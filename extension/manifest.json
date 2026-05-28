@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Shop Scout",
+  "version": "1.0.0",
+  "description": "Compare this product across stores while you browse.",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": [
+    "http://localhost:3000/*",
+    "http://127.0.0.1:3000/*",
+    "https://*/*"
+  ],
+  "action": {
+    "default_title": "Shop Scout",
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.amazon.com/*",
+        "https://www.walmart.com/*",
+        "https://www.target.com/*",
+        "https://www.nike.com/*",
+        "https://www.kohls.com/*",
+        "https://www.macys.com/*",
+        "https://www.costco.com/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,253 @@
+import type { ProductSearchResults } from "../types";
+import { buildFullSearchQuery } from "../shopping/intent-merge";
+import { extractIntentFromMessage } from "./extract-intent";
+import { summarizeSearchResults } from "./summarize-results";
+import type { ShoppingIntent } from "../types";
+
+export type ChatAction =
+  | "set_zip"
+  | "need_zip"
+  | "search"
+  | "recheck"
+  | "refine"
+  | "clarify"
+  | "link_search"
+  | "invalid_link"
+  | "conversational";
+
+export interface ChatHistoryMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface ReplyContext {
+  userMessage: string;
+  action: ChatAction;
+  zipCode?: string;
+  query?: string;
+  gender?: string;
+  ageGroup?: string;
+  nearStores?: string[];
+  productResults?: ProductSearchResults;
+  referenceProductTitle?: string;
+  history?: ChatHistoryMessage[];
+  intent?: Partial<ShoppingIntent>;
+  clarifyQuestion?: string;
+}
+
+const SYSTEM_PROMPT = `You are Shop Scout, a warm and capable AI shopping assistant.
+
+You help users compare prices across many retailers (grocery, fashion, home, sports, books) using their ZIP code for nearby stores plus online options.
+
+Guidelines:
+- Sound natural and human — like a helpful friend, not a robot.
+- Keep replies concise (usually 2–5 sentences) unless the user asks for detail.
+- Use **bold** for store names, prices, and product names (markdown).
+- When SEARCH RESULTS are provided, explain what you found using ONLY those prices and stores — never invent products or dollar amounts.
+- For action "clarify": ask ONE friendly follow-up question to narrow the product (e.g. jeans vs joggers for pants, running vs dress shoes). Mention they can tap a chip below.
+- For vague requests like "mens pants" or "shoes" without a type, always clarify before pretending you searched.
+- For recheck/refresh: say you're updating or rechecking and summarize the fresh results.
+- For greetings or thanks: respond warmly and suggest a next step.
+- If they ask which deal is best, compare using the provided results.
+- Amazon rows may show live prices and photos when Amazon PA-API is configured; other stores use estimates and store links.
+- If there are zero results, encourage a clearer product name or a product page link.`;
+
+async function callOpenAI(messages: { role: string; content: string }[]): Promise<string | null> {
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!apiKey) return null;
+
+  const baseUrl = (process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1").replace(/\/$/, "");
+  const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
+
+  try {
+    const res = await fetch(`${baseUrl}/chat/completions`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model,
+        temperature: 0.7,
+        max_tokens: 400,
+        messages,
+      }),
+    });
+
+    if (!res.ok) {
+      console.error("OpenAI error", res.status, await res.text());
+      return null;
+    }
+
+    const data = (await res.json()) as {
+      choices?: { message?: { content?: string } }[];
+    };
+    const text = data.choices?.[0]?.message?.content?.trim();
+    return text || null;
+  } catch (e) {
+    console.error("OpenAI request failed", e);
+    return null;
+  }
+}
+
+function buildUserContext(ctx: ReplyContext): string {
+  const parts: string[] = [`User said: "${ctx.userMessage}"`, `Action: ${ctx.action}`];
+
+  if (ctx.zipCode) parts.push(`ZIP: ${ctx.zipCode}`);
+  const parsed = extractIntentFromMessage(ctx.userMessage, ctx.zipCode);
+  const mergedIntent = { ...parsed, ...ctx.intent };
+  const query = ctx.query ?? buildFullSearchQuery(mergedIntent as ShoppingIntent) ?? parsed.query;
+  if (query) parts.push(`Search query: ${query}`);
+  const gender = ctx.gender ?? parsed.gender;
+  const ageGroup = ctx.ageGroup ?? parsed.ageGroup;
+  if (gender) parts.push(`Department: ${gender} (only show matching items)`);
+  if (ageGroup) parts.push(`Age group: ${ageGroup}`);
+  if (parsed.category) parts.push(`Category: ${parsed.category}`);
+  if (ctx.nearStores?.length) parts.push(`Sample nearby chains: ${ctx.nearStores.join(", ")}`);
+  if (ctx.referenceProductTitle) parts.push(`Link product: ${ctx.referenceProductTitle}`);
+  if (ctx.action === "clarify" && ctx.clarifyQuestion) {
+    parts.push(`CLARIFY (ask user before searching): ${ctx.clarifyQuestion}`);
+    parts.push("User must pick a product type from the chips — do not list prices yet.");
+  }
+
+  if (ctx.productResults) {
+    const total = ctx.productResults.local.length + ctx.productResults.online.length;
+    if (total === 0) {
+      parts.push("SEARCH RESULTS: none matched — suggest trying another name or a product link.");
+    } else {
+      parts.push("SEARCH RESULTS (use only this data):\n" + summarizeSearchResults(ctx.productResults));
+    }
+  }
+
+  return parts.join("\n");
+}
+
+function fallbackReply(ctx: ReplyContext): string {
+  const { action, productResults, query, zipCode, nearStores } = ctx;
+  const q = query ? `**${query}**` : "that";
+
+  switch (action) {
+    case "set_zip":
+      return nearStores?.length
+        ? `Got it — I've saved **${zipCode}** as your location. Stores like ${nearStores.slice(0, 4).join(", ")} can show up nearby. What should I hunt for?`
+        : `Perfect — **${zipCode}** is saved. Tell me any product and I'll pull **nearby** and **online** prices.`;
+
+    case "need_zip":
+      return "I'd love to help — what's your **5-digit ZIP**? Drop it here or in the box above and I'll find stores near you plus online deals.";
+
+    case "invalid_link":
+      return "That link didn't parse as a product page. Paste the full URL from the item page (Walmart, Target, Amazon, Nike, etc.) — not a search results page.";
+
+    case "clarify": {
+      const q =
+        ctx.clarifyQuestion ??
+        "I want to nail the right item — which style did you have in mind?";
+      if (q.includes("Tap one") || q.includes("You can pick")) return q;
+      return `${q}\n\nTap one of the options below (or type it), and I'll compare prices across every store.`;
+    }
+
+    case "recheck": {
+      if (!productResults) return "Sure — tell me what product to search and I'll run a fresh comparison.";
+      const total = productResults.local.length + productResults.online.length;
+      if (total === 0) {
+        return `I rechecked **${zipCode}** for ${q} but didn't get matches. Try a more specific name or paste a product link.`;
+      }
+      const local = productResults.local[0];
+      const online = productResults.online[0];
+      return `I'll recheck those for you — here are **updated prices** near **${zipCode}** for ${q}.\n\n${
+        local ? `**Nearby:** ${local.retailerName} at **$${local.price.toFixed(2)}**` : ""
+      }${local && online ? "\n" : ""}${
+        online ? `**Online:** ${online.retailerName} at **$${online.price.toFixed(2)}**` : ""
+      }\n\nScroll the cards below for every store.`;
+    }
+
+    case "search":
+    case "link_search":
+    case "refine": {
+      if (!productResults) return `Searching for ${q}…`;
+      const total = productResults.local.length + productResults.online.length;
+      if (total === 0) {
+        return `I looked across our stores for ${q} near **${zipCode}** but didn't find a strong match. Try different wording or paste a product link.`;
+      }
+      const local = productResults.local[0];
+      const online = productResults.online[0];
+      const ref = productResults.referenceProduct;
+      if (ref) {
+        const cheaper =
+          (local && local.price < ref.referencePrice) ||
+          (online && online.price < ref.referencePrice);
+        if (cheaper) {
+          const best =
+            local && (!online || local.price <= online.price) ? local : online!;
+          return `Compared to your link (~**$${ref.referencePrice.toFixed(2)}**), I found **${total} options** — best deal so far is **${best.retailerName}** at **$${best.price.toFixed(2)}**. Browse below for more.`;
+        }
+      }
+      const refined =
+        ctx.action === "refine"
+          ? `Got it — I updated your search${ctx.intent?.colors?.length ? ` (**${ctx.intent.colors.join(", ")}**)` : ""}${ctx.intent?.size ? ` in **${ctx.intent.size}**` : ""}${ctx.intent?.brand ? ` from **${ctx.intent.brand}**` : ""} and rechecked all stores.\n\n`
+          : "";
+      return `${refined}Here's what I found for ${q} near **${zipCode}** — **${productResults.local.length}** nearby and **${productResults.online.length}** online.\n\n${
+        local ? `Best nearby: **${local.retailerName}** · **$${local.price.toFixed(2)}**` : ""
+      }${local && online ? "\n" : ""}${
+        online ? `Best online: **${online.retailerName}** · **$${online.price.toFixed(2)}**` : ""
+      }\n\nTap **View deal** on any card to open that store with your search ready.`;
+    }
+
+    case "conversational":
+    default: {
+      const lower = ctx.userMessage.toLowerCase();
+      if (/^(hi|hello|hey|yo)\b/.test(lower)) {
+        return zipCode
+          ? `Hey! I'm Shop Scout — your ZIP **${zipCode}** is set. Ask for anything (groceries, **men's** or **women's** clothes, toddler gear, home) or paste a product link and I'll compare prices.`
+          : `Hi there! I'm Shop Scout. Share your ZIP and I'll compare prices at stores near you and online.`;
+      }
+      if (/thank/.test(lower)) {
+        return "You're welcome! Want me to **recheck** a search, try something else, or dig into a specific store from the results?";
+      }
+      if (/help|how (does|do) this work/.test(lower)) {
+        return "Easy: tell me what you want (e.g. **organic milk** or **women's black hoodie**), or paste a product link. I'll show **near you** and **online** rows with prices — click any card to shop that store.";
+      }
+      if (productResults) {
+        const local = productResults.local[0];
+        const online = productResults.online[0];
+        if (/cheaper|better|which|recommend|best/.test(lower)) {
+          if (local && online) {
+            const pick = local.price <= online.price ? local : online;
+            const other = pick === local ? online : local;
+            return `From your last search, **${pick.retailerName}** at **$${pick.price.toFixed(2)}** is the lowest I've got${
+              other ? ` (${other.retailerName} is **$${other.price.toFixed(2)}**)` : ""
+            }. Want me to **recheck** or search something different?`;
+          }
+        }
+      }
+      return zipCode
+        ? `I'm here to compare prices near **${zipCode}**. Name a product, say **recheck** to refresh your last search, or paste a link.`
+        : `I'm Shop Scout — I compare prices across major stores. Set your ZIP, then tell me what you're shopping for.`;
+    }
+  }
+}
+
+export async function generateAssistantReply(ctx: ReplyContext): Promise<string> {
+  const historyMessages = (ctx.history ?? [])
+    .slice(-8)
+    .filter((m) => m.content.trim())
+    .map((m) => ({
+      role: m.role,
+      content: m.content.slice(0, 1200),
+    }));
+
+  const messages = [
+    { role: "system", content: SYSTEM_PROMPT },
+    ...historyMessages,
+    { role: "user", content: buildUserContext(ctx) },
+  ];
+
+  const ai = await callOpenAI(messages);
+  if (ai) return ai;
+
+  return fallbackReply(ctx);
+}
+
+export function isAiEnabled(): boolean {
+  return Boolean(process.env.OPENAI_API_KEY?.trim());
+}

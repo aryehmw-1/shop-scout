@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+/* Deal Scout palette + homy warm neutrals — name stays Shop Scout */
+:root {
+  --background: #faf6f0;
+  --foreground: #44403c;
+  --cream-50: #fffbf7;
+  --cream-100: #faf6f0;
+  --cream-200: #f5ebe0;
+
+  /* Primary brand (orange → amber); sage-* classes map here site-wide */
+  --sage-50: #fff7ed;
+  --sage-100: #ffedd5;
+  --sage-200: #fed7aa;
+  --sage-400: #fb923c;
+  --sage-600: #ea580c;
+  --sage-700: #c2410c;
+  --sage-800: #9a3412;
+  --sage-900: #7c2d12;
+
+  /* Warm stone neutrals (not cool slate) */
+  --ink-50: #fafaf9;
+  --ink-100: #f5f5f4;
+  --ink-200: #e7e5e4;
+  --ink-400: #a8a29e;
+  --ink-600: #78716c;
+  --ink-800: #44403c;
+  --ink-900: #292524;
+
+  --accent: #f43f5e;
+  --accent-soft: #fff1f2;
+  --amber-500: #f59e0b;
+  --rose-500: #f43f5e;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-cream-50: var(--cream-50);
+  --color-cream-100: var(--cream-100);
+  --color-cream-200: var(--cream-200);
+  --color-sage-50: var(--sage-50);
+  --color-sage-100: var(--sage-100);
+  --color-sage-200: var(--sage-200);
+  --color-sage-400: var(--sage-400);
+  --color-sage-600: var(--sage-600);
+  --color-sage-700: var(--sage-700);
+  --color-sage-800: var(--sage-800);
+  --color-sage-900: var(--sage-900);
+  --color-ink-50: var(--ink-50);
+  --color-ink-100: var(--ink-100);
+  --color-ink-200: var(--ink-200);
+  --color-ink-400: var(--ink-400);
+  --color-ink-600: var(--ink-600);
+  --color-ink-800: var(--ink-800);
+  --color-ink-900: var(--ink-900);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-amber-500: var(--amber-500);
+  --color-rose-500: var(--rose-500);
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-outfit);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-outfit), var(--font-dm-sans), system-ui, sans-serif;
+}
+
+.font-homy {
+  font-family: var(--font-homy), Georgia, "Times New Roman", serif;
+}
+
+/* Subtle woven-linen texture for cozy sections */
+.homy-linen {
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(120, 90, 60, 0.02) 1px,
+      transparent 1px
+    ),
+    linear-gradient(rgba(120, 90, 60, 0.02) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.app-mesh {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -15%, rgba(251, 146, 60, 0.14), transparent),
+    radial-gradient(ellipse 55% 40% at 100% 10%, rgba(244, 63, 94, 0.07), transparent),
+    radial-gradient(ellipse 50% 35% at 0% 90%, rgba(245, 158, 11, 0.1), transparent);
+}
+
+.glass-card {
+  background: rgba(255, 251, 247, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(254, 215, 170, 0.45);
+  box-shadow:
+    0 1px 2px rgba(124, 45, 18, 0.04),
+    0 8px 28px rgba(154, 52, 18, 0.07);
+}
+
+.text-gradient-hero {
+  background: linear-gradient(
+    135deg,
+    var(--sage-700) 0%,
+    var(--amber-500) 50%,
+    var(--accent) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.35s ease-out forwards;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  border-radius: 999px;
+}
+
+::selection {
+  background: var(--sage-200);
+  color: var(--sage-900);
+}

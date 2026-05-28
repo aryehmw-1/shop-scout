@@ -1,0 +1,150 @@
+// Shop Scout — relational store for users, catalog, price intelligence, and search history.
+// SQLite for local/dev; set DATABASE_URL to PostgreSQL in production.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(cuid())
+  email          String          @unique
+  name           String
+  passwordHash   String
+  zipCode        String?
+  addressJson    String          @default("{}")
+  preferencesJson String         @default("{}")
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  searchSessions SearchSession[]
+  savedOffers    SavedOffer[]
+  learningEvents LearningEvent[]
+
+  @@index([email])
+}
+
+model Product {
+  id           String       @id @default(cuid())
+  catalogId    String       @unique
+  slug         String       @unique
+  title        String
+  brand        String
+  upc          String?
+  category     String
+  sizeLabel    String       @default("1 unit")
+  basePriceUsd Float
+  unitLabel    String       @default("each")
+  imageUrl     String?
+  keywordsJson String       @default("[]")
+  organic      Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  aliases      ProductAlias[]
+  priceQuotes  PriceQuote[]
+
+  @@index([category])
+  @@index([upc])
+  @@index([brand])
+}
+
+model ProductAlias {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  alias     String
+  source    String   @default("keyword")
+
+  @@unique([productId, alias])
+  @@index([alias])
+}
+
+/// One row = one retailer offer for a product (nightly index, Amazon API, or live search).
+/// Photos stored as HTTPS URLs only — not binary blobs (keeps DB small and fast).
+model PriceQuote {
+  id              String   @id @default(cuid())
+  productId       String
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  retailerId      String
+  channel         String
+  storeTitle      String?
+  imageUrl        String?
+  priceUsd        Float
+  wasPriceUsd     Float?
+  landedCostUsd   Float
+  unitPriceUsd    Float
+  inStock         Boolean  @default(true)
+  matchConfidence Float    @default(0.9)
+  source          String
+  productUrl      String
+  affiliateUrl    String
+  fetchedAt       DateTime @default(now())
+  expiresAt       DateTime
+
+  @@index([productId, retailerId, channel])
+  @@index([productId, expiresAt])
+  @@index([source, expiresAt])
+  @@index([retailerId, fetchedAt])
+}
+
+model SearchSession {
+  id           String   @id @default(cuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  zipCode      String
+  queryRaw     String
+  intentJson   String
+  mode         String   @default("search")
+  resultCount  Int      @default(0)
+  bestPriceUsd Float?
+  durationMs   Int?
+  createdAt    DateTime @default(now())
+  queries      SearchQuery[]
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+}
+
+model SearchQuery {
+  id              String        @id @default(cuid())
+  sessionId       String
+  session         SearchSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  resolvedCatalogId String?
+  queryNormalized String
+  attributesJson  String        @default("{}")
+  offerCount      Int           @default(0)
+  createdAt       DateTime      @default(now())
+
+  @@index([sessionId])
+}
+
+model LearningEvent {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  kind        String
+  payloadJson String
+  createdAt   DateTime @default(now())
+
+  @@index([userId, kind, createdAt])
+}
+
+model SavedOffer {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offerJson String
+  createdAt DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+/// Key/value config and feature flags (connector TTLs, maintenance mode).
+model SystemConfig {
+  key       String   @id
+  valueJson String
+  updatedAt DateTime @updatedAt
+}

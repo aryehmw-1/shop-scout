@@ -1,0 +1,136 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  width: 360px;
+  margin: 0;
+  padding: 14px;
+  font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+  font-size: 13px;
+  color: #1c1917;
+  background: #fffaf5;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 18px;
+  color: #c2410c;
+}
+
+.sub {
+  margin: 4px 0 12px;
+  color: #78716c;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.field input {
+  padding: 8px;
+  border: 1px solid #e7e5e4;
+  border-radius: 8px;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+button.primary {
+  background: #ea580c;
+  color: white;
+}
+
+button.secondary {
+  background: #fff;
+  border: 1px solid #e7e5e4;
+  color: #44403c;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.card {
+  padding: 10px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #f5f5f4;
+  margin: 10px 0;
+  line-height: 1.4;
+}
+
+.muted {
+  color: #57534e;
+}
+
+.status {
+  margin-top: 8px;
+  min-height: 18px;
+  color: #78716c;
+}
+
+.status.error {
+  color: #b91c1c;
+}
+
+.link {
+  display: block;
+  text-align: center;
+  margin-top: 8px;
+  color: #c2410c;
+}
+
+#offers {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+#offers li {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f5f5f4;
+}
+
+#offers img {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  border-radius: 6px;
+  background: #fafaf9;
+}
+
+#offers .meta {
+  flex: 1;
+  min-width: 0;
+}
+
+#offers .store {
+  font-weight: 600;
+}
+
+#offers .price {
+  color: #c2410c;
+  font-weight: 700;
+}
+
+#offers a {
+  color: #c2410c;
+  text-decoration: none;
+  font-size: 12px;
+}

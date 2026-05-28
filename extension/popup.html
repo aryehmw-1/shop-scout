@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Shop Scout</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Shop Scout</h1>
+      <p class="sub">Compare while you browse</p>
+    </header>
+
+    <label class="field">
+      <span>Shop Scout server</span>
+      <input id="baseUrl" type="url" placeholder="http://localhost:3000" />
+    </label>
+    <button id="saveUrl" type="button" class="secondary">Save server</button>
+
+    <div id="page" class="card muted">Loading page…</div>
+
+    <button id="compare" type="button" class="primary">Compare prices</button>
+    <a id="openChat" class="link" href="#" target="_blank" rel="noopener">Open in Shop Scout</a>
+
+    <div id="status" class="status"></div>
+    <ul id="offers"></ul>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
