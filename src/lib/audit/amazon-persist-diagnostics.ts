@@ -169,6 +169,10 @@ function inferRootCause(
   if (persist.ok) return "would_persist";
 
   if (offer.priceSource !== "scraped" && offer.priceSource !== "connector_api") {
+    const reasons = offer.confidenceReasons ?? [];
+    if (reasons.some((r) => r.code === "amazon.rejected" || r.code === "amazon.low_confidence")) {
+      return "amazon_validation_rejected_during_extraction_stale_catalog_confidence";
+    }
     if (norm && !norm.accepted) {
       return `normalization_rejected: ${norm.reason}`;
     }
@@ -180,6 +184,10 @@ function inferRootCause(
 
   if (persist.reason === "low_confidence") {
     if ((offer.matchConfidence ?? 0) < MIN_TRUSTED_MATCH_CONFIDENCE) {
+      const weakTitle = (offer.confidenceReasons ?? []).some((r) => r.code === "title.weak");
+      if (weakTitle) {
+        return "title_weak_penalty_crushed_confidence_below_persist_floor";
+      }
       return "match_confidence_crushed_below_persist_floor_after_enrichment_rescore";
     }
   }

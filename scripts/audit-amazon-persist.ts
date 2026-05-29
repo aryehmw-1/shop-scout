@@ -23,6 +23,8 @@ const limitArg = process.argv.find((a) => a.startsWith("--limit="));
 const limit = limitArg ? parseInt(limitArg.split("=")[1]!, 10) : 8;
 const write = process.argv.includes("--write");
 
+process.env.INDEX_AMAZON_PERSIST_DIAG ??= "1";
+
 function intentFor(item: { brand: string; title: string; category: string }): ShoppingIntent {
   return {
     query: [item.brand, item.title].filter(Boolean).join(" "),
@@ -59,6 +61,9 @@ async function main() {
       continue;
     }
 
+    const baselineConf = amazonOffer.matchConfidence ?? 0;
+    const baselineSource = amazonOffer.priceSource ?? "catalog_model";
+
     const enrichPass = await enrichOffersAtIndex(results, item, intent);
     results = enrichPass.results;
 
@@ -80,6 +85,12 @@ async function main() {
     );
 
     sections.push(formatAmazonPersistDiagnostic(diag));
+    sections.push(
+      `- **Confidence arc:** compare=${baselineConf.toFixed(3)} (${baselineSource}) → final=${(enrichedAmazon.matchConfidence ?? 0).toFixed(3)} (${enrichedAmazon.priceSource ?? "?"})`,
+    );
+    sections.push(
+      `- **Enrichment:** pricesExtracted=${enrichPass.report.pricesExtracted} persistRejected=${enrichPass.report.persistRejected ?? 0}`,
+    );
     sections.push("");
   }
 

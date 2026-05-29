@@ -87,6 +87,15 @@ export function buildOfferQualityMeta(offer: ProductOffer): OfferQualityMeta {
   };
 }
 
+function isAmazonValidatedScrapedPdp(offer: ProductOffer): boolean {
+  return (
+    offer.retailer === "amazon" &&
+    (offer.priceSource === "scraped" || offer.priceSource === "connector_api") &&
+    isPdpProductUrl(offer.productUrl) &&
+    (offer.confidenceReasons ?? []).some((r) => r.code === "amazon.match")
+  );
+}
+
 export function applyOfferQualityGates(
   offer: ProductOffer,
   item: CatalogItem,
@@ -94,6 +103,7 @@ export function applyOfferQualityGates(
 ): ProductOffer {
   const o = { ...offer };
   const meta = buildOfferQualityMeta(o);
+  const amazonValidated = isAmazonValidatedScrapedPdp(o);
 
   if (meta.urlKind === "search") {
     penalize(o, 0.72, "url.search", "search URL not product page");
@@ -123,13 +133,22 @@ export function applyOfferQualityGates(
     item.title,
     o.storeTitle ?? o.title,
   );
-  if (titleSim < MIN_TITLE_SIMILARITY && (o.identityConfidence ?? 0) < 0.99) {
+  if (
+    !amazonValidated &&
+    titleSim < MIN_TITLE_SIMILARITY &&
+    (o.identityConfidence ?? 0) < 0.99
+  ) {
     penalize(o, 0.75, "title.weak", "weak title match to catalog");
   }
 
+  const priceNormalized = (o.confidenceReasons ?? []).some(
+    (r) => r.code === "price.normalized" || r.code === "price.scraped",
+  );
   if (
     o.priceSource === "scraped" &&
-    !isPlausiblePrice(o.price, item.basePrice)
+    !isPlausiblePrice(o.price, item.basePrice) &&
+    !priceNormalized &&
+    !amazonValidated
   ) {
     penalize(o, 0.92, "price.catalog-drift", "scraped price differs from catalog");
   }

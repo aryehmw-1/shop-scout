@@ -224,12 +224,16 @@ export function validateAmazonOffer(
   };
   const metrics = scoreAmazonSearchHit(hit, item, intent, seenAsins);
 
-  if (metrics.accepted && (offer.matchConfidence ?? 0) < MIN_TRUSTED_MATCH_CONFIDENCE) {
+  // Use Amazon matchScore — not stale catalog estimate on the offer object.
+  if (metrics.accepted && metrics.matchScore < MIN_TRUSTED_MATCH_CONFIDENCE) {
     return {
       ...metrics,
       accepted: false,
-      rejectionReason: "amazon.low_confidence",
-      matchReasons: [...metrics.matchReasons, "rejected:offer-confidence-low"],
+      rejectionReason: "amazon.low_match_score",
+      matchReasons: [
+        ...metrics.matchReasons,
+        `rejected:matchScore<${MIN_TRUSTED_MATCH_CONFIDENCE}`,
+      ],
     };
   }
 

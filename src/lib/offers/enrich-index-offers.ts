@@ -34,6 +34,7 @@ import {
   applyOfferQualityGates,
   applyRetailerExtractionToOffer,
   buildOfferQualityMeta,
+  MIN_TRUSTED_MATCH_CONFIDENCE,
 } from "./offer-quality";
 import { fetchRetailerPageData } from "./retailer-page-extract";
 import { pickOffersForIndexEnrich, indexScrapeSkipRetailers } from "./enrich-retailer-targets";
@@ -218,6 +219,7 @@ export async function enrichOffersAtIndex(
     });
 
     const beforeUrl = offer.productUrl;
+    const baselineOffer = { ...offer };
     const patched = applyRetailerExtractionToOffer(offer, extraction, item);
     Object.assign(offer, patched);
     report.offersEnriched += 1;
@@ -226,6 +228,18 @@ export async function enrichOffersAtIndex(
       const amazonMetrics = validateAmazonOffer(offer, item, intent);
       enrichmentReport.amazon = amazonMetrics;
       logAmazonMatchDecision(item.id, amazonMetrics, "index");
+
+      if (process.env.INDEX_AMAZON_PERSIST_DIAG === "1") {
+        const { traceAmazonConfidencePipeline, formatConfidencePipelineTrace } =
+          await import("../audit/amazon-confidence-trace");
+        const trace = traceAmazonConfidencePipeline(
+          baselineOffer,
+          item,
+          intent,
+          extraction,
+        );
+        console.log("[amazon-conf-trace]", formatConfidencePipelineTrace(trace));
+      }
     }
 
     const retailerStatus = inferRetailerStatus({
@@ -404,6 +418,18 @@ function applyQualityToAll(
     };
     next.priceConfidence = buildOfferQualityMeta(next).priceConfidence;
     next = applyOfferQualityGates(next, item, intent);
+
+    // Preserve Amazon-validated scraped confidence through quality gates.
+    if (
+      (o.priceSource === "scraped" || o.priceSource === "connector_api") &&
+      priorConf >= MIN_TRUSTED_MATCH_CONFIDENCE
+    ) {
+      next.matchConfidence = Math.max(
+        next.matchConfidence ?? 0,
+        MIN_TRUSTED_MATCH_CONFIDENCE,
+      );
+    }
+
     return next;
   };
 
