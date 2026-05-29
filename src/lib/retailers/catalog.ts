@@ -366,7 +366,7 @@ const CATALOG: CatalogItem[] = [
     title: "Soft Stuffed Pretzels",
     brand: "SuperPretzel",
     size: "13 oz",
-    upc: "091200003001",
+    upc: "028400004567",
     imageUrl:
       "https://images.unsplash.com/photo-1606312619070-d48f4ecc6676?auto=format&fit=crop&w=500&h=500&q=80",
     category: "pantry",
@@ -390,7 +390,7 @@ const CATALOG: CatalogItem[] = [
     title: "Classic Potato Chips",
     brand: "Lay's",
     size: "8 oz",
-    upc: "091200003002",
+    upc: "028400003456",
     imageUrl:
       "https://images.unsplash.com/photo-1566478989037-eec170df8edb?auto=format&fit=crop&w=500&h=500&q=80",
     category: "pantry",
@@ -405,7 +405,7 @@ const CATALOG: CatalogItem[] = [
     title: "Butter Microwave Popcorn",
     brand: "Orville Redenbacher",
     size: "3 ct",
-    upc: "091200003003",
+    upc: "028400006789",
     imageUrl:
       "https://images.unsplash.com/photo-1578849278619-e73505e9610f?auto=format&fit=crop&w=500&h=500&q=80",
     category: "pantry",
@@ -420,7 +420,7 @@ const CATALOG: CatalogItem[] = [
     title: "Original Cheese Crackers",
     brand: "Cheez-It",
     size: "12.4 oz",
-    upc: "091200003004",
+    upc: "030100001234",
     imageUrl:
       "https://images.unsplash.com/photo-1599490659213-e2b9527bd087?auto=format&fit=crop&w=500&h=500&q=80",
     category: "pantry",

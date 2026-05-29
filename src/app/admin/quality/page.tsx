@@ -48,6 +48,11 @@ export default async function QualityDashboardPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-3 text-sm">
+          <Link href="/admin/inventory" className="text-sage-700 hover:underline">
+            Inventory →
+          </Link>
+          <span className="text-stone-400">·</span>
+          <code className="text-xs text-stone-500">npm run audit:data-quality</code>
           <Link href="/admin/links" className="text-sage-700 hover:underline">
             Link ingestion →
           </Link>

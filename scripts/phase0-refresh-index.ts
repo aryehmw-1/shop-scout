@@ -1,22 +1,25 @@
-#!/usr/bin/env node --import tsx/esm
+#!/usr/bin/env tsx
 /**
- * Phase 0 — refresh expired verified inventory for production-usable candidates.
+ * Phase 0 — refresh flagship verified inventory for production-usable products.
  *
  *   npm run phase0:refresh
- *   npm run phase0:refresh -- --limit=15
+ *   npm run phase0:refresh -- --limit=22
  */
 import { prisma } from "../src/lib/db/prisma";
 import { runNightlyPriceIndex } from "../src/lib/indexing/nightly-quotes";
 import { getFullIndexRotationPlan } from "../src/lib/indexing/weekly-retailer-schedule";
+import { getFlagshipCatalogIds } from "../src/lib/inventory/flagship-catalog";
 
 const VERIFIED = ["scraped", "connector_api", "daily_index", "nightly_index"];
 const limitArg = process.argv.find((a) => a.startsWith("--limit="));
-const limit = limitArg ? parseInt(limitArg.split("=")[1]!, 10) : 15;
+const limit = limitArg ? parseInt(limitArg.split("=")[1]!, 10) : 22;
 
 async function main() {
   const now = new Date();
+  const flagshipIds = getFlagshipCatalogIds();
 
   const products = await prisma.product.findMany({
+    where: { catalogId: { in: flagshipIds } },
     select: {
       catalogId: true,
       title: true,
@@ -27,7 +30,7 @@ async function main() {
     },
   });
 
-  const candidates = products
+  const staleCandidates = products
     .map((p) => {
       const active = p.priceQuotes.filter((q) => q.expiresAt > now);
       const expired = p.priceQuotes.filter((q) => q.expiresAt <= now);
@@ -38,26 +41,43 @@ async function main() {
         activeCount: active.length,
         expiredCount: expired.length,
         retailerDiversity: retailers.size,
-        needsRefresh: active.length === 0 && expired.length > 0,
-        priority: expired.length * 2 + (active.length === 0 ? 10 : 0) + retailers.size,
+        needsRefresh: active.length === 0 || retailers.size < 2,
+        priority:
+          (active.length === 0 ? 20 : 0) +
+          expired.length * 3 +
+          (retailers.size < 2 ? 8 : 0),
       };
     })
-    .filter((p) => p.needsRefresh || p.activeCount < 2)
-    .sort((a, b) => b.priority - a.priority)
-    .slice(0, limit);
+    .filter((p) => p.needsRefresh)
+    .sort((a, b) => b.priority - a.priority);
 
-  console.log(`[phase0:refresh] re-indexing ${candidates.length} priority products`);
-  for (const c of candidates) {
-    console.log(`  · ${c.catalogId} (expired=${c.expiredCount}, active=${c.activeCount})`);
+  const catalogIds: string[] = [];
+  for (const c of staleCandidates) {
+    if (!catalogIds.includes(c.catalogId)) catalogIds.push(c.catalogId);
+  }
+  for (const id of flagshipIds) {
+    if (catalogIds.length >= limit) break;
+    if (!catalogIds.includes(id)) catalogIds.push(id);
   }
 
-  if (!candidates.length) {
-    console.log("[phase0:refresh] no candidates — run full index or expand catalog");
+  const toIndex = catalogIds.slice(0, limit);
+
+  console.log(`[phase0:refresh] re-indexing ${toIndex.length} flagship products`);
+  for (const id of toIndex) {
+    const c = staleCandidates.find((s) => s.catalogId === id);
+    console.log(
+      `  · ${id}${c ? ` (expired=${c.expiredCount}, active=${c.activeCount}, retailers=${c.retailerDiversity})` : " (fresh index)"}`,
+    );
+  }
+
+  if (!toIndex.length) {
+    console.log("[phase0:refresh] no flagship products to index");
     process.exit(0);
   }
 
   const report = await runNightlyPriceIndex({
-    limit: candidates.length,
+    catalogIds: toIndex,
+    flagshipOnly: true,
     delayMs: 500,
     rotationPlan: getFullIndexRotationPlan(),
   });

@@ -5,6 +5,7 @@ import { enrichOffersAtSearch } from "../offers/enrich-offers-at-search";
 import { finalizeResultsForUser } from "../pricing/deal-intelligence";
 import { finalizeSearchPrices } from "./price-truth";
 import { attachMatchedProduct } from "./matched-product";
+import { MIN_CONSUMER_MATCH_CONFIDENCE } from "../offers/consumer-trust";
 import type { ProductSearchResults, ReferenceProduct, ShoppingIntent } from "../types";
 
 function buildReferenceProduct(ingest: LinkIngestResult): ReferenceProduct {
@@ -60,6 +61,18 @@ export async function buildLinkSearchResults(
       linkMatch,
     };
     results = attachMatchedProduct(results, ingest.catalogItem, ingest.guessedTitle);
+
+    // Flagship link compare: only show verified alternatives cheaper than pasted reference price.
+    if (ingest.priceVerified && ingest.referencePrice > 0) {
+      results = {
+        ...results,
+        online: results.online.filter(
+          (o) =>
+            o.landedCost < ingest.referencePrice &&
+            o.productUrl !== ingest.sourceUrl,
+        ),
+      };
+    }
   } else {
     results = searchSimilarFromLink(
       {
@@ -94,6 +107,18 @@ export async function buildLinkSearchResults(
         isBestDeal: false,
         dealLabel: undefined,
       })),
+    };
+  }
+
+  // Link flagship: only show verified alternatives that pass consumer trust gates.
+  // Suppress low-confidence cross-retailer matches from similar-mode fallback.
+  if (!ingest.useExactCompare) {
+    results = {
+      ...results,
+      online: results.online.filter(
+        (o) => (o.matchConfidence ?? 0) >= MIN_CONSUMER_MATCH_CONFIDENCE,
+      ),
+      similarMode: true,
     };
   }
 

@@ -10,7 +10,7 @@ import {
 } from "./offer-quality";
 import { inferRetailerStatus } from "./retailer-enrichment-status";
 import { isPdpProductUrl, isSearchProductUrl } from "./url-classifier";
-import { isVerifiedOffer } from "./offer-trust";
+import { passesConsumerTrustGates } from "./consumer-trust";
 
 export type PersistRejectionReason =
   | "non_persistable_source"
@@ -195,17 +195,9 @@ export function filterOffersForPersist(
   return { accepted, rejected };
 }
 
-/** Stricter than isVerifiedOffer — requires working image + real PDP for UI display. */
+/** Stricter than isVerifiedOffer — consumer UI trust gates (image, identifiers, freshness). */
 export function isDisplayableOffer(offer: ProductOffer): boolean {
-  if (!isVerifiedOffer(offer)) return false;
-  if (offer.pipelineDebug?.validationStatus === "rejected") return false;
-  if (!isPdpProductUrl(offer.productUrl)) return false;
-  if (!offer.imageUrl?.startsWith("https://")) return false;
-  if (isGenericCatalogImage(offer.imageUrl)) return false;
-  if (isPlaceholderImage(offer.imageUrl)) return false;
-  if (!offer.price || offer.price <= 0) return false;
-  if ((offer.matchConfidence ?? 0) < MIN_TRUSTED_MATCH_CONFIDENCE) return false;
-  return true;
+  return passesConsumerTrustGates(offer);
 }
 
 export function showEstimatedOffersInUi(): boolean {

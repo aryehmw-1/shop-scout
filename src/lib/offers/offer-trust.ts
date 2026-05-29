@@ -2,11 +2,12 @@ import { isGenericCatalogImage } from "../indexing/retailer-page-image";
 import { isRetailerHostedImage } from "../indexing/retailer-page-image";
 import { isVerifiedLivePrice } from "../search/price-truth";
 import type { ProductOffer } from "../types";
+import { MIN_CONSUMER_BEST_DEAL_CONFIDENCE } from "./consumer-trust";
 import { MIN_TRUSTED_MATCH_CONFIDENCE } from "./offer-quality";
 import { classifyProductUrl, isPdpProductUrl, isSearchProductUrl } from "./url-classifier";
 
 /** Minimum confidence to show "Best deal" badge. */
-export const BEST_DEAL_MIN_CONFIDENCE = 0.62;
+export const BEST_DEAL_MIN_CONFIDENCE = MIN_CONSUMER_BEST_DEAL_CONFIDENCE;
 
 export type OfferTrustTier = "verified" | "estimated";
 

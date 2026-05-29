@@ -253,6 +253,10 @@ export interface NightlyIndexOptions {
   category?: string;
   limit?: number;
   delayMs?: number;
+  /** Index only these catalog IDs (preserves order). */
+  catalogIds?: string[];
+  /** Restrict to flagship UPC-heavy grocery set. */
+  flagshipOnly?: boolean;
   /** Override rotation (testing). */
   rotationPlan?: WeeklyRotationPlan;
 }
@@ -286,6 +290,22 @@ export async function runNightlyPriceIndex(
   let items = [...CATALOG];
   if (options.category) {
     items = items.filter((i) => i.category === options.category);
+  }
+
+  const flagshipOnly =
+    options.flagshipOnly ?? process.env.INDEX_FLAGSHIP_ONLY?.trim().toLowerCase() === "on";
+  if (flagshipOnly) {
+    const { getFlagshipCatalogIds } = await import("../inventory/flagship-catalog");
+    const allow = new Set(getFlagshipCatalogIds());
+    items = items.filter((i) => allow.has(i.id));
+    indexLogAlways("flagship-only mode", { products: items.length });
+  }
+
+  if (options.catalogIds?.length) {
+    const allow = new Set(options.catalogIds);
+    items = items.filter((i) => allow.has(i.id));
+    const order = new Map(options.catalogIds.map((id, idx) => [id, idx]));
+    items.sort((a, b) => (order.get(a.id) ?? 999) - (order.get(b.id) ?? 999));
   }
 
   const popularityRows = await prisma.product.findMany({
