@@ -1,4 +1,5 @@
-import type { RetailerId } from "./types";
+import { buildStoreSearchQuery } from "./retailers/store-search-query";
+import type { RetailerId, ShoppingIntent } from "./types";
 
 const AFFILIATE_TAGS: Partial<Record<RetailerId, string | undefined>> = {
   walmart: process.env.AFFILIATE_WALMART_TAG,
@@ -67,7 +68,7 @@ export function buildRetailerSearchUrl(
     case "ross":
       return googleShoppingFallback(searchQuery);
     case "tjmaxx":
-      return `https://www.tjmaxx.com/store/shop/?Ntt=${q}`;
+      return `https://www.tjmaxx.com/us/store/shop/?Ntt=${q}`;
     case "footlocker":
       return `https://www.footlocker.com/search?query=${q}`;
     case "zappos":
@@ -249,7 +250,7 @@ export function buildRetailerSearchUrl(
     case "urbanoutfitters":
       return `https://www.urbanoutfitters.com/search?q=${q}`;
     case "forever21":
-      return `https://www.forever21.com/us/shop/catalog/search?q=${q}`;
+      return `https://www.forever21.com/search?q=${q}&type=product`;
     case "llbean":
       return `https://www.llbean.com/search?q=${q}`;
     case "columbia":
@@ -412,10 +413,24 @@ export function buildProductSearchUrl(
   size: string,
   searchContext?: string,
 ): string {
-  const searchQuery =
-    searchContext?.trim() ||
-    `${brand} ${title} ${size}`.replace(/\s+/g, " ").trim();
+  const searchQuery = buildStoreSearchQuery(
+    { brand, title, size },
+    searchContext ? ({ query: searchContext } as ShoppingIntent) : undefined,
+  );
   return buildRetailerSearchUrl(retailer, searchQuery);
+}
+
+function isRetailerSearchUrl(productUrl: string): boolean {
+  try {
+    const url = new URL(productUrl);
+    const pathQuery = `${url.pathname}${url.search}`.toLowerCase();
+    if (/[?&](q|query|keyword|ntt|searchterm|search)=/.test(pathQuery)) {
+      return true;
+    }
+    return /\/search/.test(pathQuery);
+  } catch {
+    return false;
+  }
 }
 
 export function buildAffiliateUrl(
@@ -425,6 +440,10 @@ export function buildAffiliateUrl(
   try {
     const url = new URL(productUrl);
     const tag = AFFILIATE_TAGS[retailer];
+    // Affiliate params on search URLs often break TJX / Oracle Commerce stores.
+    if (tag && isRetailerSearchUrl(productUrl)) {
+      return productUrl;
+    }
     if (tag) {
       switch (retailer) {
         case "amazon":
@@ -454,8 +473,10 @@ export function buildStoreProductLink(
   size: string,
   userQuery?: string,
 ): string {
-  const parts = [userQuery, brand, title, size].filter(Boolean);
-  const searchQuery = parts.join(" ").replace(/\s+/g, " ").trim();
+  const searchQuery = buildStoreSearchQuery(
+    { brand, title, size },
+    userQuery ? ({ query: userQuery } as ShoppingIntent) : undefined,
+  );
   const url = buildRetailerSearchUrl(retailer, searchQuery);
   return buildAffiliateUrl(retailer, url);
 }

@@ -39,7 +39,7 @@ export async function fetchCachedLiveQuotes(
       productId: product.id,
       expiresAt: { gt: now },
       source: {
-        in: ["connector_api", "cached_quote", "nightly_index"],
+        in: ["scraped", "connector_api"],
       },
     },
     orderBy: { fetchedAt: "desc" },
@@ -54,17 +54,26 @@ export async function fetchCachedLiveQuotes(
     if (!row.productUrl.startsWith("http")) continue;
 
     const meta = getRetailerMeta(retailerId);
-    byRetailer.set(retailerId, {
-      ...storedRowToLiveQuoteFields({
-        retailerId,
-        storeTitle: row.storeTitle,
-        imageUrl: row.imageUrl,
-        priceUsd: row.priceUsd,
-        productUrl: row.productUrl,
-        source: row.source,
-        sourceLabel: meta.name,
-      }),
+    const fields = storedRowToLiveQuoteFields({
+      retailerId,
+      storeTitle: row.storeTitle,
+      imageUrl: row.imageUrl,
+      priceUsd: row.priceUsd,
+      productUrl: row.productUrl,
+      source: row.source,
+      sourceLabel: meta.name,
     });
+
+    if (process.env.PIPELINE_DEBUG === "1") {
+      console.log("[cached-quotes]", catalogId, retailerId, {
+        dbSource: row.source,
+        priceUsd: row.priceUsd,
+        imageUrl: row.imageUrl?.slice(0, 80),
+        priceSource: fields.priceSource,
+      });
+    }
+
+    byRetailer.set(retailerId, fields);
   }
 
   const quotes = [...byRetailer.values()];

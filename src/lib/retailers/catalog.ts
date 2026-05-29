@@ -1,3 +1,7 @@
+import {
+  formatSearchProductTitle,
+  isGenericBrandToken,
+} from "../shopping/product-display";
 import { classifyProductImageSource } from "../search/product-image-source";
 import { buildOfferClickUrl } from "./retailer-url";
 import type {
@@ -9,6 +13,16 @@ import type {
   ShoppingIntent,
 } from "../types";
 import { imageForProduct } from "../catalog-images";
+import { resolveCatalogRow } from "../catalog/resolve-variant";
+import { applyOfferQualityGates } from "../offers/offer-quality";
+import { scoreOfferConfidence } from "../identity/offer-confidence";
+import {
+  createVariant,
+  createVariantGroup,
+  createVariantSize,
+  type CatalogVariant,
+  type CatalogVariantGroup,
+} from "../catalog/variants";
 import { rankSimilarCatalogItems } from "../search/product-similarity";
 import { getRetailerMeta, retailerSellsCategory } from "./meta";
 import { getRetailerListing } from "./listings";
@@ -38,7 +52,13 @@ export interface CatalogItem {
   basePrice: number;
   unitLabel: string;
   slug: string;
+  /** Preferred: color/style groups with sizes (images on group). */
+  variantGroups?: CatalogVariantGroup[];
+  /** Legacy flat SKUs — auto-grouped by color at sync time */
+  variants?: CatalogVariant[];
 }
+
+export type { CatalogVariant, CatalogVariantGroup };
 
 const CATALOG: CatalogItem[] = [
   {
@@ -499,6 +519,58 @@ const CATALOG: CatalogItem[] = [
     basePrice: 49.99,
     unitLabel: "each",
     slug: "levis-slim-jeans",
+    variantGroups: [
+      createVariantGroup({
+        parentId: "jeans-slim",
+        color: "Blue",
+        isDefault: true,
+        keywords: ["blue", "denim"],
+        sizes: [
+          createVariantSize({
+            groupId: "jeans-slim--blue",
+            sizeLabel: "32x32",
+            gtin: "091200000789",
+            basePrice: 49.99,
+            isDefault: true,
+          }),
+          createVariantSize({
+            groupId: "jeans-slim--blue",
+            sizeLabel: "34x32",
+            basePrice: 49.99,
+          }),
+          createVariantSize({
+            groupId: "jeans-slim--blue",
+            sizeLabel: "36x32",
+            basePrice: 52.99,
+          }),
+        ],
+      }),
+      createVariantGroup({
+        parentId: "jeans-slim",
+        color: "Black",
+        keywords: ["black", "denim"],
+        sizes: [
+          createVariantSize({
+            groupId: "jeans-slim--black",
+            sizeLabel: "32x32",
+            gtin: "091200000790",
+            basePrice: 54.99,
+            isDefault: true,
+          }),
+          createVariantSize({
+            groupId: "jeans-slim--black",
+            sizeLabel: "34x32",
+            gtin: "091200000791",
+            basePrice: 54.99,
+          }),
+          createVariantSize({
+            groupId: "jeans-slim--black",
+            sizeLabel: "36x32",
+            basePrice: 56.99,
+          }),
+        ],
+      }),
+    ],
   },
   {
     id: "mens-chinos",
@@ -514,6 +586,32 @@ const CATALOG: CatalogItem[] = [
     basePrice: 59.99,
     unitLabel: "each",
     slug: "gap-mens-chinos",
+  },
+  {
+    id: "mens-joggers",
+    title: "Men's Fleece Jogger Pants",
+    brand: "Nike",
+    size: "Men's L",
+    upc: "091200003022",
+    imageUrl:
+      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&h=500&fit=crop",
+    category: "clothing",
+    keywords: [
+      "pants",
+      "joggers",
+      "jogger",
+      "sweatpants",
+      "mens",
+      "men",
+      "male",
+      "clothing",
+      "athletic",
+      "fleece",
+    ],
+    organic: false,
+    basePrice: 54.99,
+    unitLabel: "each",
+    slug: "nike-mens-joggers",
   },
   {
     id: "mens-dress-pants",
@@ -966,6 +1064,46 @@ const CATALOG: CatalogItem[] = [
     slug: "audiobook-credit",
   },
   {
+    id: "womens-sweater",
+    title: "Women's Crewneck Sweater",
+    brand: "Gap",
+    size: "Women's M",
+    upc: "091200003023",
+    imageUrl:
+      "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=500&h=500&fit=crop",
+    category: "clothing",
+    keywords: [
+      "sweater",
+      "sweaters",
+      "cardigan",
+      "knit",
+      "womens",
+      "women",
+      "female",
+      "clothing",
+      "pullover",
+    ],
+    organic: false,
+    basePrice: 49.99,
+    unitLabel: "each",
+    slug: "gap-womens-sweater",
+  },
+  {
+    id: "queen-bed-frame",
+    title: "Queen Platform Bed Frame",
+    brand: "IKEA",
+    size: "Queen",
+    upc: "091300002004",
+    imageUrl:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=500&h=500&fit=crop",
+    category: "bedding",
+    keywords: ["bed", "beds", "bed frame", "frame", "platform", "queen", "furniture", "ikea"],
+    organic: false,
+    basePrice: 397.99,
+    unitLabel: "each",
+    slug: "ikea-queen-bed-frame",
+  },
+  {
     id: "queen-mattress",
     title: "Queen Memory Foam Mattress",
     brand: "Casper",
@@ -974,7 +1112,7 @@ const CATALOG: CatalogItem[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=500&h=500&fit=crop",
     category: "bedding",
-    keywords: ["mattress", "queen", "memory", "foam", "bed", "sleep"],
+    keywords: ["mattress", "queen", "memory", "foam", "sleep"],
     organic: false,
     basePrice: 899.99,
     unitLabel: "each",
@@ -1233,13 +1371,13 @@ function inferCategoryFromQuery(query: string): CatalogItem["category"] {
   if (/dress\s+shoe|dress\s+shoes|oxford|loafer|sneaker|shoe|boot|sandal|heel/.test(lower))
     return "shoes";
   if (/pretzel|popcorn|cracker|chips|snack/.test(lower)) return "pantry";
-  if (/shirt|pants|jeans|hoodie|jacket|clothing|polo/.test(lower))
+  if (/shirt|pants|jeans|joggers?|hoodie|jacket|clothing|polo|leggings|chinos?/.test(lower))
     return "clothing";
   if (/\bdress\b/.test(lower)) return "clothing";
   if (/sport|yoga|basketball|gym/.test(lower)) return "sports";
   if (/audiobook|audible|hardcover|paperback|novel|fiction|nonfiction|textbook|book\b|books\b|reading/.test(lower))
     return "books";
-  if (/mattress|pillow|sheets?|comforter|duvet|bedding|memory\s+foam|box\s+spring/.test(lower))
+  if (/mattress|pillow|sheets?|comforter|duvet|bedding|memory\s+foam|box\s+spring|\bbeds?\b/.test(lower))
     return "bedding";
   if (/sofa|couch|furniture|lamp|rug|decor|home\s+decor/.test(lower)) return "home";
   if (/salad|greens|lettuce|spinach|arugula|romaine/.test(lower)) return "salad";
@@ -1264,6 +1402,12 @@ export function createSyntheticCatalogItem(
   const extraKw: string[] = [];
   if (attrs.gender) extraKw.push(attrs.gender, attrs.gender === "mens" ? "men" : "women");
   if (attrs.ageGroup) extraKw.push(attrs.ageGroup, attrs.ageGroup === "toddler" ? "baby" : "kids");
+  if (attrs.productTypes.includes("joggers") || attrs.productTypes.includes("jogger")) {
+    extraKw.push("joggers", "jogger", "sweatpants");
+  }
+  if (attrs.productTypes.some((t) => /sweater|cardigan|knit/.test(t))) {
+    extraKw.push("sweater", "sweaters", "cardigan", "knit");
+  }
   const base =
     priceOverride ??
     (category === "shoes"
@@ -1273,25 +1417,29 @@ export function createSyntheticCatalogItem(
         : category === "books"
           ? 16.99
           : category === "bedding"
-            ? 799.99
+            ? /\bmattress\b/i.test(clean)
+              ? 799.99
+              : /\bbeds?\b|bed frame/i.test(clean)
+                ? 349.99
+                : 149.99
             : category === "home"
               ? 199.99
               : 4.99 + (slug.length % 5) * 1.1);
   const draft = {
     id: `syn-${slug}`,
-    title: clean,
-    brand: extractBrandFromTitle(clean),
-    size: "1 unit",
+    title: formatSearchProductTitle(clean),
+    brand: "Various brands",
+    size: "",
     upc: `syn-${slug}`,
     imageUrl: "",
     category,
-    keywords: [...tokenizeQuery(clean), ...extraKw],
+    keywords: [...tokenizeQuery(clean), ...extraKw, ...attrs.productTypes],
     organic: /organic/i.test(clean),
     basePrice: Math.round(base * 100) / 100,
     unitLabel: "each" as const,
     slug: `syn-${slug}`,
   };
-  draft.imageUrl = imageForProduct(draft);
+  draft.imageUrl = imageForProduct(draft, clean);
   return draft;
 }
 
@@ -1311,7 +1459,8 @@ function extractBrandFromTitle(title: string): string {
     if (title.toLowerCase().includes(b.toLowerCase())) return b.replace("Super Pretzel", "SuperPretzel");
   }
   const first = title.split(/\s+/)[0];
-  return first && first.length > 2 ? first : "Various brands";
+  if (first && first.length > 2 && !isGenericBrandToken(first)) return first;
+  return "Various brands";
 }
 
 const GENERIC_MATCH_WORDS = new Set([
@@ -1368,11 +1517,11 @@ export function findCatalogMatchByTitle(title: string): CatalogItem | undefined 
   }
 
   if (!best) return undefined;
-  const required = Math.min(2, tokens.length);
+  const required = Math.min(3, Math.max(2, Math.ceil(tokens.length * 0.45)));
   return bestScore >= required ? best : undefined;
 }
 
-/** Link paste: anchor on parsed product + truly similar catalog items only */
+/** Link paste: anchor on the parsed product title — never fuzzy-match catalog SKUs. */
 function findSimilarItemsForLink(
   query: string,
   category: CatalogItem["category"] | undefined,
@@ -1381,16 +1530,14 @@ function findSimilarItemsForLink(
 ): CatalogItem[] {
   const resolvedCategory =
     category ?? inferCategoryFromQuery(query) ?? ("general" as const);
-  let anchor: CatalogItem;
-  if (catalogId) {
-    const hit = CATALOG.find((c) => c.id === catalogId);
-    anchor = hit ?? createSyntheticCatalogItem(query, resolvedCategory, referencePrice);
-  } else {
-    const titleMatch = findCatalogMatchByTitle(query);
-    anchor =
-      titleMatch ?? createSyntheticCatalogItem(query, resolvedCategory, referencePrice);
-  }
 
+  const anchor =
+    catalogId ?
+      (CATALOG.find((c) => c.id === catalogId) ??
+        createSyntheticCatalogItem(query, resolvedCategory, referencePrice))
+    : createSyntheticCatalogItem(query, resolvedCategory, referencePrice);
+
+  const attrs = parseQueryAttributes(query);
   const sameCategory = CATALOG.filter(
     (item) => item.id !== anchor.id && item.category === resolvedCategory,
   );
@@ -1398,8 +1545,9 @@ function findSimilarItemsForLink(
     anchor.id,
     query,
     sameCategory,
-    { query, category: resolvedCategory },
+    { query, category: resolvedCategory, ...attrs },
     MAX_PRODUCTS_PER_SEARCH - 1,
+    attrs.productTypes.length > 0 ? 22 : 14,
   );
 
   if (similar.length === 0 && resolvedCategory === "pantry") {
@@ -1468,10 +1616,13 @@ function pickPrimaryCatalogItem(intent: ShoppingIntent): CatalogItem {
   const minScore = strict || categoryStrict ? 18 : 10;
   const attrs = parseQueryAttributes(q);
 
-  const scored = CATALOG.map((item) => ({
-    item,
-    score: scoreItem(item, intent),
-  }))
+  const scored = CATALOG.map((raw) => {
+    const { item } = resolveCatalogRow(raw, intent);
+    return {
+      item,
+      score: scoreItem(item, intent),
+    };
+  })
     .filter(({ item, score }) => {
       if (categoryStrict && intent.category && item.category !== intent.category) {
         return false;
@@ -1556,7 +1707,19 @@ function buildOffer(
     intent,
   );
 
-  return {
+  const confidence = scoreOfferConfidence(item, intent, retailer, {
+    storeTitle: listing.storeTitle,
+    brand: item.brand,
+    color: intent.colors?.[0],
+    size: item.size,
+    upc: item.upc,
+    imageUrl: listing.imageUrl,
+    productUrl,
+    priceSource: "catalog_model",
+  });
+
+  return applyOfferQualityGates(
+    {
     id: `${item.id}-${retailer}-${channel}`,
     catalogId: item.id,
     title: item.title,
@@ -1579,7 +1742,11 @@ function buildOffer(
     landedCost,
     productUrl,
     affiliateUrl,
-    matchConfidence: 0.92 + hashJitter(item.id + retailer, 0, 0.07),
+    matchConfidence: confidence.matchConfidence,
+    identityConfidence: confidence.identityConfidence,
+    attributeConfidence: confidence.attributeConfidence,
+    imageConfidence: confidence.imageConfidence,
+    confidenceReasons: JSON.parse(confidence.confidenceReasonsJson) as ProductOffer["confidenceReasons"],
     channel,
     priceSource: "catalog_model",
     priceNote:
@@ -1588,7 +1755,10 @@ function buildOffer(
         : retailer === "costco" || retailer === "sams"
           ? "Estimated · pickup near you · Members"
           : "Estimated · pickup or delivery near you",
-  };
+    },
+    item,
+    intent,
+  );
 }
 
 function markBestDeal(offers: ProductOffer[]) {
@@ -1599,31 +1769,42 @@ function markBestDeal(offers: ProductOffer[]) {
   return offers;
 }
 
-/** Same product — split by nearby stores vs online shipping */
+function applyRetailerAllowList(
+  retailers: RetailerId[],
+  allow?: RetailerId[],
+): RetailerId[] {
+  if (!allow?.length) return retailers;
+  const set = new Set(allow);
+  return retailers.filter((r) => set.has(r));
+}
+
+export interface CatalogCompareOptions {
+  /** Nightly job: only price these stores tonight (weekly rotation). */
+  retailers?: RetailerId[];
+}
+
+/** Same product — online shippable offers only */
 export function compareProduct(
   item: CatalogItem,
   intent: ShoppingIntent,
+  options: CatalogCompareOptions = {},
 ): ProductSearchResults {
+  const { item: resolvedItem } = resolveCatalogRow(item, intent);
   const zip = intent.zipCode ?? "78701";
+  const allow = options.retailers;
 
-  const localRetailers = getLocalRetailersForZip(zip);
-  const onlineRetailers = getOnlineRetailersForZip(zip);
-
-  const local = markBestDeal(
-    filterRetailersForItem(item, localRetailers, intent).map((r) =>
-      buildOffer(item, r, intent, "local"),
-    ),
+  const onlineRetailers = applyRetailerAllowList(
+    getOnlineRetailersForZip(zip),
+    allow,
   );
-  if (local[0]) local[0].priceNote = "Best near you";
 
   const online = markBestDeal(
-    filterRetailersForItem(item, onlineRetailers, intent).map((r) =>
-      buildOffer(item, r, intent, "online"),
+    filterRetailersForItem(resolvedItem, onlineRetailers, intent).map((r) =>
+      buildOffer(resolvedItem, r, intent, "online"),
     ),
   );
-  if (online[0]) online[0].priceNote = "Best online price";
 
-  return { local, online, zipCode: zip, compareMode: true };
+  return { local: [], online, zipCode: zip, compareMode: true };
 }
 
 export function compareByUpc(
@@ -1643,25 +1824,16 @@ export function searchCatalog(intent: ShoppingIntent): ProductSearchResults {
   const zip = intent.zipCode ?? "78701";
   const item = pickPrimaryCatalogItem(intent);
 
-  const localRetailers = getLocalRetailersForZip(zip);
   const onlineRetailers = getOnlineRetailersForZip(zip);
-
-  const local = markBestDeal(
-    filterRetailersForItem(item, localRetailers, intent)
-      .map((r) => buildOffer(item, r, intent, "local"))
-      .filter((o) => !intent.maxPrice || o.price <= intent.maxPrice),
-  );
-  if (local[0]) local[0].priceNote = "Cheapest near you";
 
   const online = markBestDeal(
     filterRetailersForItem(item, onlineRetailers, intent)
       .map((r) => buildOffer(item, r, intent, "online"))
       .filter((o) => !intent.maxPrice || o.price <= intent.maxPrice),
   );
-  if (online[0]) online[0].priceNote = "Cheapest online";
 
   return {
-    local: local.slice(0, MAX_OFFERS_PER_ROW),
+    local: [],
     online: online.slice(0, MAX_OFFERS_PER_ROW),
     zipCode: zip,
     compareMode: false,
@@ -1685,6 +1857,8 @@ export function searchSimilarFromLink(
     ...intent,
     query: parsed.guessedTitle,
     category: parsed.category ?? intent.category,
+    gender: parseQueryAttributes(parsed.guessedTitle).gender ?? intent.gender,
+    ageGroup: parseQueryAttributes(parsed.guessedTitle).ageGroup ?? intent.ageGroup,
     zipCode: zip,
   };
 
@@ -1694,25 +1868,18 @@ export function searchSimilarFromLink(
     parsed.referencePrice,
     parsed.catalogId,
   );
-  const localRetailers = getLocalRetailersForZip(zip);
   const onlineRetailers = getOnlineRetailersForZip(zip);
 
-  const local: ProductOffer[] = [];
   const online: ProductOffer[] = [];
 
   for (const item of items) {
-    for (const r of filterRetailersForItem(item, localRetailers, intent)) {
-      local.push(buildOffer(item, r, searchIntent, "local"));
-    }
     for (const r of filterRetailersForItem(item, onlineRetailers, intent)) {
       online.push(buildOffer(item, r, searchIntent, "online"));
     }
   }
 
-  const pricedLocal = annotateCheaperOffers(local, parsed.referencePrice);
   const pricedOnline = annotateCheaperOffers(online, parsed.referencePrice);
 
-  markBestDeal(pricedLocal);
   markBestDeal(pricedOnline);
 
   const referenceProduct: ReferenceProduct = {
@@ -1723,7 +1890,7 @@ export function searchSimilarFromLink(
   };
 
   return {
-    local: pricedLocal.slice(0, MAX_OFFERS_PER_ROW),
+    local: [],
     online: pricedOnline.slice(0, MAX_OFFERS_PER_ROW),
     zipCode: zip,
     compareMode: false,

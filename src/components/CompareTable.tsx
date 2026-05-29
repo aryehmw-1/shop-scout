@@ -1,19 +1,25 @@
 "use client";
 
 import type { ProductOffer } from "@/lib/types";
+import { shouldShowBestDealBadge } from "@/lib/offers/offer-trust";
+import { getOfferPriceDisplay } from "@/lib/shopping/offer-price-display";
 import { formatPrice } from "@/lib/utils/format";
 import { getRetailerMeta } from "@/lib/retailers/meta";
 import { ExternalLink, Trophy } from "lucide-react";
 import { ProductImage } from "./ProductImage";
 import { PhotoSourceLabel } from "./PhotoSourceLabel";
+import { OutboundLink } from "./OutboundLink";
 
 interface CompareTableProps {
   products: ProductOffer[];
   onSave?: (offer: ProductOffer) => void;
+  onShopClick?: (offer: ProductOffer) => void;
   savedIds: Set<string>;
+  catalogId?: string;
+  searchQuery?: string;
 }
 
-export function CompareTable({ products, onSave, savedIds }: CompareTableProps) {
+export function CompareTable({ products, onSave, onShopClick, savedIds, catalogId, searchQuery }: CompareTableProps) {
   if (!products.length) return null;
 
   const hero = products[0];
@@ -52,11 +58,13 @@ export function CompareTable({ products, onSave, savedIds }: CompareTableProps) 
           <tbody>
             {products.map((offer) => {
               const meta = getRetailerMeta(offer.retailer);
+              const showBest = shouldShowBestDealBadge(offer);
+              const priceDisplay = getOfferPriceDisplay(offer);
               return (
                 <tr
                   key={offer.id}
                   className={`border-b border-stone-50 last:border-0 ${
-                    offer.isBestDeal ? "bg-sage-50/50" : ""
+                    showBest ? "bg-sage-50/50" : ""
                   }`}
                 >
                   <td className="px-4 py-3">
@@ -71,9 +79,19 @@ export function CompareTable({ products, onSave, savedIds }: CompareTableProps) 
                         <p className="font-medium text-stone-800">
                           {offer.retailerName}
                         </p>
-                        {offer.isBestDeal && (
+                        {showBest && (
                           <span className="inline-flex items-center gap-0.5 text-xs font-semibold text-sage-700">
-                            <Trophy size={12} /> Best price
+                            <Trophy size={12} /> Best Deal
+                          </span>
+                        )}
+                        {!showBest && offer.percentBelowMarket != null && offer.percentBelowMarket >= 5 && (
+                          <span className="text-xs font-medium text-emerald-700">
+                            {offer.percentBelowMarket}% below market
+                          </span>
+                        )}
+                        {!showBest && priceDisplay.trustTier === "estimated" && (
+                          <span className="text-[10px] text-amber-800">
+                            Estimate
                           </span>
                         )}
                       </div>
@@ -81,7 +99,7 @@ export function CompareTable({ products, onSave, savedIds }: CompareTableProps) 
                   </td>
                   <td className="px-4 py-3">
                     <p className="text-lg font-bold text-stone-900">
-                      {formatPrice(offer.price)}
+                      {priceDisplay.main}
                     </p>
                     {offer.wasPrice && offer.wasPrice > offer.price && (
                       <p className="text-xs text-stone-400 line-through">
@@ -104,15 +122,15 @@ export function CompareTable({ products, onSave, savedIds }: CompareTableProps) 
                           {savedIds.has(offer.id) ? "♥" : "♡"}
                         </button>
                       )}
-                      <a
-                        href={offer.affiliateUrl}
-                        target="_blank"
-                        rel="noopener noreferrer sponsored"
+                      <OutboundLink
+                        offer={offer}
+                        context={{ source: "table", catalogId, searchQuery }}
+                        onNavigate={onShopClick}
                         className="inline-flex items-center gap-1 rounded-xl bg-sage-600 px-3 py-2 text-xs font-semibold text-white hover:bg-sage-700"
                       >
                         Shop
                         <ExternalLink size={12} />
-                      </a>
+                      </OutboundLink>
                     </div>
                   </td>
                 </tr>

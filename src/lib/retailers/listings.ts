@@ -1,4 +1,9 @@
+import { isGenericCatalogImage } from "../indexing/retailer-page-image";
 import { imageForProduct } from "../catalog-images";
+import {
+  formatStoreListingTitle,
+  isSyntheticSize,
+} from "../shopping/product-display";
 import type { RetailerId, ShoppingChannel, ShoppingIntent } from "../types";
 import { getRetailerMeta } from "./meta";
 
@@ -18,45 +23,30 @@ export interface RetailerListing {
 }
 
 function sizeLabel(size: string): string {
+  if (isSyntheticSize(size)) return "";
   return size.replace(/^men'?s\s+/i, "Men ").replace(/^women'?s\s+/i, "Women ");
 }
 
 /** Store-style product titles (how each retailer names listings) */
 function formatStoreTitle(item: CatalogListingItem, retailer: RetailerId): string {
-  const b = item.brand;
-  const t = item.title;
-  const s = sizeLabel(item.size);
+  const meta = getRetailerMeta(retailer);
+  const sized = { ...item, size: sizeLabel(item.size) || item.size };
 
   switch (retailer) {
-    case "walmart":
-      return `${b} ${t}, ${s}`;
-    case "target":
-      return `${b} ${t} — ${s}`;
-    case "amazon":
-      return `${b} ${t} | ${s}`;
-    case "costco":
-      return `${b} ${t} (${s}) - 2 Pack`;
-    case "kroger":
-    case "publix":
-    case "aldi":
-      return `${b} ${t}, ${s}`;
-    case "macys":
-      return `${b}® ${t}, ${s}`;
-    case "kohls":
-      return `${b} ${t}, Size ${s.replace(/.*\s/, "")}`;
     case "oldnavy":
-      return `Old Navy ${t}, ${s}`;
+      return formatStoreListingTitle(
+        { ...sized, title: `Old Navy ${sized.title}` },
+        meta.name,
+        "plain",
+      );
     case "gap":
-      return `Gap ${t}, ${s}`;
+      return formatStoreListingTitle(
+        { ...sized, title: `Gap ${sized.title}` },
+        meta.name,
+        "plain",
+      );
     case "nike":
-      return `${b} ${t}`;
     case "adidas":
-      return `${b} ${t} - ${s}`;
-    case "zara":
-      return `${t.toUpperCase()} - ${s}`;
-    case "hm":
-    case "uniqlo":
-      return `${t} | ${s}`;
     case "gucci":
     case "prada":
     case "louisvuitton":
@@ -65,44 +55,21 @@ function formatStoreTitle(item: CatalogListingItem, retailer: RetailerId): strin
     case "hermes":
     case "burberry":
     case "moncler":
-      return `${b} ${t}`;
-    case "levis":
-      return `Levi's® ${t} - ${s}`;
-    case "ralphlauren":
-      return `Polo Ralph Lauren ${t}, ${s}`;
-    case "lululemon":
-      return `lululemon ${t} | ${s}`;
-    case "northface":
-      return `The North Face® ${t} - ${s}`;
-    case "tjmaxx":
-    case "ross":
-    case "burlington":
-      return `${b} ${t} (${s})`;
-    case "footlocker":
-    case "zappos":
-      return `${b} ${t} - Men's/Women's ${s}`;
-    case "barnesnoble":
-    case "booksamillion":
-    case "powells":
-    case "strand":
-      return `${t} by ${b} (${s})`;
-    case "wayfair":
-    case "ikea":
-      return `${t} — ${s}`;
-    case "casper":
-    case "purple":
-    case "saatva":
-    case "tempurpedic":
-      return `${b} ${t} | ${s}`;
-    case "brooklinen":
-    case "parachute":
-    case "potterybarn":
-    case "westelm":
-      return `${t}, ${s}`;
-    default: {
-      const store = getRetailerMeta(retailer).name;
-      return `${store}: ${b} ${t}, ${s}`;
-    }
+      return formatStoreListingTitle(sized, meta.name, "brand-first");
+    case "zara":
+      return isSyntheticSize(sized.size) ?
+          sized.title.toUpperCase()
+        : `${sized.title.toUpperCase()} - ${sized.size}`;
+    case "hm":
+    case "uniqlo":
+      return isSyntheticSize(sized.size) ?
+          `${sized.title} | ${meta.name}`
+        : `${sized.title} | ${sized.size}`;
+    case "shein":
+    case "forever21":
+      return formatStoreListingTitle(sized, meta.name, "plain");
+    default:
+      return formatStoreListingTitle(sized, meta.name, "prefix");
   }
 }
 
@@ -113,29 +80,38 @@ export function getRetailerListing(
   userQuery?: string,
   intent?: Pick<ShoppingIntent, "colors" | "gender" | "brand" | "size">,
 ): RetailerListing {
-  const imageUrl =
-    item.imageUrl?.startsWith("https://")
-      ? item.imageUrl
-      : imageForProduct(
-          {
-            id: item.id,
-            category: item.category,
-            title: item.title,
-            brand: item.brand,
-            keywords: item.keywords,
-          },
-          userQuery,
-        );
+  // Do not copy one catalog/Unsplash hero onto every retailer card — forces per-retailer fetch.
+  let imageUrl = "";
+  if (
+    item.imageUrl?.startsWith("https://") &&
+    !isGenericCatalogImage(item.imageUrl)
+  ) {
+    imageUrl = item.imageUrl;
+  } else {
+    const fallback = imageForProduct(
+      {
+        id: item.id,
+        category: item.category,
+        title: item.title,
+        brand: item.brand,
+        keywords: item.keywords,
+      },
+      userQuery,
+    );
+    if (fallback?.startsWith("https://") && !isGenericCatalogImage(fallback)) {
+      imageUrl = fallback;
+    }
+  }
 
   let storeTitle = formatStoreTitle(item, retailer);
   const color = intent?.colors?.[0];
   if (color && !storeTitle.toLowerCase().includes(color)) {
     storeTitle = `${color.charAt(0).toUpperCase() + color.slice(1)} — ${storeTitle}`;
   }
-  if (intent?.size) {
+  if (intent?.size && !isSyntheticSize(intent.size)) {
     const sz = intent.size;
     if (!storeTitle.toLowerCase().includes(sz.toLowerCase())) {
-      storeTitle = `${storeTitle} · ${sz}`;
+      storeTitle = `${storeTitle} · Size ${sz}`;
     }
   }
 

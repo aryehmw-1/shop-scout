@@ -7,6 +7,7 @@ import { AppShell } from "@/components/AppShell";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { loadAddress } from "@/lib/storage";
+import { normalizeZip } from "@/lib/location/zip-only";
 
 export default function SignupPage() {
   const { signup } = useAuth();
@@ -15,28 +16,20 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [zipCode, setZipCode] = useState("");
-  const [street, setStreet] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const saved = loadAddress();
-    if (saved) {
-      setZipCode(saved.zipCode);
-      setStreet(saved.street ?? "");
-      setCity(saved.city ?? "");
-      setState(saved.state ?? "");
-    }
+    if (saved?.zipCode) setZipCode(saved.zipCode);
   }, []);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      await signup({ email, password, name, zipCode, street, city, state });
+      await signup({ email, password, name, zipCode: normalizeZip(zipCode) });
       router.push("/chat");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed");
@@ -56,7 +49,7 @@ export default function SignupPage() {
             Create your account
           </h1>
           <p className="mt-2 text-center text-sm text-stone-500">
-            Save your address, ZIP, and favorite deals
+            Save your ZIP and favorite deals across devices
           </p>
 
           <form onSubmit={submit} className="mt-8 space-y-4">
@@ -94,57 +87,21 @@ export default function SignupPage() {
               />
             </label>
 
-            <div className="border-t border-stone-100 pt-4">
-              <p className="text-sm font-semibold text-stone-800">Your address</p>
-              <p className="text-xs text-stone-500">Saved for every search</p>
-            </div>
-
-            <label className="block">
+            <label className="block border-t border-stone-100 pt-4">
               <span className="text-sm font-medium text-stone-700">ZIP code</span>
+              <p className="text-xs text-stone-500">
+                For shipping estimates only — no street address required
+              </p>
               <input
                 type="text"
                 required
                 inputMode="numeric"
                 maxLength={5}
                 value={zipCode}
-                onChange={(e) =>
-                  setZipCode(e.target.value.replace(/\D/g, "").slice(0, 5))
-                }
-                className="mt-1 w-full rounded-xl border border-stone-200 px-4 py-3 focus:border-sage-400 focus:outline-none focus:ring-2 focus:ring-sage-200"
+                onChange={(e) => setZipCode(normalizeZip(e.target.value))}
+                className="mt-1 w-full rounded-xl border border-stone-200 px-4 py-3 text-center text-lg font-semibold tracking-widest focus:border-sage-400 focus:outline-none focus:ring-2 focus:ring-sage-200"
               />
             </label>
-            <label className="block">
-              <span className="text-sm font-medium text-stone-700">
-                Street (optional)
-              </span>
-              <input
-                type="text"
-                value={street}
-                onChange={(e) => setStreet(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-stone-200 px-4 py-3 focus:border-sage-400 focus:outline-none focus:ring-2 focus:ring-sage-200"
-              />
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              <label className="block">
-                <span className="text-sm font-medium text-stone-700">City</span>
-                <input
-                  type="text"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-stone-200 px-4 py-3 focus:border-sage-400 focus:outline-none focus:ring-2 focus:ring-sage-200"
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm font-medium text-stone-700">State</span>
-                <input
-                  type="text"
-                  maxLength={2}
-                  value={state}
-                  onChange={(e) => setState(e.target.value.toUpperCase())}
-                  className="mt-1 w-full rounded-xl border border-stone-200 px-4 py-3 focus:border-sage-400 focus:outline-none focus:ring-2 focus:ring-sage-200"
-                />
-              </label>
-            </div>
 
             {error && <p className="text-sm text-red-600">{error}</p>}
 

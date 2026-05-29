@@ -27,7 +27,14 @@ export function retailerSellsCategory(
 
   switch (category) {
     case "clothing":
-      return meta.types.includes("clothing") || meta.types.includes("general");
+      return (
+        meta.types.includes("clothing") ||
+        (meta.types.includes("general") &&
+          !meta.types.includes("books") &&
+          !meta.types.includes("grocery") &&
+          !meta.types.includes("bedding") &&
+          !meta.types.includes("home"))
+      );
     case "shoes":
       return meta.types.includes("shoes") || meta.types.includes("general");
     case "sports":

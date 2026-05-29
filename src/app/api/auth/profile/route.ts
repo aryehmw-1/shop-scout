@@ -22,9 +22,6 @@ export async function PATCH(request: Request) {
       }
       patch.address = {
         zipCode: zip,
-        street: body.address.street,
-        city: body.address.city,
-        state: body.address.state,
         label: body.address.label ?? "Home",
       };
     }

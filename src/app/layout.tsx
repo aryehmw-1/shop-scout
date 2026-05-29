@@ -4,6 +4,7 @@ import "./globals.css";
 import { APP_NAME, APP_DESCRIPTION, APP_TAGLINE } from "@/lib/constants";
 import { getSiteUrl } from "@/lib/site";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -25,6 +26,7 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
+  /** Favicon + apple touch: `src/app/icon.svg` and `src/app/apple-icon.svg` (no duplicate metadata.icons). */
   title: {
     default: `${APP_NAME} — Compare Prices Across Every Store`,
     template: `%s · ${APP_NAME}`,
@@ -70,7 +72,9 @@ export default function RootLayout({
       className={`${dmSans.variable} ${outfit.variable} ${fraunces.variable} h-full`}
     >
       <body className="min-h-full antialiased">
-        <AuthProvider>{children}</AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

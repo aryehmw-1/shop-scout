@@ -1,10 +1,11 @@
-import { scoreItem, tokenizeQuery } from "../retailers/search";
 import type { CatalogItem } from "../retailers/catalog";
+import { parseQueryAttributes, scoreItem, tokenizeQuery } from "../retailers/search";
 import type { ShoppingIntent } from "../types";
 
 /** Synonym groups — tokens in the same group count as related. */
 const SYNONYM_GROUPS: string[][] = [
   ["hoodie", "hoody", "sweatshirt", "pullover", "fleece"],
+  ["sweater", "cardigan", "knit", "pullover"],
   ["jeans", "denim"],
   ["chinos", "khakis", "trousers", "slacks", "dress", "pants"],
   ["joggers", "jogger", "sweatpants", "track"],
@@ -79,11 +80,18 @@ export function rankSimilarCatalogItems(
   items: CatalogItem[],
   intent?: Partial<ShoppingIntent>,
   limit = 4,
+  minScore = 14,
 ): CatalogItem[] {
+  const queryTypes = parseQueryAttributes(query).productTypes;
   return items
     .filter((i) => i.id !== anchorId)
     .map((item) => ({ item, score: similarityScore(item, query, intent) }))
-    .filter(({ score }) => score >= 14)
+    .filter(({ item, score }) => {
+      if (score < minScore) return false;
+      if (queryTypes.length === 0) return true;
+      const blob = `${item.title} ${item.keywords.join(" ")}`.toLowerCase();
+      return queryTypes.some((t) => blob.includes(t.replace(/_/g, " ")));
+    })
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map(({ item }) => item);

@@ -1,11 +1,19 @@
+import { MIN_TRUSTED_MATCH_CONFIDENCE } from "../offers/offer-quality";
+import { isPdpProductUrl } from "../offers/url-classifier";
 import type { ProductOffer, ProductSearchResults } from "../types";
 
 export function isVerifiedLivePrice(offer: ProductOffer): boolean {
-  return (
-    offer.priceSource === "connector_api" ||
-    offer.priceSource === "cached_quote" ||
-    offer.priceSource === "nightly_index"
-  );
+  if ((offer.matchConfidence ?? 0) < MIN_TRUSTED_MATCH_CONFIDENCE) return false;
+
+  if (offer.priceSource === "connector_api" || offer.priceSource === "scraped") {
+    return true;
+  }
+
+  return false;
+}
+
+export function isHistoricalModelPrice(offer: ProductOffer): boolean {
+  return offer.priceSource === "historical_model";
 }
 
 /** Sort: verified live prices first (cheapest first), then unverified. */
@@ -42,17 +50,34 @@ function annotateOfferPrice(offer: ProductOffer): ProductOffer {
     };
   }
 
-  if (offer.priceSource === "nightly_index") {
+  if (offer.priceSource === "scraped") {
     return {
       ...offer,
-      priceNote: offer.priceNote ?? "Today’s price · updated overnight",
+      priceNote: offer.priceNote ?? "Price from retailer page · verify at checkout",
+    };
+  }
+
+  if (
+    offer.priceSource === "nightly_index" ||
+    offer.priceSource === "daily_index"
+  ) {
+    return {
+      ...offer,
+      priceNote: offer.priceNote ?? "From daily index · verify at store",
     };
   }
 
   if (offer.priceSource === "cached_quote") {
     return {
       ...offer,
-      priceNote: offer.priceNote ?? "Recent price · from an earlier search",
+      priceNote: offer.priceNote ?? "From our database · last daily check",
+    };
+  }
+
+  if (offer.priceSource === "historical_model") {
+    return {
+      ...offer,
+      priceNote: offer.priceNote ?? "30-day average · from our daily checks",
     };
   }
 

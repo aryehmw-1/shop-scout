@@ -1,3 +1,5 @@
+export type ThemeId = "warm" | "sage" | "ocean" | "slate" | "rose";
+
 export type RetailerId =
   | "walmart"
   | "target"
@@ -202,6 +204,31 @@ export type ProductCategory =
 
 export type ProductImageSource = "retailer" | "web_search" | "catalog";
 
+export interface OfferPipelineDebug {
+  priceBadge: "verified_live" | "estimated" | "unavailable";
+  scrapeAgeMinutes?: number;
+  source: string;
+  extractionMethod?: string;
+  scrapeTimestamp?: string;
+  cacheHit?: boolean;
+  validationStatus: "ok" | "rejected" | "skipped" | "pending";
+  rejectedReason?: string;
+  imageFallbackLevel: 1 | 2 | 3 | 4 | 5 | 6;
+  imageExtractionMethod?: string;
+  imageUrlResolved?: string;
+  imageNormalized?: boolean;
+  retailerStatus?: "success" | "blocked" | "parser_missing" | "no_match" | "low_confidence";
+  amazonMatchScore?: number;
+  persistRejected?: boolean;
+  persistRejectionReason?: string;
+  urlValidation?: {
+    ok: boolean;
+    httpStatus?: number;
+    finalUrl?: string;
+    reason?: string;
+  };
+}
+
 export interface ProductOffer {
   id: string;
   title: string;
@@ -229,17 +256,52 @@ export interface ProductOffer {
   productUrl: string;
   affiliateUrl: string;
   matchConfidence: number;
+  identityConfidence?: number;
+  attributeConfidence?: number;
+  imageConfidence?: number;
+  confidenceReasons?: Array<{ code: string; message: string; weight: number }>;
+  /** 0–1 trust in listed price (scraped/live vs estimated). */
+  priceConfidence?: number;
   /** How this price was produced (demo model, cache, future API). */
   priceSource?:
     | "catalog_model"
     | "cached_quote"
     | "connector_api"
     | "nightly_index"
-    | "scraped";
+    | "daily_index"
+    | "historical_model"
+    | "scraped"
+    | "nightly_index";
   priceAsOf?: string;
   priceExpiresAt?: string;
   isBestDeal?: boolean;
   priceNote?: string;
+  /** Composite deal ranking score (0–1). Higher = better trustworthy deal. */
+  dealScore?: number;
+  marketMedianPrice?: number;
+  marketMeanPrice?: number;
+  percentBelowMarket?: number;
+  percentBelowCatalog?: number;
+  historicalLowPrice?: number;
+  movingAvgPrice?: number;
+  verificationCount?: number;
+  lastVerifiedAt?: string;
+  retailerTrustScore?: number;
+  isGoodDeal?: boolean;
+  isHistoricalLow?: boolean;
+  dealLabel?: "best_deal" | "good_deal" | "verified";
+  /** Sparkline points (oldest→newest) for mini price chart */
+  priceHistorySparkline?: number[];
+  /** User-facing explanation of deal ranking */
+  dealExplanation?: {
+    headline: string;
+    bullets: string[];
+    dealScore?: number;
+    isGoodTimeToBuy?: boolean;
+    goodTimeReason?: string;
+  };
+  /** Server-side pipeline trace for debug UI (stripped in production unless enabled). */
+  pipelineDebug?: OfferPipelineDebug;
 }
 
 export interface ReferenceProduct {
@@ -260,12 +322,18 @@ export interface MatchedProductSummary {
 export interface ProductSearchResults {
   local: ProductOffer[];
   online: ProductOffer[];
+  /** Unverified catalog/estimate rows — never mixed into `online`. */
+  estimatedOnline?: ProductOffer[];
   zipCode: string;
   compareMode?: boolean;
   referenceProduct?: ReferenceProduct;
   similarMode?: boolean;
   /** Primary product we matched for this search */
   matchedProduct?: MatchedProductSummary;
+  /** Client-side progressive enrichment state */
+  enrichmentPending?: boolean;
+  enrichmentCatalogId?: string;
+  resolvedQuery?: string;
 }
 
 export interface ChatMessage {
@@ -359,6 +427,8 @@ export interface ChatRequest {
   learningProfile?: LearningProfile;
   /** Recent messages for conversational context */
   history?: ChatHistoryEntry[];
+  /** Fast cached results first; client enriches in background (default true). */
+  progressive?: boolean;
 }
 
 export interface ChatResponse {
@@ -383,6 +453,8 @@ export interface UserPreferences {
   organicPreferred?: boolean;
   favoriteRetailers?: RetailerId[];
   learningProfile?: LearningProfile;
+  /** Screen color theme — see Settings */
+  colorTheme?: ThemeId;
 }
 
 export interface PublicUser {

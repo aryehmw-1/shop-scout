@@ -1,11 +1,10 @@
-import { findCatalogMatchByTitle } from "../retailers/catalog";
 import { isShoppableRetailer } from "../retailers/retailers-shoppable";
 import type { ProductCategory, RetailerId } from "../types";
 
 const BLOCKED_PRODUCT_LINK_HOST =
   /google\.|gstatic\.|youtube\.|facebook\.|instagram\.|pinterest\.|serpapi\.|doubleclick\./i;
 
-const URL_HOST_RETAILER: Record<string, RetailerId> = {
+export const URL_HOST_RETAILER: Record<string, RetailerId> = {
   "walmart.com": "walmart",
   "target.com": "target",
   "kroger.com": "kroger",
@@ -23,6 +22,7 @@ const URL_HOST_RETAILER: Record<string, RetailerId> = {
   "oldnavy.com": "oldnavy",
   "rossstores.com": "ross",
   "tjmaxx.com": "tjmaxx",
+  "tjmaxx.tjx.com": "tjmaxx",
   "footlocker.com": "footlocker",
   "zappos.com": "zappos",
   "hm.com": "hm",
@@ -214,6 +214,16 @@ function decodeSegment(raw: string): string {
     .trim();
 }
 
+/** Shopify-style slugs: strip SKU suffixes and "1 pack" quantity prefixes */
+function cleanDecodedProductTitle(raw: string): string {
+  const cleaned = raw
+    .replace(/\bop\d+\b/gi, "")
+    .replace(/^\d+\s*pack\s+/i, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return cleaned || raw;
+}
+
 function titleCase(text: string): string {
   return text.replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -235,6 +245,8 @@ function inferCategoryFromText(text: string): ProductCategory | undefined {
   if (/mattress|pillow|sheets?|comforter|duvet|bedding|memory\s+foam/.test(lower))
     return "bedding";
   if (/sofa|couch|furniture|lamp|rug|home\s+decor/.test(lower)) return "home";
+  if (/\b(beds?|mattress|bed\s+frame|box\s+spring)\b/.test(lower))
+    return "bedding";
   if (/shoe|sneaker|boot|sandal|cleat|footwear|loafer|heel/.test(lower))
     return "shoes";
   if (/shirt|pants|jeans|dress|hoodie|jacket|clothing|apparel|fashion|polo|tee|sweater|coat|shorts|skirt|blouse/.test(lower))
@@ -295,6 +307,12 @@ function extractTitleFromPath(pathParts: string[]): string | null {
   return candidates[0] ?? null;
 }
 
+function titleFromPathParts(pathParts: string[]): string | null {
+  const raw = extractTitleFromPath(pathParts);
+  if (!raw) return null;
+  return cleanDecodedProductTitle(raw);
+}
+
 function estimateReferencePrice(title: string, category?: ProductCategory): number {
   const lower = title.toLowerCase();
   if (/shoe|sneaker|boot/.test(lower)) return 79.99;
@@ -337,7 +355,7 @@ export function parseProductUrl(rawUrl: string): ParsedProductUrl | null {
       url.searchParams.get("keyword");
 
     let title =
-      extractTitleFromPath(pathParts) ??
+      titleFromPathParts(pathParts) ??
       (fromQuery ? decodeSegment(fromQuery.replace(/\+/g, " ")) : null);
 
     if (!title || title.length < 2 || /^search$/i.test(title)) {
@@ -347,14 +365,11 @@ export function parseProductUrl(rawUrl: string): ParsedProductUrl | null {
     if (!title || title.length < 2) return null;
 
     const guessedTitle = titleCase(title);
-    const catalogMatch = findCatalogMatchByTitle(guessedTitle);
+    // Pasted links should not fuzzy-match catalog rows (e.g. "1-pack …" → socks).
     const category: ProductCategory | undefined =
-      (catalogMatch?.category as ProductCategory | undefined) ??
       inferCategoryFromText(guessedTitle);
 
-    const referencePrice = catalogMatch
-      ? catalogMatch.basePrice
-      : estimateReferencePrice(guessedTitle, category);
+    const referencePrice = estimateReferencePrice(guessedTitle, category);
 
     const slug =
       pathParts.filter((p) => !isMostlyNumeric(p)).pop() ?? slugify(guessedTitle);
@@ -366,8 +381,8 @@ export function parseProductUrl(rawUrl: string): ParsedProductUrl | null {
       guessedTitle,
       category,
       referencePrice,
-      upc: catalogMatch?.upc,
-      catalogId: catalogMatch?.id,
+      upc: undefined,
+      catalogId: undefined,
     };
   } catch {
     return null;
@@ -403,6 +418,12 @@ export function retailerIdFromProductUrl(url: string): RetailerId | undefined {
   } catch {
     return undefined;
   }
+}
+
+/** Primary hostname for favicon / retailer branding fallbacks. */
+export function primaryDomainForRetailer(retailerId: RetailerId): string | null {
+  const entry = Object.entries(URL_HOST_RETAILER).find(([, id]) => id === retailerId);
+  return entry?.[0] ?? null;
 }
 
 export function productUrlMatchesRetailer(

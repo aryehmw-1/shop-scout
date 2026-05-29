@@ -21,7 +21,12 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { SHOPPABLE_STORE_COUNT } from "@/lib/retailers/meta";
 import type { UserAddress } from "@/lib/types";
-import { Send, Link2, MapPin, RotateCcw } from "lucide-react";
+import { SearchSuggest } from "./SearchSuggest";
+import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
+import { ValueProposition } from "./ValueProposition";
+import { trackEvent } from "@/lib/analytics/track-client";
+import Link from "next/link";
+import { Send, Link2, MapPin, RotateCcw, Columns3 } from "lucide-react";
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -61,6 +66,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
   const initialSent = useRef(false);
   const linkHintApplied = useRef(false);
   const chatInitialized = useRef(false);
+  const [enrichingId, setEnrichingId] = useState<string | null>(null);
 
   sessionRef.current = session;
 
@@ -72,7 +78,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
         return {
           id: "welcome",
           role: "assistant",
-          content: `${hi}Paste a **product page URL** from any store in the box below (Nike, Amazon, Target, etc.). I'll find similar items and compare prices near **${zip}** and online.`,
+          content: `${hi}Paste a **product page URL** from any store in the box below (Nike, Amazon, Target, etc.). I'll compare online prices for delivery to **${zip}**.`,
           chips: ["Find me mens pants", "Womens black hoodie", "Toddler sneakers"],
           timestamp: Date.now(),
         };
@@ -81,8 +87,8 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
         id: "welcome",
         role: "assistant",
         content: isValidZip(zip)
-          ? `${hi}Welcome to **Shop Scout**! Near **${zip}** you'll see **two columns side by side**: nearby stores on the left, online on the right.\n\nTry natural requests like **find me mens pants** or **womens black hoodie** — I understand department and size, then compare prices across ${SHOPPABLE_STORE_COUNT} stores.`
-          : `${hi}Welcome to **Shop Scout**! Enter your ZIP for nearby stores and online prices that ship to you.`,
+          ? `${hi}Welcome to **Shop Scout**! Compare prices across **${SHOPPABLE_STORE_COUNT} online stores** — shipping to **${zip}**.\n\nTry **find me mens pants**, **womens black hoodie**, or paste a product link.`
+          : `${hi}Welcome to **Shop Scout**! Add your **ZIP code** (for shipping estimates), then tell me what you're shopping for.`,
         chips: isValidZip(zip)
           ? [
               "Find me mens pants",
@@ -171,6 +177,16 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
       setSavedIds(new Set(next.map((o) => o.id)));
       syncSavedOffers(next);
       setLearningProfile(learnFromProduct(offer));
+      const isSaved = next.some((o) => o.id === offer.id);
+      trackEvent({
+        name: isSaved ? "watchlist_add" : "offer_save",
+        properties: {
+          offerId: offer.id,
+          retailer: offer.retailer,
+          catalogId: offer.catalogId,
+          action: isSaved ? "add" : "remove",
+        },
+      });
     },
     [syncSavedOffers],
   );
@@ -199,17 +215,24 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
       setMessages((prev) => [...prev, userMsg]);
       setInput("");
       setLoading(true);
+      const searchStarted = Date.now();
+
+      trackEvent({
+        name: "search_performed",
+        properties: { query: trimmed, source: "chat" },
+      });
 
       try {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({
+            body: JSON.stringify({
             message: trimmed,
             session: sessionRef.current,
             zipCode,
             learningProfile,
+            progressive: true,
             history: [...messages, userMsg].slice(-10).map((m) => ({
               role: m.role,
               content: m.content,
@@ -253,6 +276,79 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
         };
 
         setMessages((prev) => [...prev, assistantMsg]);
+
+        if (data.productResults) {
+          trackEvent({
+            name: "search_first_results",
+            properties: {
+              query: trimmed,
+              offerCount: data.productResults.online?.length ?? 0,
+              timeToFirstResultMs: Date.now() - searchStarted,
+              cacheHit: data.productResults.meta?.cacheHit,
+              progressive: true,
+              catalogId: data.productResults.enrichmentCatalogId,
+            },
+          });
+        }
+
+        if (
+          data.productResults?.enrichmentPending &&
+          data.session?.intent
+        ) {
+          setEnrichingId(assistantMsg.id);
+          const enrichStart = Date.now();
+          const catalogId = data.productResults.enrichmentCatalogId;
+
+          trackEvent({
+            name: "enrichment_started",
+            properties: {
+              catalogId,
+              query: trimmed,
+              offerCountBefore: data.productResults.online?.length ?? 0,
+            },
+          });
+
+          fetch("/api/search/enrich", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({
+              intent: data.session.intent,
+              catalogId: data.productResults.enrichmentCatalogId,
+            }),
+          })
+            .then((r) => (r.ok ? r.json() : null))
+            .then((enriched) => {
+              if (!enriched?.productResults) return;
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantMsg.id ?
+                    { ...m, productResults: enriched.productResults }
+                  : m,
+                ),
+              );
+              trackEvent({
+                name: "enrichment_completed",
+                properties: {
+                  catalogId,
+                  latencyMs: Date.now() - enrichStart,
+                  offerCountAfter: enriched.productResults.online?.length ?? 0,
+                  success: true,
+                },
+              });
+            })
+            .catch(() => {
+              trackEvent({
+                name: "enrichment_completed",
+                properties: {
+                  catalogId,
+                  latencyMs: Date.now() - enrichStart,
+                  success: false,
+                },
+              });
+            })
+            .finally(() => setEnrichingId(null));
+        }
       } catch {
         setMessages((prev) => [
           ...prev,
@@ -300,22 +396,32 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
         />
       )}
 
-      <div className="flex min-h-[100dvh] flex-1 flex-col">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         <header className="flex shrink-0 items-center justify-between gap-2 border-b border-orange-100/80 bg-cream-50/95 px-4 py-3 backdrop-blur-xl lg:px-8">
-          <button
-            type="button"
-            onClick={resetChat}
-            disabled={loading}
-            className="flex items-center gap-2 rounded-xl border border-orange-200/80 bg-white px-3 py-2 text-sm font-semibold text-ink-700 shadow-sm transition hover:border-orange-300 hover:bg-orange-50 disabled:opacity-40"
-            title="Clear chat and start over"
-          >
-            <RotateCcw size={16} />
-            New chat
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={resetChat}
+              disabled={loading}
+              className="flex items-center gap-2 rounded-xl border border-orange-200/80 bg-white px-3 py-2 text-sm font-semibold text-ink-700 shadow-sm transition hover:border-orange-300 hover:bg-orange-50 disabled:opacity-40"
+              title="Clear chat and start over"
+            >
+              <RotateCcw size={16} />
+              <span className="hidden sm:inline">New chat</span>
+            </button>
+            <Link
+              href="/compare"
+              className="flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm font-medium text-stone-700 hover:border-sage-300 hover:bg-sage-50"
+            >
+              <Columns3 size={16} />
+              <span className="hidden sm:inline">Compare</span>
+            </Link>
+          </div>
           <button
             type="button"
             onClick={() => setShowLocation(true)}
             className="flex items-center gap-2 rounded-xl border border-sage-200 bg-sage-50 px-3 py-1.5 text-sm font-medium text-sage-800 transition hover:bg-sage-100"
+            title="ZIP for shipping estimates"
           >
             <MapPin size={16} />
             <span className="text-stone-500">ZIP</span>
@@ -336,12 +442,12 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
               onClick={(e) => e.stopPropagation()}
               className="w-14 bg-transparent text-center font-bold text-stone-900 focus:outline-none"
               maxLength={5}
-              aria-label="ZIP code"
+              aria-label="ZIP code for shipping"
             />
           </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto px-4 py-6 lg:px-8">
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6 lg:px-8">
           <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-1 sm:px-2">
             {messages.map((msg) => (
               <ChatMessageBubble
@@ -353,19 +459,23 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
                 onChipSelect={sendMessage}
                 isLatest={msg.id === lastAssistantId}
                 loading={loading}
+                enriching={msg.id === enrichingId}
+                searchQuery={
+                  msg.role === "user" ? msg.content
+                  : messages[messages.indexOf(msg) - 1]?.role === "user" ?
+                    messages[messages.indexOf(msg) - 1]?.content
+                  : undefined
+                }
               />
             ))}
+            {messages.length <= 1 && !loading && (
+              <ValueProposition compact />
+            )}
             {loading && (
               <div className="flex gap-3 animate-fade-in">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-sage-600 text-white">
-                  <span className="flex gap-1">
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:0.15s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:0.3s]" />
-                  </span>
-                </div>
+                <BrandHomeMark size="xs" pulse />
                 <div className="rounded-2xl border border-stone-200/80 bg-white px-5 py-4 text-sm text-stone-500 shadow-sm">
-                  Checking stores near you + online…
+                  Finding verified deals…
                 </div>
               </div>
             )}
@@ -385,6 +495,14 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
               <Link2
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400"
                 size={18}
+              />
+              <SearchSuggest
+                value={input}
+                onSelect={(q) => {
+                  setInput(q);
+                  inputRef.current?.focus();
+                }}
+                disabled={loading}
               />
               <input
                 ref={inputRef}
@@ -412,8 +530,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
             </button>
           </form>
           <p className="mx-auto mt-2 max-w-6xl text-center text-[11px] text-stone-400">
-            Left = stores near your ZIP · Right = online orders shipped to you.
-            Affiliate disclosure applies.
+            ZIP is used for shipping estimates only. Affiliate disclosure applies.
           </p>
         </div>
       </div>

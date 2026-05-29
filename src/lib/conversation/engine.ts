@@ -9,6 +9,7 @@ export async function processMessage(
   learningProfile?: LearningProfile,
   history?: ChatHistoryMessage[],
   userId?: string,
+  progressive = true,
 ): Promise<ChatResponse> {
   const turn = await resolveChatTurn(
     message,
@@ -17,6 +18,7 @@ export async function processMessage(
     learningProfile,
     userId,
     history,
+    progressive,
   );
 
   const reply = await generateAssistantReply({

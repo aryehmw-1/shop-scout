@@ -8,7 +8,7 @@ import { SHOPPABLE_STORE_COUNT } from "@/lib/retailers/meta";
 
 export const metadata: Metadata = {
   title: "About",
-  description: `${APP_NAME} helps shoppers compare prices across major retailers online and nearby.`,
+  description: `${APP_NAME} helps shoppers compare online prices across major retailers.`,
 };
 
 export default function AboutPage() {
@@ -24,7 +24,7 @@ export default function AboutPage() {
           <p>
             <strong className="text-ink-800">{APP_NAME}</strong> is a price-comparison
             service for everyday shopping. We help you see how a product stacks up across
-            major retailers — online and, when you share your ZIP code, stores near you —
+            major retailers online — your ZIP is used only for shipping estimates —
             so you can buy with confidence.
           </p>
 

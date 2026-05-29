@@ -3,7 +3,8 @@ import {
   buildStoreProductLink,
   googleShoppingFallback,
 } from "../affiliate";
-import type { RetailerId } from "../types";
+import { buildStoreSearchQuery } from "./store-search-query";
+import type { RetailerId, ShoppingIntent } from "../types";
 
 export interface ProductLinkItem {
   id: string;
@@ -17,12 +18,15 @@ export interface ProductLinkItem {
 export function productSearchQuery(
   item: ProductLinkItem,
   userQuery?: string,
+  intent?: ShoppingIntent,
 ): string {
-  const base = `${item.brand} ${item.title} ${item.size}`.replace(/\s+/g, " ").trim();
-  if (!userQuery?.trim()) return base;
-  const q = userQuery.trim();
-  if (base.toLowerCase().includes(q.toLowerCase().slice(0, 8))) return base;
-  return `${q} ${base}`.replace(/\s+/g, " ").trim();
+  if (intent) {
+    return buildStoreSearchQuery(item, intent);
+  }
+  if (userQuery?.trim()) {
+    return buildStoreSearchQuery(item, { query: userQuery.trim() } as ShoppingIntent);
+  }
+  return buildStoreSearchQuery(item);
 }
 
 /**
@@ -32,8 +36,9 @@ export function buildDirectProductUrl(
   item: ProductLinkItem,
   retailer: RetailerId,
   userQuery?: string,
+  intent?: ShoppingIntent,
 ): string {
-  const searchQ = productSearchQuery(item, userQuery);
+  const searchQ = productSearchQuery(item, userQuery, intent);
   try {
     return buildRetailerSearchUrl(retailer, searchQ);
   } catch {

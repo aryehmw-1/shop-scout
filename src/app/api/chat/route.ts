@@ -24,6 +24,7 @@ export async function POST(request: Request) {
       body.learningProfile,
       body.history,
       userId,
+      body.progressive !== false,
     );
 
     return NextResponse.json(result);

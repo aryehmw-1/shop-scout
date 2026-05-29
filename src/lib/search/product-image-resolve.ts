@@ -1,3 +1,7 @@
+import { loadVariantGroupsForCatalog } from "../catalog/load-group-images";
+import { resolveCatalogRow } from "../catalog/resolve-variant";
+import { resolveVariantGroupImage } from "../catalog/variant-group-images";
+import { isGenericCatalogImage } from "../indexing/retailer-page-image";
 import { imageSourceForLiveQuote } from "./product-image-source";
 import { fetchProductImageFromOpenFoodFacts } from "./providers/open-food-facts-images";
 import { fetchProductImageFromOpenverse } from "./providers/openverse-images";
@@ -112,6 +116,34 @@ export async function resolveProductImages(
   const fromQuotes = buildPerRetailerImages(quotes);
   for (const [id, img] of fromQuotes) {
     perRetailer.set(id, img);
+  }
+
+  const dbGroups = await loadVariantGroupsForCatalog(item.id);
+  const catalogItem: CatalogItem =
+    dbGroups.length ? { ...item, variantGroups: dbGroups } : item;
+  const { variantGroup, size } = resolveCatalogRow(catalogItem, intent);
+
+  if (variantGroup) {
+    for (const [retailerId, url] of Object.entries(
+      variantGroup.retailerImageUrls ?? {},
+    )) {
+      if (url?.startsWith("https://")) {
+        perRetailer.set(retailerId as RetailerId, {
+          url,
+          source: "retailer",
+        });
+      }
+    }
+    const groupHero = resolveVariantGroupImage(variantGroup, {
+      size: size ?? undefined,
+      fallbackCatalogUrl: item.imageUrl,
+    });
+    if (
+      groupHero &&
+      (!hero || isGenericCatalogImage(hero.url))
+    ) {
+      hero = { url: groupHero.url, source: groupHero.source };
+    }
   }
 
   if (!hero) {

@@ -29,7 +29,8 @@ export async function runSearchWithLivePricing(
   try {
     const { quotes, origin } = await fetchLiveQuotes(intent, item);
     if (quotes.length > 0) {
-      const livePriceSource = priceSourceForLiveOrigin(origin) ?? "connector_api";
+      const livePriceSource =
+        priceSourceForLiveOrigin(origin, quotes) ?? "connector_api";
       const merged = mergeLivePrices(results, quotes, item, intent, livePriceSource);
       results = merged.results;
       liveQuoteCount = merged.liveCount;

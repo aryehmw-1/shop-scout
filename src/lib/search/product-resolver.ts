@@ -10,6 +10,7 @@ import {
   scoreItem,
 } from "../retailers/search";
 import type { ShoppingIntent } from "../types";
+import { normalizeSearchQuery } from "./query-normalize";
 import type { ResolvedProduct } from "./types";
 
 /**
@@ -20,7 +21,9 @@ export function resolvePrimaryProduct(intent: ShoppingIntent): {
   item: CatalogItem;
   resolved: ResolvedProduct;
 } {
-  const q = intent.query.trim();
+  const q = normalizeSearchQuery(intent.query.trim());
+  const searchIntent = q ? { ...intent, query: q } : intent;
+
   if (!q) {
     const item = CATALOG[0];
     return {
@@ -37,16 +40,16 @@ export function resolvePrimaryProduct(intent: ShoppingIntent): {
   }
 
   const strict = queryRequiresStrictMatch(q);
-  const categoryStrict = queryRequiresCategoryMatch(q, intent.category);
+  const categoryStrict = queryRequiresCategoryMatch(q, searchIntent.category);
   const minScore = strict || categoryStrict ? 18 : 10;
   const attrs = parseQueryAttributes(q);
 
   const scored = CATALOG.map((item) => ({
     item,
-    score: scoreItem(item, intent),
+    score: scoreItem(item, searchIntent),
   }))
     .filter(({ item, score }) => {
-      if (categoryStrict && intent.category && item.category !== intent.category) {
+      if (categoryStrict && searchIntent.category && item.category !== searchIntent.category) {
         return false;
       }
       return score >= minScore;

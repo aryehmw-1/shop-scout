@@ -14,7 +14,7 @@ export function stripShoppingPrefixes(raw: string): string {
 
 /** Words that mean the user is shopping, not just chatting */
 export const SHOPPING_KEYWORDS =
-  /hoodie|hoody|shirt|pants|jeans|denim|chinos|shorts|dress|shoe|sneaker|boot|sandal|milk|egg|organic|grocery|book|mattress|sheet|comforter|jacket|polo|legging|toddler|baby|infant|\b(?:mens?|womens?|kids?|boys?|girls?)\b/i;
+  /hoodie|hoody|shirt|sweater|cardigan|joggers?|pants|jeans|denim|chinos|shorts|dress|shoe|sneaker|boot|sandal|milk|egg|organic|grocery|book|mattress|bed|beds|bedding|sheet|comforter|jacket|polo|legging|toddler|baby|infant|\b(?:mens?|womens?|kids?|boys?|girls?)\b/i;
 
 export function looksLikeShoppingQuery(text: string): boolean {
   const t = stripShoppingPrefixes(text);

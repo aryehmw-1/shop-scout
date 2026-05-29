@@ -31,9 +31,6 @@ export async function POST(request: Request) {
       name: name || email.split("@")[0],
       address: {
         zipCode,
-        street: body.address?.street,
-        city: body.address?.city,
-        state: body.address?.state,
         label: body.address?.label ?? "Home",
       },
     });

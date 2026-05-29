@@ -37,7 +37,7 @@ export function StoreDirectory() {
   }
 
   return (
-    <section className="bg-white/40 px-6 py-12 lg:px-12">
+    <section className="bg-white/40 px-4 py-12 sm:px-6 lg:px-12">
       <div className="mx-auto max-w-3xl text-center">
         <p className="text-sm font-semibold uppercase tracking-wider text-ink-400">
           Stores we compare

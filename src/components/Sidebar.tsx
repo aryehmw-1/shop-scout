@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, Scale, Heart, Settings, LogIn, LogOut } from "lucide-react";
+import { Home, Heart, Settings, LogIn, LogOut } from "lucide-react";
+import { ShopScoutCompareIcon } from "@/components/brand/ShopScoutCompareIcon";
 import { Logo } from "./Logo";
 import { COMPARE_NAV_LABEL } from "@/lib/constants";
 import { getRetailerMeta, SHOPPABLE_STORE_COUNT } from "@/lib/retailers/meta";
@@ -11,7 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const nav = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/chat", label: COMPARE_NAV_LABEL, icon: Scale },
+  { href: "/chat", label: COMPARE_NAV_LABEL, icon: ShopScoutCompareIcon },
   { href: "/saved", label: "Saved deals", icon: Heart },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

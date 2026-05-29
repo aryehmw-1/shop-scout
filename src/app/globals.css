@@ -163,3 +163,10 @@ body {
   background: var(--sage-200);
   color: var(--sage-900);
 }
+
+/* Next.js dev-only corner indicator (black floating bubble) */
+button[data-nextjs-data-runtime-error],
+[data-nextjs-dialog-overlay] + div[style*="bottom"],
+#__next-build-watcher {
+  display: none !important;
+}

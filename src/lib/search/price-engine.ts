@@ -12,6 +12,8 @@ import type {
   ShoppingIntent,
 } from "../types";
 import type { PriceSource } from "./types";
+import { applyOfferQualityGates } from "../offers/offer-quality";
+import { scoreOfferConfidence } from "../identity/offer-confidence";
 
 const PRICE_SOURCE: PriceSource = "catalog_model";
 const QUOTE_TTL_MS = 30 * 60 * 1000;
@@ -73,7 +75,19 @@ export function buildOfferFromCatalog(
       listing.imageUrl
     : imageForProduct(item, searchQ);
 
-  const offer: ProductOffer = {
+  const confidence = scoreOfferConfidence(item, intent, retailer, {
+    storeTitle: listing.storeTitle,
+    brand: item.brand,
+    color: intent.colors?.[0],
+    size: item.size,
+    upc: item.upc,
+    imageUrl,
+    productUrl,
+    priceSource: PRICE_SOURCE,
+  });
+
+  const offer: ProductOffer = applyOfferQualityGates(
+    {
     id: `${item.id}-${retailer}-${channel}`,
     catalogId: item.id,
     title: item.title,
@@ -97,7 +111,11 @@ export function buildOfferFromCatalog(
     landedCost: price,
     productUrl,
     affiliateUrl,
-    matchConfidence: baseMatchConfidence,
+    matchConfidence: Math.max(baseMatchConfidence, confidence.matchConfidence),
+    identityConfidence: confidence.identityConfidence,
+    attributeConfidence: confidence.attributeConfidence,
+    imageConfidence: confidence.imageConfidence,
+    confidenceReasons: JSON.parse(confidence.confidenceReasonsJson) as ProductOffer["confidenceReasons"],
     priceSource: PRICE_SOURCE,
     priceAsOf: new Date().toISOString(),
     priceExpiresAt: new Date(Date.now() + QUOTE_TTL_MS).toISOString(),
@@ -107,7 +125,10 @@ export function buildOfferFromCatalog(
       : retailer === "costco" || retailer === "sams" ?
         "Pickup near you · Members"
       : "Pickup or delivery near you",
-  };
+    },
+    item,
+    intent,
+  );
 
   return offer;
 }

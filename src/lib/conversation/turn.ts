@@ -15,8 +15,8 @@ import { clarifyHelpReply } from "../ai/category-clarify";
 import { extractIntentFromMessage } from "../ai/extract-intent";
 import { parseSizeFromText } from "../shopping/sizes";
 import {
-  isRefinementMessage,
   mergeSearchIntent,
+  shouldMergeWithPreviousSearch,
 } from "../shopping/intent-merge";
 import { looksLikeShoppingQuery, stripShoppingPrefixes } from "../shopping/query";
 import type {
@@ -28,6 +28,10 @@ import type {
 
 const URL_REGEX = /https?:\/\/[^\s]+/gi;
 const GREETING = /^(hi|hello|hey|thanks|thank you|ok|okay|yo|howdy|good (morning|afternoon|evening))$/i;
+
+function searchOpts(userId?: string, progressive = true) {
+  return { userId, fastOnly: progressive };
+}
 
 export function extractUrl(text: string): string | null {
   const match = text.match(URL_REGEX);
@@ -143,6 +147,7 @@ export async function resolveChatTurn(
   learningProfile?: LearningProfile,
   userId?: string,
   history?: ChatHistoryMessage[],
+  progressive = true,
 ): Promise<ResolvedChatTurn> {
   const text = message.trim();
   let { intent, asked, phase, sourceUrl, sourceProductTitle, compareMode } = session;
@@ -242,7 +247,7 @@ export async function resolveChatTurn(
           fullIntent,
           { userId },
         )
-      : await searchService.search(fullIntent, { userId });
+      : await searchService.search(fullIntent, searchOpts(userId, progressive));
 
     return {
       action: "recheck",
@@ -256,10 +261,10 @@ export async function resolveChatTurn(
     };
   }
 
-  if (phase === "ready" && isRefinementMessage(text, session)) {
+  if (phase === "ready" && shouldMergeWithPreviousSearch(text, session)) {
     intent = mergeSearchIntent(session.intent, text);
     const fullIntent = enrichIntent({ ...intent, zipCode: zip }, learningProfile);
-    const productResults = await searchService.search(fullIntent, { userId });
+    const productResults = await searchService.search(fullIntent, searchOpts(userId, progressive));
 
     return {
       action: "refine",
@@ -281,7 +286,7 @@ export async function resolveChatTurn(
 
   if (phase === "ready" && isFollowUpAboutResults(text)) {
     const fullIntent = fullIntentFromSession();
-    const productResults = await searchService.search(fullIntent, { userId });
+    const productResults = await searchService.search(fullIntent, searchOpts(userId, progressive));
     return {
       action: "conversational",
       session,
@@ -297,7 +302,7 @@ export async function resolveChatTurn(
       phase === "ready" && intent.query ? fullIntentFromSession() : undefined;
     const productResults =
       fullIntent && isFollowUpAboutResults(text)
-        ? await searchService.search(fullIntent, { userId })
+        ? await searchService.search(fullIntent, searchOpts(userId, progressive))
         : undefined;
 
     return {
@@ -337,7 +342,7 @@ export async function resolveChatTurn(
         { ...resolved, zipCode: zip, learningProfile },
         learningProfile,
       );
-      const productResults = await searchService.search(fullIntent, { userId });
+      const productResults = await searchService.search(fullIntent, searchOpts(userId, progressive));
       return {
         action: "search",
         session: {
@@ -365,7 +370,7 @@ export async function resolveChatTurn(
     ) {
       intent = { ...buildIntentFromQuery(text), zipCode: zip };
       const fullIntent = enrichIntent(intent, learningProfile);
-      const productResults = await searchService.search(fullIntent, { userId });
+      const productResults = await searchService.search(fullIntent, searchOpts(userId, progressive));
       return {
         action: "search",
         session: {
@@ -398,23 +403,31 @@ export async function resolveChatTurn(
     isProductSearchMessage(text) || (phase === "ready" && !GREETING.test(text));
 
   if (shouldSearch) {
-    if (
-      phase === "ready" &&
-      session.intent?.query &&
-      isRefinementMessage(text, { phase, intent: session.intent, asked, compareMode: false })
-    ) {
+    const merging = shouldMergeWithPreviousSearch(text, session);
+    if (merging) {
       intent = mergeSearchIntent(session.intent, text);
     } else if (phase !== "ready" || !compareMode) {
       intent = { ...buildIntentFromQuery(text), zipCode: zip };
+      if (phase === "ready" && session.intent?.query?.trim()) {
+        sourceUrl = undefined;
+        sourceProductTitle = undefined;
+      }
     } else {
       intent = { ...intent, ...buildIntentFromQuery(text), zipCode: zip };
     }
 
-    const analysis = await analyzeShoppingMessage(
-      text,
-      { phase, intent, asked, compareMode, clarifying: session.clarifying },
-      history,
-    );
+    const skipClarifyForRefine =
+      session.phase === "ready" &&
+      Boolean(session.intent?.query?.trim()) &&
+      merging;
+
+    const analysis = skipClarifyForRefine
+      ? { intent: {}, needsClarification: false as const }
+      : await analyzeShoppingMessage(
+          text,
+          { phase, intent, asked, compareMode, clarifying: session.clarifying },
+          history,
+        );
 
     if (analysis.needsClarification && analysis.clarification) {
       return {
@@ -437,7 +450,7 @@ export async function resolveChatTurn(
       { ...intent, ...analysis.intent, zipCode: zip },
       learningProfile,
     );
-    const productResults = await searchService.search(fullIntent, { userId });
+    const productResults = await searchService.search(fullIntent, searchOpts(userId, progressive));
 
     return {
       action: "search",
@@ -445,8 +458,8 @@ export async function resolveChatTurn(
         phase: "ready",
         intent: fullIntent,
         asked,
-        sourceUrl,
-        sourceProductTitle,
+        sourceUrl: merging ? sourceUrl : undefined,
+        sourceProductTitle: merging ? sourceProductTitle : undefined,
         compareMode: false,
       },
       productResults,

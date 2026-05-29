@@ -1,15 +1,38 @@
 import { prisma } from "../db/prisma";
+import { compareProduct } from "../retailers/catalog";
 import { mergeLivePrices } from "../search/merge-live-prices";
-import { runSearchWithLivePricing } from "../search/live-pricing";
-import { fetchAmazonLiveQuotes } from "../search/providers/amazon-paapi-server";
+import { fetchAmazonLiveQuotes } from "../search/providers/amazon-paapi";
 import { isAmazonPaapiConfigured } from "../search/providers/amazon-paapi-config";
+import { finalizeSearchPrices } from "../search/price-truth";
 import type { CatalogItem } from "../retailers/catalog";
-import type { ProductSearchResults, ShoppingIntent } from "../types";
+import type { ProductSearchResults, RetailerId, ShoppingIntent } from "../types";
+import { finalizePricesWithHistory } from "../pricing/apply-pricing-pipeline";
+import { DAILY_INDEX_SOURCE } from "../own-db/config";
 import { startOfNextLocalDay } from "./expiry";
+import { enrichIndexSearchResults, type EnrichedIndexImagesReport } from "./enrich-offer-images";
 import { offersToStoredRows } from "./offer-rows";
 import { shuffleInPlace } from "./shuffle";
+import { resolveCatalogRow } from "../catalog/resolve-variant";
+import { compareByRefreshPriority } from "../identity/popularity";
+import {
+  getWeeklyRotationPlan,
+  type WeeklyRotationPlan,
+} from "./weekly-retailer-schedule";
+import {
+  formatDurationMs,
+  indexLog,
+  indexLogAlways,
+} from "./index-progress";
+import {
+  initIndexTelemetry,
+  recordIndexProductResult,
+  finalizeIndexTelemetry,
+  setCategoryTotals,
+} from "./index-telemetry";
+import { indexOfferEnrichmentEnabled } from "../offers/enrich-index-offers";
+import { indexVariantGroupImagesEnabled } from "./index-variant-group-images";
 
-const NIGHTLY_SOURCE = "nightly_index";
+const NIGHTLY_SOURCE = DAILY_INDEX_SOURCE;
 
 export async function purgeExpiredPriceQuotes(): Promise<number> {
   const result = await prisma.priceQuote.deleteMany({
@@ -20,7 +43,26 @@ export async function purgeExpiredPriceQuotes(): Promise<number> {
 
 export async function clearNightlyQuotesForProduct(productId: string): Promise<void> {
   await prisma.priceQuote.deleteMany({
-    where: { productId, source: NIGHTLY_SOURCE },
+    where: {
+      productId,
+      source: {
+        in: [NIGHTLY_SOURCE, "catalog_estimate", "nightly_index"],
+      },
+    },
+  });
+}
+
+async function clearNightlyQuotesForRetailers(
+  productId: string,
+  retailerIds: string[],
+): Promise<void> {
+  if (!retailerIds.length) return;
+  await prisma.priceQuote.deleteMany({
+    where: {
+      productId,
+      source: NIGHTLY_SOURCE,
+      retailerId: { in: retailerIds },
+    },
   });
 }
 
@@ -28,6 +70,11 @@ export async function persistNightlySearchResults(
   catalogId: string,
   results: ProductSearchResults,
   expiresAt: Date,
+  options: {
+    partialRetailers?: boolean;
+    item?: CatalogItem;
+    intent?: ShoppingIntent;
+  } = {},
 ): Promise<number> {
   const product = await prisma.product.findUnique({
     where: { catalogId },
@@ -35,10 +82,19 @@ export async function persistNightlySearchResults(
   });
   if (!product) return 0;
 
-  await clearNightlyQuotesForProduct(product.id);
-
-  const rows = offersToStoredRows(results, NIGHTLY_SOURCE);
+  const rows = offersToStoredRows(results, NIGHTLY_SOURCE, {
+    item: options.item,
+    intent: options.intent,
+    validatedOnly: true,
+  });
   if (!rows.length) return 0;
+
+  if (options.partialRetailers) {
+    const retailerIds = [...new Set(rows.map((r) => r.retailerId))];
+    await clearNightlyQuotesForRetailers(product.id, retailerIds);
+  } else {
+    await clearNightlyQuotesForProduct(product.id);
+  }
 
   const now = new Date();
 
@@ -55,6 +111,12 @@ export async function persistNightlySearchResults(
       unitPriceUsd: o.unitPriceUsd,
       inStock: o.inStock,
       matchConfidence: o.matchConfidence,
+      identityConfidence: o.identityConfidence,
+      attributeConfidence: o.attributeConfidence,
+      imageConfidence: o.imageConfidence,
+      confidenceReasonsJson: o.confidenceReasonsJson,
+      variantGroupId: o.variantGroupId,
+      variantId: o.variantId,
       source: o.source,
       productUrl: o.productUrl,
       affiliateUrl: o.affiliateUrl,
@@ -75,94 +137,306 @@ function intentForCatalogItem(item: CatalogItem): ShoppingIntent {
 }
 
 /**
- * Pre-compute one product’s compare grid and store until expiresAt (usually start of next day).
+ * Pre-compute one product’s compare grid for tonight’s store batch.
  */
 export async function indexCatalogItemNightly(
   item: CatalogItem,
   expiresAt: Date,
-): Promise<{ offerCount: number }> {
+  retailersTonight: RetailerId[],
+  partialRetailers: boolean,
+): Promise<{
+  offerCount: number;
+  retailerImagesFetched?: number;
+  variantGroupsIndexed?: number;
+  imageCacheHits?: number;
+  offerEnrichment?: EnrichedIndexImagesReport["offerEnrichment"];
+}> {
+  const itemStarted = Date.now();
   const intent = intentForCatalogItem(item);
-  let results = (await runSearchWithLivePricing(intent, item)).results;
+  const { item: resolvedItem } = resolveCatalogRow(item, intent);
+  const allow = new Set(retailersTonight);
 
-  if (isAmazonPaapiConfigured()) {
-    const amazonQuotes = await fetchAmazonLiveQuotes(intent, item);
+  indexLog("product: compare grid", { catalogId: item.id, retailers: retailersTonight.length });
+  let results = compareProduct(item, intent, { retailers: retailersTonight });
+  results = finalizeSearchPrices(results);
+
+  if (isAmazonPaapiConfigured() && allow.has("amazon")) {
+    indexLog("product: amazon PA-API", { catalogId: item.id });
+    const amazonStarted = Date.now();
+    const amazonQuotes = (await fetchAmazonLiveQuotes(intent, resolvedItem)).filter((q) =>
+      allow.has(q.retailerId),
+    );
+    indexLog("product: amazon PA-API done", {
+      catalogId: item.id,
+      quotes: amazonQuotes.length,
+      elapsed: formatDurationMs(Date.now() - amazonStarted),
+    });
     if (amazonQuotes.length > 0) {
       const merged = mergeLivePrices(
         results,
         amazonQuotes,
-        item,
+        resolvedItem,
         intent,
         "connector_api",
       );
-      results = merged.results;
+      results = finalizeSearchPrices(merged.results);
     }
   }
 
+  indexLog("product: images + PDP enrich", {
+    catalogId: item.id,
+    offerEnrichment: indexOfferEnrichmentEnabled(),
+    variantGroupImages: indexVariantGroupImagesEnabled(),
+  });
+  const imageStarted = Date.now();
+  const imagePass = await enrichIndexSearchResults(results, resolvedItem, intent);
+  results = imagePass.results;
+  indexLog("product: images done", {
+    catalogId: item.id,
+    elapsed: formatDurationMs(Date.now() - imageStarted),
+    retailerImagesFetched: imagePass.retailerImagesFetched,
+    offerEnrichment: imagePass.offerEnrichment,
+  });
+
+  indexLog("product: price history", { catalogId: item.id });
+  results = await finalizePricesWithHistory(resolvedItem.id, results, {
+    recordSnapshot: true,
+    snapshotSource: NIGHTLY_SOURCE,
+  });
+
+  indexLog("product: persist quotes", { catalogId: item.id });
   const offerCount = await persistNightlySearchResults(
     item.id,
     results,
     expiresAt,
+    { partialRetailers, item: resolvedItem, intent },
   );
-  return { offerCount };
+  indexLog("product: done", {
+    catalogId: item.id,
+    offers: offerCount,
+    elapsed: formatDurationMs(Date.now() - itemStarted),
+  });
+
+  return {
+    offerCount,
+    retailerImagesFetched: imagePass.retailerImagesFetched,
+    variantGroupsIndexed: imagePass.variantGroupsIndexed,
+    imageCacheHits: imagePass.imageCacheHits,
+    offerEnrichment: imagePass.offerEnrichment,
+  };
 }
 
 export interface NightlyIndexReport {
   productsIndexed: number;
   offersWritten: number;
+  retailerImagesFetched: number;
+  variantGroupsIndexed: number;
+  imageCacheHits: number;
+  offerEnrichment?: {
+    offersEnriched: number;
+    pdpUrlsResolved: number;
+    imagesFetched: number;
+    pricesExtracted: number;
+  };
   expiredPurged: number;
   amazonPaapi: boolean;
   expiresAt: string;
+  weeklyRotation: boolean;
+  weekday: number;
+  weekdayName: string;
+  retailersTonight: number;
+  totalRetailers: number;
+  telemetry?: import("./index-telemetry").IndexTelemetrySnapshot | null;
 }
 
 export interface NightlyIndexOptions {
-  /** e.g. "shoes" — omit to index full catalog */
   category?: string;
-  /** Max products per run (rate limits) */
   limit?: number;
-  /** Delay ms between products (Amazon PA-API / politeness) */
   delayMs?: number;
+  /** Override rotation (testing). */
+  rotationPlan?: WeeklyRotationPlan;
 }
 
 export async function runNightlyPriceIndex(
   options: NightlyIndexOptions = {},
 ): Promise<NightlyIndexReport> {
+  indexLogAlways("loading catalog module…");
   const { CATALOG } = await import("../retailers/catalog");
   const { ensureCatalogSynced } = await import("../db/catalog-sync");
+  indexLogAlways("catalog module loaded", { products: CATALOG.length });
 
+  const plan = options.rotationPlan ?? getWeeklyRotationPlan();
+  indexLogAlways("purge expired quotes…");
+  const purgeStarted = Date.now();
   const expiredPurged = await purgeExpiredPriceQuotes();
-  await ensureCatalogSynced();
+  indexLogAlways("purge done", {
+    removed: expiredPurged,
+    elapsed: formatDurationMs(Date.now() - purgeStarted),
+  });
 
-  const expiresAt = startOfNextLocalDay();
+  if (process.env.SKIP_CATALOG_SYNC === "1") {
+    indexLogAlways("SKIP_CATALOG_SYNC=1 — skipping ensureCatalogSynced");
+  } else {
+    await ensureCatalogSynced();
+  }
+
+  const expiresAt =
+    plan.enabled ? plan.expiresAt : startOfNextLocalDay();
+
   let items = [...CATALOG];
   if (options.category) {
     items = items.filter((i) => i.category === options.category);
   }
-  shuffleInPlace(items);
+
+  const popularityRows = await prisma.product.findMany({
+    select: {
+      catalogId: true,
+      popularityScore: true,
+      searchFrequency: true,
+      clickFrequency: true,
+      refreshPriority: true,
+    },
+  });
+  const popByCatalog = new Map(popularityRows.map((r) => [r.catalogId, r]));
+  items.sort((a, b) =>
+    compareByRefreshPriority(
+      popByCatalog.get(a.id) ?? {},
+      popByCatalog.get(b.id) ?? {},
+    ),
+  );
+  shuffleInPlace(items.slice(Math.min(12, items.length)));
 
   if (options.limit && options.limit > 0) {
     items = items.slice(0, options.limit);
   }
 
+  const scrapeSkip = process.env.INDEX_SCRAPE_SKIP_RETAILERS?.trim();
+  indexLogAlways("index plan", {
+    productsToIndex: items.length,
+    retailersTonight: plan.retailersTonight.length,
+    fullRotation: !plan.enabled,
+    delayMsPerProduct: options.delayMs ?? 350,
+    indexFetchRetailerImages: process.env.INDEX_FETCH_RETAILER_IMAGES ?? "(default on)",
+    indexOfferEnrichment: indexOfferEnrichmentEnabled(),
+    indexScrapeSkipRetailers: scrapeSkip || "hm (default)",
+    amazonPaapi: isAmazonPaapiConfigured(),
+  });
+
   const delayMs = options.delayMs ?? 350;
   let productsIndexed = 0;
+  const loopStarted = Date.now();
   let offersWritten = 0;
+  let retailerImagesFetched = 0;
+  let variantGroupsIndexed = 0;
+  let imageCacheHits = 0;
+  let offerEnrichmentTotals = {
+    offersEnriched: 0,
+    pdpUrlsResolved: 0,
+    imagesFetched: 0,
+    pricesExtracted: 0,
+  };
 
+  initIndexTelemetry(items.length);
+  const categoryTotals: Record<string, number> = {};
   for (const item of items) {
-    const { offerCount } = await indexCatalogItemNightly(item, expiresAt);
+    categoryTotals[item.category] = (categoryTotals[item.category] ?? 0) + 1;
+  }
+  setCategoryTotals(categoryTotals);
+
+  for (let idx = 0; idx < items.length; idx++) {
+    const item = items[idx]!;
+    indexLogAlways(`product ${idx + 1}/${items.length}`, {
+      catalogId: item.id,
+      title: item.title.slice(0, 48),
+    });
+    const productStarted = Date.now();
+    const {
+      offerCount,
+      retailerImagesFetched: imgCount,
+      variantGroupsIndexed: gCount,
+      imageCacheHits: cHits,
+      offerEnrichment: oe,
+    } = await indexCatalogItemNightly(
+      item,
+      expiresAt,
+      plan.retailersTonight,
+      plan.enabled,
+    );
     if (offerCount > 0) {
       productsIndexed += 1;
       offersWritten += offerCount;
+      retailerImagesFetched += imgCount ?? 0;
+      variantGroupsIndexed += gCount ?? 0;
+      imageCacheHits += cHits ?? 0;
+      if (oe) {
+        offerEnrichmentTotals.offersEnriched += oe.offersEnriched;
+        offerEnrichmentTotals.pdpUrlsResolved += oe.pdpUrlsResolved;
+        offerEnrichmentTotals.imagesFetched += oe.imagesFetched;
+        offerEnrichmentTotals.pricesExtracted += oe.pricesExtracted;
+      }
     }
+    const loopElapsed = Date.now() - loopStarted;
+    const done = idx + 1;
+    const avgMs = loopElapsed / done;
+    const etaMs = avgMs * (items.length - done);
+
+    const rejections =
+      oe ?
+        Math.max(0, (oe.offersEnriched ?? 0) - (oe.pricesExtracted ?? 0))
+      : 0;
+
+    recordIndexProductResult({
+      category: item.category,
+      offerCount,
+      rejections,
+      retailersAttempted: plan.retailersTonight.length,
+      elapsedMs: Date.now() - productStarted,
+      productsDone: done,
+      productsTotal: items.length,
+      loopElapsedMs: loopElapsed,
+      bottleneck:
+        offerCount === 0 ? "no_verified_offers_persisted"
+        : (imgCount ?? 0) === 0 && indexVariantGroupImagesEnabled() ?
+          "image_fetch"
+        : "ok",
+    });
+
+    indexLogAlways("progress", {
+      done: `${done}/${items.length}`,
+      elapsed: formatDurationMs(loopElapsed),
+      eta: formatDurationMs(etaMs),
+      lastProductSec: formatDurationMs(avgMs),
+    });
+
     if (delayMs > 0) {
       await new Promise((r) => setTimeout(r, delayMs));
     }
   }
 
+  indexLogAlways("index loop finished", {
+    productsIndexed,
+    offersWritten,
+    elapsed: formatDurationMs(Date.now() - loopStarted),
+  });
+
+  const telemetry = finalizeIndexTelemetry();
+
   return {
     productsIndexed,
     offersWritten,
+    retailerImagesFetched,
+    variantGroupsIndexed,
+    imageCacheHits,
+    offerEnrichment:
+      offerEnrichmentTotals.offersEnriched > 0 ? offerEnrichmentTotals : undefined,
     expiredPurged,
     amazonPaapi: isAmazonPaapiConfigured(),
     expiresAt: expiresAt.toISOString(),
+    weeklyRotation: plan.enabled,
+    weekday: plan.weekday,
+    weekdayName: plan.weekdayName,
+    retailersTonight: plan.retailersTonight.length,
+    totalRetailers: plan.totalRetailers,
+    telemetry,
   };
 }

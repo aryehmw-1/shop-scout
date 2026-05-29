@@ -29,5 +29,9 @@ export function ChatPageClient() {
       ? CATEGORY_STARTS[start] ?? `I'm looking for ${start}`
       : undefined;
 
-  return <ChatApp initialMessage={initialMessage} inputHint={pasteLinkMode ? "link" : undefined} />;
+  return (
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <ChatApp initialMessage={initialMessage} inputHint={pasteLinkMode ? "link" : undefined} />
+    </div>
+  );
 }

@@ -4,6 +4,7 @@ import {
   pickBestHeroFromOffers,
   tagOfferImageSources,
 } from "./product-image-source";
+import { isGenericCatalogImage } from "../indexing/retailer-page-image";
 import { isWeakProductImage } from "./product-image-quality";
 import type { CatalogItem } from "../retailers/catalog";
 import type {
@@ -79,7 +80,10 @@ export function applyWebProductImages(
       };
     }
     if (!isWeakProductImage(o.imageUrl)) return o;
-    if (hero?.url.startsWith("https://")) {
+    if (
+      hero?.url.startsWith("https://") &&
+      !isGenericCatalogImage(hero.url)
+    ) {
       return { ...o, imageUrl: hero.url, imageSource: hero.source };
     }
     return o;

@@ -4,12 +4,12 @@ const steps = [
   {
     icon: MapPin,
     title: "Set your ZIP",
-    desc: "We surface stores near you for pickup and in-store pricing, plus online retailers that ship to your area.",
+    desc: "We use it for shipping estimates when comparing online prices from major retailers.",
   },
   {
     icon: Rows3,
-    title: "Two rows of results",
-    desc: "Left: closest stores near you. Right: online deals that ship to you. Same search — groceries, clothes, gear, home.",
+    title: "Compare online prices",
+    desc: "One search across groceries, clothes, gear, and home — every store that ships to your area.",
   },
   {
     icon: MousePointerClick,
@@ -20,7 +20,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section className="homy-linen border-y border-orange-100/80 bg-cream-50/60 px-6 py-16 backdrop-blur-sm lg:px-12">
+    <section className="border-y border-orange-100/80 bg-cream-50/60 px-4 py-14 sm:px-6 lg:px-12">
       <div className="mx-auto max-w-5xl">
         <h2 className="font-homy text-center text-3xl font-bold text-ink-900">
           How it works

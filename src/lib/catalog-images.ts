@@ -52,6 +52,8 @@ const PRODUCT_IMAGES: Record<string, string> = {
   "fiction-novel": CATEGORY_IMAGES.books,
   "audiobook-credit": CATEGORY_IMAGES.books,
   "queen-mattress": CATEGORY_IMAGES.bedding,
+  "queen-bed-frame": CATEGORY_IMAGES.bedding,
+  "womens-sweater": CATEGORY_IMAGES.clothing,
   "cotton-sheet-set": CATEGORY_IMAGES.bedding,
   "down-comforter": CATEGORY_IMAGES.bedding,
   "hoodie-black-womens": COLOR_PRODUCT_IMAGES.black,
@@ -64,6 +66,8 @@ const PRODUCT_IMAGES: Record<string, string> = {
   "womens-leggings": CATEGORY_IMAGES.clothing,
   "mens-chinos":
     "https://images.unsplash.com/photo-1473966967909-574e6d719e0a?w=500&h=500&fit=crop",
+  "mens-joggers":
+    "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&h=500&fit=crop",
   "mens-dress-pants": CATEGORY_IMAGES.clothing,
   "womens-pants": CATEGORY_IMAGES.clothing,
 };
@@ -83,6 +87,23 @@ function colorFromItemAndQuery(
   return undefined;
 }
 
+const CLOTHING_PHOTOS: Record<string, string> = {
+  joggers:
+    "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&h=500&fit=crop",
+  jogger:
+    "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&h=500&fit=crop",
+  pants:
+    "https://images.unsplash.com/photo-1473966967909-574e6d719e0a?w=500&h=500&fit=crop",
+  chinos:
+    "https://images.unsplash.com/photo-1473966967909-574e6d719e0a?w=500&h=500&fit=crop",
+  jeans:
+    "https://images.unsplash.com/photo-1542272604-787c3835535d?w=500&h=500&fit=crop",
+  hoodie:
+    "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&h=500&fit=crop",
+  sneakers:
+    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&h=500&fit=crop",
+};
+
 export function imageForProduct(
   item: {
     id: string;
@@ -93,12 +114,19 @@ export function imageForProduct(
   },
   queryHint?: string,
 ): string {
-  if (item.id.startsWith("syn-") && queryHint?.trim()) {
-    const label = queryHint.trim().split(/\s+/).slice(0, 3).join(" ").slice(0, 28);
-    return placeholder(label);
+  if (PRODUCT_IMAGES[item.id]) return PRODUCT_IMAGES[item.id];
+
+  const blob = `${item.title} ${item.brand} ${item.keywords.join(" ")} ${queryHint ?? ""}`.toLowerCase();
+
+  for (const [key, url] of Object.entries(CLOTHING_PHOTOS)) {
+    if (blob.includes(key)) return url;
   }
 
-  if (PRODUCT_IMAGES[item.id]) return PRODUCT_IMAGES[item.id];
+  if (item.id.startsWith("syn-") && queryHint?.trim()) {
+    for (const [key, url] of Object.entries(CLOTHING_PHOTOS)) {
+      if (queryHint.toLowerCase().includes(key)) return url;
+    }
+  }
 
   const color = colorFromItemAndQuery(item, queryHint);
   if (color && COLOR_PRODUCT_IMAGES[color]) return COLOR_PRODUCT_IMAGES[color];

@@ -24,7 +24,13 @@ export async function POST(request: Request) {
     }
 
     const userId = (await getSessionUserId()) ?? undefined;
-    const productResults = await searchService.search(intent, { userId });
+    const productResults = await searchService.search(intent, {
+      userId,
+      skipImages: body.skipImages === true,
+      skipCache: body.skipCache === true,
+      skipPersist: body.skipPersist === true,
+      skipHistory: body.skipHistory === true,
+    });
     return NextResponse.json({ productResults });
   } catch (e) {
     console.error("search error", e);

@@ -2,8 +2,15 @@
   "name": "shop-scout",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0 <25"
+  },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
+    "dev:turbo": "next dev",
+    "dev:clean": "node scripts/clean-dev.mjs && npm run dev",
+    "clean": "node scripts/clean-dev.mjs",
+    "clean:install": "node scripts/clean-dev.mjs --reinstall",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
@@ -12,6 +19,30 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "index:nightly": "tsx scripts/nightly-index.ts",
+    "index:daily": "node scripts/daily-index.mjs",
+    "index:full": "node scripts/daily-index.mjs --full",
+    "index:full:local": "WEEKLY_STORE_ROTATION=off tsx scripts/nightly-index.ts --full",
+    "index:images": "INDEX_FETCH_RETAILER_IMAGES=true node scripts/daily-index.mjs --full",
+    "bootstrap:db:fill:all": "npm run bootstrap:db && npm run index:full",
+    "index:daily:local": "tsx scripts/nightly-index.ts",
+    "bootstrap:db": "npm run db:push && npm run db:seed && npm run db:sync-catalog",
+    "db:sync-catalog": "tsx scripts/sync-catalog.ts",
+    "db:backfill-variant-groups": "node scripts/backfill-variant-groups.mjs",
+    "db:backfill-identity": "node scripts/backfill-identity.mjs",
+    "db:purge-estimates": "node scripts/purge-estimate-quotes.mjs",
+    "db:purge-absurd-scraped": "node scripts/purge-absurd-scraped-quotes.mjs",
+    "verify:pipeline": "node scripts/verify-pipeline.mjs",
+    "bootstrap:db:fill": "npm run bootstrap:db && node scripts/daily-index.mjs",
+    "import:history": "node scripts/import-price-history.mjs",
+    "test:accuracy": "node scripts/accuracy-test-http.mjs",
+    "test:retailers": "node scripts/test-retailer-search.mjs",
+    "test:adapters": "tsx src/lib/offers/retailer-adapters/smoke-test.ts",
+    "audit:adapters": "tsx scripts/audit-retailer-adapters.ts",
+    "audit:deals": "tsx scripts/audit-deal-display.ts",
+    "audit:ops": "node --import tsx/esm scripts/operational-audit.ts",
+    "monitor:quality": "node --import tsx/esm scripts/monitor-quality.ts",
+    "test:links": "node scripts/test-store-links.mjs",
+    "test:intent": "node scripts/test-intent-switch.mjs",
     "postinstall": "prisma generate"
   },
   "prisma": {
@@ -25,7 +56,9 @@
     "next": "16.2.6",
     "paapi5-nodejs-sdk": "^1.1.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "server-only": "^0.0.1",
+    "undici": "^7.26.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

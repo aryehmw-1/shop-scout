@@ -1,7 +1,8 @@
+import { searchUsesOwnDbOnly } from "../own-db/config";
 import { getLivePricingProvider } from "./live-pricing-config";
 import type { CatalogItem } from "../retailers/catalog";
 import type { ShoppingIntent } from "../types";
-import { fetchAmazonLiveQuotes } from "./providers/amazon-paapi-server";
+import { fetchAmazonLiveQuotes } from "./providers/amazon-paapi";
 import { isAmazonPaapiConfigured } from "./providers/amazon-paapi-config";
 import { fetchCachedLiveQuotesForItem } from "./providers/cached-quotes";
 import type { LiveQuote } from "./providers/live-quote";
@@ -38,21 +39,30 @@ async function fetchCachedQuotes(
   return { quotes, origin: quotes.length ? "cache" : null };
 }
 
+export interface FetchLiveQuotesOptions {
+  /** Daily job only — allow Amazon PA-API. Searches use own DB by default. */
+  allowLiveRetailerApis?: boolean;
+}
+
 /**
- * Live prices: Amazon PA-API (when configured) + optional DB cache.
- * No SerpAPI / Google Shopping.
+ * Read prices from Shop Scout's own DB. Live retailer APIs run once per day in the daily index job.
  */
 export async function fetchLiveQuotes(
   intent: ShoppingIntent,
   item: CatalogItem,
+  options: FetchLiveQuotesOptions = {},
 ): Promise<FetchedLiveQuotes> {
+  const allowLive =
+    options.allowLiveRetailerApis === true ||
+    (!searchUsesOwnDbOnly() && isAmazonPaapiConfigured());
+
   const amazonPromise =
-    isAmazonPaapiConfigured() ?
+    allowLive ?
       fetchAmazonLiveQuotes(intent, item).catch((e) => {
         console.error("[fetch-live-quotes] Amazon PA-API", e);
         return [] as LiveQuote[];
       })
-    : Promise.resolve([]);
+    : Promise.resolve([] as LiveQuote[]);
 
   const [amazonQuotes, cached] = await Promise.all([
     amazonPromise,
@@ -71,8 +81,17 @@ export async function fetchLiveQuotes(
 
 export function priceSourceForLiveOrigin(
   origin: LiveQuoteOrigin,
-): "connector_api" | "cached_quote" | "nightly_index" | null {
+  quotes: LiveQuote[] = [],
+): import("./types").PriceSource | null {
   if (origin === "amazon_paapi") return "connector_api";
-  if (origin === "cache") return "cached_quote";
+  if (origin === "cache") {
+    if (
+      quotes.length > 0 &&
+      quotes.every((q) => q.priceSource === "scraped")
+    ) {
+      return "scraped";
+    }
+    return "cached_quote";
+  }
   return null;
 }

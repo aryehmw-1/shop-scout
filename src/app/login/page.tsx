@@ -40,7 +40,7 @@ export default function LoginPage() {
             Welcome back
           </h1>
           <p className="mt-2 text-center text-sm text-stone-500">
-            Sign in to save your address and deals
+            Sign in to save your ZIP and deals
           </p>
 
           <form onSubmit={submit} className="mt-8 space-y-4">

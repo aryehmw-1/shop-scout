@@ -1,3 +1,4 @@
+import { sizesCompatible } from "../catalog/size-normalize";
 import type { ClothingAgeGroup, ClothingGender, RetailerId, ShoppingIntent } from "../types";
 import { learningBoost } from "../learning/preference-learner";
 
@@ -88,6 +89,7 @@ function parseProductTypes(lower: string): string[] {
   const types: string[] = [];
   if (/hoodie|hoody|sweatshirt|pullover/.test(lower))
     types.push("hoodie", "hoody", "sweatshirt", "pullover", "fleece");
+  if (/sweaters?|cardigans?/.test(lower)) types.push("sweater", "cardigan", "knit");
   if (/jeans|denim/.test(lower)) types.push("jeans", "denim");
   if (/\bchinos?\b|khakis/.test(lower)) types.push("chinos", "khakis");
   if (/\bjoggers?\b|track\s+pants/.test(lower)) types.push("joggers", "jogger");
@@ -122,6 +124,10 @@ function parseProductTypes(lower: string): string[] {
   if (/\bbook\b|books|novel|fiction|nonfiction|hardcover|paperback|textbook/.test(lower))
     types.push("book", "books", "novel", "fiction");
   if (/mattress/.test(lower)) types.push("mattress");
+  if (/\bbed\s+frame\b|platform\s+bed|bedframe/.test(lower))
+    types.push("bed frame", "bedframe", "frame");
+  if (/\bbeds?\b|box\s+spring/.test(lower) && !/mattress/.test(lower))
+    types.push("bed", "beds", "bed frame");
   if (/sheets?|bedding|linen/.test(lower)) types.push("sheets", "bedding", "linen");
   if (/comforter|duvet|blanket/.test(lower)) types.push("comforter", "duvet", "blanket");
   if (/pillow/.test(lower)) types.push("pillow");
@@ -203,14 +209,74 @@ function itemMatchesBrand(blob: string, brand: string): boolean {
   return blob.includes(b) || blob.includes(first);
 }
 
+export function expandApparelProductTypes(types: string[]): string[] {
+  const out = new Set(types);
+  const pantsFamily =
+    types.some((t) =>
+      /pants|jogger|chino|trouser|slacks|sweatpant|cargo|legging/.test(t),
+    );
+  if (pantsFamily) {
+    for (const t of [
+      "pants",
+      "joggers",
+      "jogger",
+      "chinos",
+      "chino",
+      "trousers",
+      "slacks",
+      "sweatpants",
+      "leggings",
+    ]) {
+      out.add(t);
+    }
+  }
+  return [...out];
+}
+
+function typesShareToken(a: string[], b: string[]): boolean {
+  const setA = new Set(expandApparelProductTypes(a));
+  const setB = new Set(expandApparelProductTypes(b));
+  for (const x of setA) {
+    for (const y of setB) {
+      if (x === y || (x.length > 3 && y.length > 3 && (x.includes(y) || y.includes(x)))) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/** True when a follow-up narrows the same product (e.g. chinos → joggers), not a new category. */
+export function areProductTypesCompatible(
+  previousTypes: string[],
+  nextTypes: string[],
+): boolean {
+  if (!previousTypes.length || !nextTypes.length) return true;
+
+  const prevMattress = previousTypes.includes("mattress");
+  const nextMattress = nextTypes.includes("mattress");
+  const prevBedFrame = previousTypes.some((t) => /bed frame|bedframe|frame/.test(t));
+  const nextBedFrame = nextTypes.some((t) => /bed frame|bedframe|frame/.test(t));
+  const prevBed =
+    previousTypes.some((t) => /\bbeds?\b/.test(t)) && !prevMattress;
+  const nextBed = nextTypes.some((t) => /\bbeds?\b/.test(t)) && !nextMattress;
+
+  if ((prevMattress && (nextBed || nextBedFrame)) || (nextMattress && (prevBed || prevBedFrame))) {
+    return false;
+  }
+
+  return typesShareToken(previousTypes, nextTypes);
+}
+
 function itemMatchesProductTypesStrong(
   item: { title: string; keywords: string[] },
   types: string[],
 ): boolean {
   if (types.length === 0) return true;
+  const expanded = expandApparelProductTypes(types);
   const title = item.title.toLowerCase();
   const kw = item.keywords.map((k) => k.toLowerCase());
-  return types.some(
+  return expanded.some(
     (t) =>
       title.includes(t) ||
       kw.some((k) => k === t || k.includes(t) || t.includes(k)),
@@ -218,11 +284,13 @@ function itemMatchesProductTypesStrong(
 }
 
 export function tokenizeQuery(query: string): string[] {
-  return query
+  const normalized = query
     .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\b\d+\s*pack\b/g, " ")
+    .replace(/[^a-z0-9\s]/g, " ");
+  return normalized
     .split(/\s+/)
-    .filter((t) => t.length > 1 && !STOP_WORDS.has(t));
+    .filter((t) => t.length > 1 && !STOP_WORDS.has(t) && t !== "pack");
 }
 
 export function scoreCatalogText(
@@ -239,6 +307,9 @@ export function scoreCatalogText(
   for (const token of tokens) {
     if (hay.includes(token)) score += 12;
     else if (token.length > 3 && hay.includes(token.slice(0, -1))) score += 6;
+    else if (token === "beds" && hay.includes("bed")) score += 10;
+    else if (token === "bed" && hay.includes("beds")) score += 10;
+    else if (token === "mattresses" && hay.includes("mattress")) score += 10;
   }
 
   return score;
@@ -246,7 +317,8 @@ export function scoreCatalogText(
 
 function blobMatchesProductTypes(blob: string, types: string[]): boolean {
   if (types.length === 0) return true;
-  return types.some((t) => blob.includes(t));
+  const expanded = expandApparelProductTypes(types);
+  return expanded.some((t) => blob.includes(t));
 }
 
 function blobMatchesColors(blob: string, colors: string[]): boolean {
@@ -418,19 +490,13 @@ export function scoreItem<T extends {
   score += attributeAdjustments(blob, item.category, attrs);
 
   if (intent.size) {
-    const want = intent.size.toLowerCase();
-    const sizeBlob = item.size.toLowerCase();
-    const sizeToken = want.replace(/^size\s+/, "");
-    if (
-      sizeBlob.includes(want) ||
-      sizeBlob.includes(sizeToken) ||
-      want.includes(sizeBlob.replace(/^men'?s\s+|^women'?s\s+/i, ""))
-    ) {
+    const want = intent.size;
+    if (sizesCompatible(want, item.size)) {
       score += 22;
     } else if (
       /\b(x?s|x?l|small|medium|large|xx?l|\d{2}x\d{2})\b/i.test(want) &&
-      /\b(x?s|x?l|small|medium|large|xx?l|\d{2}x\d{2})\b/i.test(sizeBlob) &&
-      !sizeBlob.includes(sizeToken)
+      /\b(x?s|x?l|small|medium|large|xx?l|\d{2}x\d{2})\b/i.test(item.size) &&
+      !sizesCompatible(want, item.size)
     ) {
       return 0;
     }

@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import type { ProductOffer, PublicUser, UserAddress } from "@/lib/types";
+import { zipOnlyAddress } from "@/lib/location/zip-only";
 import { savePreferences } from "@/lib/storage";
 
 interface AuthContextValue {
@@ -20,9 +21,6 @@ interface AuthContextValue {
     password: string;
     name: string;
     zipCode: string;
-    street?: string;
-    city?: string;
-    state?: string;
   }) => Promise<void>;
   logout: () => Promise<void>;
   updateAddress: (address: UserAddress) => Promise<void>;
@@ -81,9 +79,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     password: string;
     name: string;
     zipCode: string;
-    street?: string;
-    city?: string;
-    state?: string;
   }) => {
     const res = await fetch("/api/auth/signup", {
       method: "POST",
@@ -93,13 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         email: signupData.email,
         password: signupData.password,
         name: signupData.name,
-        address: {
-          zipCode: signupData.zipCode,
-          street: signupData.street,
-          city: signupData.city,
-          state: signupData.state,
-          label: "Home",
-        },
+        address: zipOnlyAddress(signupData.zipCode),
       }),
     });
     const data = await res.json();
@@ -114,11 +103,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateAddress = async (address: UserAddress) => {
+    const zipOnly = zipOnlyAddress(address.zipCode, address.label);
     const res = await fetch("/api/auth/profile", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
-      body: JSON.stringify({ address }),
+      body: JSON.stringify({ address: zipOnly }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error ?? "Failed to save address");

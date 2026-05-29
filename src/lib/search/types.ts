@@ -11,6 +11,8 @@ export type PriceSource =
   | "cached_quote"
   | "connector_api"
   | "nightly_index"
+  | "daily_index"
+  | "historical_model"
   | "scraped";
 
 export interface SearchContext {
@@ -18,6 +20,9 @@ export interface SearchContext {
   sessionId?: string;
   skipCache?: boolean;
   skipPersist?: boolean;
+  skipImages?: boolean;
+  /** Skip historical price model (faster bulk tests). */
+  skipHistory?: boolean;
 }
 
 export interface ResolvedProduct {
@@ -53,6 +58,13 @@ export interface PriceConnector {
 
 export interface SearchServiceOptions extends SearchContext {
   mode?: "search" | "compare" | "link_similar";
+  /** Skip Openverse / image API calls (faster tests and nightly jobs). */
+  skipImages?: boolean;
+  skipHistory?: boolean;
+  /** Return cached/DB verified offers immediately — skip live retailer scrape. */
+  fastOnly?: boolean;
+  /** Skip live scrape but run deal scoring + display prep. */
+  enrichOnly?: boolean;
 }
 
 export type { ProductOffer, ProductSearchResults, ShoppingIntent, RetailerId };

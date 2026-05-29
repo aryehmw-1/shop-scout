@@ -27,28 +27,75 @@ model User {
   @@index([email])
 }
 
+/// Canonical commerce identity (one row per catalog product).
 model Product {
-  id           String       @id @default(cuid())
-  catalogId    String       @unique
-  slug         String       @unique
-  title        String
-  brand        String
-  upc          String?
-  category     String
-  sizeLabel    String       @default("1 unit")
-  basePriceUsd Float
-  unitLabel    String       @default("each")
-  imageUrl     String?
-  keywordsJson String       @default("[]")
-  organic      Boolean      @default(false)
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  aliases      ProductAlias[]
-  priceQuotes  PriceQuote[]
+  id                     String       @id @default(cuid())
+  catalogId              String       @unique
+  slug                   String       @unique
+  title                  String
+  brand                  String
+  brandCanonical         String?
+  brandRaw               String?
+  upc                    String?
+  gtin                   String?
+  mpn                    String?
+  manufacturerPartNumber String?
+  category               String
+  sizeLabel              String       @default("1 unit")
+  basePriceUsd           Float
+  unitLabel              String       @default("each")
+  imageUrl               String?
+  keywordsJson           String       @default("[]")
+  organic                Boolean      @default(false)
+  popularityScore        Float        @default(0)
+  searchFrequency        Int          @default(0)
+  clickFrequency         Int          @default(0)
+  refreshPriority        Int          @default(50)
+  embeddingJson          String?
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+  aliases                ProductAlias[]
+  variantGroups          VariantGroup[]
+  variants               ProductVariant[]
+  priceQuotes            PriceQuote[]
+  priceHistory           PriceHistorySnapshot[]
+  priceObservations      PriceHistory[]
+  priceStats             ProductRetailerPriceStats[]
+  identifiers            ProductIdentifier[]
+  retailerIdentities     RetailerProductIdentity[]
 
   @@index([category])
   @@index([upc])
+  @@index([gtin])
   @@index([brand])
+  @@index([brandCanonical])
+  @@index([refreshPriority])
+}
+
+model BrandCanonical {
+  id          String   @id @default(cuid())
+  canonical   String   @unique
+  aliasesJson String   @default("[]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ProductIdentifier {
+  id             String   @id @default(cuid())
+  productId      String?
+  product        Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantGroupId String?
+  variantId      String?
+  type           String
+  value          String
+  source         String   @default("catalog")
+  confidence     Float    @default(1)
+  createdAt      DateTime @default(now())
+
+  @@unique([type, value])
+  @@index([productId])
+  @@index([variantGroupId])
+  @@index([variantId])
 }
 
 model ProductAlias {
@@ -62,32 +109,213 @@ model ProductAlias {
   @@index([alias])
 }
 
+/// Visual variant (color/style) — one canonical image + retailer URL map for all sizes.
+model VariantGroup {
+  id                     String           @id @default(cuid())
+  productId              String
+  product                Product          @relation(fields: [productId], references: [id], onDelete: Cascade)
+  catalogGroupId         String
+  color                  String?
+  colorNormalized        String?
+  styleKey               String?
+  upc                    String?
+  gtin                   String?
+  mpn                    String?
+  manufacturerPartNumber String?
+  canonicalImageUrl      String?
+  retailerImageUrlsJson  String           @default("{}")
+  imageSource            String?
+  imageConfidence        Float?
+  imageQualityJson       String           @default("{}")
+  matchConfidence        Float?
+  identityConfidence     Float?
+  attributeConfidence    Float?
+  confidenceReasonsJson  String           @default("[]")
+  lastVerifiedAt         DateTime?
+  attributesJson         String           @default("{}")
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+  sizes                  ProductVariant[]
+
+  @@unique([productId, catalogGroupId])
+  @@index([colorNormalized])
+  @@index([lastVerifiedAt])
+  @@index([upc])
+  @@index([gtin])
+}
+
+/// Size SKU under a VariantGroup — inherits group images unless sizeSpecificImageUrl set.
+model ProductVariant {
+  id                     String        @id @default(cuid())
+  productId              String
+  product                Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantGroupId         String
+  variantGroup           VariantGroup    @relation(fields: [variantGroupId], references: [id], onDelete: Cascade)
+  catalogVariantId       String
+  sizeLabel              String
+  sizeNormalized         String
+  sizeKind               String        @default("unknown")
+  upc                    String?
+  gtin                   String?
+  mpn                    String?
+  manufacturerPartNumber String?
+  sizeSpecificImageUrl   String?
+  keywordsJson           String        @default("[]")
+  basePriceUsd           Float?
+  isDefault              Boolean       @default(false)
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+
+  @@unique([productId, catalogVariantId])
+  @@index([variantGroupId])
+  @@index([sizeNormalized])
+  @@index([gtin])
+  @@index([upc])
+}
+
 /// One row = one retailer offer for a product (nightly index, Amazon API, or live search).
 /// Photos stored as HTTPS URLs only — not binary blobs (keeps DB small and fast).
+/// Retailer offer row (listing + price) linked to canonical product identity.
 model PriceQuote {
-  id              String   @id @default(cuid())
-  productId       String
-  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  retailerId      String
-  channel         String
-  storeTitle      String?
-  imageUrl        String?
-  priceUsd        Float
-  wasPriceUsd     Float?
-  landedCostUsd   Float
-  unitPriceUsd    Float
-  inStock         Boolean  @default(true)
-  matchConfidence Float    @default(0.9)
-  source          String
-  productUrl      String
-  affiliateUrl    String
-  fetchedAt       DateTime @default(now())
-  expiresAt       DateTime
+  id                    String   @id @default(cuid())
+  productId             String
+  product               Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantGroupId        String?
+  variantId             String?
+  retailerId            String
+  channel               String
+  storeTitle            String?
+  imageUrl              String?
+  priceUsd              Float
+  wasPriceUsd           Float?
+  landedCostUsd         Float
+  unitPriceUsd          Float
+  inStock               Boolean  @default(true)
+  matchConfidence       Float    @default(0.9)
+  identityConfidence    Float?
+  attributeConfidence   Float?
+  imageConfidence       Float?
+  confidenceReasonsJson String   @default("[]")
+  source                String
+  productUrl            String
+  affiliateUrl          String
+  fetchedAt             DateTime @default(now())
+  expiresAt             DateTime
 
   @@index([productId, retailerId, channel])
   @@index([productId, expiresAt])
+  @@index([variantGroupId])
   @@index([source, expiresAt])
   @@index([retailerId, fetchedAt])
+}
+
+/// Retailer-scoped listing identity before / during canonical linkage.
+model RetailerProductIdentity {
+  id                     String   @id @default(cuid())
+  retailerId             String
+  externalSku            String?
+  retailerBrandRaw       String?
+  storeTitle             String
+  productUrl             String
+  upc                    String?
+  gtin                   String?
+  mpn                    String?
+  manufacturerPartNumber String?
+  productId              String?
+  product                Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variantGroupId         String?
+  variantId              String?
+  rawAttributesJson      String   @default("{}")
+  lastSeenAt             DateTime @default(now())
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@unique([retailerId, productUrl])
+  @@index([productId])
+  @@index([upc])
+  @@index([gtin])
+  @@index([retailerId, lastSeenAt])
+}
+
+/// One observation per product + store per day — rollup-friendly daily view.
+model PriceHistorySnapshot {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  retailerId String
+  channel    String   @default("online")
+  priceUsd   Float
+  storeTitle String?
+  imageUrl   String?
+  source     String
+  observedAt DateTime @default(now())
+
+  @@index([productId, retailerId, observedAt])
+  @@index([retailerId, observedAt])
+  @@index([observedAt])
+}
+
+/// Append-only price observations (never overwrite — supports trends & volatility).
+model PriceHistory {
+  id                    String   @id @default(cuid())
+  productId             String
+  product               Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantGroupId        String?
+  variantId             String?
+  retailerId            String
+  channel               String   @default("online")
+  observedPrice         Float
+  availability          Boolean  @default(true)
+  source                String
+  storeTitle            String?
+  imageUrl              String?
+  matchConfidence       Float?
+  identityConfidence    Float?
+  confidenceReasonsJson String?
+  observedAt            DateTime @default(now())
+
+  @@index([productId, retailerId, observedAt])
+  @@index([variantGroupId, observedAt])
+  @@index([variantId, observedAt])
+  @@index([observedAt])
+}
+
+/// Rolling price intelligence per product × retailer (verified offers only).
+model ProductRetailerPriceStats {
+  id                   String    @id @default(cuid())
+  productId            String
+  product              Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  retailerId           String
+  channel              String    @default("online")
+  firstSeenPriceUsd    Float?
+  firstSeenAt          DateTime?
+  lowestPriceUsd       Float?
+  lowestPriceAt        DateTime?
+  movingAvgPriceUsd    Float?
+  lastVerifiedPriceUsd Float?
+  lastVerifiedAt       DateTime?
+  verificationCount    Int       @default(0)
+  updatedAt            DateTime  @updatedAt
+
+  @@unique([productId, retailerId, channel])
+  @@index([productId])
+  @@index([retailerId])
+}
+
+/// Persistent retailer scrape/parser quality (used in deal ranking).
+model RetailerQualityMetric {
+  id                 String   @id @default(cuid())
+  retailerId         String   @unique
+  fetchAttempts      Int      @default(0)
+  fetchSuccesses     Int      @default(0)
+  parserAttempts     Int      @default(0)
+  parserSuccesses    Int      @default(0)
+  offersRejected     Int      @default(0)
+  offersAccepted     Int      @default(0)
+  avgMatchConfidence Float    @default(0)
+  avgFetchLatencyMs  Float    @default(0)
+  trustScore         Float    @default(0.5)
+  updatedAt          DateTime @updatedAt
 }
 
 model SearchSession {

@@ -1,4 +1,5 @@
 import { isAmazonPaapiConfigured } from "./providers/amazon-paapi-config";
+import { searchUsesOwnDbOnly } from "../own-db/config";
 
 /** How to reuse saved prices from SQLite. Amazon PA-API is always attempted separately when configured. */
 export type LivePricingProvider = "off" | "cache";
@@ -15,14 +16,18 @@ export function isLivePricingEnabled(): boolean {
 
 export function livePricingStatusMessage(): string {
   const parts: string[] = [];
-  if (isAmazonPaapiConfigured()) {
-    parts.push("Amazon live prices and photos via PA-API.");
+  if (searchUsesOwnDbOnly()) {
+    parts.push(
+      "Prices and photos come from Shop Scout’s own database (updated once per day).",
+    );
+  } else if (isAmazonPaapiConfigured()) {
+    parts.push("Amazon live prices via PA-API on each search.");
   }
   if (getLivePricingProvider() === "cache") {
-    parts.push("Other stores: recent saved prices when available.");
-  } else {
-    parts.push("Other stores: estimated catalog prices — open the store link to verify.");
+    parts.push("Daytime searches read saved daily checks — no constant retailer polling.");
   }
-  parts.push("Photos: catalog, Open Food Facts (grocery), Openverse fallback; Amazon image on Amazon rows.");
+  parts.push(
+    "After ~30 daily checks, stores show a rolling average instead of catalog estimates.",
+  );
   return parts.join(" ");
 }

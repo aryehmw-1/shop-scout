@@ -1,0 +1,6 @@
+# catalog_id,retailer_id,channel,price_usd,observed_at,source
+catalog_id,retailer_id,channel,price_usd,observed_at,source
+spinach-og-10,walmart,online,2.49,2023-06-01T12:00:00Z,import
+spinach-og-10,walmart,online,2.59,2023-12-01T12:00:00Z,import
+spinach-og-10,amazon,online,3.19,2024-01-15T12:00:00Z,keepa_export
+spinach-og-10,target,online,2.79,2024-06-01T12:00:00Z,nightly_index

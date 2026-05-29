@@ -1,3 +1,4 @@
+import { bumpProductSearchFrequency } from "./identity-store";
 import { prisma } from "./prisma";
 import type { ProductSearchResults, ShoppingIntent } from "../types";
 import type { ResolvedProduct, SearchExecutionMeta } from "../search/types";
@@ -43,6 +44,10 @@ export async function persistSearchSession(input: {
     },
   });
 
+  if (input.resolved.catalogId) {
+    await bumpProductSearchFrequency(input.resolved.catalogId);
+  }
+
   return session.id;
 }
 
@@ -57,7 +62,22 @@ export async function persistPriceQuotes(
 
   const now = new Date();
   const expiresAt = new Date(now.getTime() + 30 * 60 * 1000);
-  const rows = [...offers.local, ...offers.online].slice(0, 80);
+  const rows = [...offers.local, ...offers.online]
+    .filter(
+      (o) =>
+        o.priceSource === "scraped" || o.priceSource === "connector_api",
+    )
+    .slice(0, 80);
+
+  if (!rows.length) return;
+
+  await prisma.priceQuote.deleteMany({
+    where: {
+      productId: product.id,
+      retailerId: { in: rows.map((r) => r.retailer) },
+      source: { in: ["scraped", "connector_api", "catalog_model", "catalog_estimate"] },
+    },
+  });
 
   await prisma.priceQuote.createMany({
     data: rows.map((o) => ({
@@ -72,7 +92,11 @@ export async function persistPriceQuotes(
       unitPriceUsd: o.unitPrice,
       inStock: o.inStock,
       matchConfidence: o.matchConfidence,
-      source: o.priceSource ?? "catalog_model",
+      identityConfidence: o.identityConfidence ?? null,
+      attributeConfidence: o.attributeConfidence ?? null,
+      imageConfidence: o.imageConfidence ?? null,
+      confidenceReasonsJson: JSON.stringify(o.confidenceReasons ?? []),
+      source: o.priceSource === "connector_api" ? "connector_api" : "scraped",
       productUrl: o.productUrl,
       affiliateUrl: o.affiliateUrl,
       fetchedAt: o.priceAsOf ? new Date(o.priceAsOf) : now,

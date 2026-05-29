@@ -15,7 +15,7 @@ export function extractIntentFromMessage(
   let category: string | undefined;
   if (/dress\s+shoe|oxford|loafer|sneaker|shoe|boot|sandal|cleat|footwear|heel/.test(lower))
     category = "shoes";
-  else if (/shirt|pants|jeans|chinos|hoodie|jacket|clothing|apparel|fashion|polo|shorts/.test(lower))
+  else if (/shirt|pants|jeans|joggers?|chinos|hoodie|jacket|clothing|apparel|fashion|polo|shorts|leggings/.test(lower))
     category = "clothing";
   else if (/\bdress\b/.test(lower) && !/shoe|pants/.test(lower)) category = "clothing";
   else if (/sport|athletic|gym|yoga|basketball|football|soccer|fitness/.test(lower))
@@ -29,7 +29,7 @@ export function extractIntentFromMessage(
   else if (/pasta|rice|cereal|coffee|snack|chips|soda|juice/.test(lower)) category = "pantry";
   else if (/hardcover|paperback|novel|fiction|nonfiction|textbook|\bbook\b|books\b/.test(lower))
     category = "books";
-  else if (/mattress|pillow|sheets?|comforter|duvet|bedding|memory\s+foam/.test(lower))
+  else if (/mattress|pillow|sheets?|comforter|duvet|bedding|memory\s+foam|\bbeds?\b|bed\s+frame|box\s+spring/.test(lower))
     category = "bedding";
   else if (/sofa|couch|furniture|lamp|rug|home\s+decor/.test(lower)) category = "home";
 

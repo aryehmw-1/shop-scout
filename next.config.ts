@@ -1,9 +1,20 @@
 import type { NextConfig } from "next";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+/**
+ * Pin Turbopack root to this app directory (where package-lock + node_modules/next live).
+ * Using process.cwd() here caused "Next.js package not found" + endless HMR restart loops
+ * when the dev server was started from a different working directory.
+ */
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["paapi5-nodejs-sdk"],
+  /** Removes the black floating Next.js dev indicator (lower-left in dev). */
+  devIndicators: false,
   turbopack: {
-    root: process.cwd(),
+    root: projectRoot,
   },
   images: {
     remotePatterns: [

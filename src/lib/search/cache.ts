@@ -7,6 +7,7 @@ interface CacheEntry {
 }
 
 const DEFAULT_TTL_MS = 15 * 60 * 1000;
+const VERIFIED_TTL_MS = 60 * 60 * 1000;
 const MAX_ENTRIES = 500;
 
 const store = new Map<string, CacheEntry>();
@@ -55,9 +56,13 @@ export function setCachedSearch(
     const oldest = store.keys().next().value;
     if (oldest) store.delete(oldest);
   }
+  const hasVerified = results.online.some(
+    (o) => o.priceSource === "scraped" || o.priceSource === "connector_api",
+  );
+  const ttl = hasVerified ? Math.max(ttlMs, VERIFIED_TTL_MS) : ttlMs;
   store.set(stableIntentKey(intent, mode), {
     results,
-    expiresAt: Date.now() + ttlMs,
+    expiresAt: Date.now() + ttl,
   });
 }
 

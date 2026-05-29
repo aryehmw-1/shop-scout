@@ -48,6 +48,11 @@ export function parseSizeFromText(text: string): string | undefined {
   );
   if (labeled) return normalizeSizeToken(labeled[1]);
 
+  const sizeBeforeNoun = lower.match(
+    /\b(xxlarge|xxlarge|xlarge|extra large|large|medium|small|xx?s|xx?l|xl)\s+(?:pants?|jeans|joggers?|chinos?|shirt|hoodie|shoes?|sneakers?|boots?|dress|shorts|jacket|top|sweater|coat|leggings|sweatpants?)\b/i,
+  );
+  if (sizeBeforeNoun) return normalizeSizeToken(sizeBeforeNoun[1]);
+
   const inSize = lower.match(
     /\bin\s+(?:a\s+)?(xx?s|xx?l|x?s|x?l|small|medium|large|xlarge|extra\s+large|\d{1,2}x\d{1,2})\b/i,
   );

@@ -14,6 +14,10 @@ import { runSearchWithLivePricing } from "./live-pricing";
 import { mergeLivePrices } from "./merge-live-prices";
 import { attachMatchedProduct } from "./matched-product";
 import { enrichSearchResultsWithImages } from "./product-image-lookup";
+import { recordSnapshotsOnSearch } from "../own-db/config";
+import { finalizePricesWithHistory, shouldUseHistoricalModel } from "../pricing/apply-pricing-pipeline";
+import { enrichOffersAtSearch } from "../offers/enrich-offers-at-search";
+import { finalizeResultsForUser } from "../pricing/deal-intelligence";
 import { finalizeSearchPrices } from "./price-truth";
 import {
   fetchLiveQuotes,
@@ -38,6 +42,91 @@ import type {
  * Live retailer APIs plug in as additional PriceConnector implementations.
  */
 export class SearchService {
+  private async finishSearchResults(
+    results: ProductSearchResults,
+    item: CatalogItem,
+    fullIntent: ShoppingIntent,
+    options: SearchServiceOptions,
+  ): Promise<ProductSearchResults> {
+    let out = finalizeSearchPrices(results);
+
+    if (!options.fastOnly) {
+      out = await enrichOffersAtSearch(out, item, fullIntent);
+      out = finalizeSearchPrices(out);
+    } else {
+      out = {
+        ...out,
+        enrichmentPending: true,
+        enrichmentCatalogId: item.id,
+        resolvedQuery: fullIntent.query,
+      };
+    }
+
+    out = await finalizeResultsForUser(out, item, fullIntent);
+
+    if (options.fastOnly) {
+      out = {
+        ...out,
+        enrichmentPending: out.online.length === 0 ? true : out.enrichmentPending,
+        enrichmentCatalogId: item.id,
+      };
+    } else {
+      out = { ...out, enrichmentPending: false };
+    }
+
+    return out;
+  }
+
+  /** Background pass: live retailer scrape + deal refresh. */
+  async enrichSearch(
+    intent: ShoppingIntent,
+    catalogId: string,
+    options: SearchServiceOptions = {},
+  ): Promise<EnrichedSearchResults> {
+    const mode = options.mode ?? "search";
+    const zip = intent.zipCode ?? "78701";
+    const fullIntent = { ...intent, query: intent.query || catalogId, zipCode: zip };
+    const started = Date.now();
+
+    const cached = getCachedSearch(fullIntent, mode);
+    const { item, resolved } = resolvePrimaryProduct(fullIntent);
+    const base =
+      cached ??
+      attachMatchedProduct(
+        (await runSearchWithLivePricing(fullIntent, item)).results,
+        item,
+        fullIntent.query,
+      );
+
+    let results = options.skipImages ?
+      base
+    : await enrichSearchResultsWithImages(base, item, fullIntent);
+
+    if (shouldUseHistoricalModel(fullIntent, options)) {
+      results = await finalizePricesWithHistory(item.id, results, {
+        recordSnapshot: !options.skipPersist && recordSnapshotsOnSearch(),
+        snapshotSource: "search_enrich",
+      });
+    }
+
+    results = await enrichOffersAtSearch(results, item, fullIntent);
+    results = finalizeSearchPrices(results);
+    results = await finalizeResultsForUser(results, item, fullIntent);
+    results = { ...results, enrichmentPending: false, enrichmentCatalogId: catalogId };
+
+    if (!options.skipCache) {
+      setCachedSearch(fullIntent, mode, results);
+    }
+
+    return attachMeta(results, {
+      resolved,
+      durationMs: Date.now() - started,
+      cacheHit: Boolean(cached),
+      priceSource: "scraped",
+      quoteCount: results.online.length,
+    });
+  }
+
   async search(
     intent: ShoppingIntent,
     options: SearchServiceOptions = {},
@@ -52,13 +141,26 @@ export class SearchService {
       if (cached) {
         const { item, resolved } = resolvePrimaryProduct(fullIntent);
         const withMatch = attachMatchedProduct(cached, item, fullIntent.query);
-        let enriched = await enrichSearchResultsWithImages(
-          withMatch,
-          item,
-          fullIntent,
-        );
+        let enriched = options.skipImages ?
+          withMatch
+        : await enrichSearchResultsWithImages(withMatch, item, fullIntent);
+        if (shouldUseHistoricalModel(fullIntent, options)) {
+          enriched = await finalizePricesWithHistory(item.id, enriched);
+        }
         enriched = finalizeSearchPrices(enriched);
-        const hasLive = [...enriched.local, ...enriched.online].some((o) =>
+        if (!options.fastOnly) {
+          enriched = await enrichOffersAtSearch(enriched, item, fullIntent);
+          enriched = finalizeSearchPrices(enriched);
+        }
+        enriched = await finalizeResultsForUser(enriched, item, fullIntent);
+        if (options.fastOnly) {
+          enriched = {
+            ...enriched,
+            enrichmentPending: true,
+            enrichmentCatalogId: item.id,
+          };
+        }
+        const hasLive = enriched.online.some((o) =>
           o.priceSource === "connector_api" || o.priceSource === "cached_quote",
         );
         return attachMeta(enriched, {
@@ -66,7 +168,7 @@ export class SearchService {
           durationMs: Date.now() - started,
           cacheHit: true,
           priceSource: hasLive ? "connector_api" : "cached_quote",
-          quoteCount: enriched.local.length + enriched.online.length,
+          quoteCount: enriched.online.length,
         });
       }
     }
@@ -74,12 +176,21 @@ export class SearchService {
     const { item, resolved } = resolvePrimaryProduct(fullIntent);
     const { results: rawResults, priceSource, liveQuoteCount } =
       await runSearchWithLivePricing(fullIntent, item);
-    let results = await enrichSearchResultsWithImages(
-      rawResults,
-      item,
-      fullIntent,
-    );
+    let results =
+      options.skipImages ?
+        rawResults
+      : await enrichSearchResultsWithImages(rawResults, item, fullIntent);
+
+    if (shouldUseHistoricalModel(fullIntent, options)) {
+      results = await finalizePricesWithHistory(item.id, results, {
+        recordSnapshot:
+          !options.skipPersist && recordSnapshotsOnSearch(),
+        snapshotSource: priceSource === "connector_api" ? "live_api" : "search",
+      });
+    }
+
     results = finalizeSearchPrices(results);
+    results = await this.finishSearchResults(results, item, fullIntent, options);
 
     if (!options.skipCache) {
       setCachedSearch(fullIntent, mode, results);
@@ -115,7 +226,7 @@ export class SearchService {
       durationMs,
       cacheHit: false,
       priceSource,
-      quoteCount: results.local.length + results.online.length,
+      quoteCount: results.online.length,
       liveQuoteCount,
     });
   }
@@ -137,7 +248,8 @@ export class SearchService {
     try {
       const { quotes, origin } = await fetchLiveQuotes(intent, item);
       if (quotes.length > 0) {
-        const livePriceSource = priceSourceForLiveOrigin(origin) ?? "connector_api";
+        const livePriceSource =
+          priceSourceForLiveOrigin(origin, quotes) ?? "connector_api";
         const merged = mergeLivePrices(results, quotes, item, intent, livePriceSource);
         results = attachMatchedProduct(merged.results, item, intent.query);
         liveQuoteCount = merged.liveCount;
@@ -147,8 +259,23 @@ export class SearchService {
       console.error("[SearchService] compare live pricing failed", e);
     }
 
-    results = await enrichSearchResultsWithImages(results, item, intent);
+    results =
+      options.skipImages ?
+        results
+      : await enrichSearchResultsWithImages(results, item, intent);
+
+    if (shouldUseHistoricalModel(intent, options)) {
+      results = await finalizePricesWithHistory(item.id, results, {
+        recordSnapshot:
+          !options.skipPersist && recordSnapshotsOnSearch(),
+        snapshotSource: "compare",
+      });
+    }
+
     results = finalizeSearchPrices(results);
+    results = await enrichOffersAtSearch(results, item, intent);
+    results = finalizeSearchPrices(results);
+    results = await finalizeResultsForUser(results, item, intent);
 
     const resolvedProduct = {
       catalogId: item.id,
@@ -164,7 +291,7 @@ export class SearchService {
       durationMs,
       cacheHit: false,
       priceSource,
-      quoteCount: results.local.length + results.online.length,
+      quoteCount: results.online.length,
       liveQuoteCount,
     };
 
@@ -201,7 +328,7 @@ export class SearchService {
     options: SearchContext = {},
   ): Promise<EnrichedSearchResults & { referenceProduct?: ReferenceProduct }> {
     const started = Date.now();
-    const results = await linkSimilarViaCatalog(parsed, intent);
+    let results = await linkSimilarViaCatalog(parsed, intent);
     const durationMs = Date.now() - started;
 
     const resolvedProduct = {
@@ -217,8 +344,26 @@ export class SearchService {
       durationMs,
       cacheHit: false,
       priceSource: "catalog_model",
-      quoteCount: results.local.length + results.online.length,
+      quoteCount: results.online.length,
     };
+
+    const linkItem: CatalogItem = {
+      id: parsed.catalogId ?? "link",
+      title: parsed.guessedTitle,
+      brand: "",
+      size: "",
+      upc: "",
+      imageUrl: "",
+      category: parsed.category ?? "general",
+      keywords: [],
+      organic: false,
+      basePrice: parsed.referencePrice,
+      unitLabel: "each",
+      slug: parsed.catalogId ?? "link",
+    };
+    results = await enrichOffersAtSearch(results, linkItem, intent);
+    results = finalizeSearchPrices(results);
+    results = await finalizeResultsForUser(results, linkItem, intent);
 
     if (!options.skipPersist) {
       try {

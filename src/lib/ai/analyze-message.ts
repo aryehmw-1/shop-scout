@@ -4,6 +4,10 @@ import { findBroadKeywordRule } from "./shopping-keywords";
 import { parseSizeFromText } from "../shopping/sizes";
 import type { ClarificationState } from "../types";
 import { extractIntentFromMessage } from "./extract-intent";
+import {
+  mergeSearchIntent,
+  shouldMergeWithPreviousSearch,
+} from "../shopping/intent-merge";
 import type { SessionState, ShoppingIntent } from "../types";
 
 export interface MessageAnalysis {
@@ -176,14 +180,21 @@ export async function analyzeShoppingMessage(
   session: SessionState,
   history?: ChatHistoryMessage[],
 ): Promise<MessageAnalysis> {
+  if (shouldMergeWithPreviousSearch(message, session)) {
+    return {
+      intent: mergeSearchIntent(session.intent, message),
+      needsClarification: false,
+    };
+  }
+
   const rulesIntent = extractIntentFromMessage(message, session.intent?.zipCode);
-  const mergedRules = {
-    ...session.intent,
+  const mergedRules: Partial<ShoppingIntent> = {
+    zipCode: session.intent?.zipCode,
     ...rulesIntent,
     size:
       rulesIntent.size ??
       parseSizeFromText(message) ??
-      session.intent?.size,
+      undefined,
   };
 
   const ruleClarify = detectClarificationNeeded(

@@ -4,29 +4,29 @@ import { SHOPPABLE_STORE_COUNT } from "@/lib/retailers/meta";
 
 export function Hero() {
   return (
-    <section className="homy-linen relative overflow-hidden px-6 pb-20 pt-10 lg:px-12 lg:pt-16 lg:pb-28">
+    <section className="relative isolate overflow-hidden px-4 pb-16 pt-8 sm:px-6 sm:pb-20 sm:pt-10 lg:px-12 lg:pb-24 lg:pt-16">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -right-24 top-0 h-[28rem] w-[28rem] rounded-full bg-orange-300/25 blur-3xl" />
         <div className="absolute -left-16 bottom-0 h-80 w-80 rounded-full bg-amber-200/40 blur-3xl" />
         <div className="absolute right-1/3 top-1/2 h-64 w-64 rounded-full bg-rose-200/25 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <div className="relative mx-auto grid max-w-6xl items-start gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
         <div>
           <span className="inline-flex items-center gap-2 rounded-full border border-orange-200/90 bg-cream-50/90 px-4 py-1.5 text-sm font-medium text-sage-800 shadow-sm backdrop-blur-sm">
             <Home size={14} className="text-sage-600" />
             Compare prices across {SHOPPABLE_STORE_COUNT} stores
           </span>
 
-          <h1 className="font-homy mt-6 text-4xl font-bold leading-[1.12] tracking-tight text-ink-900 md:text-5xl lg:text-[3.25rem]">
+          <h1 className="font-homy mt-6 text-3xl font-bold leading-tight tracking-tight text-ink-900 sm:text-4xl md:text-5xl lg:text-[3.25rem] lg:leading-[1.12]">
             Find the lowest price on{" "}
             <span className="text-gradient-hero">anything you buy</span>
           </h1>
 
           <p className="mt-5 max-w-lg text-lg leading-relaxed text-ink-600">
-            Pull up a chair — we&apos;ll check the stores for you. Groceries,
-            clothes, home, and kids — <strong className="text-ink-800">near you</strong>{" "}
-            and <strong className="text-ink-800">online</strong>, like a neighbor who
+            Pull up a chair — we&apos;ll check online stores for you. Groceries,
+            clothes, home, and kids — compare prices that{" "}
+            <strong className="text-ink-800">ship to your ZIP</strong>, like a neighbor who
             loves a good deal.
           </p>
 
@@ -54,14 +54,14 @@ export function Hero() {
           <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-500">
             <span className="inline-flex items-center gap-1.5">
               <MapPin size={14} className="text-sage-600" />
-              Local + online rows
+              Online prices · ZIP for shipping
             </span>
             <span className="text-ink-300">·</span>
             <span>No account required to try</span>
           </p>
         </div>
 
-        <div className="mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
+        <div className="mx-auto w-full max-w-md lg:max-w-none">
           <div className="glass-card rounded-3xl p-6">
             <p className="text-xs font-semibold uppercase tracking-wider text-ink-400">
               Live compare preview
@@ -71,9 +71,9 @@ export function Hero() {
             </p>
             <div className="mt-4 space-y-3">
               {[
-                { name: "DICK'S", price: "$74.99", tag: "Near you", best: true },
+                { name: "Amazon", price: "$74.99", tag: "Online", best: true },
                 { name: "Nike.com", price: "$89.97", tag: "Online", best: false },
-                { name: "Foot Locker", price: "$79.99", tag: "Near you", best: false },
+                { name: "Foot Locker", price: "$79.99", tag: "Online", best: false },
               ].map((row) => (
                 <div
                   key={row.name}

@@ -1,9 +1,7 @@
 import { buildAffiliateUrl } from "../affiliate";
-import {
-  productUrlMatchesRetailer,
-} from "../matching/url-parser";
 import { buildDirectProductUrl } from "./product-urls";
-import { buildFullSearchQuery } from "../shopping/intent-merge";
+import { shouldUseStoredProductUrl } from "./product-link-url";
+import { buildStoreSearchQuery } from "./store-search-query";
 import type { RetailerId, ShoppingIntent } from "../types";
 
 export interface OfferLinkInput {
@@ -24,13 +22,10 @@ export function buildOfferClickUrl(
   intent: ShoppingIntent,
   liveProductUrl?: string,
 ): { productUrl: string; affiliateUrl: string } {
-  const searchQ = buildFullSearchQuery(intent);
-  let productUrl = buildDirectProductUrl(item, retailer, searchQ);
+  const searchQ = buildStoreSearchQuery(item, intent);
+  let productUrl = buildDirectProductUrl(item, retailer, searchQ, intent);
 
-  if (
-    liveProductUrl?.startsWith("http") &&
-    productUrlMatchesRetailer(liveProductUrl, retailer)
-  ) {
+  if (shouldUseStoredProductUrl(liveProductUrl, retailer)) {
     productUrl = liveProductUrl;
   }
 

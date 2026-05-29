@@ -1,11 +1,22 @@
 import { Sidebar } from "./Sidebar";
 import { MobileNav } from "./MobileNav";
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  scroll = "page",
+}: {
+  children: React.ReactNode;
+  /** "none" = child controls scroll (chat with pinned input). Default = page scrolls. */
+  scroll?: "page" | "none";
+}) {
   return (
-    <div className="app-mesh flex min-h-[100dvh]">
+    <div className="app-mesh flex h-[100dvh] overflow-hidden">
       <Sidebar />
-      <div className="flex min-h-[100dvh] min-w-0 flex-1 flex-col overflow-y-auto pb-20 md:pb-0">
+      <div
+        className={`flex min-h-0 min-w-0 flex-1 flex-col pb-20 md:pb-0 ${
+          scroll === "page" ? "overflow-y-auto" : "overflow-hidden"
+        }`}
+      >
         {children}
       </div>
       <MobileNav />
