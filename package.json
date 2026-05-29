@@ -47,6 +47,8 @@
     "audit:data-quality": "tsx scripts/data-quality-audit.ts",
     "audit:retailer-health": "tsx scripts/audit-retailer-health.ts",
     "audit:amazon-persist": "tsx scripts/audit-amazon-persist.ts",
+    "audit:persisted": "tsx scripts/audit-persisted-products.ts",
+    "debug:search": "tsx scripts/debug-search-pipeline.ts",
     "monitor:quality": "tsx scripts/monitor-quality.ts",
     "test:links": "node scripts/test-store-links.mjs",
     "test:intent": "node scripts/test-intent-switch.mjs",

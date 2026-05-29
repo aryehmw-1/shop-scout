@@ -10,7 +10,7 @@ import {
   scoreItem,
 } from "../retailers/search";
 import type { ShoppingIntent } from "../types";
-import { normalizeSearchQuery } from "./query-normalize";
+import { normalizeSearchQuery, suggestCatalogProducts } from "./query-normalize";
 import type { ResolvedProduct } from "./types";
 
 /**
@@ -86,6 +86,26 @@ export function resolvePrimaryProduct(intent: ShoppingIntent): {
         synthetic: false,
       },
     };
+  }
+
+  // Keyword fallback when strict scoring finds nothing
+  const suggestions = suggestCatalogProducts(q, 5);
+  if (suggestions.length > 0) {
+    const hit = suggestions[0]!;
+    const item = CATALOG.find((c) => c.id === hit.catalogId);
+    if (item) {
+      return {
+        item,
+        resolved: {
+          catalogId: item.id,
+          title: item.title,
+          brand: item.brand,
+          confidence: Math.min(0.85, hit.score / 100),
+          matchReason: "keyword_fallback",
+          synthetic: false,
+        },
+      };
+    }
   }
 
   const item = createSyntheticCatalogItemForIntent(intent);

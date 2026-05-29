@@ -118,8 +118,9 @@ function isProductSearchMessage(text: string): boolean {
   return t.length >= 3;
 }
 
-function isConversationalOnly(text: string): boolean {
+function isConversationalOnly(text: string, session?: SessionState): boolean {
   const t = text.trim();
+  if (session && shouldMergeWithPreviousSearch(t, session)) return false;
   if (looksLikeShoppingQuery(t)) return false;
   if (GREETING.test(t)) return true;
   if (/^thanks|thank you|thx$/i.test(t)) return true;
@@ -355,7 +356,7 @@ export async function resolveChatTurn(
     };
   }
 
-  if (isConversationalOnly(text) && !isProductSearchMessage(text)) {
+  if (isConversationalOnly(text, session) && !isProductSearchMessage(text)) {
     const fullIntent =
       phase === "ready" && intent.query ? fullIntentFromSession() : undefined;
     const productResults =

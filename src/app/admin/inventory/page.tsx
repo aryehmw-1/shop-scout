@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { computeInventoryHealth } from "@/lib/inventory/inventory-health";
+import { computePersistedProductsReport } from "@/lib/inventory/persisted-products-report";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,7 @@ function pct(n: number): string {
 
 export default async function InventoryDashboardPage() {
   const inv = await computeInventoryHealth();
+  const persisted = await computePersistedProductsReport();
   const c = inv.operational.coverage;
 
   return (
@@ -185,6 +187,55 @@ export default async function InventoryDashboardPage() {
         </table>
       </section>
 
+      {persisted.products.length > 0 && (
+        <section className="mb-8 overflow-hidden rounded-xl border border-sage-300 bg-sage-50/40 shadow-sm">
+          <h2 className="border-b border-sage-200 px-4 py-3 font-semibold text-sage-900">
+            Persisted verified products ({persisted.uniqueProducts})
+          </h2>
+          <p className="px-4 py-2 text-xs text-stone-600">
+            Manual QA target · run <code>npm run audit:persisted -- --write</code> for full report
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-white/80 text-xs uppercase text-stone-500">
+                <tr>
+                  <th className="px-4 py-2">Product</th>
+                  <th className="px-4 py-2">Category</th>
+                  <th className="px-4 py-2">Retailers</th>
+                  <th className="px-4 py-2">Price range</th>
+                  <th className="px-4 py-2">Flags</th>
+                </tr>
+              </thead>
+              <tbody>
+                {persisted.products.slice(0, 20).map((p) => {
+                  const suspicious = p.quotes.some((q) => q.bulkSuspicion);
+                  return (
+                    <tr key={p.catalogId} className="border-t border-sage-100">
+                      <td className="px-4 py-2">
+                        <span className="font-medium">{p.title}</span>
+                        <span className="block text-xs text-stone-500">{p.catalogId}</span>
+                      </td>
+                      <td className="px-4 py-2">{p.category}</td>
+                      <td className="px-4 py-2">{p.retailers.join(", ")}</td>
+                      <td className="px-4 py-2">
+                        ${p.minPrice.toFixed(2)}–${p.maxPrice.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-2 text-xs">
+                        {suspicious ? (
+                          <span className="text-amber-700">review bulk/ratio</span>
+                        ) : (
+                          <span className="text-sage-700">ok</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
       <section className="rounded-xl border border-stone-200 bg-white shadow-sm">
         <h2 className="border-b border-stone-100 px-4 py-3 font-semibold">
           Retailer ingestion model (core 5)
@@ -220,7 +271,9 @@ export default async function InventoryDashboardPage() {
 
       <p className="mt-6 text-xs text-stone-500">
         Strategy: <code>docs/INVENTORY_STRATEGY.md</code> · Data quality:{" "}
-        <code>npm run audit:data-quality</code> · Refresh:{" "}
+        <code>npm run audit:data-quality</code> · Persisted QA:{" "}
+        <code>npm run audit:persisted -- --write</code> · Search debug:{" "}
+        <code>npm run debug:search -- &quot;mens joggers&quot; --write</code> · Refresh:{" "}
         <code>npm run phase0:refresh</code>
       </p>
     </main>

@@ -18,6 +18,10 @@ import { ValueProposition } from "./ValueProposition";
 import { LinkProductHero } from "./LinkProductHero";
 import { CompareExperience } from "./CompareExperience";
 import { useExperiment } from "@/lib/experiments/useExperiment";
+import {
+  SearchPipelineDebugPanel,
+  searchDebugEnabledClient,
+} from "./SearchPipelineDebugPanel";
 
 interface ProductResultsProps {
   results: ProductSearchResults;
@@ -41,13 +45,16 @@ export function ProductResults({
     results.estimatedOnline !== undefined ?
       results
     : prepareResultsForDisplay(results);
-  const { online, estimatedOnline = [], zipCode, compareMode, referenceProduct, similarMode } =
+  const { online, estimatedOnline = [], lowConfidenceOnline = [], zipCode, compareMode, referenceProduct, similarMode } =
     display;
+  const showLowConfidence =
+    (searchDebugEnabledClient() || showEstimatedOffersInUi()) &&
+    lowConfidenceOnline.length > 0;
   const [view, setView] = useState<"cards" | "table">(
     compareMode ? "table" : "cards",
   );
 
-  if (!online.length && !estimatedOnline.length) {
+  if (!online.length && !estimatedOnline.length && !showLowConfidence) {
     const q = searchQuery ?? results.matchedProduct?.title ?? "";
     return (
       <div className="mt-4 space-y-4 rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-6 text-center">
@@ -55,6 +62,9 @@ export function ProductResults({
         <p className="text-sm text-stone-600">
           Stores may be temporarily unavailable. We only show prices we can verify live.
         </p>
+        {results.searchDebug && searchDebugEnabledClient() && (
+          <SearchPipelineDebugPanel debug={results.searchDebug} />
+        )}
         {q && (
           <Link
             href={`/compare?q=${encodeURIComponent(q)}`}
@@ -256,6 +266,29 @@ export function ProductResults({
           </div>
           {renderOffers(estimatedOnline)}
         </section>
+      )}
+
+      {showLowConfidence && (
+        <section className="flex min-w-0 flex-col rounded-2xl border-2 border-dashed border-amber-300 bg-amber-50/60 p-4 sm:p-5">
+          <div className="mb-4 flex min-w-0 gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
+              <AlertTriangle size={22} className="text-amber-700" />
+            </div>
+            <div className="min-w-0">
+              <h4 className="text-base font-bold text-amber-900 sm:text-lg">
+                Low confidence / filtered ({lowConfidenceOnline.length})
+              </h4>
+              <p className="mt-0.5 text-xs text-amber-800 sm:text-sm">
+                Debug view — offers retrieved but failed verification gates
+              </p>
+            </div>
+          </div>
+          {renderOffers(lowConfidenceOnline)}
+        </section>
+      )}
+
+      {results.searchDebug && searchDebugEnabledClient() && (
+        <SearchPipelineDebugPanel debug={results.searchDebug} />
       )}
 
       {online.length === 0 && showEstimatedOffersInUi() && estimatedOnline.length > 0 && (

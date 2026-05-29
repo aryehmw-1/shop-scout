@@ -107,9 +107,8 @@ export function storedRowToLiveQuoteFields(row: {
     priceSource:
       row.source === "scraped" ? "scraped"
       : row.source === "connector_api" ? "connector_api"
+      : row.source === "daily_index" || row.source === "nightly_index" ? "scraped"
       : row.source === "catalog_estimate" ? "catalog_model"
-      : row.source === "daily_index" || row.source === "nightly_index" ?
-        "daily_index"
       : "cached_quote",
   };
 }

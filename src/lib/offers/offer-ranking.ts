@@ -12,6 +12,15 @@ import { rankOffersByDealScore } from "../pricing/deal-score";
 
 export const DISPLAY_OFFER_LIMIT = 10;
 export const DISPLAY_ESTIMATED_LIMIT = 6;
+export const DISPLAY_LOW_CONFIDENCE_LIMIT = 8;
+
+export function searchDebugUiEnabled(): boolean {
+  if (typeof process !== "undefined") {
+    const raw = process.env.NEXT_PUBLIC_SEARCH_DEBUG?.trim().toLowerCase();
+    if (raw === "1" || raw === "true" || raw === "on") return true;
+  }
+  return false;
+}
 
 const NON_VERIFIED_SOURCES = new Set([
   "catalog_model",
@@ -131,6 +140,7 @@ export function prepareResultsForDisplay(
 ): ProductSearchResults {
   const limit = options.limit ?? DISPLAY_OFFER_LIMIT;
   const estLimit = DISPLAY_ESTIMATED_LIMIT;
+  const lowLimit = DISPLAY_LOW_CONFIDENCE_LIMIT;
   const catalogTitle = results.matchedProduct?.title;
   const merged = rankOffersForDisplay(
     [...results.online, ...results.local],
@@ -144,12 +154,22 @@ export function prepareResultsForDisplay(
     ? merged.filter((o) => !isDisplayableOffer(o) && !isVerifiedOffer(o))
     : [];
 
+  const lowConfidenceRaw =
+    searchDebugUiEnabled() || showEstimatedOffersInUi() ?
+      merged.filter((o) => !isVerifiedOffer(o) && (o.matchConfidence ?? 0) >= 0.35)
+    : [];
+
   const verified = verifiedRaw
     .slice(0, limit)
     .map((o) => finalizeOfferRow(o, options.item, options.intent));
 
   const estimated = estimatedRaw
     .slice(0, estLimit)
+    .map((o) => finalizeOfferRow(o, options.item, options.intent));
+
+  const lowConfidence = lowConfidenceRaw
+    .filter((o) => !estimatedRaw.some((e) => e.id === o.id))
+    .slice(0, lowLimit)
     .map((o) => finalizeOfferRow(o, options.item, options.intent));
 
   const bestId =
@@ -169,6 +189,7 @@ export function prepareResultsForDisplay(
     local: [],
     online,
     estimatedOnline: estimated,
+    lowConfidenceOnline: lowConfidence.length ? lowConfidence : undefined,
   };
 }
 

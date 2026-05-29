@@ -336,6 +336,23 @@ export interface MatchedProductSummary {
   imageSource?: ProductImageSource;
 }
 
+export interface SearchPipelineDebugSummary {
+  query: string;
+  resolvedCatalogId: string;
+  resolvedTitle: string;
+  matchReason: string;
+  stages: Array<{ stage: string; count: number; detail?: string; samples?: string[] }>;
+  filterReasons: Array<{
+    retailer: string;
+    price: number;
+    priceSource?: string;
+    matchConfidence?: number;
+    reasons: string[];
+  }>;
+  keywordFallbackUsed: boolean;
+  semanticNote: string;
+}
+
 export interface ProductSearchResults {
   local: ProductOffer[];
   online: ProductOffer[];
@@ -353,6 +370,10 @@ export interface ProductSearchResults {
   resolvedQuery?: string;
   /** Populated for pasted-link searches */
   linkMatch?: LinkMatchMeta;
+  /** Filtered offers with reasons — shown in debug / low-confidence UI */
+  lowConfidenceOnline?: ProductOffer[];
+  /** End-to-end pipeline trace when SEARCH_PIPELINE_DEBUG or NEXT_PUBLIC_SEARCH_DEBUG */
+  searchDebug?: SearchPipelineDebugSummary;
 }
 
 export interface ChatMessage {

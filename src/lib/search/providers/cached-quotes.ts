@@ -39,7 +39,7 @@ export async function fetchCachedLiveQuotes(
       productId: product.id,
       expiresAt: { gt: now },
       source: {
-        in: ["scraped", "connector_api"],
+        in: ["scraped", "connector_api", "daily_index", "nightly_index"],
       },
     },
     orderBy: { fetchedAt: "desc" },

@@ -22,6 +22,10 @@ import { enrichOffersAtSearch } from "../offers/enrich-offers-at-search";
 import { finalizeResultsForUser } from "../pricing/deal-intelligence";
 import { finalizeSearchPrices } from "./price-truth";
 import {
+  searchPipelineDebugEnabled,
+  traceSearchPipeline,
+} from "./search-pipeline-debug";
+import {
   fetchLiveQuotes,
   priceSourceForLiveOrigin,
 } from "./fetch-live-quotes";
@@ -193,6 +197,15 @@ export class SearchService {
 
     results = finalizeSearchPrices(results);
     results = await this.finishSearchResults(results, item, fullIntent, options);
+
+    if (searchPipelineDebugEnabled()) {
+      const trace = await traceSearchPipeline(fullIntent, {
+        afterEnrich: results,
+        item,
+      });
+      results = { ...results, searchDebug: trace };
+      console.log("[search-pipeline]", formatSearchPipelineLog(trace));
+    }
 
     if (!options.skipCache) {
       setCachedSearch(fullIntent, mode, results);
@@ -423,6 +436,14 @@ export class SearchService {
 }
 
 export const searchService = new SearchService();
+
+function formatSearchPipelineLog(
+  trace: Awaited<ReturnType<typeof traceSearchPipeline>>,
+): string {
+  return trace.stages
+    .map((s) => `${s.stage}=${s.count}${s.detail ? ` (${s.detail})` : ""}`)
+    .join(" → ");
+}
 
 /** Back-compat sync entry (used during migration). */
 export function searchCatalogViaService(intent: ShoppingIntent): ProductSearchResults {

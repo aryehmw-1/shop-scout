@@ -34,7 +34,7 @@ export function isProductTypeSwitch(previousQuery: string, message: string): boo
   return !areProductTypesCompatible(prev, next);
 }
 
-/** Short follow-up that only adds color, size, brand, etc. */
+/** Short follow-up that only adds color, size, brand, product subtype, etc. */
 export function isAttributeFollowUp(message: string, previousQuery: string): boolean {
   const msg = stripShoppingPrefixes(message.trim());
   const lower = msg.toLowerCase();
@@ -50,6 +50,17 @@ export function isAttributeFollowUp(message: string, previousQuery: string): boo
   if (/^(in|with|only|make it|size)\b/i.test(lower)) return true;
   if (COLOR_WORD.test(lower.split(/\s+/)[0] ?? "")) return true;
   if (/^(large|medium|small|xl|xxl|xs|xx?s|xx?l)\b/i.test(lower)) return true;
+
+  // Single-word subtype refinement: "joggers" after "mens pants"
+  const attrs = parseQueryAttributes(msg);
+  const prevAttrs = parseQueryAttributes(previousQuery);
+  if (
+    attrs.productTypes.length > 0 &&
+    msg.split(/\s+/).length <= 4 &&
+    (prevAttrs.productTypes.length > 0 || prevAttrs.gender || /\bpants\b/i.test(previousQuery))
+  ) {
+    return areProductTypesCompatible(prevAttrs.productTypes, attrs.productTypes);
+  }
 
   return false;
 }
