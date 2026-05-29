@@ -292,7 +292,11 @@ export function applyRetailerExtractionToOffer(
     appendReason(o, "amazon.match", amazonMetrics.matchReasons.join("; "), 0.15);
     o.matchConfidence = Math.min(
       1,
-      Math.max(o.matchConfidence ?? 0.5, amazonMetrics.matchScore),
+      Math.max(
+        o.matchConfidence ?? 0.5,
+        amazonMetrics.matchScore,
+        MIN_TRUSTED_MATCH_CONFIDENCE,
+      ),
     );
   }
 

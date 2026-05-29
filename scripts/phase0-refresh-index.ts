@@ -23,6 +23,7 @@ const limit = limitArg ? parseInt(limitArg.split("=")[1]!, 10) : 22;
 // Operational diagnostics during refresh
 process.env.INDEX_ENRICHMENT_REPORT ??= "1";
 process.env.INDEX_FETCH_LOG ??= "1";
+process.env.INDEX_AMAZON_PERSIST_DIAG ??= "1";
 
 async function main() {
   warnIfProxyMisconfigured();

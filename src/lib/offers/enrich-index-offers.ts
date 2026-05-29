@@ -315,6 +315,18 @@ export async function enrichOffersAtIndex(
   report.persistRejected = finalPass.persistRejected.length;
   report.displayable = finalPass.displayable.length;
 
+  if (process.env.INDEX_AMAZON_PERSIST_DIAG === "1") {
+    for (const r of finalPass.persistRejected.filter((x) => x.offer.retailer === "amazon")) {
+      const { diagnoseAmazonOfferPersist, formatAmazonPersistDiagnostic } = await import(
+        "../audit/amazon-persist-diagnostics"
+      );
+      console.log(
+        "[amazon-persist-diag]",
+        formatAmazonPersistDiagnostic(diagnoseAmazonOfferPersist(r.offer, item, intent)),
+      );
+    }
+  }
+
   const offerById = new Map(finalPass.offers.map((o) => [o.id, o]));
   let patchedResults = {
     ...out,
@@ -348,6 +360,10 @@ function applyQualityToAll(
   intent: ShoppingIntent,
 ): ProductSearchResults {
   const patch = (o: ProductOffer) => {
+    const priorConf = o.matchConfidence ?? 0;
+    const priorIdentity = o.identityConfidence ?? 0;
+    const priorReasons = o.confidenceReasons ?? [];
+
     const confidence = scoreOfferConfidence(item, intent, o.retailer, {
       storeTitle: o.storeTitle,
       brand: o.brand,
@@ -355,14 +371,36 @@ function applyQualityToAll(
       size: o.size,
       upc: o.upc,
       imageUrl: o.imageUrl,
+      productUrl: o.productUrl,
+      priceSource: o.priceSource,
     });
+
+    const scoredReasons = JSON.parse(
+      confidence.confidenceReasonsJson,
+    ) as ProductOffer["confidenceReasons"];
+    const mergedReasons = [...priorReasons];
+    for (const r of scoredReasons ?? []) {
+      if (!mergedReasons.some((x) => x.code === r.code)) mergedReasons.push(r);
+    }
+
+    let matchConfidence = confidence.matchConfidence;
+    let identityConfidence = confidence.identityConfidence;
+    let imageConfidence = confidence.imageConfidence;
+
+    // Do not crush PDP-enriched verified prices back to catalog-estimate confidence.
+    if (o.priceSource === "scraped" || o.priceSource === "connector_api") {
+      matchConfidence = Math.max(matchConfidence, priorConf);
+      identityConfidence = Math.max(identityConfidence, priorIdentity, priorConf);
+      imageConfidence = Math.max(imageConfidence, o.imageConfidence ?? 0);
+    }
+
     let next: ProductOffer = {
       ...o,
-      matchConfidence: confidence.matchConfidence,
-      identityConfidence: confidence.identityConfidence,
+      matchConfidence,
+      identityConfidence,
       attributeConfidence: confidence.attributeConfidence,
-      imageConfidence: confidence.imageConfidence,
-      confidenceReasons: JSON.parse(confidence.confidenceReasonsJson) as ProductOffer["confidenceReasons"],
+      imageConfidence,
+      confidenceReasons: mergedReasons,
     };
     next.priceConfidence = buildOfferQualityMeta(next).priceConfidence;
     next = applyOfferQualityGates(next, item, intent);
