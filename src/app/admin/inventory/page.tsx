@@ -26,6 +26,9 @@ export default async function InventoryDashboardPage() {
           <Link href="/admin/quality" className="text-sage-700 hover:underline">
             Operational →
           </Link>
+          <Link href="/admin/qa" className="text-sage-700 hover:underline">
+            Manual QA →
+          </Link>
           <Link href="/admin/links" className="text-sage-700 hover:underline">
             Link ingestion →
           </Link>

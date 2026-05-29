@@ -272,6 +272,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
           productResults: data.productResults,
           compareMode: data.compareMode,
           chips: data.chips,
+          conversationDebug: data.conversationDebug,
           timestamp: Date.now(),
         };
 

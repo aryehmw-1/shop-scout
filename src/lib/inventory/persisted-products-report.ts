@@ -4,11 +4,7 @@
 
 import { prisma } from "../db/prisma";
 import { CATALOG } from "../retailers/catalog";
-import {
-  extractPackCount,
-  isBulkCommercialListing,
-  normalizeAmazonListingPrice,
-} from "../offers/amazon-normalization";
+import { analyzeQuantityExpectation } from "../offers/quantity-expectation";
 import { isPlausiblePrice } from "../offers/offer-quality";
 import { getFlagshipCatalogIds } from "./flagship-catalog";
 
@@ -113,19 +109,28 @@ export async function computePersistedProductsReport(options: {
     const catalog = catalogItemFor(catalogId);
     const base = row.product.basePriceUsd ?? catalog?.basePrice ?? 0;
     const storeTitle = row.storeTitle ?? row.product.title;
-    const packCount = extractPackCount(storeTitle, catalog?.size ?? row.product.sizeLabel ?? undefined);
-    const ratio = base > 0 ? row.priceUsd / base : 0;
-    const bulkSuspicion =
-      row.retailerId === "amazon" &&
-      catalog ?
-        isBulkCommercialListing(storeTitle, catalog) || ratio > 2.5 || ratio < 0.35
-      : ratio > 3 || ratio < 0.25;
-
-    let normalizationNote: string | undefined;
-    if (row.retailerId === "amazon" && catalog) {
-      const norm = normalizeAmazonListingPrice(row.priceUsd, storeTitle, catalog);
-      normalizationNote = `${norm.method} pack=${norm.packCount} accepted=${norm.accepted}`;
-    }
+    const item =
+      catalog ?? {
+        id: catalogId,
+        title: row.product.title,
+        brand: row.product.brand,
+        size: row.product.sizeLabel,
+        upc: "",
+        imageUrl: "",
+        category: row.product.category,
+        keywords: [],
+        organic: false,
+        basePrice: base,
+        unitLabel: "each",
+        slug: catalogId,
+      };
+    const quantity = analyzeQuantityExpectation(item, storeTitle, row.priceUsd);
+    const packCount = quantity.titlePackExtracted;
+    const ratio = quantity.priceRatioVsCatalog;
+    const bulkSuspicion = quantity.wouldMisleadConsumer;
+    const normalizationNote = quantity.normalization ?
+      `${quantity.normalization.method} pack=${quantity.normalization.packCount} ${quantity.consumerQuantityLabel}`
+    : quantity.consumerQuantityLabel;
 
     const q: PersistedQuoteRow = {
       catalogId,
@@ -146,7 +151,9 @@ export async function computePersistedProductsReport(options: {
       priceRatio: Math.round(ratio * 100) / 100,
       plausibleVsCatalog: isPlausiblePrice(row.priceUsd, base),
       bulkSuspicion,
-      normalizationNote,
+      normalizationNote: quantity.normalization ?
+        `${quantity.normalization.method} pack=${quantity.normalization.packCount} ${quantity.consumerQuantityLabel}`
+      : undefined,
     };
 
     quoteRows.push(q);

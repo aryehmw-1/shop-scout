@@ -6,6 +6,8 @@ import { finalizeResultsForUser } from "../pricing/deal-intelligence";
 import { finalizeSearchPrices } from "./price-truth";
 import { attachMatchedProduct } from "./matched-product";
 import { MIN_CONSUMER_MATCH_CONFIDENCE } from "../offers/consumer-trust";
+import { fetchCachedLiveQuotesForItem } from "./providers/cached-quotes";
+import { mergeLivePrices } from "./merge-live-prices";
 import type { ProductSearchResults, ReferenceProduct, ShoppingIntent } from "../types";
 
 function buildReferenceProduct(ingest: LinkIngestResult): ReferenceProduct {
@@ -16,6 +18,8 @@ function buildReferenceProduct(ingest: LinkIngestResult): ReferenceProduct {
     referencePrice: ingest.referencePrice,
     imageUrl: ingest.imageUrl,
     priceVerified: ingest.priceVerified,
+    priceFromPersistedCache: ingest.priceFromPersistedCache,
+    normalizationNote: ingest.normalizationNote,
     matchTier: ingest.matchTier,
     matchConfidence: ingest.matchConfidence,
     equivalenceReasons: ingest.equivalenceReasons,
@@ -61,6 +65,19 @@ export async function buildLinkSearchResults(
       linkMatch,
     };
     results = attachMatchedProduct(results, ingest.catalogItem, ingest.guessedTitle);
+
+    // Merge persisted verified quotes from DB before scrape-only enrichment gaps.
+    const cached = await fetchCachedLiveQuotesForItem(ingest.catalogItem);
+    if (cached.length > 0) {
+      const merged = mergeLivePrices(
+        results,
+        cached,
+        ingest.catalogItem,
+        intent,
+        "scraped",
+      );
+      results = attachMatchedProduct(merged.results, ingest.catalogItem, ingest.guessedTitle);
+    }
 
     // Flagship link compare: only show verified alternatives cheaper than pasted reference price.
     if (ingest.priceVerified && ingest.referencePrice > 0) {

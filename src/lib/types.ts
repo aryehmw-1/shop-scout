@@ -311,6 +311,8 @@ export interface ReferenceProduct {
   referencePrice: number;
   imageUrl?: string;
   priceVerified?: boolean;
+  priceFromPersistedCache?: boolean;
+  normalizationNote?: string;
   matchTier?: "exact" | "near" | "family" | "none";
   matchConfidence?: number;
   equivalenceReasons?: string[];
@@ -385,6 +387,7 @@ export interface ChatMessage {
   compareMode?: boolean;
   chips?: string[];
   timestamp: number;
+  conversationDebug?: import("./types").ConversationDebugSnapshot;
 }
 
 export interface LearningProfile {
@@ -471,12 +474,30 @@ export interface ChatRequest {
   progressive?: boolean;
 }
 
+export interface ConversationDebugSnapshot {
+  action: string;
+  message: string;
+  merged: boolean;
+  priorQuery?: string;
+  nextQuery: string;
+  fullQuery: string;
+  attributes: {
+    gender?: string;
+    size?: string;
+    brand?: string;
+    colors?: string[];
+    maxPrice?: number;
+    productSubtype?: string;
+  };
+}
+
 export interface ChatResponse {
   reply: string;
   chips?: string[];
   productResults?: ProductSearchResults;
   compareMode?: boolean;
   session: SessionState;
+  conversationDebug?: ConversationDebugSnapshot;
 }
 
 export interface UserAddress {

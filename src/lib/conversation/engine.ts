@@ -42,6 +42,7 @@ export async function processMessage(
     productResults: turn.productResults,
     compareMode: turn.compareMode,
     session: turn.session,
+    conversationDebug: turn.conversationDebug,
   };
 }
 

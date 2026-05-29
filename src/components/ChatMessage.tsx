@@ -59,6 +59,7 @@ export function ChatMessageBubble({
               onShopClick={onShopClick}
               enriching={enriching}
               searchQuery={searchQuery}
+              conversationDebug={message.conversationDebug}
             />
           </div>
         )}

@@ -21,7 +21,12 @@ import {
   shouldMergeWithPreviousSearch,
 } from "../shopping/intent-merge";
 import { looksLikeShoppingQuery, stripShoppingPrefixes } from "../shopping/query";
+import {
+  buildConversationDebugSnapshot,
+  conversationDebugEnabled,
+} from "../conversation/conversation-debug";
 import type {
+  ConversationDebugSnapshot,
   LearningProfile,
   ProductSearchResults,
   SessionState,
@@ -141,6 +146,28 @@ export interface ResolvedChatTurn {
   nearStores?: string[];
   referenceProductTitle?: string;
   clarifyQuestion?: string;
+  conversationDebug?: ConversationDebugSnapshot;
+}
+
+function withConversationDebug(
+  result: ResolvedChatTurn,
+  input: {
+    message: string;
+    priorSession: SessionState;
+    merged: boolean;
+  },
+): ResolvedChatTurn {
+  if (!conversationDebugEnabled()) return result;
+  return {
+    ...result,
+    conversationDebug: buildConversationDebugSnapshot({
+      action: result.action,
+      message: input.message,
+      priorSession: input.priorSession,
+      nextSession: result.session,
+      merged: input.merged,
+    }),
+  };
 }
 
 export async function resolveChatTurn(
@@ -321,26 +348,30 @@ export async function resolveChatTurn(
   }
 
   if (phase === "ready" && shouldMergeWithPreviousSearch(text, session)) {
+    const priorSession = session;
     intent = mergeSearchIntent(session.intent, text);
     const fullIntent = enrichIntent({ ...intent, zipCode: zip }, learningProfile);
     const productResults = await searchService.search(fullIntent, searchOpts(userId, progressive));
 
-    return {
-      action: "refine",
-      session: {
-        phase: "ready",
-        intent: fullIntent,
-        asked,
-        sourceUrl,
-        sourceProductTitle,
+    return withConversationDebug(
+      {
+        action: "refine",
+        session: {
+          phase: "ready",
+          intent: fullIntent,
+          asked,
+          sourceUrl,
+          sourceProductTitle,
+          compareMode: false,
+        },
+        productResults,
         compareMode: false,
+        zipCode: zip,
+        query: fullIntent.query,
+        chips: ["Size large", "In navy", "From Nike", "Recheck prices"],
       },
-      productResults,
-      compareMode: false,
-      zipCode: zip,
-      query: fullIntent.query,
-      chips: ["Size large", "In navy", "From Nike", "Recheck prices"],
-    };
+      { message: text, priorSession, merged: true },
+    );
   }
 
   if (phase === "ready" && isFollowUpAboutResults(text)) {
@@ -463,6 +494,7 @@ export async function resolveChatTurn(
 
   if (shouldSearch) {
     const merging = shouldMergeWithPreviousSearch(text, session);
+    const priorSession = session;
     if (merging) {
       intent = mergeSearchIntent(session.intent, text);
     } else if (phase !== "ready" || !compareMode) {
@@ -511,22 +543,25 @@ export async function resolveChatTurn(
     );
     const productResults = await searchService.search(fullIntent, searchOpts(userId, progressive));
 
-    return {
-      action: "search",
-      session: {
-        phase: "ready",
-        intent: fullIntent,
-        asked,
-        sourceUrl: merging ? sourceUrl : undefined,
-        sourceProductTitle: merging ? sourceProductTitle : undefined,
+    return withConversationDebug(
+      {
+        action: "search",
+        session: {
+          phase: "ready",
+          intent: fullIntent,
+          asked,
+          sourceUrl: merging ? sourceUrl : undefined,
+          sourceProductTitle: merging ? sourceProductTitle : undefined,
+          compareMode: false,
+        },
+        productResults,
         compareMode: false,
+        zipCode: zip,
+        query: fullIntent.query,
+        chips: ["Recheck prices", "Show something cheaper", "Compare a product link"],
       },
-      productResults,
-      compareMode: false,
-      zipCode: zip,
-      query: fullIntent.query,
-      chips: ["Recheck prices", "Show something cheaper", "Compare a product link"],
-    };
+      { message: text, priorSession, merged: merging },
+    );
   }
 
   return {

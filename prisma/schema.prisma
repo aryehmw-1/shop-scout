@@ -202,11 +202,30 @@ model PriceQuote {
   fetchedAt             DateTime @default(now())
   expiresAt             DateTime
 
+  qaReview              InventoryQaReview?
+
   @@index([productId, retailerId, channel])
   @@index([productId, expiresAt])
   @@index([variantGroupId])
   @@index([source, expiresAt])
   @@index([retailerId, fetchedAt])
+}
+
+/// Human-in-the-loop QA for persisted verified quotes before scaling inventory.
+model InventoryQaReview {
+  id           String     @id @default(cuid())
+  priceQuoteId String     @unique
+  priceQuote   PriceQuote @relation(fields: [priceQuoteId], references: [id], onDelete: Cascade)
+  catalogId    String
+  status       String     @default("pending")
+  tagsJson     String     @default("[]")
+  notes        String?
+  reviewedAt   DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([catalogId])
+  @@index([status])
 }
 
 /// Retailer-scoped listing identity before / during canonical linkage.

@@ -22,6 +22,8 @@ import {
   SearchPipelineDebugPanel,
   searchDebugEnabledClient,
 } from "./SearchPipelineDebugPanel";
+import { ConversationDebugPanel } from "./ConversationDebugPanel";
+import { buildRetrievalTrustDiagnostic } from "@/lib/search/retrieval-trust-message";
 
 interface ProductResultsProps {
   results: ProductSearchResults;
@@ -30,6 +32,7 @@ interface ProductResultsProps {
   onShopClick?: (offer: ProductOffer) => void;
   enriching?: boolean;
   searchQuery?: string;
+  conversationDebug?: import("@/lib/types").ConversationDebugSnapshot;
 }
 
 export function ProductResults({
@@ -39,6 +42,7 @@ export function ProductResults({
   onShopClick,
   enriching,
   searchQuery,
+  conversationDebug,
 }: ProductResultsProps) {
   const compareLayout = useExperiment("compare_layout");
   const display =
@@ -56,14 +60,23 @@ export function ProductResults({
 
   if (!online.length && !estimatedOnline.length && !showLowConfidence) {
     const q = searchQuery ?? results.matchedProduct?.title ?? "";
+    const trust = buildRetrievalTrustDiagnostic(results, q);
     return (
       <div className="mt-4 space-y-4 rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-6 text-center">
-        <p className="font-medium text-stone-800">No verified offers yet</p>
-        <p className="text-sm text-stone-600">
-          Stores may be temporarily unavailable. We only show prices we can verify live.
-        </p>
+        <p className="font-medium text-stone-800">{trust.headline}</p>
+        <p className="text-sm text-stone-600">{trust.detail}</p>
+        {trust.hints.length > 0 && (
+          <ul className="mx-auto max-w-md text-left text-sm text-stone-600">
+            {trust.hints.map((h) => (
+              <li key={h} className="mt-1 list-disc ml-5">{h}</li>
+            ))}
+          </ul>
+        )}
         {results.searchDebug && searchDebugEnabledClient() && (
           <SearchPipelineDebugPanel debug={results.searchDebug} />
+        )}
+        {conversationDebug && searchDebugEnabledClient() && (
+          <ConversationDebugPanel debug={conversationDebug} />
         )}
         {q && (
           <Link
@@ -289,6 +302,10 @@ export function ProductResults({
 
       {results.searchDebug && searchDebugEnabledClient() && (
         <SearchPipelineDebugPanel debug={results.searchDebug} />
+      )}
+
+      {conversationDebug && searchDebugEnabledClient() && (
+        <ConversationDebugPanel debug={conversationDebug} />
       )}
 
       {online.length === 0 && showEstimatedOffersInUi() && estimatedOnline.length > 0 && (

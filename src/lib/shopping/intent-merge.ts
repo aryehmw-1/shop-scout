@@ -1,6 +1,7 @@
 import { extractIntentFromMessage } from "../ai/extract-intent";
 import { areProductTypesCompatible, parseQueryAttributes } from "../retailers/search";
 import { parseBrandFromText } from "./brands";
+import { parseMaxPriceFromText, isPriceConstraintFollowUp } from "./budget";
 import { looksLikeShoppingQuery, stripShoppingPrefixes } from "./query";
 import {
   isSizeOnlyFollowUp,
@@ -50,6 +51,7 @@ export function isAttributeFollowUp(message: string, previousQuery: string): boo
   if (/^(in|with|only|make it|size)\b/i.test(lower)) return true;
   if (COLOR_WORD.test(lower.split(/\s+/)[0] ?? "")) return true;
   if (/^(large|medium|small|xl|xxl|xs|xx?s|xx?l)\b/i.test(lower)) return true;
+  if (isPriceConstraintFollowUp(msg)) return true;
 
   // Single-word subtype refinement: "joggers" after "mens pants"
   const attrs = parseQueryAttributes(msg);
@@ -153,6 +155,7 @@ export function mergeSearchIntent(
   const attrs = parseQueryAttributes(msg);
   const brand = parseBrandFromText(msg) ?? previous.brand;
   const size = parseSizeFromText(msg) ?? previous.size;
+  const maxPrice = parseMaxPriceFromText(msg) ?? previous.maxPrice;
   const prevColors =
     previous.colors ?? parseQueryAttributes(previous.query ?? "").colors;
   const colors = [...new Set([...prevColors, ...attrs.colors])];
@@ -206,6 +209,7 @@ export function mergeSearchIntent(
     query,
     brand,
     size,
+    maxPrice,
     colors: colors.length ? colors : undefined,
     gender,
     ageGroup,

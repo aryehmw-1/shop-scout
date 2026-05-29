@@ -7,6 +7,9 @@ import { parseProductUrl, type ParsedProductUrl } from "./url-parser";
 import { extractExternalIdsFromUrl, isCoreLinkRetailer } from "./link-url-extract";
 import { parseVariantFromTitle } from "./link-variant-parse";
 import {
+  lookupPersistedQuoteByAsin,
+} from "../search/link-persisted-lookup";
+import {
   resolveLinkCanonicalProduct,
   type LinkCanonicalResult,
   type LinkMatchTier,
@@ -21,6 +24,8 @@ export interface LinkIngestResult {
   category?: ProductCategory;
   referencePrice: number;
   priceVerified: boolean;
+  priceFromPersistedCache?: boolean;
+  normalizationNote?: string;
   imageUrl?: string;
   storeTitle?: string;
   identifiers: ProductIdentifiers;
@@ -63,6 +68,8 @@ export async function ingestLinkProduct(rawUrl: string): Promise<LinkIngestResul
   let title = parsed.guessedTitle;
   let referencePrice = parsed.referencePrice;
   let priceVerified = false;
+  let priceFromPersistedCache = false;
+  let normalizationNote: string | undefined;
   let imageUrl: string | undefined;
   let storeTitle: string | undefined;
   let pdpFetchOk = false;
@@ -71,7 +78,29 @@ export async function ingestLinkProduct(rawUrl: string): Promise<LinkIngestResul
 
   const variant = parseVariantFromTitle(title);
 
-  if (parsed.sourceRetailer && isCoreLinkRetailer(parsed.sourceRetailer) && !isSearchUrl) {
+  // Prefer persisted verified quote for known Amazon ASIN before live scrape.
+  if (externalIds.asin && parsed.sourceRetailer === "amazon") {
+    const cached = await lookupPersistedQuoteByAsin(externalIds.asin, rawUrl);
+    if (cached.hit && cached.priceUsd) {
+      referencePrice = cached.priceUsd;
+      priceVerified = true;
+      priceFromPersistedCache = true;
+      normalizationNote = cached.normalizationNote;
+      if (cached.storeTitle) {
+        storeTitle = cached.storeTitle;
+        title = cached.storeTitle;
+      }
+      if (cached.imageUrl) imageUrl = cached.imageUrl;
+      pdpFetchOk = true;
+    }
+  }
+
+  if (
+    parsed.sourceRetailer &&
+    isCoreLinkRetailer(parsed.sourceRetailer) &&
+    !isSearchUrl &&
+    !priceFromPersistedCache
+  ) {
     const fetchStart = Date.now();
     try {
       const page = await fetchRetailerPageData(rawUrl, parsed.sourceRetailer);
@@ -124,6 +153,8 @@ export async function ingestLinkProduct(rawUrl: string): Promise<LinkIngestResul
     category: parsed.category ?? (canonical.catalogItem?.category as ProductCategory | undefined),
     referencePrice,
     priceVerified,
+    priceFromPersistedCache,
+    normalizationNote,
     imageUrl,
     storeTitle,
     identifiers,
