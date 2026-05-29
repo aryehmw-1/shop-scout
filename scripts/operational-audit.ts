@@ -8,8 +8,8 @@
  */
 import { writeFileSync } from "fs";
 import { join } from "path";
-import { runOperationalAudit } from "../src/lib/audit/operational-audit.ts";
-import { formatAuditMarkdown } from "../src/lib/audit/format-audit-report.ts";
+import { runOperationalAudit } from "../src/lib/audit/operational-audit";
+import { formatAuditMarkdown } from "../src/lib/audit/format-audit-report";
 
 const write = process.argv.includes("--write");
 const asJson = process.argv.includes("--json");

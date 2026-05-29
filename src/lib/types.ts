@@ -309,6 +309,23 @@ export interface ReferenceProduct {
   sourceUrl: string;
   sourceRetailer?: RetailerId;
   referencePrice: number;
+  imageUrl?: string;
+  priceVerified?: boolean;
+  matchTier?: "exact" | "near" | "family" | "none";
+  matchConfidence?: number;
+  equivalenceReasons?: string[];
+  variantWarning?: string;
+  pdpFetchOk?: boolean;
+}
+
+export interface LinkMatchMeta {
+  matchTier: "exact" | "near" | "family" | "none";
+  matchConfidence: number;
+  equivalenceReasons: string[];
+  variantWarning?: string;
+  useExactCompare: boolean;
+  pdpFetchOk: boolean;
+  ingestLatencyMs: number;
 }
 
 export interface MatchedProductSummary {
@@ -334,6 +351,8 @@ export interface ProductSearchResults {
   enrichmentPending?: boolean;
   enrichmentCatalogId?: string;
   resolvedQuery?: string;
+  /** Populated for pasted-link searches */
+  linkMatch?: LinkMatchMeta;
 }
 
 export interface ChatMessage {

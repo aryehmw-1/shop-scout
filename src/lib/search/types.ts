@@ -23,6 +23,8 @@ export interface SearchContext {
   skipImages?: boolean;
   /** Skip historical price model (faster bulk tests). */
   skipHistory?: boolean;
+  /** Pre-computed link ingest (avoids double PDP fetch). */
+  linkIngest?: import("../matching/link-ingest").LinkIngestResult;
 }
 
 export interface ResolvedProduct {

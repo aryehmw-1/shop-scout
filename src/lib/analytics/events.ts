@@ -12,7 +12,15 @@ export type AnalyticsEventName =
   | "feedback_submitted"
   | "experiment_exposure"
   | "compare_view"
-  | "page_view";
+  | "page_view"
+  | "link_pasted"
+  | "link_ingest_success"
+  | "link_ingest_failed"
+  | "link_canonical_exact"
+  | "link_canonical_near"
+  | "link_canonical_failed"
+  | "link_low_confidence"
+  | "link_unsupported_retailer";
 
 export interface AnalyticsEvent {
   name: AnalyticsEventName;

@@ -1,7 +1,9 @@
 import {
   compareViaCatalog,
-  linkSimilarViaCatalog,
 } from "./connectors/catalog-connector";
+import { buildLinkSearchResults } from "./link-search";
+import type { LinkIngestResult } from "../matching/link-ingest";
+import { ingestLinkProduct } from "../matching/link-ingest";
 import { getCachedSearch, setCachedSearch } from "./cache";
 import { ensureCatalogSynced } from "../db/catalog-sync";
 import {
@@ -328,51 +330,58 @@ export class SearchService {
     options: SearchContext = {},
   ): Promise<EnrichedSearchResults & { referenceProduct?: ReferenceProduct }> {
     const started = Date.now();
-    let results = await linkSimilarViaCatalog(parsed, intent);
+
+    const ingest =
+      options.linkIngest ??
+      (await ingestLinkProduct(parsed.sourceUrl));
+
+    if (!ingest) {
+      throw new Error("link_ingest_failed");
+    }
+
+    let results = await buildLinkSearchResults(ingest, intent);
     const durationMs = Date.now() - started;
 
-    const resolvedProduct = {
-      catalogId: parsed.catalogId ?? "link",
-      title: parsed.guessedTitle,
-      brand: "",
-      confidence: 0.8,
-      matchReason: "url_parse",
-      synthetic: !parsed.catalogId,
+    const item = ingest.catalogItem ?? {
+      id: ingest.catalogId ?? `syn-${ingest.guessedTitle}`,
+      title: ingest.guessedTitle,
+      brand: ingest.brand,
+      size: "",
+      upc: ingest.identifiers.upc ?? "",
+      imageUrl: ingest.imageUrl ?? "",
+      category: ingest.category ?? "general",
+      keywords: [],
+      organic: false,
+      basePrice: ingest.referencePrice,
+      unitLabel: "each",
+      slug: ingest.catalogId ?? "link",
     };
+
+    const resolvedProduct = {
+      catalogId: ingest.catalogId ?? "link",
+      title: ingest.guessedTitle,
+      brand: ingest.brand,
+      confidence: ingest.matchConfidence,
+      matchReason: ingest.matchTier,
+      synthetic: !ingest.catalogId,
+    };
+
     const meta: SearchExecutionMeta = {
       resolved: resolvedProduct,
       durationMs,
       cacheHit: false,
-      priceSource: "catalog_model",
+      priceSource: ingest.priceVerified ? "scraped" : "catalog_model",
       quoteCount: results.online.length,
     };
-
-    const linkItem: CatalogItem = {
-      id: parsed.catalogId ?? "link",
-      title: parsed.guessedTitle,
-      brand: "",
-      size: "",
-      upc: "",
-      imageUrl: "",
-      category: parsed.category ?? "general",
-      keywords: [],
-      organic: false,
-      basePrice: parsed.referencePrice,
-      unitLabel: "each",
-      slug: parsed.catalogId ?? "link",
-    };
-    results = await enrichOffersAtSearch(results, linkItem, intent);
-    results = finalizeSearchPrices(results);
-    results = await finalizeResultsForUser(results, linkItem, intent);
 
     if (!options.skipPersist) {
       try {
         meta.sessionId = await persistSearchSession({
           userId: options.userId,
           zipCode: intent.zipCode ?? "78701",
-          queryRaw: parsed.guessedTitle,
+          queryRaw: parsed.sourceUrl,
           intent,
-          mode: "link_similar",
+          mode: ingest.useExactCompare ? "link_exact" : "link_similar",
           results,
           resolved: resolvedProduct,
           durationMs,
@@ -386,6 +395,30 @@ export class SearchService {
       ...attachMeta(results, meta),
       referenceProduct: results.referenceProduct,
     };
+  }
+
+  /** Ingest + search from raw URL (preferred entry for pasted links). */
+  async searchFromUrl(
+    sourceUrl: string,
+    intent: ShoppingIntent,
+    options: SearchContext = {},
+  ): Promise<EnrichedSearchResults & { referenceProduct?: ReferenceProduct; ingest?: LinkIngestResult }> {
+    const ingest = await ingestLinkProduct(sourceUrl);
+    if (!ingest) throw new Error("link_ingest_failed");
+
+    const out = await this.searchFromLink(
+      {
+        guessedTitle: ingest.guessedTitle,
+        category: ingest.category,
+        referencePrice: ingest.referencePrice,
+        sourceUrl,
+        sourceRetailer: ingest.sourceRetailer,
+        catalogId: ingest.catalogId,
+      },
+      intent,
+      { ...options, linkIngest: ingest },
+    );
+    return { ...out, ingest };
   }
 }
 

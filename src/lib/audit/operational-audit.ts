@@ -3,7 +3,7 @@
  * No optimistic catalog counts; separates catalog entries from production-usable products.
  */
 
-import { prisma } from "../db/prisma.ts";
+import { prisma } from "../db/prisma";
 
 const VERIFIED_SOURCES = new Set([
   "scraped",

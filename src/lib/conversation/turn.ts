@@ -1,6 +1,8 @@
 import { getStoresNearZip } from "../retailers/catalog";
 import { searchService } from "../search/search-service";
 import { parseProductUrl } from "../matching/url-parser";
+import { ingestLinkProduct } from "../matching/link-ingest";
+import { recordAnalyticsEvent } from "../analytics/record";
 import { parseQueryAttributes } from "../retailers/search";
 import { inferFromLearning } from "../learning/preference-learner";
 import type { ChatAction } from "../ai/generate-reply";
@@ -180,6 +182,10 @@ export async function resolveChatTurn(
   if (url) {
     const parsed = parseProductUrl(url);
     if (!parsed) {
+      await recordAnalyticsEvent({
+        name: "link_ingest_failed",
+        properties: { sourceUrl: url, reason: "parse_failed" },
+      }, userId);
       return {
         action: "invalid_link",
         session: { phase: "idle", intent: { zipCode: zip }, asked: [] },
@@ -189,25 +195,77 @@ export async function resolveChatTurn(
     }
 
     sourceUrl = url;
-    sourceProductTitle = parsed.guessedTitle;
+    const fullIntent = enrichIntent(
+      {
+        query: parsed.guessedTitle,
+        zipCode: zip,
+        ...(parsed.category ? { category: parsed.category } : {}),
+      },
+      learningProfile,
+    );
+
+    const ingest = await ingestLinkProduct(url);
+    if (!ingest) {
+      await recordAnalyticsEvent({
+        name: "link_ingest_failed",
+        properties: { sourceUrl: url, reason: "ingest_failed" },
+      }, userId);
+      return {
+        action: "invalid_link",
+        session: { phase: "idle", intent: { zipCode: zip }, asked: [] },
+        compareMode: false,
+        zipCode: zip,
+      };
+    }
+
+    sourceProductTitle = ingest.guessedTitle;
     intent = {
-      query: parsed.guessedTitle,
+      query: ingest.guessedTitle,
       zipCode: zip,
-      ...(parsed.category ? { category: parsed.category } : {}),
+      ...(ingest.category ? { category: ingest.category } : {}),
     };
 
-    const fullIntent = enrichIntent({ ...intent, zipCode: zip }, learningProfile);
+    await recordAnalyticsEvent({
+      name: "link_pasted",
+      properties: {
+        sourceUrl: url,
+        sourceRetailer: ingest.sourceRetailer,
+        matchTier: ingest.matchTier,
+        matchConfidence: ingest.matchConfidence,
+        pdpFetchOk: ingest.pdpFetchOk,
+        useExactCompare: ingest.useExactCompare,
+        ingestLatencyMs: ingest.ingestLatencyMs,
+      },
+    }, userId);
+
+    if (ingest.matchTier === "exact") {
+      await recordAnalyticsEvent({ name: "link_canonical_exact", properties: { catalogId: ingest.catalogId } }, userId);
+    } else if (ingest.matchTier === "near") {
+      await recordAnalyticsEvent({ name: "link_canonical_near", properties: { catalogId: ingest.catalogId } }, userId);
+    } else if (ingest.matchTier === "none") {
+      await recordAnalyticsEvent({ name: "link_canonical_failed", properties: { title: ingest.guessedTitle } }, userId);
+    }
+    if (ingest.matchConfidence < 0.6 || ingest.variantWarning) {
+      await recordAnalyticsEvent({
+        name: "link_low_confidence",
+        properties: { matchConfidence: ingest.matchConfidence, variantWarning: ingest.variantWarning },
+      }, userId);
+    }
+    if (ingest.unsupportedRetailer) {
+      await recordAnalyticsEvent({ name: "link_unsupported_retailer", properties: { hostname: ingest.hostname } }, userId);
+    }
+
     const productResults = await searchService.searchFromLink(
       {
-        guessedTitle: parsed.guessedTitle,
-        category: parsed.category,
-        referencePrice: parsed.referencePrice,
+        guessedTitle: ingest.guessedTitle,
+        category: ingest.category,
+        referencePrice: ingest.referencePrice,
         sourceUrl: url,
-        sourceRetailer: parsed.sourceRetailer,
-        catalogId: parsed.catalogId,
+        sourceRetailer: ingest.sourceRetailer,
+        catalogId: ingest.catalogId,
       },
       fullIntent,
-      { userId },
+      { userId, linkIngest: ingest },
     );
 
     return {
@@ -218,13 +276,13 @@ export async function resolveChatTurn(
         asked: ["url"],
         sourceUrl,
         sourceProductTitle,
-        compareMode: false,
+        compareMode: ingest.useExactCompare,
       },
       productResults,
-      compareMode: false,
+      compareMode: ingest.useExactCompare,
       zipCode: zip,
-      query: parsed.guessedTitle,
-      referenceProductTitle: parsed.guessedTitle,
+      query: ingest.guessedTitle,
+      referenceProductTitle: ingest.guessedTitle,
     };
   }
 

@@ -48,6 +48,9 @@ export default async function QualityDashboardPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-3 text-sm">
+          <Link href="/admin/links" className="text-sage-700 hover:underline">
+            Link ingestion →
+          </Link>
           <Link href="/admin/analytics" className="text-sage-700 hover:underline">
             Product analytics →
           </Link>

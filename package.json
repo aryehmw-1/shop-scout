@@ -40,6 +40,8 @@
     "audit:adapters": "tsx scripts/audit-retailer-adapters.ts",
     "audit:deals": "tsx scripts/audit-deal-display.ts",
     "audit:ops": "node --import tsx/esm scripts/operational-audit.ts",
+    "audit:links": "node --import tsx/esm scripts/audit-link-matching.ts",
+    "phase0:refresh": "node --import tsx/esm scripts/phase0-refresh-index.ts",
     "monitor:quality": "node --import tsx/esm scripts/monitor-quality.ts",
     "test:links": "node scripts/test-store-links.mjs",
     "test:intent": "node scripts/test-intent-switch.mjs",

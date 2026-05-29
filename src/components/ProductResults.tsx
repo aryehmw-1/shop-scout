@@ -15,6 +15,7 @@ import { LayoutGrid, List, Truck, AlertTriangle, Loader2, ExternalLink } from "l
 import Link from "next/link";
 import { BestDealHero } from "./BestDealHero";
 import { ValueProposition } from "./ValueProposition";
+import { LinkProductHero } from "./LinkProductHero";
 import { CompareExperience } from "./CompareExperience";
 import { useExperiment } from "@/lib/experiments/useExperiment";
 
@@ -182,7 +183,11 @@ export function ProductResults({
         </div>
       )}
 
-      {similarMode && referenceProduct && (
+      {referenceProduct && (similarMode || results.linkMatch) && (
+        <LinkProductHero reference={referenceProduct} />
+      )}
+
+      {similarMode && referenceProduct && !results.linkMatch && (
         <div className="rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-600">
           <p>
             <span className="font-medium text-stone-800">From your link:</span>{" "}
@@ -217,10 +222,14 @@ export function ProductResults({
               </div>
               <div className="min-w-0">
                 <h4 className="text-base font-bold text-stone-900 sm:text-lg">
-                  Verified live offers ({online.length})
+                  {results.linkMatch?.useExactCompare ?
+                    "Verified equivalent offers"
+                  : "Verified live offers"} ({online.length})
                 </h4>
                 <p className="mt-0.5 text-xs text-stone-600 sm:text-sm">
-                  Scraped or API prices · PDP links · ships to {zipCode}
+                  {results.linkMatch?.useExactCompare ?
+                    "Same product across stores · explainable match confidence"
+                  : "Scraped or API prices · PDP links"} · ships to {zipCode}
                 </p>
               </div>
             </div>
