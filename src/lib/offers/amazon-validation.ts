@@ -6,12 +6,35 @@ import type { CatalogItem } from "../retailers/catalog";
 import type { ProductOffer, ShoppingIntent } from "../types";
 import type { RetailerSearchHit } from "./retailer-adapters/types";
 import {
+  normalizeAmazonListingPrice,
+  amazonNormalizationEnabled,
+  isBulkCommercialListing,
+} from "./amazon-normalization";
+import {
   isPlausiblePrice,
   isPlausibleScrapedPrice,
   MIN_TITLE_SIMILARITY,
   MIN_TRUSTED_MATCH_CONFIDENCE,
 } from "./offer-quality";
 import { isPdpProductUrl } from "./url-classifier";
+
+function amazonPriceSanityOk(
+  priceUsd: number | undefined,
+  storeTitle: string,
+  item: CatalogItem,
+): { ok: boolean; normReason?: string } {
+  if (!priceUsd) return { ok: true };
+  if (!isPlausibleScrapedPrice(priceUsd)) return { ok: false, normReason: "invalid_price" };
+  if (isPlausiblePrice(priceUsd, item.basePrice)) return { ok: true };
+  if (isBulkCommercialListing(storeTitle, item)) {
+    return { ok: false, normReason: "bulk_listing" };
+  }
+  if (amazonNormalizationEnabled()) {
+    const norm = normalizeAmazonListingPrice(priceUsd, storeTitle, item);
+    return { ok: norm.accepted, normReason: norm.reason };
+  }
+  return { ok: false, normReason: "catalog_drift" };
+}
 
 /** Minimum title overlap to accept an Amazon search hit without UPC match. */
 export const AMAZON_MIN_TITLE_SIMILARITY = 0.38;
@@ -83,10 +106,8 @@ export function scoreAmazonSearchHit(
   const titleSim = titleSimilarity(catalogTitle, storeTitle);
   const duplicatePdp = Boolean(asin && seenAsins.has(asin));
 
-  const priceSanityOk =
-    !hit.priceUsd ||
-    (isPlausibleScrapedPrice(hit.priceUsd) &&
-      isPlausiblePrice(hit.priceUsd, item.basePrice));
+  const priceCheck = amazonPriceSanityOk(hit.priceUsd, storeTitle, item);
+  const priceSanityOk = priceCheck.ok;
 
   const imageQ = hit.imageUrl ? scoreImageQuality(hit.imageUrl) : { imageQualityScore: 0 };
   const imageUrl = hit.imageUrl ?? "";
@@ -117,7 +138,7 @@ export function scoreAmazonSearchHit(
   matchReasons.push(`titleSim=${titleSim.toFixed(2)}`);
   if (hit.priceUsd) matchReasons.push(`price=$${hit.priceUsd.toFixed(2)}`);
   if (priceSanityOk) matchReasons.push("price-sane");
-  else matchReasons.push("price-failed-sanity");
+  else matchReasons.push(`price-failed:${priceCheck.normReason ?? "sanity"}`);
   if (imageQualityOk) matchReasons.push(`imageQ=${imageQ.imageQualityScore.toFixed(2)}`);
   if (duplicatePdp) matchReasons.push("duplicate-asin");
   if (variantFlags.length) matchReasons.push(...variantFlags);

@@ -31,6 +31,10 @@ import {
 } from "./index-telemetry";
 import { indexOfferEnrichmentEnabled } from "../offers/enrich-index-offers";
 import { indexVariantGroupImagesEnabled } from "./index-variant-group-images";
+import {
+  getIndexRetailerRunSummary,
+  resetIndexRetailerSummary,
+} from "./index-retailer-summary";
 
 const NIGHTLY_SOURCE = DAILY_INDEX_SOURCE;
 
@@ -247,6 +251,7 @@ export interface NightlyIndexReport {
   retailersTonight: number;
   totalRetailers: number;
   telemetry?: import("./index-telemetry").IndexTelemetrySnapshot | null;
+  retailerSummary?: import("./index-retailer-summary").IndexRetailerRunSummary;
 }
 
 export interface NightlyIndexOptions {
@@ -265,6 +270,7 @@ export async function runNightlyPriceIndex(
   options: NightlyIndexOptions = {},
 ): Promise<NightlyIndexReport> {
   indexLogAlways("loading catalog module…");
+  resetIndexRetailerSummary();
   const { CATALOG } = await import("../retailers/catalog");
   const { ensureCatalogSynced } = await import("../db/catalog-sync");
   indexLogAlways("catalog module loaded", { products: CATALOG.length });
@@ -458,5 +464,6 @@ export async function runNightlyPriceIndex(
     retailersTonight: plan.retailersTonight.length,
     totalRetailers: plan.totalRetailers,
     telemetry,
+    retailerSummary: getIndexRetailerRunSummary(),
   };
 }

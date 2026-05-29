@@ -8,6 +8,10 @@ import {
   logAmazonMatchDecision,
   validateAmazonOffer,
 } from "./amazon-validation";
+import {
+  amazonNormalizationEnabled,
+  normalizeAmazonListingPrice,
+} from "./amazon-normalization";
 import { attachPipelineDebug } from "./offer-pipeline-meta";
 import type { RetailerPageExtraction } from "./retailer-page-extract";
 import {
@@ -202,22 +206,55 @@ export function applyRetailerExtractionToOffer(
     isPlausibleScrapedPrice(extraction.priceUsd) &&
     trustExtractedPrice
   ) {
-    const matchesCatalog = isPlausiblePrice(extraction.priceUsd, item.basePrice);
-    if (matchesCatalog) {
-      o.price = extraction.priceUsd;
-      o.landedCost = extraction.priceUsd;
-      o.unitPrice = extraction.priceUsd;
+    let priceToApply = extraction.priceUsd;
+    let priceNote = "Price from retailer page · verify at checkout";
+    const storeTitle = extraction.storeTitle ?? o.storeTitle ?? o.title;
+
+    if (!isPlausiblePrice(extraction.priceUsd, item.basePrice)) {
+      if (o.retailer === "amazon" && amazonNormalizationEnabled()) {
+        const norm = normalizeAmazonListingPrice(
+          extraction.priceUsd,
+          storeTitle,
+          item,
+        );
+        if (norm.accepted) {
+          priceToApply = norm.normalizedPrice;
+          priceNote =
+            norm.method === "direct" ?
+              priceNote
+            : `Normalized from $${norm.rawPrice.toFixed(2)} (${norm.reason}) · verify at checkout`;
+          appendReason(
+            o,
+            "price.normalized",
+            `${norm.method}: ${norm.reason}`,
+            0.12,
+          );
+        } else {
+          appendReason(
+            o,
+            "price.bulk-rejected",
+            norm.reason,
+            -0.2,
+          );
+        }
+      } else {
+        appendReason(
+          o,
+          "price.search-rejected",
+          "scraped price ignored (not plausible vs catalog)",
+          -0.1,
+        );
+      }
+    }
+
+    if (isPlausiblePrice(priceToApply, item.basePrice)) {
+      o.price = priceToApply;
+      o.landedCost = priceToApply;
+      o.unitPrice = priceToApply;
       o.priceSource = "scraped";
       o.priceAsOf = new Date().toISOString();
-      o.priceNote = "Price from retailer page · verify at checkout";
+      o.priceNote = priceNote;
       appendReason(o, "price.scraped", "price extracted from PDP", 0.18);
-    } else {
-      appendReason(
-        o,
-        "price.search-rejected",
-        "scraped price ignored (not plausible vs catalog)",
-        -0.1,
-      );
     }
   } else if (extraction.priceUsd && isPlausibleScrapedPrice(extraction.priceUsd)) {
     appendReason(

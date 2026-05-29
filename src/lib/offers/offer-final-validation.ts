@@ -6,6 +6,7 @@ import { PROXY_SENSITIVE_RETAILERS } from "./retailer-enrichment-status";
 import { hasRetailerAdapter } from "./retailer-enrichment-status";
 import { isDisplayableOffer, validateOfferBeforePersist } from "./offer-persist-validation";
 import { isVerifiedOffer } from "./offer-trust";
+import { recordPersistOutcome } from "../indexing/index-retailer-summary";
 
 /**
  * Mark adapter-retailer offers as rejected when fetch/parse failed.
@@ -87,6 +88,7 @@ export function applyFinalOfferValidation(
 
     if (result.ok) {
       persistable.push(offer);
+      recordPersistOutcome(offer.retailer, true);
       if (offer.imageUrl) seenImages.add(offer.imageUrl);
       const asin = offer.productUrl.match(/\/dp\/([A-Z0-9]{10})/i)?.[1];
       if (asin) seenAsins.add(asin.toUpperCase());
@@ -103,6 +105,7 @@ export function applyFinalOfferValidation(
       reason: result.reason ?? "unknown",
       detail: result.detail,
     });
+    recordPersistOutcome(offer.retailer, false, result.reason ?? "unknown");
 
     return attachPipelineDebug(offer, {
       validationStatus: "rejected",

@@ -61,6 +61,36 @@ export default async function InventoryDashboardPage() {
         </div>
       </section>
 
+      {inv.retailerQuality.length > 0 && (
+        <section className="mb-8 overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm">
+          <h2 className="border-b border-stone-100 px-4 py-3 font-semibold">
+            Retailer success rates (from last index runs)
+          </h2>
+          <table className="w-full text-left text-sm">
+            <thead className="bg-stone-50 text-xs uppercase text-stone-500">
+              <tr>
+                <th className="px-4 py-2">Retailer</th>
+                <th className="px-4 py-2">Fetch OK</th>
+                <th className="px-4 py-2">Parser OK</th>
+                <th className="px-4 py-2">Persist OK</th>
+                <th className="px-4 py-2">Trust</th>
+              </tr>
+            </thead>
+            <tbody>
+              {inv.retailerQuality.map((r) => (
+                <tr key={r.retailerId} className="border-t border-stone-100">
+                  <td className="px-4 py-2 font-medium">{r.retailerId}</td>
+                  <td className="px-4 py-2">{pct(r.fetchSuccessPct)}</td>
+                  <td className="px-4 py-2">{pct(r.parserSuccessPct)}</td>
+                  <td className="px-4 py-2">{pct(r.persistSuccessPct)}</td>
+                  <td className="px-4 py-2">{r.trustScore.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
+
       <section className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Curated catalog (canonical IDs)" value={inv.inMemoryCatalogSize} />
         <Stat label="DB canonical products" value={inv.canonicalProductCount} />

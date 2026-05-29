@@ -71,6 +71,13 @@ export interface InventoryHealthReport {
     consumerTrustPassPct: number;
     matchConfidenceBuckets: { bucket: string; count: number; pct: number }[];
   };
+  retailerQuality: Array<{
+    retailerId: string;
+    fetchSuccessPct: number;
+    parserSuccessPct: number;
+    persistSuccessPct: number;
+    trustScore: number;
+  }>;
 }
 
 export interface CategoryInventoryRow {
@@ -360,6 +367,30 @@ export async function computeInventoryHealth(): Promise<InventoryHealthReport> {
       Math.round((expiredVerifiedQuotes / verifiedQuoteRows) * 1000) / 10
     : 0;
 
+  const qualityRows = await prisma.retailerQualityMetric.findMany({
+    orderBy: { fetchAttempts: "desc" },
+    take: 10,
+  });
+  const retailerQuality = qualityRows.map((m) => {
+    const persistTotal = m.offersAccepted + m.offersRejected;
+    return {
+      retailerId: m.retailerId,
+      fetchSuccessPct:
+        m.fetchAttempts > 0 ?
+          Math.round((m.fetchSuccesses / m.fetchAttempts) * 1000) / 10
+        : 0,
+      parserSuccessPct:
+        m.parserAttempts > 0 ?
+          Math.round((m.parserSuccesses / m.parserAttempts) * 1000) / 10
+        : 0,
+      persistSuccessPct:
+        persistTotal > 0 ?
+          Math.round((m.offersAccepted / persistTotal) * 1000) / 10
+        : 0,
+      trustScore: m.trustScore,
+    };
+  });
+
   return {
     generatedAt: now.toISOString(),
     inMemoryCatalogSize: CATALOG.length,
@@ -409,5 +440,6 @@ export async function computeInventoryHealth(): Promise<InventoryHealthReport> {
         : 0,
       matchConfidenceBuckets,
     },
+    retailerQuality,
   };
 }

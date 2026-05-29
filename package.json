@@ -45,6 +45,7 @@
     "index:flagship": "INDEX_FLAGSHIP_ONLY=on tsx scripts/nightly-index.ts --full",
     "inventory:report": "tsx scripts/inventory-report.ts",
     "audit:data-quality": "tsx scripts/data-quality-audit.ts",
+    "audit:retailer-health": "tsx scripts/audit-retailer-health.ts",
     "monitor:quality": "tsx scripts/monitor-quality.ts",
     "test:links": "node scripts/test-store-links.mjs",
     "test:intent": "node scripts/test-intent-switch.mjs",

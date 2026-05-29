@@ -5,16 +5,32 @@
  *   npm run phase0:refresh
  *   npm run phase0:refresh -- --limit=22
  */
+import { writeFileSync } from "fs";
+import { join } from "path";
 import { prisma } from "../src/lib/db/prisma";
 import { runNightlyPriceIndex } from "../src/lib/indexing/nightly-quotes";
 import { getFullIndexRotationPlan } from "../src/lib/indexing/weekly-retailer-schedule";
 import { getFlagshipCatalogIds } from "../src/lib/inventory/flagship-catalog";
+import {
+  formatIndexRetailerSummaryMarkdown,
+} from "../src/lib/indexing/index-retailer-summary";
+import { proxyUrlPool, warnIfProxyMisconfigured } from "../src/lib/offers/retailer-adapters/retailer-fetch";
 
 const VERIFIED = ["scraped", "connector_api", "daily_index", "nightly_index"];
 const limitArg = process.argv.find((a) => a.startsWith("--limit="));
 const limit = limitArg ? parseInt(limitArg.split("=")[1]!, 10) : 22;
 
+// Operational diagnostics during refresh
+process.env.INDEX_ENRICHMENT_REPORT ??= "1";
+process.env.INDEX_FETCH_LOG ??= "1";
+
 async function main() {
+  warnIfProxyMisconfigured();
+  const proxies = proxyUrlPool();
+  console.log(
+    `[phase0:refresh] proxy: ${proxies.length ? `${proxies.length} configured` : "NOT configured — Walmart/Target/Kroger will fail"}`,
+  );
+
   const now = new Date();
   const flagshipIds = getFlagshipCatalogIds();
 
@@ -83,6 +99,19 @@ async function main() {
   });
 
   console.log("[phase0:refresh] done", JSON.stringify(report, null, 2));
+
+  if (report.retailerSummary) {
+    const md = formatIndexRetailerSummaryMarkdown(report.retailerSummary);
+    console.log("\n" + md);
+    const outPath = join(process.cwd(), "docs", "PHASE0_RETAILER_DIAGNOSTICS.md");
+    writeFileSync(
+      outPath,
+      `# Phase 0 retailer diagnostics\n\nGenerated: ${new Date().toISOString()}\n\nOffers written: **${report.offersWritten}** · Products indexed: **${report.productsIndexed}**\n\n${md}\n`,
+      "utf8",
+    );
+    console.error(`\n[phase0:refresh] wrote ${outPath}`);
+  }
+
   await prisma.$disconnect();
 }
 

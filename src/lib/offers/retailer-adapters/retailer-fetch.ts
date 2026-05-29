@@ -5,6 +5,7 @@ import {
   getRetailerFetchProfile,
   shouldUseProxyForRetailer,
 } from "./fetch-profiles";
+import { recordFetchOutcome } from "../../indexing/index-retailer-summary";
 
 const DEFAULT_USER_AGENTS = [
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
@@ -309,14 +310,16 @@ export async function fetchRetailerHtml(
     );
 
     if (!res.ok) {
-      logFetchFailure({
+      const failure: RetailerFetchFailure = {
         retailerId,
         url: pageUrl,
         status: res.status,
         reason: `http-${res.status}`,
         attempt,
         proxyUsed: viaProxy,
-      });
+      };
+      logFetchFailure(failure);
+      recordFetchOutcome(failure, retailerId, viaProxy);
       return null;
     }
 
@@ -325,18 +328,33 @@ export async function fetchRetailerHtml(
     if (isRetailerBlockedHtml(retailerId, html, true)) {
       const reason = blockReason(retailerId, html);
       await maybeSaveDebugHtml(retailerId, html, reason);
-      logFetchFailure({
+      const failure: RetailerFetchFailure = {
         retailerId,
         url: pageUrl,
         status: res.status,
         reason,
         attempt,
         proxyUsed: viaProxy,
-      });
+      };
+      logFetchFailure(failure);
+      recordFetchOutcome(failure, retailerId, viaProxy);
       return null;
     }
 
-    if (html.length < 200) return null;
+    if (html.length < 200) {
+      const failure: RetailerFetchFailure = {
+        retailerId,
+        url: pageUrl,
+        status: res.status,
+        reason: "html-too-short",
+        attempt,
+        proxyUsed: viaProxy,
+      };
+      recordFetchOutcome(failure, retailerId, viaProxy);
+      return null;
+    }
+
+    recordFetchOutcome(null, retailerId, viaProxy);
 
     return {
       html,
@@ -347,13 +365,15 @@ export async function fetchRetailerHtml(
       status: res.status,
     };
   } catch (e) {
-    logFetchFailure({
+    const failure: RetailerFetchFailure = {
       retailerId,
       url: pageUrl,
       reason: `network-${String(e).slice(0, 80)}`,
       attempt,
       proxyUsed: Boolean(proxyUrl),
-    });
+    };
+    logFetchFailure(failure);
+    recordFetchOutcome(failure, retailerId, Boolean(proxyUrl));
     return null;
   }
 }
