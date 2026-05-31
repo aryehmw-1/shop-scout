@@ -94,9 +94,13 @@ export default function RootLayout({
       className={`${dmSans.variable} ${outfit.variable} ${fraunces.variable} h-full`}
     >
       <head>
+        {/* Impact uses non-standard `value`; include both for crawler compatibility. */}
         <meta
           name="impact-site-verification"
-          value="9624ca76-4d4b-48b7-aa75-b993343f25db"
+          content="9624ca76-4d4b-48b7-aa75-b993343f25db"
+          {...({
+            value: "9624ca76-4d4b-48b7-aa75-b993343f25db",
+          } as Record<string, string>)}
         />
       </head>
       <body className="min-h-full antialiased">
