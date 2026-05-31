@@ -2,14 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { DM_Sans, Fraunces, Outfit } from "next/font/google";
 import "./globals.css";
 import { APP_NAME, APP_DESCRIPTION, APP_TAGLINE } from "@/lib/constants";
-import {
-  BRAND_ICON_32_URL,
-  BRAND_ICON_180_URL,
-  BRAND_OG_MARK_URL,
-  brandAssetUrl,
-} from "@/lib/brand/mark-config";
 import { getSiteUrl } from "@/lib/site";
-import { IMPACT_VERIFICATION_METADATA_OTHER } from "@/lib/affiliate/impact-verification";
+import {
+  IMPACT_SITE_VERIFICATION_ID,
+  IMPACT_VERIFICATION_METADATA_OTHER,
+} from "@/lib/affiliate/impact-verification";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
@@ -31,16 +28,8 @@ const fraunces = Fraunces({
   weight: ["500", "600", "700"],
 });
 
-/** Tab icons — generated from public/brand/mark.svg (see mark-config.ts). */
-const TAB_ICON = brandAssetUrl(BRAND_ICON_32_URL);
-const APPLE_ICON = brandAssetUrl(BRAND_ICON_180_URL);
-
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
-  icons: {
-    icon: [{ url: TAB_ICON, type: "image/png", sizes: "32x32" }],
-    apple: [{ url: APPLE_ICON, sizes: "180x180", type: "image/png" }],
-  },
   title: {
     default: `${APP_NAME} — Compare Prices Across Every Store`,
     template: `%s · ${APP_NAME}`,
@@ -61,21 +50,13 @@ export const metadata: Metadata = {
     description: APP_TAGLINE,
     type: "website",
     locale: "en_US",
-    images: [
-      {
-        url: brandAssetUrl(BRAND_OG_MARK_URL),
-        width: 512,
-        height: 512,
-        alt: APP_NAME,
-      },
-    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: APP_NAME,
     description: APP_TAGLINE,
-    images: ["/brand/og-mark.png"],
   },
+  /** SSR head meta — paired with htmlLimitedBots so crawlers see it in initial HTML. */
   other: {
     ...IMPACT_VERIFICATION_METADATA_OTHER,
   },
@@ -86,6 +67,9 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
 };
+
+/** Keep homepage metadata in prerendered HTML (crawler-visible without streaming). */
+export const dynamic = "force-static";
 
 export default function RootLayout({
   children,

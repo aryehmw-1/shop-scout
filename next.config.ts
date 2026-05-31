@@ -11,6 +11,8 @@ const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["paapi5-nodejs-sdk"],
+  /** Emit metadata tags in initial HTML for all UAs (curl, Impact crawler, browsers). */
+  htmlLimitedBots: /.*/,
   /** Removes the black floating Next.js dev indicator (lower-left in dev). */
   devIndicators: false,
   turbopack: {
