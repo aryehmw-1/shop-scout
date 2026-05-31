@@ -9,6 +9,7 @@ import {
   brandAssetUrl,
 } from "@/lib/brand/mark-config";
 import { getSiteUrl } from "@/lib/site";
+import { IMPACT_VERIFICATION_METADATA_OTHER } from "@/lib/affiliate/impact-verification";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
@@ -75,6 +76,9 @@ export const metadata: Metadata = {
     description: APP_TAGLINE,
     images: ["/brand/og-mark.png"],
   },
+  other: {
+    ...IMPACT_VERIFICATION_METADATA_OTHER,
+  },
 };
 
 export const viewport: Viewport = {
@@ -93,16 +97,6 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${outfit.variable} ${fraunces.variable} h-full`}
     >
-      <head>
-        {/* Impact uses non-standard `value`; include both for crawler compatibility. */}
-        <meta
-          name="impact-site-verification"
-          content="9624ca76-4d4b-48b7-aa75-b993343f25db"
-          {...({
-            value: "9624ca76-4d4b-48b7-aa75-b993343f25db",
-          } as Record<string, string>)}
-        />
-      </head>
       <body className="min-h-full antialiased">
         <ThemeProvider>
           <AuthProvider>{children}</AuthProvider>
