@@ -1,21 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { IMPACT_VERIFICATION_META_HTML } from "@/lib/affiliate/impact-verification";
 
-const IMPACT_VERIFICATION_ID = "9624ca76-4d4b-48b7-aa75-b993343f25db";
-const IMPACT_META_HTML = `<meta name="impact-site-verification" value="${IMPACT_VERIFICATION_ID}" content="${IMPACT_VERIFICATION_ID}">`;
 /** Prevents middleware fetch loop when rewriting HTML. */
 const HTML_META_SKIP_HEADER = "x-shop-scout-html-meta-skip";
-
-type HtmlRewriterCtor = new () => {
-  on(
-    selector: string,
-    handlers: {
-      element: (element: {
-        prepend: (html: string, opts: { html: boolean }) => void;
-      }) => void;
-    },
-  ): { transform: (response: Response) => Response };
-};
 
 function shouldInjectImpactMeta(request: NextRequest): boolean {
   if (request.method !== "GET" && request.method !== "HEAD") return false;
@@ -27,14 +15,19 @@ function shouldInjectImpactMeta(request: NextRequest): boolean {
   return true;
 }
 
+function injectMetaIntoHtml(html: string): string {
+  if (html.includes("impact-site-verification")) {
+    return html;
+  }
+  if (/<head[\s>]/i.test(html)) {
+    return html.replace(/<head([^>]*)>/i, `<head$1>${IMPACT_VERIFICATION_META_HTML}`);
+  }
+  return `${IMPACT_VERIFICATION_META_HTML}${html}`;
+}
+
 async function injectImpactVerificationMeta(
   request: NextRequest,
 ): Promise<Response> {
-  const Rewriter = (globalThis as { HTMLRewriter?: HtmlRewriterCtor }).HTMLRewriter;
-  if (!Rewriter) {
-    return NextResponse.next();
-  }
-
   const headers = new Headers(request.headers);
   headers.set(HTML_META_SKIP_HEADER, "1");
 
@@ -62,13 +55,18 @@ async function injectImpactVerificationMeta(
     return response;
   }
 
-  return new Rewriter()
-    .on("head", {
-      element(element) {
-        element.prepend(IMPACT_META_HTML, { html: true });
-      },
-    })
-    .transform(response);
+  if (request.method === "HEAD") {
+    return response;
+  }
+
+  const html = await response.text();
+  const injected = injectMetaIntoHtml(html);
+
+  return new Response(injected, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: response.headers,
+  });
 }
 
 export async function middleware(request: NextRequest) {
@@ -102,4 +100,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image).*)"],
+  /** Node runtime: Vercel Edge has no HTMLRewriter; text rewrite works reliably. */
+  runtime: "nodejs",
 };

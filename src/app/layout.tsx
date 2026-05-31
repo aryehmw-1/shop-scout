@@ -81,6 +81,13 @@ export default function RootLayout({
       lang="en"
       className={`${dmSans.variable} ${outfit.variable} ${fraunces.variable} h-full`}
     >
+      <head>
+        {/* Crawler-visible verification — metadata.other may stream outside initial head. */}
+        <meta
+          name="impact-site-verification"
+          content={IMPACT_SITE_VERIFICATION_ID}
+        />
+      </head>
       <body className="min-h-full antialiased">
         <ThemeProvider>
           <AuthProvider>{children}</AuthProvider>
