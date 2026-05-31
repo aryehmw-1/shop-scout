@@ -30,6 +30,7 @@ async function injectImpactVerificationMeta(
 ): Promise<Response> {
   const headers = new Headers(request.headers);
   headers.set(HTML_META_SKIP_HEADER, "1");
+  headers.delete("accept-encoding");
 
   let response: Response;
   try {
@@ -100,6 +101,4 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image).*)"],
-  /** Node runtime: Vercel Edge has no HTMLRewriter; text rewrite works reliably. */
-  runtime: "nodejs",
 };
