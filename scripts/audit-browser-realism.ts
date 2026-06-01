@@ -14,12 +14,74 @@ import { loadEnv } from "./load-env.mjs";
 loadEnv({ verbose: true });
 process.env.RENDERED_LAB_LOG = process.env.RENDERED_LAB_LOG ?? "1";
 
-import {
-  fetchRenderedHtml,
-  fetchRenderedCompareSession,
-  type RenderedFetchResult,
-  type CompareVariantResult,
-} from "../src/lib/offers/retailer-adapters/rendered-fetch";
+// import {
+//   fetchRenderedHtml,
+//   fetchRenderedCompareSession,
+//   type RenderedFetchResult,
+//   type CompareVariantResult,
+// } from "../src/lib/offers/retailer-adapters/rendered-fetch";
+
+type RenderedFetchResult = {
+  ok: boolean;
+  status: number;
+  error?: string;
+  failureKind?: string;
+  warmupMode?: string;
+  behavior?: string;
+  transport?: string;
+  proxyUsed?: boolean;
+  sticky?: boolean;
+  classification: {
+    category: string;
+    reason: string;
+    vendor?: string;
+    ok: boolean;
+  };
+  timingMs: number;
+  artifactDir?: string | null;
+  identity?: {
+    ip?: string;
+    asn?: string;
+    isp?: string;
+    country?: string;
+    city?: string;
+    ok?: boolean;
+  };
+  coherence?: { score: number; mismatches: string[] };
+  lifecycle?: {
+    stages: Array<Record<string, unknown>>;
+    waitStrategy?: string;
+    committed?: boolean;
+    firstByteMs?: number;
+    becameInteractive?: boolean;
+    challengeDetected?: boolean;
+    domBytesAtExtraction?: number;
+    timedOut?: boolean;
+  };
+  redirectChain?: Array<{ url: string; status: number }>;
+  realism?: unknown;
+  suspicion?: { score?: number; reasons?: string[] };
+  challenge?: { score?: number; factors?: string[] };
+  geoCountry?: string;
+};
+
+type CompareVariantResult = RenderedFetchResult & { label: string };
+
+function stubRenderedFetchDisabled(reason = "rendered-fetch temporarily disabled"): RenderedFetchResult {
+  return {
+    ok: false,
+    status: 0,
+    error: reason,
+    failureKind: "unknown",
+    classification: {
+      ok: false,
+      category: "empty",
+      reason: "not_configured",
+    },
+    timingMs: 0,
+    artifactDir: null,
+  };
+}
 import {
   newStickySessionId,
   getProxyForTransport,
@@ -74,19 +136,9 @@ interface RunOpts {
 }
 
 async function runAudit(opts: RunOpts): Promise<RenderedFetchResult> {
-  return fetchRenderedHtml(opts.url, opts.retailer, {
-    behaviorId: opts.behaviorId,
-    transport: opts.transport,
-    country: opts.country,
-    region: opts.region,
-    stickySessionId: opts.stickySessionId,
-    warmup: opts.warmup,
-    waitStrategy: opts.waitStrategy,
-    blockResources: opts.blockResources,
-    earlyExtraction: opts.earlyExtraction,
-    probeIdentity: true,
-    alwaysCapture: true,
-  });
+  void opts;
+  // return fetchRenderedHtml(opts.url, opts.retailer, { ... });
+  return stubRenderedFetchDisabled();
 }
 
 function printOutcome(label: string, res: RenderedFetchResult | CompareVariantResult) {
@@ -222,65 +274,19 @@ async function main() {
     }
 
     console.log("\n=== warm-session A/B (one browser, sequential, no parallelism) ===");
-    const session = await fetchRenderedCompareSession(
-      url,
-      retailer,
-      [
-        { label: "direct", warmup: false },
-        { label: "homepage", warmup: "homepage" },
-      ],
-      {
-        behaviorId,
-        transport,
-        country,
-        region,
-        stickySessionId,
-        waitStrategy,
-        blockResources,
-        earlyExtraction,
-        probeIdentity: true,
-        alwaysCapture: true,
-      },
-    );
-
-    if ("error" in session) {
-      console.error(`\n⚠ compare session failed: ${session.error}`);
-      process.exit(2);
-    }
-
-    console.log("\n=== shared transport identity (probed once) ===");
-    console.log(
-      session.identity
-        ? {
-            ip: session.identity.ip,
-            geo: session.identity.country,
-            asn: session.identity.asn,
-            ok: session.identity.ok,
-            coherence: session.coherence?.score,
-          }
-        : "(probe failed)",
-    );
-
-    for (const res of session.results) {
-      printOutcome(res.label, { ...res, identity: session.identity, coherence: session.coherence });
-    }
-
-    console.log("\n=== warmup comparison ===");
-    console.table(session.results.map(summarize));
-    const directSum = summarize(session.results[0]!);
-    const warmedSum = summarize(session.results[1]!);
-    console.log({
-      cooldownMs: session.cooldownMs,
-      challengeImproved:
-        directSum.challenged &&
-        !warmedSum.challenged &&
-        warmedSum.failureKind === "ok",
-      directFailureKind: directSum.failureKind,
-      homepageFailureKind: warmedSum.failureKind,
-      preferHomepageExperiment:
-        warmedSum.failureKind === "walmart_challenge" && directSum.failureKind === "walmart_challenge",
-      deltaMs: warmedSum.timingMs - directSum.timingMs,
-    });
+    void url;
+    void retailer;
+    void behaviorId;
+    void transport;
+    void country;
+    void region;
+    void stickySessionId;
+    void waitStrategy;
+    void blockResources;
+    void earlyExtraction;
+    // const session = await fetchRenderedCompareSession(url, retailer, [...], { ... });
+    console.error("\n⚠ compare-warmup unavailable: rendered-fetch temporarily disabled");
+    process.exit(2);
     return;
   }
 

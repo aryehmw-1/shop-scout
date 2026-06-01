@@ -567,53 +567,53 @@ export async function fetchRetailerHtmlWithRetries(
 }
 
 async function tryRenderedEscalation(
-  pageUrl: string,
-  retailerId: RetailerId,
+  _pageUrl: string,
+  _retailerId: RetailerId,
 ): Promise<RetailerHtmlFetchResult | null> {
-  try {
-    const { isRenderedFetchEnabled, strategyAllowsRendered, fetchRenderedHtml } = await import(
-      "./rendered-fetch"
-    );
-    if (!isRenderedFetchEnabled() || !strategyAllowsRendered(retailerId)) return null;
-
-    const { buildEscalationLadder } = await import("../../retailers/escalation-policy");
-    const { newStickySessionId } = await import("../../net/proxy-routing");
-
-    // Transport-first ladder: cheapest transport before behavioral escalation.
-    const ladder = buildEscalationLadder({ retailerId, suspicion: 0 });
-    for (let i = 0; i < ladder.length; i++) {
-      const step = ladder[i]!;
-      if (process.env.PIPELINE_DEBUG === "1" || process.env.INDEX_FETCH_LOG === "1") {
-        console.warn(
-          `[retailer-fetch] rendered escalation ${retailerId}: ${step.transport}+${step.behavior}`,
-        );
-      }
-      const result = await fetchRenderedHtml(pageUrl, retailerId, {
-        transport: step.transport,
-        behaviorId: step.behavior,
-        stickySessionId: step.transport === "residential" ? newStickySessionId() : undefined,
-        attempt: i + 1,
-      });
-      // Skip unconfigured transports without aborting the ladder.
-      if (result.error?.includes("not_configured")) continue;
-      if (result.ok && result.html) {
-        return {
-          html: result.html,
-          resolvedUrl: result.finalUrl ?? pageUrl,
-          userAgent: "playwright",
-          proxyUsed: result.proxyUsed,
-          attempt: attempts(retailerId) + i + 1,
-          status: result.status,
-        };
-      }
-    }
-    return null;
-  } catch (e) {
-    if (process.env.PIPELINE_DEBUG === "1") {
-      console.warn("[retailer-fetch] rendered escalation failed", String(e).slice(0, 120));
-    }
-    return null;
-  }
+  // Rendered-fetch module temporarily unavailable — skip Playwright escalation.
+  return null;
+  // try {
+  //   const { isRenderedFetchEnabled, strategyAllowsRendered, fetchRenderedHtml } = await import(
+  //     "./rendered-fetch"
+  //   );
+  //   if (!isRenderedFetchEnabled() || !strategyAllowsRendered(retailerId)) return null;
+  //
+  //   const { buildEscalationLadder } = await import("../../retailers/escalation-policy");
+  //   const { newStickySessionId } = await import("../../net/proxy-routing");
+  //
+  //   const ladder = buildEscalationLadder({ retailerId, suspicion: 0 });
+  //   for (let i = 0; i < ladder.length; i++) {
+  //     const step = ladder[i]!;
+  //     if (process.env.PIPELINE_DEBUG === "1" || process.env.INDEX_FETCH_LOG === "1") {
+  //       console.warn(
+  //         `[retailer-fetch] rendered escalation ${retailerId}: ${step.transport}+${step.behavior}`,
+  //       );
+  //     }
+  //     const result = await fetchRenderedHtml(pageUrl, retailerId, {
+  //       transport: step.transport,
+  //       behaviorId: step.behavior,
+  //       stickySessionId: step.transport === "residential" ? newStickySessionId() : undefined,
+  //       attempt: i + 1,
+  //     });
+  //     if (result.error?.includes("not_configured")) continue;
+  //     if (result.ok && result.html) {
+  //       return {
+  //         html: result.html,
+  //         resolvedUrl: result.finalUrl ?? pageUrl,
+  //         userAgent: "playwright",
+  //         proxyUsed: result.proxyUsed,
+  //         attempt: attempts(retailerId) + i + 1,
+  //         status: result.status,
+  //       };
+  //     }
+  //   }
+  //   return null;
+  // } catch (e) {
+  //   if (process.env.PIPELINE_DEBUG === "1") {
+  //     console.warn("[retailer-fetch] rendered escalation failed", String(e).slice(0, 120));
+  //   }
+  //   return null;
+  // }
 }
 
 function attempts(retailerId: RetailerId): number {

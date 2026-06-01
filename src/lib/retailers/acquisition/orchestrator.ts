@@ -16,10 +16,10 @@ import {
   enrichCapabilityWithMetrics,
 } from "./capability-registry";
 import { fetchRetailerHtmlWithRetries } from "../../offers/retailer-adapters/retailer-fetch";
-import {
-  fetchRenderedHtml,
-  isRenderedFetchEnabled,
-} from "../../offers/retailer-adapters/rendered-fetch";
+// import {
+//   fetchRenderedHtml,
+//   isRenderedFetchEnabled,
+// } from "../../offers/retailer-adapters/rendered-fetch";
 import { isAmazonPaapiConfigured } from "../../search/providers/amazon-paapi-config";
 import {
   buildTransportLadder,
@@ -63,18 +63,18 @@ async function executeBrowserRendered(
   }
 > {
   const start = Date.now();
-  if (!isRenderedFetchEnabled()) {
-    return {
-      method: "browser_rendered",
-      ok: false,
-      failureKind: "not_configured",
-      latencyMs: Date.now() - start,
-      reason: "INDEX_ENABLE_RENDERED not set",
-      status: 0,
-      transport,
-      costScore: TRANSPORT_COST[transport],
-    };
-  }
+  // if (!isRenderedFetchEnabled()) {
+  //   return {
+  //     method: "browser_rendered",
+  //     ok: false,
+  //     failureKind: "not_configured",
+  //     latencyMs: Date.now() - start,
+  //     reason: "INDEX_ENABLE_RENDERED not set",
+  //     status: 0,
+  //     transport,
+  //     costScore: TRANSPORT_COST[transport],
+  //   };
+  // }
 
   const policy = getTransportPolicy(req.retailerId);
   if (transport === "residential" && policy.tier === "experimental") {
@@ -93,24 +93,35 @@ async function executeBrowserRendered(
     }
   }
 
-  const res = await fetchRenderedHtml(req.url, req.retailerId, {
-    transport,
-    probeIdentity: transport === "residential",
-  });
+  // const res = await fetchRenderedHtml(req.url, req.retailerId, {
+  //   transport,
+  //   probeIdentity: transport === "residential",
+  // });
+
+  // return {
+  //   method: "browser_rendered",
+  //   ok: res.ok,
+  //   failureKind: res.failureKind as AcquisitionFailureKind,
+  //   latencyMs: Date.now() - start,
+  //   html: res.html,
+  //   status: res.status,
+  //   classification: {
+  //     category: res.classification.category,
+  //     reason: res.classification.reason,
+  //     vendor: res.classification.vendor,
+  //   },
+  //   reason: res.classification.reason,
+  //   transport,
+  //   costScore: TRANSPORT_COST[transport],
+  // };
 
   return {
     method: "browser_rendered",
-    ok: res.ok,
-    failureKind: res.failureKind as AcquisitionFailureKind,
+    ok: false,
+    failureKind: "not_configured",
     latencyMs: Date.now() - start,
-    html: res.html,
-    status: res.status,
-    classification: {
-      category: res.classification.category,
-      reason: res.classification.reason,
-      vendor: res.classification.vendor,
-    },
-    reason: res.classification.reason,
+    reason: "rendered-fetch temporarily disabled",
+    status: 0,
     transport,
     costScore: TRANSPORT_COST[transport],
   };

@@ -1,8 +1,8 @@
 /**
  * Structured challenge analytics from rendered experiment runs.
  */
-import type { RenderedFetchResult } from "../../offers/retailer-adapters/rendered-fetch";
-import type { ChallengeAnalytics } from "./types";
+// import type { RenderedFetchResult } from "../../offers/retailer-adapters/rendered-fetch";
+import type { ChallengeAnalytics, RenderedFetchResult } from "./types";
 import { parseHarSummary } from "./har-analytics";
 
 const INTERSTITIAL_RE = /blocked|challenge|captcha|interstitial|px/i;

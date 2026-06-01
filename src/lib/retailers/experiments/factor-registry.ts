@@ -2,7 +2,7 @@
  * Experiment factor registry + retailer presets.
  * Vary one factor at a time from a stable baseline.
  */
-import type { RetailerId } from "../types";
+import type { RetailerId } from "../../types";
 import type {
   ExperimentBaseline,
   ExperimentCellSpec,

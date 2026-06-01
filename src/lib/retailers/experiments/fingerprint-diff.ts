@@ -99,8 +99,8 @@ export function diffFingerprints(
   if (!successful || !challenged) return [];
   const diffs: FingerprintDiffEntry[] = [];
   for (const field of DIFF_FIELDS) {
-    const a = (successful.signals as Record<string, unknown>)[field];
-    const b = (challenged.signals as Record<string, unknown>)[field];
+    const a = (successful.signals as unknown as Record<string, unknown>)[field];
+    const b = (challenged.signals as unknown as Record<string, unknown>)[field];
     const same = JSON.stringify(a) === JSON.stringify(b);
     if (!same) {
       diffs.push({

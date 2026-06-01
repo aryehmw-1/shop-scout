@@ -2,7 +2,7 @@
  * Experiment framework types — controlled A/B and one-factor-at-a-time matrices
  * for anti-bot observability (not evasion tuning).
  */
-import type { RetailerId } from "../types";
+import type { RetailerId } from "../../types";
 import type { ProxyTransport } from "../../net/proxy-routing";
 import type { SessionBehaviorId } from "../session-behavior";
 import type { WaitStrategy, BlockableResource } from "../navigation-strategy";
@@ -13,7 +13,56 @@ import type { ResponseClassification } from "../../net/response-classification";
 import type { NavigationLifecycle } from "../navigation-strategy";
 import type { TransportIdentity } from "../../net/transport-identity";
 import type { CoherenceResult } from "../../net/geo-coherence";
-import type { RenderedFetchResult } from "../../offers/retailer-adapters/rendered-fetch";
+// import type { RenderedFetchResult } from "../../offers/retailer-adapters/rendered-fetch";
+
+/** Temporary local shape while rendered-fetch module is unavailable. */
+export interface RenderedFetchResult {
+  ok: boolean;
+  status: number;
+  html?: string;
+  finalUrl?: string;
+  failureKind?: LabFailureKind;
+  error?: string;
+  classification: ResponseClassification;
+  lifecycle?: NavigationLifecycle;
+  redirectChain?: Array<{ url: string; status: number }>;
+  identity?: TransportIdentity;
+  coherence?: CoherenceResult;
+  realism?: RealismSignals;
+  suspicion?: { score?: number; reasons?: string[] };
+  challenge?: { score?: number; factors?: string[] };
+  timingMs: number;
+  artifactDir?: string | null;
+  proxyUsed?: boolean;
+  transport?: string;
+  behavior?: string;
+  warmupMode?: string;
+  sticky?: boolean;
+  geoCountry?: string;
+}
+
+/** Stub result when rendered-fetch is disabled (build / deploy). */
+export function stubRenderedFetchDisabled(
+  reason = "rendered-fetch temporarily disabled",
+): RenderedFetchResult {
+  return {
+    ok: false,
+    status: 0,
+    error: reason,
+    failureKind: "unknown",
+    classification: {
+      ok: false,
+      category: "empty",
+      reason: "not_configured",
+      confidence: 1,
+      indicators: [reason],
+      status: 0,
+      bytes: 0,
+    },
+    timingMs: 0,
+    artifactDir: null,
+  };
+}
 
 /** Factors we can vary independently in the matrix runner. */
 export type ExperimentFactorId =

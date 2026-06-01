@@ -3,8 +3,8 @@
  */
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import type { RetailerId } from "../types";
-import { fetchRenderedHtml } from "../../offers/retailer-adapters/rendered-fetch";
+import type { RetailerId } from "../../types";
+// import { fetchRenderedHtml } from "../../offers/retailer-adapters/rendered-fetch";
 import { newStickySessionId } from "../../net/proxy-routing";
 import { labLog, COMPARE_VARIANT_COOLDOWN_MS } from "../rendered-lab";
 import { sleep } from "../session-behavior";
@@ -14,6 +14,7 @@ import type {
   ExperimentCellResult,
   ExperimentBaseline,
 } from "./types";
+import { stubRenderedFetchDisabled } from "./types";
 import {
   buildOneAtATimeMatrix,
   getExperimentPreset,
@@ -93,11 +94,12 @@ export async function runExperimentBatch(spec: ExperimentBatchSpec): Promise<Exp
     const cellStarted = Date.now();
     labLog("experiment_cell_start", { cellId: cellSpec.id, factor: cellSpec.factor });
 
-    const fetch = await fetchRenderedHtml(
-      spec.targetUrl,
-      spec.retailerId as RetailerId,
-      baselineToFetchOptions(spec.baseline, cellSpec.overrides, stickySessionId),
-    );
+    // const fetch = await fetchRenderedHtml(
+    //   spec.targetUrl,
+    //   spec.retailerId as RetailerId,
+    //   baselineToFetchOptions(spec.baseline, cellSpec.overrides, stickySessionId),
+    // );
+    const fetch = stubRenderedFetchDisabled();
 
     let harContent: string | undefined;
     if (fetch.artifactDir) {

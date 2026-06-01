@@ -26,7 +26,7 @@ export async function GET() {
   ]);
   const proxy = describeProxyConfig();
   return NextResponse.json({
-    renderedEnabled: isRenderedFetchEnabled(),
+    renderedEnabled: false, // isRenderedFetchEnabled() — rendered-fetch temporarily disabled
     transports: {
       available: availableTransports(),
       configured: proxy.transports,

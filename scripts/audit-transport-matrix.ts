@@ -17,7 +17,45 @@ import { loadEnv } from "./load-env.mjs";
 
 loadEnv();
 
-import { fetchRenderedHtml } from "../src/lib/offers/retailer-adapters/rendered-fetch";
+// import { fetchRenderedHtml } from "../src/lib/offers/retailer-adapters/rendered-fetch";
+
+/** Temporary stub while rendered-fetch is unavailable. */
+function stubRenderedFetchDisabled(reason = "rendered-fetch temporarily disabled") {
+  return {
+    ok: false,
+    status: 0,
+    error: reason,
+    failureKind: "unknown" as const,
+    classification: {
+      ok: false,
+      category: "empty" as const,
+      reason: "not_configured",
+      confidence: 1,
+      indicators: [reason],
+      status: 0,
+      bytes: 0,
+      vendor: undefined as string | undefined,
+    },
+    lifecycle: {
+      stages: [] as Array<{ stage: string; note?: string }>,
+      domBytesAtExtraction: 0,
+      timedOut: false,
+      firstByteMs: undefined as number | undefined,
+      committed: false,
+      becameInteractive: false,
+      challengeDetected: false,
+      partialExtraction: false,
+      blockedRequests: 0,
+    },
+    identity: undefined as { ip?: string; asn?: string; country?: string } | undefined,
+    coherence: undefined as { score: number; mismatches: string[] } | undefined,
+    suspicion: undefined as { score?: number } | undefined,
+    sticky: false,
+    geoCountry: undefined as string | undefined,
+    timingMs: 0,
+    artifactDir: null as string | null,
+  };
+}
 import {
   availableTransports,
   newStickySessionId,
@@ -102,16 +140,23 @@ async function main() {
 
       for (const variant of variants) {
         process.stdout.write(`\n→ ${transport} + ${behavior} [${variant.tag}] ... `);
-        const res = await fetchRenderedHtml(url, retailer, {
-          transport,
-          behaviorId: behavior,
-          stickySessionId: sessionId,
-          country: transport === "residential" ? country : undefined,
-          region: transport === "residential" ? region : undefined,
-          probeIdentity: true,
-          alwaysCapture: true,
-          ...variant.opts,
-        });
+        // const res = await fetchRenderedHtml(url, retailer, {
+        //   transport,
+        //   behaviorId: behavior,
+        //   stickySessionId: sessionId,
+        //   country: transport === "residential" ? country : undefined,
+        //   region: transport === "residential" ? region : undefined,
+        //   probeIdentity: true,
+        //   alwaysCapture: true,
+        //   ...variant.opts,
+        // });
+        void url;
+        void retailer;
+        void sessionId;
+        void country;
+        void region;
+        void variant;
+        const res = stubRenderedFetchDisabled();
         const lc = res.lifecycle;
         const cell = {
           transport,
