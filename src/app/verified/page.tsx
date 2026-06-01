@@ -3,6 +3,8 @@ import { Footer } from "@/components/Footer";
 import { VerifiedInventoryClient } from "@/components/verified/VerifiedInventoryClient";
 import { loadVerifiedInventoryBrowse } from "@/lib/inventory/verified-inventory-browse";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Verified Inventory | Shop Scout",
   description:
