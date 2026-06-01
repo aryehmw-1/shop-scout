@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, Heart, Settings, LogIn, LogOut, ShieldCheck } from "lucide-react";
+import { Home, Heart, Settings, LogIn, LogOut, ShieldCheck, ShoppingBag } from "lucide-react";
 import { ShopScoutCompareIcon } from "@/components/brand/ShopScoutCompareIcon";
 import { Logo } from "./Logo";
 import { COMPARE_NAV_LABEL } from "@/lib/constants";
-import { getRetailerMeta, SHOPPABLE_STORE_COUNT } from "@/lib/retailers/meta";
+import { getRetailerMeta } from "@/lib/retailers/meta";
+import { PUBLIC_SHOPPABLE_STORE_COUNT } from "@/lib/retailers/public-retailers";
 import { SIDEBAR_FEATURED_RETAILERS } from "@/lib/retailers/featured-retailers";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -14,6 +15,7 @@ const nav = [
   { href: "/", label: "Home", icon: Home },
   { href: "/chat", label: COMPARE_NAV_LABEL, icon: ShopScoutCompareIcon },
   { href: "/verified", label: "Verified inventory", icon: ShieldCheck },
+  { href: "/demo", label: "Demo catalog", icon: ShoppingBag },
   { href: "/saved", label: "Saved deals", icon: Heart },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
@@ -107,7 +109,8 @@ export function Sidebar() {
             })}
           </div>
           <p className="mt-2 shrink-0 text-[10px] leading-snug text-ink-400">
-            Verified grocery first · apparel experimental · {SHOPPABLE_STORE_COUNT} stores
+            Verified grocery first · apparel experimental · {PUBLIC_SHOPPABLE_STORE_COUNT}{" "}
+            stores
           </p>
         </div>
       </div>

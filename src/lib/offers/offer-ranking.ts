@@ -1,3 +1,4 @@
+import { filterPublicOffers } from "../retailers/public-retailers";
 import { isGenericCatalogImage } from "../indexing/retailer-page-image";
 import { titleSimilarity } from "../catalog/title-similarity";
 import type { CatalogItem } from "../retailers/catalog";
@@ -212,7 +213,7 @@ export function prepareResultsForDisplay(
     options.searchQuery ?? options.intent?.query,
   );
   const merged = rankOffersForDisplay(
-    [...results.online, ...results.local],
+    filterPublicOffers([...results.online, ...results.local]),
     catalogTitle,
     categoryId,
   );

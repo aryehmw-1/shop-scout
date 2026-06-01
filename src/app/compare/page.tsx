@@ -6,7 +6,7 @@ import { APP_NAME } from "@/lib/constants";
 export const metadata: Metadata = {
   title: "Compare Prices",
   description:
-    "Compare verified live prices across Amazon, Walmart, Target, and more. See savings, trust scores, and price history in one view.",
+    "Compare verified live prices across Amazon, Costco, Kroger, and more. See savings, trust scores, and price history in one view.",
   openGraph: {
     title: `Compare Prices · ${APP_NAME}`,
     description:

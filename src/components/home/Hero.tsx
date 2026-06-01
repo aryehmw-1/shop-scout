@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, MapPin, Link2, Search } from "lucide-react";
-import { SHOPPABLE_STORE_COUNT } from "@/lib/retailers/meta";
+import { PUBLIC_SHOPPABLE_STORE_COUNT } from "@/lib/retailers/public-retailers";
 import { GROCERY_DEMO_CHIPS } from "@/lib/inventory/demo-suggestions";
 
 export function Hero() {
@@ -56,7 +56,7 @@ export function Hero() {
               Online prices · ZIP for shipping
             </span>
             <span className="text-ink-300">·</span>
-            <span>{SHOPPABLE_STORE_COUNT} stores compared</span>
+            <span>{PUBLIC_SHOPPABLE_STORE_COUNT} stores compared</span>
           </p>
         </div>
 
@@ -71,8 +71,8 @@ export function Hero() {
             <div className="mt-4 space-y-3">
               {[
                 { name: "Amazon", price: "$4.93", tag: "Verified live price", best: true },
-                { name: "Target", price: "—", tag: "Checking availability", best: false },
-                { name: "Walmart", price: "—", tag: "Checking availability", best: false },
+                { name: "Kroger", price: "$5.29", tag: "Verified live price", best: false },
+                { name: "Costco", price: "$4.79", tag: "Member price", best: false },
               ].map((row) => (
                 <div
                   key={row.name}

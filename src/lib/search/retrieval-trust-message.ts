@@ -66,7 +66,7 @@ export function buildRetrievalTrustDiagnostic(
     } else if (cached === 0 && live === 0 && postEnrich === 0) {
       detail = "Live retailer pricing and cached quotes both unavailable. " + detail;
       if (family === "apparel") {
-        hints.push("Walmart/Target apparel often blocks without residential proxy");
+        hints.push("Some apparel retailers block automated price checks — try a direct Amazon product URL");
       }
     }
 

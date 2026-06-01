@@ -4,7 +4,7 @@ import { AppShell } from "@/components/AppShell";
 import { Footer } from "@/components/Footer";
 import { APP_NAME } from "@/lib/constants";
 import { CONTACT_EMAIL, getSiteUrl } from "@/lib/site";
-import { SHOPPABLE_STORE_COUNT } from "@/lib/retailers/meta";
+import { PUBLIC_SHOPPABLE_STORE_COUNT } from "@/lib/retailers/public-retailers";
 
 export const metadata: Metadata = {
   title: "About",
@@ -35,7 +35,7 @@ export default function AboutPage() {
               — describe what you need or paste a product link.
             </li>
             <li>
-              Side-by-side prices from {SHOPPABLE_STORE_COUNT}+ retailers (groceries,
+              Side-by-side prices from {PUBLIC_SHOPPABLE_STORE_COUNT}+ retailers (groceries,
               clothing, shoes, home, kids, and more).
             </li>
             <li>

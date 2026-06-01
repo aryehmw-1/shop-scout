@@ -41,8 +41,9 @@ export default function AffiliateDisclosurePage() {
 
       <h2 className="text-xl font-semibold text-ink-900">Other retailers</h2>
       <p>
-        We may also participate in affiliate or partner programs with Walmart, Target,
-        and other retailers. Commissions help us operate and improve {APP_NAME}.
+        We may also participate in affiliate or partner programs with other major
+        retailers when those programs are active. Commissions help us operate and improve{" "}
+        {APP_NAME}.
       </p>
 
       <h2 className="text-xl font-semibold text-ink-900">Editorial independence</h2>

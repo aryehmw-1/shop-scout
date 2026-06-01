@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     "cheapest shoes",
     "clothing deals",
     "grocery prices",
-    "Walmart vs Target",
+    "Amazon vs Costco",
     "Nike deals",
     "home goods prices",
   ],

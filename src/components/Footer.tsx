@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { APP_NAME, COMPARE_NAV_LABEL } from "@/lib/constants";
+import { RETAILER_TRADEMARK_DISCLAIMER } from "@/lib/retailers/public-retailers";
 
 export function Footer() {
   return (
@@ -33,9 +34,12 @@ export function Footer() {
           </Link>
         </nav>
       </div>
-      <div className="border-t border-ink-100 py-4 text-center text-xs text-ink-400">
-        © {new Date().getFullYear()} {APP_NAME}. Prices are estimates — confirm at
-        checkout.
+      <div className="border-t border-ink-100 px-6 py-4 text-center text-xs text-ink-400">
+        <p>{RETAILER_TRADEMARK_DISCLAIMER}</p>
+        <p className="mt-2">
+          © {new Date().getFullYear()} {APP_NAME}. Prices are estimates — confirm at
+          checkout.
+        </p>
       </div>
     </footer>
   );

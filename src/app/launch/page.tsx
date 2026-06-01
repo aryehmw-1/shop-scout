@@ -5,7 +5,7 @@ import { CheckCircle2, Circle } from "lucide-react";
 
 const affiliateSteps = [
   "Apply for Amazon Associates",
-  "Apply for Walmart / Target via Impact.com",
+  "Apply for additional retailers via Impact.com when ready",
   "Copy .env.example → .env.local",
   "Add AFFILIATE_* tags from each program",
   "Restart npm run dev and test a View deal link",

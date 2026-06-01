@@ -2,9 +2,11 @@ import type { RetailerId } from "../types";
 
 /** Major retailers shown in the sidebar (full list still used in search) */
 export const SIDEBAR_FEATURED_RETAILERS: RetailerId[] = [
-  "walmart",
+  // Re-enable once live retailer comparison + affiliate support is active.
+  // "walmart",
   "amazon",
-  "target",
+  // Re-enable once live retailer comparison + affiliate support is active.
+  // "target",
   "costco",
   "kroger",
   "wholefoods",

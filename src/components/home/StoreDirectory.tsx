@@ -7,7 +7,10 @@ import {
   groupRetailersByDepartment,
   searchRetailers,
 } from "@/lib/retailers/directory";
-import { RETAILERS, SHOPPABLE_STORE_COUNT } from "@/lib/retailers/meta";
+import {
+  PUBLIC_RETAILERS,
+  PUBLIC_SHOPPABLE_STORE_COUNT,
+} from "@/lib/retailers/public-retailers";
 
 export function StoreDirectory() {
   const [query, setQuery] = useState("");
@@ -16,7 +19,7 @@ export function StoreDirectory() {
   );
 
   const filtered = useMemo(
-    () => searchRetailers(query, RETAILERS),
+    () => searchRetailers(query, PUBLIC_RETAILERS),
     [query],
   );
 
@@ -43,7 +46,7 @@ export function StoreDirectory() {
           Stores we compare
         </p>
         <h2 className="font-display mt-2 text-2xl font-bold text-ink-900 md:text-3xl">
-          {SHOPPABLE_STORE_COUNT} retailers with shoppable search
+          {PUBLIC_SHOPPABLE_STORE_COUNT} retailers with shoppable search
         </h2>
         <p className="mt-2 text-sm text-ink-500">
           Grocery, fashion, home, sports, books, and more — each link opens that
@@ -127,7 +130,7 @@ export function StoreDirectory() {
 
         {totalCount === 0 && (
           <p className="px-6 py-12 text-center text-sm text-stone-500">
-            No stores match that search. Try Walmart, Nike, or Whole Foods.
+            No stores match that search. Try Kroger, Nike, or Whole Foods.
           </p>
         )}
       </div>
