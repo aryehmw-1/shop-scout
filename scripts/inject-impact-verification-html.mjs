@@ -6,7 +6,7 @@
 import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const ID = "9624ca76-4d4b-48b7-aa75-b993343f25db";
+const ID = "fcf36cb7-b6f6-4b73-b6b6-ea6017c5c391";
 const META =
   `<meta name="impact-site-verification" value="${ID}" content="${ID}">`;
 const APP_HTML_ROOT = join(process.cwd(), ".next", "server", "app");

@@ -1,5 +1,5 @@
 /** Impact affiliate site ownership verification token. */
-export const IMPACT_SITE_VERIFICATION_ID = "ed67eafb-cec8-4a5a-8a1d-2e5acd7aec3c";
+export const IMPACT_SITE_VERIFICATION_ID = "fcf36cb7-b6f6-4b73-b6b6-ea6017c5c391";
 
 /**
  * Raw meta tag for Impact crawlers (non-standard `value` attribute).
