@@ -13,7 +13,7 @@ import {
   extractionBlockSummary,
   recentExtractionArtifacts,
 } from "@/lib/retailers/extraction-artifacts";
-import { isRenderedFetchEnabled } from "@/lib/offers/retailer-adapters/rendered-fetch";
+// import { isRenderedFetchEnabled } from "@/lib/offers/retailer-adapters/rendered-fetch";
 import { availableTransports, describeProxyConfig } from "@/lib/net/proxy-routing";
 import type { RetailerId } from "@/lib/types";
 
