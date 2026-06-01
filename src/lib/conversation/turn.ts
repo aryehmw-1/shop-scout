@@ -17,6 +17,7 @@ import { clarifyHelpReply } from "../ai/category-clarify";
 import { extractIntentFromMessage } from "../ai/extract-intent";
 import { parseSizeFromText } from "../shopping/sizes";
 import {
+  classifyIntentTransition,
   mergeSearchIntent,
   shouldMergeWithPreviousSearch,
 } from "../shopping/intent-merge";
@@ -25,6 +26,8 @@ import {
   buildConversationDebugSnapshot,
   conversationDebugEnabled,
 } from "../conversation/conversation-debug";
+import { DEFAULT_CHAT_CHIPS, GROCERY_DEMO_CHIPS } from "../inventory/demo-suggestions";
+import { getDynamicOnboardingChips } from "../inventory/onboarding-examples";
 import type {
   ConversationDebugSnapshot,
   LearningProfile,
@@ -158,6 +161,10 @@ function withConversationDebug(
   },
 ): ResolvedChatTurn {
   if (!conversationDebugEnabled()) return result;
+  const priorQuery = input.priorSession.intent?.query ?? "";
+  const transition = priorQuery
+    ? classifyIntentTransition(priorQuery, input.message, input.priorSession)
+    : undefined;
   return {
     ...result,
     conversationDebug: buildConversationDebugSnapshot({
@@ -166,6 +173,7 @@ function withConversationDebug(
       priorSession: input.priorSession,
       nextSession: result.session,
       merged: input.merged,
+      transition,
     }),
   };
 }
@@ -193,17 +201,12 @@ export async function resolveChatTurn(
       compareMode: false,
       zipCode: zip,
       nearStores: near,
-      chips: ["Womens black hoodie", "Organic milk", "Toddler sneakers", "Compare a product link"],
+      chips: [...GROCERY_DEMO_CHIPS.slice(0, 3), "Paste an Amazon link"],
     };
   }
 
   if (!isValidZip(zip)) {
-    return {
-      action: "need_zip",
-      session: { phase: "idle", intent, asked: [] },
-      compareMode: false,
-      zipCode: "",
-    };
+    zip = "";
   }
 
   const url = extractUrl(text);
@@ -343,7 +346,7 @@ export async function resolveChatTurn(
       zipCode: zip,
       query: fullIntent.query,
       referenceProductTitle: sourceProductTitle,
-      chips: ["Recheck prices", "Try a different product", "Mens jeans"],
+      chips: ["Recheck prices", "Whole milk", "Paste an Amazon link"],
     };
   }
 
@@ -368,7 +371,7 @@ export async function resolveChatTurn(
         compareMode: false,
         zipCode: zip,
         query: fullIntent.query,
-        chips: ["Size large", "In navy", "From Nike", "Recheck prices"],
+        chips: getDynamicOnboardingChips(fullIntent.query, 5),
       },
       { message: text, priorSession, merged: true },
     );
@@ -403,7 +406,7 @@ export async function resolveChatTurn(
       zipCode: zip,
       query: intent.query,
       chips: zip
-        ? ["Womens hoodie", "Cheapest eggs", "Recheck prices", "Compare a product link"]
+        ? [...GROCERY_DEMO_CHIPS.slice(0, 2), "Recheck prices", "Paste an Amazon link"]
         : undefined,
     };
   }
@@ -558,7 +561,7 @@ export async function resolveChatTurn(
         compareMode: false,
         zipCode: zip,
         query: fullIntent.query,
-        chips: ["Recheck prices", "Show something cheaper", "Compare a product link"],
+        chips: getDynamicOnboardingChips(fullIntent.query),
       },
       { message: text, priorSession, merged: merging },
     );
@@ -569,6 +572,6 @@ export async function resolveChatTurn(
     session: { phase: "idle", intent: { zipCode: zip }, asked: [] },
     compareMode: false,
     zipCode: zip,
-    chips: ["Running shoes", "Organic milk", "Mens jeans", "Compare a product link"],
+    chips: [...DEFAULT_CHAT_CHIPS],
   };
 }

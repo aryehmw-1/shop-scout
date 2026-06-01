@@ -13,7 +13,9 @@ import { RetailerTrustBadge } from "./RetailerTrustBadge";
 import { BestDealExplainer } from "./BestDealExplainer";
 import { OfferInspectionPanel } from "./OfferInspectionPanel";
 import { OutboundLink } from "./OutboundLink";
+import { DeliveredPriceBreakdown } from "./DeliveredPriceBreakdown";
 import { OfferFeedback } from "./OfferFeedback";
+import { FreshnessIndicator } from "./FreshnessIndicator";
 import { useExperiment } from "@/lib/experiments/useExperiment";
 
 interface ProductCardProps {
@@ -108,6 +110,15 @@ export function ProductCard({
         >
           {offer.storeTitle ?? `${offer.brand} ${offer.title}`}
         </h3>
+        {offer.packSizeLabel ? (
+          <p className="text-[10px] font-medium uppercase tracking-wide text-stone-500">
+            {offer.packSizeLabel}
+          </p>
+        ) : offer.size ? (
+          <p className="text-[10px] font-medium uppercase tracking-wide text-stone-500">
+            {offer.size}
+          </p>
+        ) : null}
         <PhotoSourceLabel source={offer.imageSource} className="mt-0.5" />
         {offer.pipelineDebug?.imageFallbackLevel != null && (
           <p className="text-[10px] text-stone-400">
@@ -144,6 +155,8 @@ export function ProductCard({
         <p className="text-[11px] leading-snug text-stone-500">
           {priceDisplay.dealHeadline ?? priceDisplay.sub}
         </p>
+        <FreshnessIndicator offer={offer} compact className="self-start" />
+        <DeliveredPriceBreakdown offer={offer} compact={layout === "carousel"} />
         {priceDisplay.marketComparison && (
           <p className="text-[10px] font-medium text-emerald-700">
             {priceDisplay.marketComparison}

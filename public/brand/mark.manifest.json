@@ -1,0 +1,26 @@
+{
+  "canonical": "public/brand/mark.svg",
+  "generatedAt": "2026-05-31T17:27:24.682Z",
+  "svgMd5": "8139f507dcd256a589acad7d8c5efe28",
+  "housePathFingerprint": "M4 11.5 12 5l8 6.5V20",
+  "assets": {
+    "mark-16.png": {
+      "md5": "9c1ef401fc9636044f6dbbd7d4135c8e"
+    },
+    "mark-32.png": {
+      "md5": "84018b36b00302b1b900074881d544ba"
+    },
+    "mark-180.png": {
+      "md5": "d1d1e5cead02cfd6a35bc0d6b61b67fd"
+    },
+    "mark-512.png": {
+      "md5": "a84027f6fbda1bab2fa3c4754f324ec9"
+    },
+    "og-mark.png": {
+      "md5": "a84027f6fbda1bab2fa3c4754f324ec9"
+    },
+    "mark.ico": {
+      "md5": "97b4dbe95093e0dd770aa35e2d490f83"
+    }
+  }
+}

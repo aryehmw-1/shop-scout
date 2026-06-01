@@ -19,13 +19,16 @@ import {
   syncLearningFromServer,
 } from "@/lib/learning/client-storage";
 import { useAuth } from "@/contexts/AuthContext";
-import { SHOPPABLE_STORE_COUNT } from "@/lib/retailers/meta";
+import { ZIP_SET_CHAT_CHIPS } from "@/lib/inventory/demo-suggestions";
+import { getOnboardingContext, getWelcomeChips } from "@/lib/inventory/onboarding-examples";
+import { VerifiedOnboardingPaths } from "./onboarding/VerifiedOnboardingPaths";
 import type { UserAddress } from "@/lib/types";
 import { SearchSuggest } from "./SearchSuggest";
 import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { ValueProposition } from "./ValueProposition";
 import { trackEvent } from "@/lib/analytics/track-client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Send, Link2, MapPin, RotateCcw, Columns3 } from "lucide-react";
 
 function uid() {
@@ -50,6 +53,7 @@ interface ChatAppProps {
 }
 
 export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps) {
+  const router = useRouter();
   const { user, updateAddress, syncSavedOffers } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -75,27 +79,23 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
       const hi = userName ? `Hi **${firstName(userName)}**! ` : "";
 
       if (forLinkPaste && isValidZip(zip)) {
+        const ctx = getOnboardingContext();
         return {
           id: "welcome",
           role: "assistant",
-          content: `${hi}Paste a **product page URL** from any store in the box below (Nike, Amazon, Target, etc.). I'll compare online prices for delivery to **${zip}**.`,
-          chips: ["Find me mens pants", "Womens black hoodie", "Toddler sneakers"],
+          content: `${hi}Paste a **product page URL** (Amazon works best today). I'll compare against verified catalog matches where available — shipping to **${zip}**.\n\n${ctx.subhead}`,
+          chips: ["Paste an Amazon link", ...getWelcomeChips(true).slice(0, 3)],
           timestamp: Date.now(),
         };
       }
+      const ctx = getOnboardingContext();
       return {
         id: "welcome",
         role: "assistant",
         content: isValidZip(zip)
-          ? `${hi}Welcome to **Shop Scout**! Compare prices across **${SHOPPABLE_STORE_COUNT} online stores** — shipping to **${zip}**.\n\nTry **find me mens pants**, **womens black hoodie**, or paste a product link.`
-          : `${hi}Welcome to **Shop Scout**! Add your **ZIP code** (for shipping estimates), then tell me what you're shopping for.`,
-        chips: isValidZip(zip)
-          ? [
-              "Find me mens pants",
-              "Womens black hoodie",
-              "Toddler sneakers",
-            ]
-          : [],
+          ? `${hi}**${ctx.headline}**\n\n${ctx.subhead}\n\nShipping to **${zip}**. Start below — browse verified products, paste a link, or try grocery.`
+          : `${hi}**${ctx.headline}**\n\n${ctx.subhead}\n\nSearch any product now — add your **ZIP** later for shipping and tax estimates.`,
+        chips: isValidZip(zip) ? [...ZIP_SET_CHAT_CHIPS] : [...ctx.chips.slice(0, 4)],
         timestamp: Date.now(),
       };
     },
@@ -118,7 +118,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
       setZipCode(zip);
       setLocationReady(true);
     } else {
-      setShowLocation(true);
+      setLocationReady(true);
     }
     const saved = user?.savedOffers ?? loadSavedOffers();
     setSavedIds(new Set(saved.map((o) => o.id)));
@@ -200,8 +200,19 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
       const trimmed = text.trim();
       if (!trimmed || loading) return;
 
-      if (!isValidZip(zipCode) && !/^\d{5}$/.test(trimmed)) {
-        setShowLocation(true);
+      const lower = trimmed.toLowerCase();
+      if (
+        lower.includes("paste an amazon") ||
+        lower.includes("compare a product link") ||
+        lower.includes("product link")
+      ) {
+        router.push("/chat?hint=link");
+        setInput("");
+        inputRef.current?.focus();
+        return;
+      }
+      if (lower.includes("browse verified")) {
+        router.push("/verified");
         return;
       }
 
@@ -364,7 +375,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
         setLoading(false);
       }
     },
-    [loading, session, zipCode, persistAddress, learningProfile, messages],
+    [loading, session, zipCode, persistAddress, learningProfile, messages, router],
   );
 
   useEffect(() => {
@@ -470,7 +481,10 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
               />
             ))}
             {messages.length <= 1 && !loading && (
-              <ValueProposition compact />
+              <div className="space-y-4">
+                <VerifiedOnboardingPaths onTrySearch={sendMessage} compact />
+                <ValueProposition compact />
+              </div>
             )}
             {loading && (
               <div className="flex gap-3 animate-fade-in">

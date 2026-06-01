@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-05-29T22:53:07.333Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=organic%20milk",
+  "status": 200,
+  "method": "playwright",
+  "proxyUsed": true,
+  "proxyEndpoint": "http://***:***@dc.decodo.com:10001",
+  "attempt": 3,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:akamai",
+    "vendor": "akamai",
+    "confidence": 0.82,
+    "indicators": [
+      "html:akamai-bm",
+      "header:hdr-akamai-cookie"
+    ],
+    "status": 200,
+    "bytes": 2599
+  },
+  "headers": {
+    "cache-control": "no-store",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-length": "1094",
+    "content-type": "text/html",
+    "date": "Fri, 29 May 2026 22:53:07 GMT",
+    "etag": "\"ea4ebdedb3394777ecaaec6b9e046ec47c6ed638b866e7b27faa24e8bbed95ee\"",
+    "expires": "Fri, 29 May 2026 22:53:07 GMT",
+    "last-modified": "Thu, 19 Feb 2026 11:12:36 GMT",
+    "pragma": "no-cache",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780095187126_399923356_116568654_73_37997_191_0_-\";dur=1",
+    "set-cookie": "bm_sz",
+    "stored-attribute-sha-checksum": "aaa9fdfbd791a83862dad5a4e0e9e76a4f093796aa038a5caee93a863a02dc8b",
+    "strict-transport-security": "max-age=31536000;includeSubDomains",
+    "vary": "Accept-Encoding",
+    "x-akamai-transformed": "9 773 0 pmb=mRUM,2"
+  },
+  "htmlBytes": 2599,
+  "screenshotSaved": false
+}

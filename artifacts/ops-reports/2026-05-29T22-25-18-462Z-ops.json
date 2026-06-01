@@ -1,0 +1,323 @@
+{
+  "timestamp": "2026-05-29T22:25:18.462Z",
+  "baseUrl": "http://localhost:3000",
+  "proxy": {
+    "enabled": true,
+    "configuredCount": 1,
+    "chosenProxy": "http://***:***@dc.decodo.com:10001",
+    "provider": "decodo",
+    "mode": "datacenter",
+    "components": [
+      {
+        "prefix": "DECODO_PROXY",
+        "present": true,
+        "hasHost": true,
+        "hasPort": true,
+        "hasUsername": true,
+        "hasPassword": true,
+        "assembled": "http://***:***@dc.decodo.com:10001",
+        "valid": true
+      },
+      {
+        "prefix": "INDEX_PROXY",
+        "present": false,
+        "hasHost": false,
+        "hasPort": false,
+        "hasUsername": false,
+        "hasPassword": false,
+        "valid": false
+      }
+    ],
+    "pool": [
+      "http://***:***@dc.decodo.com:10001"
+    ],
+    "warnings": []
+  },
+  "endpointSummary": {
+    "reachable": 5,
+    "total": 5
+  },
+  "endpoints": {
+    "brandVisual": {
+      "ok": true,
+      "status": 200,
+      "latencyMs": 2518,
+      "data": {
+        "ok": true,
+        "navbarUses": "/brand/mark-32.png",
+        "faviconUses": "/brand/mark-32.png",
+        "faviconUrl": "/brand/mark-32.png?v=8139f507dcd2",
+        "faviconHash": "84018b36b00302b1b900074881d544ba",
+        "lastModified": "2026-05-29T22:10:40.347Z",
+        "etag": "\"84018b36b00302b1b900074881d544ba\"",
+        "renderingFlags": {
+          "imageRenderingCrispEdges": false,
+          "transformScaleApplied": false,
+          "roundedClassPresent": false,
+          "shadowClassPresent": false,
+          "fixedCssDimensions32": true
+        },
+        "parity": "Navbar and favicon are both forced to /brand/mark-32.png (32×32 PNG) for optical debugging.",
+        "comparisons": [
+          {
+            "size": 16,
+            "diffPct": 0,
+            "pass": true,
+            "assetMd5": "9c1ef401fc9636044f6dbbd7d4135c8e",
+            "freshMd5": "9c1ef401fc9636044f6dbbd7d4135c8e"
+          },
+          {
+            "size": 32,
+            "diffPct": 0,
+            "pass": true,
+            "assetMd5": "84018b36b00302b1b900074881d544ba",
+            "freshMd5": "84018b36b00302b1b900074881d544ba"
+          }
+        ],
+        "manifest": {
+          "canonical": "public/brand/mark.svg",
+          "generatedAt": "2026-05-29T22:10:40.344Z",
+          "svgMd5": "8139f507dcd256a589acad7d8c5efe28",
+          "housePathFingerprint": "M4 11.5 12 5l8 6.5V20",
+          "assets": {
+            "mark-16.png": {
+              "md5": "9c1ef401fc9636044f6dbbd7d4135c8e"
+            },
+            "mark-32.png": {
+              "md5": "84018b36b00302b1b900074881d544ba"
+            },
+            "mark-180.png": {
+              "md5": "d1d1e5cead02cfd6a35bc0d6b61b67fd"
+            },
+            "mark-512.png": {
+              "md5": "a84027f6fbda1bab2fa3c4754f324ec9"
+            },
+            "og-mark.png": {
+              "md5": "a84027f6fbda1bab2fa3c4754f324ec9"
+            },
+            "mark.ico": {
+              "md5": "97b4dbe95093e0dd770aa35e2d490f83"
+            }
+          }
+        },
+        "tips": [
+          "Hard-refresh Safari: Develop → Empty Caches, or use private window",
+          "Compare localhost vs 127.0.0.1 separately — cache is per-origin",
+          "Do not add CSS border-radius or shadow on the brand mark wrapper"
+        ]
+      }
+    },
+    "brandAuditHistory": {
+      "ok": true,
+      "status": 200,
+      "latencyMs": 81,
+      "data": {
+        "latestVisual": null,
+        "latestBrowser": null,
+        "historyCount": 0,
+        "runs": [],
+        "artifactRoot": "artifacts/brand-audit/history"
+      }
+    },
+    "retailerHealth": {
+      "ok": true,
+      "status": 200,
+      "latencyMs": 238,
+      "data": {
+        "retailers": [
+          {
+            "retailerId": "walmart",
+            "status": "unknown",
+            "trustScore": 0.72,
+            "fetchSuccessRate": 0.72,
+            "parserSuccessRate": 0.72,
+            "proxyRequired": true
+          },
+          {
+            "retailerId": "target",
+            "status": "unknown",
+            "trustScore": 0.74,
+            "fetchSuccessRate": 0.74,
+            "parserSuccessRate": 0.74,
+            "proxyRequired": true
+          },
+          {
+            "retailerId": "amazon",
+            "status": "unknown",
+            "trustScore": 0.78,
+            "fetchSuccessRate": 0.78,
+            "parserSuccessRate": 0.78,
+            "proxyRequired": true
+          },
+          {
+            "retailerId": "kroger",
+            "status": "unknown",
+            "trustScore": 0.7,
+            "fetchSuccessRate": 0.7,
+            "parserSuccessRate": 0.7,
+            "proxyRequired": true
+          },
+          {
+            "retailerId": "costco",
+            "status": "unknown",
+            "trustScore": 0.71,
+            "fetchSuccessRate": 0.71,
+            "parserSuccessRate": 0.71,
+            "proxyRequired": true
+          },
+          {
+            "retailerId": "aldi",
+            "status": "unknown",
+            "trustScore": 0.68,
+            "fetchSuccessRate": 0.68,
+            "parserSuccessRate": 0.68,
+            "proxyRequired": false
+          }
+        ],
+        "bandwidth": [],
+        "updatedAt": "2026-05-29T22:25:21.303Z"
+      }
+    },
+    "ingestionEfficiency": {
+      "ok": true,
+      "status": 200,
+      "latencyMs": 146,
+      "data": {
+        "efficiency": {
+          "perRetailer": [],
+          "totals": {
+            "requests": 0,
+            "successes": 0,
+            "products": 0,
+            "bytes": 0,
+            "avgKbPerProduct": 0,
+            "avgRequestsPerProduct": 0,
+            "nightlyGbEstimate": 0,
+            "monthlyGbEstimate": 0
+          }
+        },
+        "proxyObservability": [],
+        "requestBlocking": {
+          "classes": [],
+          "totals": {
+            "blocked": 0,
+            "allowed": 0,
+            "estimatedSavedKb": 0,
+            "blockedPct": 0,
+            "estimatedSavedMb": 0
+          }
+        },
+        "proxyConfig": {
+          "enabled": true,
+          "configuredCount": 1,
+          "chosenProxy": "http://***:***@dc.decodo.com:10001",
+          "provider": "decodo",
+          "mode": "datacenter",
+          "components": [
+            {
+              "prefix": "DECODO_PROXY",
+              "present": true,
+              "hasHost": true,
+              "hasPort": true,
+              "hasUsername": true,
+              "hasPassword": true,
+              "assembled": "http://***:***@dc.decodo.com:10001",
+              "valid": true
+            },
+            {
+              "prefix": "INDEX_PROXY",
+              "present": false,
+              "hasHost": false,
+              "hasPort": false,
+              "hasUsername": false,
+              "hasPassword": false,
+              "valid": false
+            }
+          ],
+          "pool": [
+            "http://***:***@dc.decodo.com:10001"
+          ],
+          "warnings": []
+        },
+        "proxyAvailability": {
+          "enabled": true,
+          "provider": "decodo",
+          "mode": "datacenter",
+          "configuredCount": 1,
+          "configured": [
+            "http://***:***@dc.decodo.com:10001"
+          ],
+          "directFirst": true,
+          "forceAll": false,
+          "warnings": []
+        },
+        "updatedAt": "2026-05-29T22:25:21.449Z"
+      }
+    },
+    "requestBlocking": {
+      "ok": true,
+      "status": 200,
+      "latencyMs": 85,
+      "data": {
+        "classes": [],
+        "totals": {
+          "blocked": 0,
+          "allowed": 0,
+          "estimatedSavedKb": 0,
+          "blockedPct": 0,
+          "estimatedSavedMb": 0
+        },
+        "sourceRuns": {}
+      }
+    }
+  },
+  "latestLocalArtifact": {
+    "file": "2026-05-29T22-10-53-755Z-nightly-sim.json",
+    "data": {
+      "products": 5,
+      "retailers": 3,
+      "totalRequests": 30,
+      "cacheHits": 0,
+      "cacheMisses": 30,
+      "proxyRequests": 0,
+      "directRequests": 30,
+      "blocked": 0,
+      "success": 0,
+      "bytes": 0,
+      "latencyMs": 0,
+      "perRetailer": {
+        "amazon": {
+          "requests": 10,
+          "success": 0,
+          "blocked": 0,
+          "bytes": 0,
+          "latencyMs": 0,
+          "proxy": 0,
+          "direct": 10
+        },
+        "walmart": {
+          "requests": 10,
+          "success": 0,
+          "blocked": 0,
+          "bytes": 0,
+          "latencyMs": 0,
+          "proxy": 0,
+          "direct": 10
+        },
+        "target": {
+          "requests": 10,
+          "success": 0,
+          "blocked": 0,
+          "bytes": 0,
+          "latencyMs": 0,
+          "proxy": 0,
+          "direct": 10
+        }
+      },
+      "avgLatencyMs": 0,
+      "avgKbPerRequest": 0,
+      "nightlyGbEstimate": 0,
+      "monthlyGbEstimate": 0
+    }
+  }
+}

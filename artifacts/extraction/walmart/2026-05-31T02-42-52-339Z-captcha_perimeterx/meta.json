@@ -1,0 +1,48 @@
+{
+  "timestamp": "2026-05-31T02:42:52.339Z",
+  "retailerId": "walmart",
+  "url": "https://www.walmart.com/search?q=Honey%20nut%20cereal",
+  "status": 200,
+  "method": "lightweight",
+  "proxyUsed": true,
+  "proxyEndpoint": "http://***:***@dc.decodo.com:10001",
+  "attempt": 3,
+  "classification": {
+    "ok": false,
+    "category": "captcha",
+    "reason": "captcha:perimeterx",
+    "vendor": "perimeterx",
+    "confidence": 0.95,
+    "indicators": [
+      "html:perimeterx-px-captcha",
+      "html:robot-or-human"
+    ],
+    "status": 200,
+    "bytes": 15566
+  },
+  "headers": {
+    "accept-ch": "Sec-CH-DPR, DPR, Sec-CH-Device-Memory, Device-Memory, Downlink",
+    "accept-ranges": "bytes",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "cache-status": "Hit",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-length": "3369",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sun, 31 May 2026 02:42:52 GMT",
+    "expires": "Sun, 31 May 2026 02:42:52 GMT",
+    "origin-cc": "",
+    "origin-ex": "",
+    "permissions-policy": "ch-dpr=(self \"https://i5.walmartimages.com\"), ch-device-memory=(self \"https://i5.walmartimages.com\")",
+    "pragma": "no-cache",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780195371878_388936910_631511536_38_13289_209_275_-\";dur=1",
+    "set-cookie": "bm_mi",
+    "strict-transport-security": "max-age=31536000",
+    "vary": "Accept-Encoding",
+    "x-akamai-transformed": "0 - 0 -"
+  },
+  "htmlBytes": 15566,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

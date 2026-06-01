@@ -7,6 +7,7 @@ import { CATALOG } from "../retailers/catalog";
 import { storedRowToLiveQuoteFields } from "../indexing/offer-rows";
 import { getRetailerMeta } from "../retailers/meta";
 import { extractAmazonAsin } from "../offers/amazon-validation";
+import { consumerVisibleQuoteWhere } from "../pricing/quote-freshness-policy";
 import type { CatalogItem } from "../retailers/catalog";
 import type { RetailerId } from "../types";
 
@@ -31,14 +32,13 @@ export async function lookupPersistedQuoteByAsin(
   asin: string,
   sourceUrl: string,
 ): Promise<PersistedLinkLookup> {
-  const now = new Date();
   const upper = asin.toUpperCase();
 
   const byUrl = await prisma.priceQuote.findFirst({
     where: {
       productUrl: { contains: upper },
       source: { in: VERIFIED_SOURCES },
-      expiresAt: { gt: now },
+      ...consumerVisibleQuoteWhere("amazon"),
       retailerId: "amazon",
     },
     include: { product: true },
@@ -68,7 +68,7 @@ export async function lookupPersistedQuoteByAsin(
     include: { product: { include: { priceQuotes: {
       where: {
         source: { in: VERIFIED_SOURCES },
-        expiresAt: { gt: now },
+        ...consumerVisibleQuoteWhere("amazon"),
         retailerId: "amazon",
       },
       orderBy: { fetchedAt: "desc" },
@@ -101,14 +101,13 @@ export async function lookupPersistedQuoteByAsin(
 export async function lookupPersistedQuotesForCatalog(
   catalogId: string,
 ): Promise<PersistedLinkLookup[]> {
-  const now = new Date();
   const product = await prisma.product.findUnique({
     where: { catalogId },
     include: {
       priceQuotes: {
         where: {
           source: { in: VERIFIED_SOURCES },
-          expiresAt: { gt: now },
+          ...consumerVisibleQuoteWhere(),
         },
         orderBy: { priceUsd: "asc" },
       },

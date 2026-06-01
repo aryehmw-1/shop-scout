@@ -2,6 +2,7 @@ import { bumpProductSearchFrequency } from "./identity-store";
 import { prisma } from "./prisma";
 import type { ProductSearchResults, ShoppingIntent } from "../types";
 import type { ResolvedProduct, SearchExecutionMeta } from "../search/types";
+import { computePersistExpiresAt } from "../pricing/quote-freshness-policy";
 
 export async function persistSearchSession(input: {
   userId?: string;
@@ -58,10 +59,14 @@ export async function persistPriceQuotes(
   const product = await prisma.product.findUnique({
     where: { catalogId },
   });
-  if (!product) return;
+  if (!product) {
+    if (process.env.PERSIST_DEBUG === "1") {
+      console.warn(`[persistPriceQuotes] skipped — no Product row for catalogId=${catalogId}`);
+    }
+    return;
+  }
 
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + 30 * 60 * 1000);
   const rows = [...offers.local, ...offers.online]
     .filter(
       (o) =>
@@ -100,7 +105,9 @@ export async function persistPriceQuotes(
       productUrl: o.productUrl,
       affiliateUrl: o.affiliateUrl,
       fetchedAt: o.priceAsOf ? new Date(o.priceAsOf) : now,
-      expiresAt: o.priceExpiresAt ? new Date(o.priceExpiresAt) : expiresAt,
+      expiresAt: o.priceExpiresAt
+        ? new Date(o.priceExpiresAt)
+        : computePersistExpiresAt(o.priceAsOf ? new Date(o.priceAsOf) : now, o.retailer),
     })),
   });
 }

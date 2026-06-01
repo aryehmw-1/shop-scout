@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" role="img" aria-label="Shop Scout">
+  <defs>
+    <linearGradient id="ss-mark-grad" x1="4" y1="4" x2="28" y2="28" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f97316"/>
+      <stop offset="0.5" stop-color="#f59e0b"/>
+      <stop offset="1" stop-color="#f43f5e"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="9" fill="url(#ss-mark-grad)"/>
+  <!-- Original navbar house (Lucide Home geometry), filled for tab/favicon readability -->
+  <g transform="translate(4 4)">
+    <path
+      fill="#ffffff"
+      d="M4 11.5 12 5l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1V11.5Z"
+    />
+  </g>
+</svg>

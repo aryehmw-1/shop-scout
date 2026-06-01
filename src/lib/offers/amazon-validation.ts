@@ -10,6 +10,7 @@ import {
   amazonNormalizationEnabled,
   isBulkCommercialListing,
 } from "./amazon-normalization";
+import { analyzeProductMatch } from "./product-match-analysis";
 import {
   isPlausiblePrice,
   isPlausibleScrapedPrice,
@@ -127,6 +128,18 @@ export function scoreAmazonSearchHit(
   const variantFlags = variantMismatchSignals(catalogTitle, storeTitle, intent);
   if (variantFlags.length) exactMatchConfidence *= 0.82;
 
+  const productMatch = analyzeProductMatch(storeTitle, item, intent, exactMatchConfidence);
+  if (productMatch.shouldReject || productMatch.band === "rejected") {
+    exactMatchConfidence = Math.min(exactMatchConfidence, productMatch.confidence);
+  }
+  if (productMatch.parsedListing.isVarietyPack && !productMatch.parsedExpected.isVarietyPack) {
+    exactMatchConfidence *= 0.25;
+    variantFlags.push("variety-pack-mismatch");
+  }
+  for (const r of productMatch.reasons) {
+    variantFlags.push(r.code);
+  }
+
   const matchScore =
     exactMatchConfidence * 0.55 +
     (priceSanityOk ? 0.25 : 0) +
@@ -165,6 +178,10 @@ export function scoreAmazonSearchHit(
     accepted = false;
     rejectionReason = "amazon.variant_mismatch";
     matchReasons.push("rejected:variant-mismatch");
+  } else if (productMatch.shouldReject || productMatch.band === "rejected") {
+    accepted = false;
+    rejectionReason = "amazon.product_match_rejected";
+    matchReasons.push(`rejected:${productMatch.reasons[0]?.code ?? "product_match"}`);
   } else {
     matchReasons.push(`accepted:matchScore=${matchScore.toFixed(2)}`);
   }

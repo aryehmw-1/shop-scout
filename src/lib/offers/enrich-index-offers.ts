@@ -4,8 +4,13 @@ import {
   isRetailerHostedImage,
   scoreProductImageUrl,
 } from "../indexing/retailer-page-image";
+import { recordEnrichmentFailureClass } from "../indexing/index-retailer-summary";
 import { scoreOfferConfidence } from "../identity/offer-confidence";
 import type { CatalogItem } from "../retailers/catalog";
+import {
+  classifyAcquisitionFailure,
+} from "../retailers/acquisition/failure-classification";
+import { isAmazonPaapiConfigured } from "../search/providers/amazon-paapi-config";
 import type {
   ProductOffer,
   ProductSearchResults,
@@ -37,6 +42,8 @@ import {
   MIN_TRUSTED_MATCH_CONFIDENCE,
 } from "./offer-quality";
 import { fetchRetailerPageData } from "./retailer-page-extract";
+import type { RetailerPageExtraction } from "./retailer-page-extract";
+import { persistPartialMetadataBatch } from "./offer-metadata-persist";
 import { pickOffersForIndexEnrich, indexScrapeSkipRetailers } from "./enrich-retailer-targets";
 import { classifyProductUrl, isPdpProductUrl } from "./url-classifier";
 import { inferRetailerStatus } from "./retailer-enrichment-status";
@@ -76,6 +83,7 @@ export interface IndexOfferEnrichmentReport {
   enrichmentReport?: ProductEnrichmentReport;
   persistRejected?: number;
   displayable?: number;
+  partialMetadataStored?: number;
 }
 
 /**
@@ -99,6 +107,7 @@ export async function enrichOffersAtIndex(
 
   const enrichmentReport = createEnrichmentReport(item.id, "index");
   const reportStarted = Date.now();
+  const extractionsByRetailer = new Map<RetailerId, RetailerPageExtraction | null>();
 
   if (!indexOfferEnrichmentEnabled()) {
     const out = applyQualityToAll(results, item, intent);
@@ -136,6 +145,34 @@ export async function enrichOffersAtIndex(
     const hasPdp = urlKind === "pdp";
     const hasScrapedPrice = offer.priceSource === "scraped" || offer.priceSource === "connector_api";
 
+    if (
+      retailerId === "amazon" &&
+      isAmazonPaapiConfigured() &&
+      offer.priceSource === "connector_api" &&
+      hasPdp &&
+      hasScrapedPrice
+    ) {
+      report.skipReasons.push({
+        retailer: retailerId,
+        reason: "amazon-paapi-primary",
+        productUrl: offer.productUrl,
+      });
+      recordEnrichmentAttempt(enrichmentReport, {
+        retailer: retailerId,
+        status: "success",
+        fetchOk: true,
+        fetchMs: 0,
+        parserSuccess: true,
+        adapterConfidence: offer.matchConfidence,
+        price: offer.price,
+        pdpUrl: offer.productUrl,
+        hasImage: hasRetailerImage,
+        resolvedVia: "paapi_primary",
+        failureClass: "success",
+      });
+      continue;
+    }
+
     if (hasPdp && hasRetailerImage && hasScrapedPrice) {
       report.skipReasons.push({
         retailer: retailerId,
@@ -152,6 +189,7 @@ export async function enrichOffersAtIndex(
         price: offer.price,
         pdpUrl: offer.productUrl,
         hasImage: true,
+        failureClass: "success",
       });
       continue;
     }
@@ -171,9 +209,17 @@ export async function enrichOffersAtIndex(
 
     if (!extraction) {
       const fetchReason = urlKind === "search" ? "search-page-fetch-failed" : "fetch-failed";
+      const failureClass = classifyAcquisitionFailure({
+        fetchOk: false,
+        fetchReason,
+        parserRan: false,
+        parserFoundMatch: false,
+      });
+      recordEnrichmentFailureClass(retailerId, failureClass);
       indexLog("PDP fetch failed", {
         catalogId: item.id,
         retailer: retailerId,
+        failureClass,
         elapsed: formatDurationMs(fetchMs),
       });
       report.skipReasons.push({
@@ -195,10 +241,14 @@ export async function enrichOffersAtIndex(
         fetchReason,
         parserSuccess: false,
         rejectionReason: fetchReason,
+        failureClass,
       });
+      extractionsByRetailer.set(retailerId, null);
       await sleep(enrichDelayMs());
       continue;
     }
+
+    extractionsByRetailer.set(retailerId, extraction);
 
     const parserFoundMatch = Boolean(
       extraction.searchResolved ||
@@ -250,6 +300,19 @@ export async function enrichOffersAtIndex(
       matchConfidence: offer.matchConfidence,
     });
 
+    const failureClass = classifyAcquisitionFailure({
+      fetchOk: true,
+      parserRan: true,
+      parserFoundMatch,
+      hasPrice:
+        offer.priceSource === "scraped" ||
+        offer.priceSource === "connector_api" ||
+        Boolean(extraction.priceUsd),
+      hasPdp: isPdpProductUrl(offer.productUrl),
+      hasImage: Boolean(offer.imageUrl?.startsWith("https://")),
+    });
+    recordEnrichmentFailureClass(retailerId, failureClass);
+
     recordEnrichmentAttempt(enrichmentReport, {
       retailer: retailerId,
       status: retailerStatus,
@@ -262,6 +325,7 @@ export async function enrichOffersAtIndex(
       pdpUrl: offer.productUrl,
       hasImage: Boolean(offer.imageUrl),
       resolvedVia: extraction.resolvedVia,
+      failureClass,
     });
 
     if (isPdpProductUrl(offer.productUrl) && offer.productUrl !== beforeUrl) {
@@ -306,6 +370,17 @@ export async function enrichOffersAtIndex(
   const out = applyQualityToAll(results, item, intent);
   const allOffers = [...out.online, ...out.local];
   const finalPass = applyFinalOfferValidation(allOffers, item, intent, enrichmentReport.attempts);
+
+  if (productDbId) {
+    const partialMeta = await persistPartialMetadataBatch({
+      productDbId,
+      item,
+      offers: allOffers,
+      attempts: enrichmentReport.attempts,
+      extractions: extractionsByRetailer,
+    });
+    report.partialMetadataStored = partialMeta.identitiesStored;
+  }
 
   recordPersistRejections(
     enrichmentReport,

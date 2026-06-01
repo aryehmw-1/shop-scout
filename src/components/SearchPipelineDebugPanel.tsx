@@ -17,6 +17,23 @@ export function SearchPipelineDebugPanel({ debug }: SearchPipelineDebugPanelProp
         Resolved: <strong>{debug.resolvedTitle}</strong> ({debug.matchReason})
         {debug.keywordFallbackUsed ? " · keyword fallback" : ""}
       </p>
+      {debug.verifiedInventoryResolution && (
+        <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50/60 p-2 text-xs">
+          <p className="font-semibold text-emerald-900">
+            Verified inventory: {debug.verifiedInventoryResolution.matched ? "HIT" : "MISS"}
+            {debug.verifiedInventoryResolution.catalogId ?
+              ` · ${debug.verifiedInventoryResolution.catalogId}`
+            : ""}
+          </p>
+          {debug.verifiedInventoryResolution.candidates?.map((c) => (
+            <p key={c.catalogId} className="text-emerald-800">
+              {c.catalogId} score={c.score}
+              {c.hasPersistedQuotes ? " ✓quotes" : " ✗no quotes"}
+              {c.rejectedReason ? ` (${c.rejectedReason})` : ""}
+            </p>
+          ))}
+        </div>
+      )}
       <table className="mt-3 w-full text-xs">
         <thead>
           <tr className="text-left text-amber-700">

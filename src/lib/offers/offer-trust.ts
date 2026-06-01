@@ -3,6 +3,7 @@ import { isRetailerHostedImage } from "../indexing/retailer-page-image";
 import { isVerifiedLivePrice } from "../search/price-truth";
 import type { ProductOffer } from "../types";
 import { MIN_CONSUMER_BEST_DEAL_CONFIDENCE } from "./consumer-trust";
+import { isAuthoritativeMatchBand } from "./product-match-analysis";
 import { MIN_TRUSTED_MATCH_CONFIDENCE } from "./offer-quality";
 import { classifyProductUrl, isPdpProductUrl, isSearchProductUrl } from "./url-classifier";
 
@@ -16,7 +17,19 @@ export function offerTrustTier(offer: ProductOffer): OfferTrustTier {
   return "estimated";
 }
 
+export function isPersistedVerifiedOffer(offer: ProductOffer): boolean {
+  return Boolean(offer.verifiedPersistedInventory);
+}
+
 export function isVerifiedOffer(offer: ProductOffer): boolean {
+  if (isPersistedVerifiedOffer(offer)) {
+    if ((offer.matchConfidence ?? 0) < MIN_TRUSTED_MATCH_CONFIDENCE) return false;
+    if (isSearchProductUrl(offer.productUrl)) return false;
+    if (!offer.price || offer.price <= 0) return false;
+    if (!isPdpProductUrl(offer.productUrl)) return false;
+    return offer.priceSource === "scraped" || offer.priceSource === "connector_api";
+  }
+
   if ((offer.matchConfidence ?? 0) < MIN_TRUSTED_MATCH_CONFIDENCE) return false;
   if (isSearchProductUrl(offer.productUrl)) return false;
   if (offer.priceSource === "catalog_model") return false;
@@ -41,6 +54,9 @@ export function shouldShowBestDealBadge(offer: ProductOffer): boolean {
   return (
     (Boolean(offer.isBestDeal) || offer.dealLabel === "best_deal") &&
     isVerifiedOffer(offer) &&
+    offer.matchBand !== "rejected" &&
+    offer.matchBand !== "weak" &&
+    (isAuthoritativeMatchBand(offer.matchBand) || offer.matchBand === "likely_match" || !offer.matchBand) &&
     (offer.matchConfidence ?? 0) >= BEST_DEAL_MIN_CONFIDENCE
   );
 }

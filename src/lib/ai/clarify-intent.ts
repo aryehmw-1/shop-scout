@@ -3,6 +3,7 @@ import {
   findCategoryClarifyRule,
   type CategoryClarifyKind,
 } from "./category-clarify";
+import { isObviousProductSearch } from "./product-query-specificity";
 import { findBroadKeywordRule } from "./shopping-keywords";
 import { parseQueryAttributes } from "../retailers/search";
 import { parseSizeFromText } from "../shopping/sizes";
@@ -164,6 +165,8 @@ export function detectClarificationNeeded(
 
   const wordCount = lower.trim().split(/\s+/).filter(Boolean).length;
   if (wordCount > 8) return null;
+
+  if (isObviousProductSearch(query, intent)) return null;
 
   const keywordRule = findBroadKeywordRule(query);
   if (keywordRule) {

@@ -1,19 +1,15 @@
 /**
  * Production-grade flagship inventory — UPC-heavy grocery/household only.
- * Indexing and Phase 0 refresh target these IDs first; apparel/shoes are deprioritized.
+ * Indexing and Phase 0 refresh target these IDs first.
  */
 
-/** Categories excluded from automated indexing until matching reliability improves. */
 export const DEPRIORITIZED_INDEX_CATEGORIES = new Set([
   "clothing",
   "shoes",
   "bedding",
 ]);
 
-/**
- * Curated flagship set (~22 products) — simple variants, UPC-backed, high retailer overlap potential.
- * Target: 15–30 production-usable before any catalog expansion.
- */
+/** Flagship grocery set — high retailer overlap, UPC-backed where possible. */
 export const FLAGSHIP_CATALOG_IDS: readonly string[] = [
   // Pantry / snacks
   "pasta-spaghetti",
@@ -24,15 +20,28 @@ export const FLAGSHIP_CATALOG_IDS: readonly string[] = [
   "microwave-popcorn",
   "cheese-crackers",
   "bread-wheat",
-  // Dairy / beverages
+  "granola-bars",
+  "peanut-butter",
+  "mac-cheese",
+  // Beverages
+  "cola-classic-12",
+  "pepsi-12pk",
+  "sparkling-water-12",
+  "oj-juice",
+  // Dairy
   "milk-whole-gal",
   "milk-og-half",
   "eggs-dozen",
   "butter-salted",
   "yogurt-greek",
-  "oj-juice",
-  // Household
+  // Household / cleaning
   "paper-towels",
+  "toilet-paper-12",
+  "dish-soap",
+  "laundry-detergent",
+  // Frozen
+  "frozen-pizza",
+  "frozen-vegetables",
   // Produce / salad / meat
   "bananas-bunch",
   "spinach-og-10",

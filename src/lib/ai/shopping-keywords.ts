@@ -86,7 +86,8 @@ export const BROAD_SHOPPING_KEYWORD_RULES: BroadKeywordRule[] = [
     id: "snacks",
     category: "pantry",
     patterns: [/\b(snacks?|chips?|cereal|coffee|pasta|rice|soda|juice)\b/i],
-    specifics: /\b(pretzel|popcorn|cracker|spaghetti|k.?cup|cola|sparkling)\b/i,
+    specifics:
+      /\b(potato|pretzel|popcorn|cracker|spaghetti|k.?cup|cola|sparkling|classic|original|folgers|cheerios|lay'?s|bounty|charmin|honey\s+nut|ground\s+coffee|breakfast\s+blend|whole\s+milk|greek\s+yogurt|barbecue|bbq|ranch|sour\s+cream|salted|unsalted|organic|decaf|instant|variety|family\s+size)\b/i,
     defaultQuestion: "What pantry item are you looking for?",
     defaultOptions: ["Potato chips", "Pretzels", "Coffee", "Cereal", "Pasta"],
   },

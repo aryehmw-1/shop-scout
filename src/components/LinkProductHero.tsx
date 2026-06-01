@@ -75,13 +75,10 @@ export function LinkProductHero({ reference }: LinkProductHeroProps) {
             </span>
             {reference.priceFromPersistedCache && (
               <span className="rounded-full bg-sage-100 px-2 py-0.5 text-[10px] font-bold text-sage-800">
-                From persisted inventory
+                Recently verified price
               </span>
             )}
           </div>
-          {reference.normalizationNote && (
-            <p className="mt-1 text-xs text-stone-600">{reference.normalizationNote}</p>
-          )}
           <a
             href={reference.sourceUrl}
             target="_blank"

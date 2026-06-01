@@ -7,6 +7,7 @@ import { hasRetailerAdapter } from "./retailer-enrichment-status";
 import { isDisplayableOffer, validateOfferBeforePersist } from "./offer-persist-validation";
 import { isVerifiedOffer } from "./offer-trust";
 import { recordPersistOutcome } from "../indexing/index-retailer-summary";
+import { indexLog } from "../indexing/index-progress";
 
 /**
  * Mark adapter-retailer offers as rejected when fetch/parse failed.
@@ -106,6 +107,11 @@ export function applyFinalOfferValidation(
       detail: result.detail,
     });
     recordPersistOutcome(offer.retailer, false, result.reason ?? "unknown");
+    indexLog("persist: rejected", {
+      retailer: offer.retailer,
+      reason: result.reason,
+      detail: result.detail?.slice(0, 80),
+    });
 
     return attachPipelineDebug(offer, {
       validationStatus: "rejected",

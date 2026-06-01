@@ -1,4 +1,5 @@
 import type { CatalogItem } from "../retailers/catalog";
+import type { AcquisitionFailureClass } from "../retailers/acquisition/failure-classification";
 import type { ProductOffer, RetailerId } from "../types";
 import type { AmazonMatchMetrics } from "./amazon-validation";
 import type { PersistValidationResult } from "./offer-persist-validation";
@@ -17,6 +18,7 @@ export interface RetailerEnrichmentAttempt {
   pdpUrl?: string;
   hasImage?: boolean;
   resolvedVia?: string;
+  failureClass?: AcquisitionFailureClass;
 }
 
 export interface EnrichmentReportOffer {
@@ -167,6 +169,7 @@ export function logEnrichmentReport(
     attempts: report.attempts.map((a) => ({
       retailer: a.retailer,
       status: a.status,
+      failureClass: a.failureClass,
       fetchMs: a.fetchMs,
       parserSuccess: a.parserSuccess,
       conf: a.adapterConfidence,

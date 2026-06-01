@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-05-31T03:42:00.596Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=Hanes%20Fleece%20Pullover%20Hoodie",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 384
+  },
+  "headers": {
+    "cache-control": "max-age=900",
+    "connection": "close",
+    "content-length": "384",
+    "content-type": "text/html",
+    "date": "Sun, 31 May 2026 03:42:00 GMT",
+    "expires": "Sun, 31 May 2026 03:57:00 GMT",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780198920520_399274504_2626381407_15_27225_9_45_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000;includeSubDomains"
+  },
+  "htmlBytes": 384,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

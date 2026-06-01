@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-05-31T16:09:18.471Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=Chobani%20Greek%20Yogurt%20Plain",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": true,
+  "proxyEndpoint": "http://***:***@dc.decodo.com:10001",
+  "attempt": 3,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "http_403:akamai",
+    "vendor": "akamai",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied",
+      "header:hdr-akamai-cookie"
+    ],
+    "status": 403,
+    "bytes": 543
+  },
+  "headers": {
+    "cache-control": "max-age=900",
+    "connection": "close",
+    "content-type": "text/html",
+    "date": "Sun, 31 May 2026 16:09:18 GMT",
+    "expires": "Sun, 31 May 2026 16:24:18 GMT",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=17, ak_p; desc=\"1780243758057_388936903_668119384_1716_18649_254_308_-\";dur=1",
+    "set-cookie": "bm_sz",
+    "strict-transport-security": "max-age=31536000;includeSubDomains",
+    "x-akamai-transformed": "0 - 0 -"
+  },
+  "htmlBytes": 543,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

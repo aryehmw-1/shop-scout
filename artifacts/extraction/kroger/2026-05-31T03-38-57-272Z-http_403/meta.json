@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-05-31T03:38:57.272Z",
+  "retailerId": "kroger",
+  "url": "https://www.kroger.com/search?query=Organic%20Girl%20Organic%20Baby%20Spinach&searchType=default",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 377
+  },
+  "headers": {
+    "akamai-grn": "0.0a72cc17.1780198737.1c6b104e",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "connection": "close",
+    "content-length": "377",
+    "content-type": "text/html",
+    "date": "Sun, 31 May 2026 03:38:57 GMT",
+    "expires": "Sun, 31 May 2026 03:38:57 GMT",
+    "link": "<https://www.kroger.com/cdn/b79518c0a8eb9a48d20f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin,<https://www.kroger.com/cdn/f3be6f7f945b6214f87f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin, <https://cdn.cookielaw.org>;rel=\"preconnect\",<https://assets.adobedtm.com>;rel=\"preconnect\",<https://cdnws.softcoin.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780198737236_399274506_476778574_14_16471_9_14_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000 ; preload",
+    "x-correlation-id": "akam_1780198737_967a648f-6a8f-45c1-b089-1410edd4809d",
+    "x-frame-options": "SAMEORIGIN",
+    "x-kt-acr-lma-ct": "true"
+  },
+  "htmlBytes": 377,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

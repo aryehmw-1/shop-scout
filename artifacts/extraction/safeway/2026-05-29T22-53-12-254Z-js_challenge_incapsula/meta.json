@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-05-29T22:53:12.254Z",
+  "retailerId": "safeway",
+  "url": "https://www.safeway.com/shop/search-results.html?q=organic%20milk",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:incapsula",
+    "vendor": "incapsula",
+    "confidence": 0.85,
+    "indicators": [
+      "html:incapsula",
+      "header:hdr-incap-cookie"
+    ],
+    "status": 200,
+    "bytes": 4540
+  },
+  "headers": {
+    "cache-control": "no-cache, no-store",
+    "connection": "close",
+    "content-length": "4540",
+    "content-type": "text/html",
+    "set-cookie": "incap_ses_1430_1610353",
+    "x-iinfo": "7-51435221-0 NNNN RT(1780095192164 29) q(0 -1 -1 0) r(0 -1) B10(14,0,0) U24"
+  },
+  "htmlBytes": 4540,
+  "screenshotSaved": false
+}

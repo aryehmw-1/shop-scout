@@ -6,6 +6,27 @@ import {
   shouldUseProxyForRetailer,
 } from "./fetch-profiles";
 import { recordFetchOutcome } from "../../indexing/index-retailer-summary";
+import {
+  getProxyPool,
+  getUndiciDispatcher,
+  pickProxyRoute,
+  proxyRedacted,
+} from "../../net/proxy-routing";
+import { recordBandwidth } from "../../retailers/health/bandwidth-metrics";
+import {
+  recordFallbackToDirect,
+  recordProxyFailure,
+  recordProxyRetry,
+  recordRouteSelection,
+  recordSelectedEndpoint,
+} from "../../net/proxy-observability";
+import { recordIngestionAttempt } from "../../retailers/health/ingestion-efficiency";
+import {
+  classifyRetailerResponse,
+  type ResponseClassification,
+} from "../../net/response-classification";
+import { saveExtractionArtifact } from "../../retailers/extraction-artifacts";
+import { getRetailerFetchStrategy } from "../../retailers/fetch-strategy";
 
 const DEFAULT_USER_AGENTS = [
   "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
@@ -39,9 +60,7 @@ export function userAgentPool(): string[] {
 }
 
 export function proxyUrlPool(): string[] {
-  const list = parseList(process.env.INDEX_PROXY_LIST);
-  const raw = list.length > 0 ? list : process.env.INDEX_PROXY_URL?.trim() ? [process.env.INDEX_PROXY_URL.trim()] : [];
-  return raw.filter(isValidProxyUrl);
+  return getProxyPool();
 }
 
 /** Reject doc placeholders and malformed proxy URLs. */
@@ -186,13 +205,24 @@ export interface RetailerFetchFailure {
   reason: string;
   attempt: number;
   proxyUsed: boolean;
+  /** Structured anti-bot classification when available. */
+  classification?: ResponseClassification;
 }
 
 interface SimpleHttpResponse {
   ok: boolean;
   status: number;
   url: string;
+  headers: Record<string, string>;
   text: () => Promise<string>;
+}
+
+function headersToObject(h: Headers): Record<string, string> {
+  const out: Record<string, string> = {};
+  h.forEach((value, key) => {
+    out[key] = value;
+  });
+  return out;
 }
 
 function buildHeaders(retailerId: RetailerId, userAgent: string): Record<string, string> {
@@ -216,15 +246,17 @@ async function fetchWithOptionalProxy(
   url: string,
   headers: Record<string, string>,
   timeoutMs: number,
+  retailerId: RetailerId,
+  attempt: number,
   proxyUrl?: string,
 ): Promise<{ response: SimpleHttpResponse; viaProxy: boolean }> {
   if (proxyUrl && isValidProxyUrl(proxyUrl)) {
     try {
-      const { ProxyAgent, fetch: proxyFetch } = await import("undici");
-      const agent = new ProxyAgent(proxyUrl);
+      const { fetch: proxyFetch } = await import("undici");
+      const dispatcher = await getUndiciDispatcher(proxyUrl);
       const res = await proxyFetch(url, {
         headers,
-        dispatcher: agent,
+        dispatcher,
         signal: AbortSignal.timeout(timeoutMs),
         redirect: "follow",
       });
@@ -233,14 +265,19 @@ async function fetchWithOptionalProxy(
           ok: res.ok,
           status: res.status,
           url: res.url,
+          headers: headersToObject(res.headers as unknown as Headers),
           text: () => res.text(),
         },
         viaProxy: true,
       };
     } catch (e) {
+      recordProxyFailure(retailerId, String(e));
+      recordFallbackToDirect(retailerId);
+      if (attempt > 1) recordProxyRetry(retailerId);
       if (process.env.PIPELINE_DEBUG === "1" || process.env.INDEX_FETCH_LOG === "1") {
         console.warn(
           "[retailer-fetch] proxy failed, falling back to direct",
+          proxyRedacted(proxyUrl),
           String(e).slice(0, 80),
         );
       }
@@ -257,6 +294,7 @@ async function fetchWithOptionalProxy(
       ok: res.ok,
       status: res.status,
       url: res.url,
+      headers: headersToObject(res.headers),
       text: () => res.text(),
     },
     viaProxy: false,
@@ -280,24 +318,18 @@ async function maybeSaveDebugHtml(
   }
 }
 
-function blockReason(retailerId: RetailerId, html: string): string {
-  if (retailerId === "walmart" && isWalmartBlockedHtml(html)) return "walmart-bot-wall";
-  if (retailerId === "amazon" && isAmazonBlockedHtml(html)) return "amazon-bot-wall";
-  if (retailerId === "target" && isTargetBlockedHtml(html)) return "target-empty-or-blocked";
-  if (/access denied|request blocked/i.test(html)) return "access-denied";
-  if (html.length < 400) return "html-too-short";
-  return "blocked";
-}
-
 /** Fetch retailer HTML with rotating UA + optional residential proxy. */
 export async function fetchRetailerHtml(
   pageUrl: string,
   retailerId: RetailerId,
   attempt = 1,
 ): Promise<RetailerHtmlFetchResult | null> {
+  const startedAt = Date.now();
   const seed = `${pageUrl}:${attempt}`;
   const userAgent = pickUserAgent(seed);
-  const proxyUrl = pickProxyUrl(seed, retailerId);
+  const route = pickProxyRoute({ retailerId, seed, attempt });
+  const proxyUrl = route.proxyUrl;
+  recordSelectedEndpoint(retailerId, proxyRedacted(proxyUrl), attempt);
   const timeoutMs = fetchTimeoutMs(retailerId);
   const headers = buildHeaders(retailerId, userAgent);
 
@@ -306,28 +338,83 @@ export async function fetchRetailerHtml(
       pageUrl,
       headers,
       timeoutMs,
+      retailerId,
+      attempt,
       proxyUrl,
     );
 
     if (!res.ok) {
+      const errorHtml = await res.text().catch(() => "");
+      const classification = classifyRetailerResponse({
+        retailerId,
+        status: res.status,
+        html: errorHtml,
+        headers: res.headers,
+      });
+      await saveExtractionArtifact({
+        retailerId,
+        url: pageUrl,
+        status: res.status,
+        html: errorHtml,
+        headers: res.headers,
+        classification,
+        method: getRetailerFetchStrategy(retailerId).method,
+        proxyUsed: viaProxy,
+        proxyEndpoint: proxyRedacted(proxyUrl),
+        attempt,
+      });
       const failure: RetailerFetchFailure = {
         retailerId,
         url: pageUrl,
         status: res.status,
-        reason: `http-${res.status}`,
+        reason: classification.reason,
         attempt,
         proxyUsed: viaProxy,
+        classification,
       };
       logFetchFailure(failure);
       recordFetchOutcome(failure, retailerId, viaProxy);
+      recordBandwidth(retailerId, {
+        bytes: Buffer.byteLength(errorHtml, "utf8"),
+        viaProxy,
+        ok: false,
+      });
+      recordIngestionAttempt({
+        retailerId,
+        productKey: pageUrl,
+        ok: false,
+        viaProxy,
+        blocked: classification.category !== "http_error",
+        bytes: Buffer.byteLength(errorHtml, "utf8"),
+        latencyMs: Date.now() - startedAt,
+      });
       return null;
     }
 
     const html = await res.text();
+    const classification = classifyRetailerResponse({
+      retailerId,
+      status: res.status,
+      html,
+      headers: res.headers,
+    });
+    const bytes = classification.bytes;
 
-    if (isRetailerBlockedHtml(retailerId, html, true)) {
-      const reason = blockReason(retailerId, html);
+    if (!classification.ok) {
+      const reason = classification.reason;
       await maybeSaveDebugHtml(retailerId, html, reason);
+      await saveExtractionArtifact({
+        retailerId,
+        url: pageUrl,
+        status: res.status,
+        html,
+        headers: res.headers,
+        classification,
+        method: getRetailerFetchStrategy(retailerId).method,
+        proxyUsed: viaProxy,
+        proxyEndpoint: proxyRedacted(proxyUrl),
+        attempt,
+      });
       const failure: RetailerFetchFailure = {
         retailerId,
         url: pageUrl,
@@ -335,9 +422,20 @@ export async function fetchRetailerHtml(
         reason,
         attempt,
         proxyUsed: viaProxy,
+        classification,
       };
       logFetchFailure(failure);
       recordFetchOutcome(failure, retailerId, viaProxy);
+      recordBandwidth(retailerId, { bytes, viaProxy, ok: false });
+      recordIngestionAttempt({
+        retailerId,
+        productKey: pageUrl,
+        ok: false,
+        blocked: true,
+        viaProxy,
+        bytes,
+        latencyMs: Date.now() - startedAt,
+      });
       return null;
     }
 
@@ -351,10 +449,30 @@ export async function fetchRetailerHtml(
         proxyUsed: viaProxy,
       };
       recordFetchOutcome(failure, retailerId, viaProxy);
+      recordBandwidth(retailerId, { bytes, viaProxy, ok: false });
+      recordIngestionAttempt({
+        retailerId,
+        productKey: pageUrl,
+        ok: false,
+        blocked: false,
+        viaProxy,
+        bytes,
+        latencyMs: Date.now() - startedAt,
+      });
       return null;
     }
 
     recordFetchOutcome(null, retailerId, viaProxy);
+    recordBandwidth(retailerId, { bytes, viaProxy, ok: true });
+    recordIngestionAttempt({
+      retailerId,
+      productKey: pageUrl,
+      ok: true,
+      blocked: false,
+      viaProxy,
+      bytes,
+      latencyMs: Date.now() - startedAt,
+    });
 
     return {
       html,
@@ -374,6 +492,16 @@ export async function fetchRetailerHtml(
     };
     logFetchFailure(failure);
     recordFetchOutcome(failure, retailerId, Boolean(proxyUrl));
+    recordBandwidth(retailerId, { bytes: 0, viaProxy: Boolean(proxyUrl), ok: false });
+    recordIngestionAttempt({
+      retailerId,
+      productKey: pageUrl,
+      ok: false,
+      blocked: false,
+      viaProxy: Boolean(proxyUrl),
+      bytes: 0,
+      latencyMs: Date.now() - startedAt,
+    });
     return null;
   }
 }
@@ -384,6 +512,9 @@ export function logFetchFailure(f: RetailerFetchFailure): void {
     retailer: f.retailerId,
     status: f.status,
     reason: f.reason,
+    category: f.classification?.category,
+    vendor: f.classification?.vendor,
+    indicators: f.classification?.indicators,
     attempt: f.attempt,
     proxy: f.proxyUsed,
     url: f.url.slice(0, 80),
@@ -396,15 +527,95 @@ export function logFetchFailure(f: RetailerFetchFailure): void {
   });
 }
 
-/** Retry fetch with fresh UA/proxy rotation. */
+/** Retry fetch with fresh UA/proxy rotation, then escalate to rendered. */
 export async function fetchRetailerHtmlWithRetries(
   pageUrl: string,
   retailerId: RetailerId,
 ): Promise<RetailerHtmlFetchResult | null> {
+  if (process.env.ACQUISITION_ORCHESTRATOR === "1" || process.env.INDEX_USE_ACQUISITION_ORCHESTRATOR === "1") {
+    const { acquireRetailerPage } = await import("../../retailers/acquisition/orchestrator");
+    const result = await acquireRetailerPage({ retailerId, url: pageUrl });
+    if (result.ok && result.html) {
+      return {
+        html: result.html,
+        resolvedUrl: pageUrl,
+        userAgent: "orchestrator",
+        status: result.status || 200,
+        proxyUsed: result.transport === "datacenter" || result.transport === "residential",
+        attempt: result.strategyAttempts.length,
+      };
+    }
+  }
+
   const attempts = maxFetchAttempts(retailerId);
   for (let i = 1; i <= attempts; i++) {
+    const seed = `${pageUrl}:${i}`;
+    const route = pickProxyRoute({ retailerId, seed, attempt: i });
+    recordRouteSelection(retailerId, route.mode);
     const row = await fetchRetailerHtml(pageUrl, retailerId, i);
     if (row) return row;
+    if (i < attempts) recordProxyRetry(retailerId);
   }
+
+  // Escalate to the rendered (Playwright) executor when the HTTP path is
+  // exhausted and the retailer's strategy permits it. Env-gated + lazy-imported
+  // so normal flows never require browsers.
+  const rendered = await tryRenderedEscalation(pageUrl, retailerId);
+  if (rendered) return rendered;
+
   return null;
+}
+
+async function tryRenderedEscalation(
+  pageUrl: string,
+  retailerId: RetailerId,
+): Promise<RetailerHtmlFetchResult | null> {
+  try {
+    const { isRenderedFetchEnabled, strategyAllowsRendered, fetchRenderedHtml } = await import(
+      "./rendered-fetch"
+    );
+    if (!isRenderedFetchEnabled() || !strategyAllowsRendered(retailerId)) return null;
+
+    const { buildEscalationLadder } = await import("../../retailers/escalation-policy");
+    const { newStickySessionId } = await import("../../net/proxy-routing");
+
+    // Transport-first ladder: cheapest transport before behavioral escalation.
+    const ladder = buildEscalationLadder({ retailerId, suspicion: 0 });
+    for (let i = 0; i < ladder.length; i++) {
+      const step = ladder[i]!;
+      if (process.env.PIPELINE_DEBUG === "1" || process.env.INDEX_FETCH_LOG === "1") {
+        console.warn(
+          `[retailer-fetch] rendered escalation ${retailerId}: ${step.transport}+${step.behavior}`,
+        );
+      }
+      const result = await fetchRenderedHtml(pageUrl, retailerId, {
+        transport: step.transport,
+        behaviorId: step.behavior,
+        stickySessionId: step.transport === "residential" ? newStickySessionId() : undefined,
+        attempt: i + 1,
+      });
+      // Skip unconfigured transports without aborting the ladder.
+      if (result.error?.includes("not_configured")) continue;
+      if (result.ok && result.html) {
+        return {
+          html: result.html,
+          resolvedUrl: result.finalUrl ?? pageUrl,
+          userAgent: "playwright",
+          proxyUsed: result.proxyUsed,
+          attempt: attempts(retailerId) + i + 1,
+          status: result.status,
+        };
+      }
+    }
+    return null;
+  } catch (e) {
+    if (process.env.PIPELINE_DEBUG === "1") {
+      console.warn("[retailer-fetch] rendered escalation failed", String(e).slice(0, 120));
+    }
+    return null;
+  }
+}
+
+function attempts(retailerId: RetailerId): number {
+  return maxFetchAttempts(retailerId);
 }

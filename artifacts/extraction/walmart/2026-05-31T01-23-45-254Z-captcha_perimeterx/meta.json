@@ -1,0 +1,104 @@
+{
+  "timestamp": "2026-05-31T01:23:45.254Z",
+  "retailerId": "walmart",
+  "url": "https://www.walmart.com/search?q=whole+milk",
+  "status": 200,
+  "method": "playwright",
+  "behavior": "humanized",
+  "transport": "direct",
+  "identity": {
+    "ok": true,
+    "ip": "99.92.177.32",
+    "asn": "AS7018 AT&T Enterprises, LLC",
+    "isp": "AT&T Enterprises, LLC",
+    "org": "AT&T Corp",
+    "country": "US",
+    "city": "Boca Raton",
+    "latencyMs": 41
+  },
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "captcha",
+    "reason": "captcha:perimeterx",
+    "vendor": "perimeterx",
+    "confidence": 0.95,
+    "indicators": [
+      "html:perimeterx-px-captcha",
+      "html:robot-or-human"
+    ],
+    "status": 200,
+    "bytes": 16358
+  },
+  "headers": {
+    "accept-ch": "Sec-CH-DPR, DPR, Sec-CH-Device-Memory, Device-Memory, Downlink",
+    "accept-ranges": "bytes",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "cache-status": "Hit",
+    "content-encoding": "gzip",
+    "content-length": "3173",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Sun, 31 May 2026 01:23:40 GMT",
+    "expires": "Sun, 31 May 2026 01:23:40 GMT",
+    "origin-cc": "",
+    "origin-ex": "",
+    "permissions-policy": "ch-dpr=(self \"https://i5.walmartimages.com\"), ch-device-memory=(self \"https://i5.walmartimages.com\")",
+    "pragma": "no-cache",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780190620297_389937413_1102115636_62_20908_17_0_255\";dur=1",
+    "set-cookie": "isoLoc",
+    "strict-transport-security": "max-age=31536000",
+    "vary": "Accept-Encoding",
+    "x-ak-protocol": "h2"
+  },
+  "htmlBytes": 16358,
+  "redirectChain": [
+    "200 https://www.walmart.com/",
+    "200 https://i5.walmartimages.com/dfw/63fd9f59-4c54/7adb6fe1-4149-4ebe-b4c7-2ea1921d4a19/v344/create-3p-cookie.html",
+    "200 https://crcldu.com/bd/sync.html?v=1780190400000",
+    "200 https://crcldu.com/bd/sync.html?v=1780190400000",
+    "200 https://www.walmart.com/~partytown/partytown-sandbox-sw.html?1780190619908",
+    "307 https://www.walmart.com/search?q=whole+milk",
+    "200 https://www.walmart.com/blocked?url=L3NlYXJjaD9xPXdob2xlK21pbGs=&uuid=59f896dc-5c8f-11f1-bb19-d1d4b05c37fc&vid=59f89b1f-5c8f-11f1-bb19-fa44ff29c0aa&g=b",
+    "200 https://crcldu.com/bd/sync.html?v=1780190400000"
+  ],
+  "realism": {
+    "webdriver": null,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "platform": "MacIntel",
+    "languages": [
+      "en-US"
+    ],
+    "language": "en-US",
+    "hardwareConcurrency": 10,
+    "deviceMemory": 16,
+    "pluginsLength": 3,
+    "webglVendor": "Intel Inc.",
+    "webglRenderer": "Intel Iris OpenGL Engine",
+    "timezone": "America/New_York",
+    "locale": "en-US",
+    "innerWidth": 1366,
+    "innerHeight": 900,
+    "devicePixelRatio": 1,
+    "hasChromeObject": true,
+    "canvasHash": "-1812192639",
+    "permissionsConsistent": null
+  },
+  "realismScores": {
+    "suspicion": {
+      "score": 0,
+      "reasons": []
+    },
+    "challenge": {
+      "score": 0.62,
+      "factors": [
+        "block=1",
+        "suspicion=0",
+        "difficulty=0.6"
+      ]
+    }
+  },
+  "screenshotSaved": true,
+  "harSaved": false,
+  "renderedDomSaved": true
+}

@@ -6,9 +6,13 @@ import { finalizeResultsForUser } from "../pricing/deal-intelligence";
 import { finalizeSearchPrices } from "./price-truth";
 import { attachMatchedProduct } from "./matched-product";
 import { MIN_CONSUMER_MATCH_CONFIDENCE } from "../offers/consumer-trust";
-import { fetchCachedLiveQuotesForItem } from "./providers/cached-quotes";
 import { mergeLivePrices } from "./merge-live-prices";
-import type { ProductSearchResults, ReferenceProduct, ShoppingIntent } from "../types";
+import {
+  loadPersistedLiveQuotes,
+  resolveVerifiedInventoryByAsin,
+} from "../inventory/verified-inventory-resolver";
+import { extractAsinFromAmazonUrl } from "./link-persisted-lookup";
+import type { ProductSearchResults, ReferenceProduct, ShoppingIntent, VerifiedInventoryHitMeta } from "../types";
 
 function buildReferenceProduct(ingest: LinkIngestResult): ReferenceProduct {
   return {
@@ -53,34 +57,81 @@ export async function buildLinkSearchResults(
     ingestLatencyMs: ingest.ingestLatencyMs,
   };
 
+  let verifiedHit: VerifiedInventoryHitMeta | undefined;
+  let persistedQuotes = ingest.catalogItem ?
+    await loadPersistedLiveQuotes(ingest.catalogItem.id)
+  : [];
+
+  const asin = extractAsinFromAmazonUrl(ingest.sourceUrl);
+  if (asin && persistedQuotes.length === 0) {
+    const verified = await resolveVerifiedInventoryByAsin(asin);
+    if (verified.hit && verified.catalogItem) {
+      persistedQuotes = verified.quotes;
+      verifiedHit = {
+        matched: true,
+        catalogId: verified.catalogItem.id,
+        matchMethod: verified.matchMethod,
+        matchScore: verified.matchScore,
+        lastVerifiedAt: verified.lastVerifiedAt,
+        confidence: verified.resolved?.confidence,
+        normalizationStatus: verified.normalizationNote,
+        qaStatus: verified.qaStatus,
+        candidateCount: verified.candidates.length,
+        candidates: verified.candidates.map((c) => ({
+          catalogId: c.catalogId,
+          title: c.title,
+          score: c.score,
+          hasPersistedQuotes: c.hasPersistedQuotes,
+          rejectedReason: c.rejectedReason,
+        })),
+      };
+    }
+  }
+
   let results: ProductSearchResults;
 
-  if (ingest.useExactCompare && ingest.catalogItem) {
-    results = compareProduct(ingest.catalogItem, intent);
+  const item = catalogItemForIngest(ingest);
+
+  if ((ingest.useExactCompare && ingest.catalogItem) || persistedQuotes.length > 0) {
+    const catalogItem = ingest.catalogItem ?? item;
+    results = compareProduct(catalogItem, intent);
     results = {
       ...results,
       compareMode: true,
       similarMode: false,
       referenceProduct,
       linkMatch,
+      verifiedInventoryHit: verifiedHit,
     };
-    results = attachMatchedProduct(results, ingest.catalogItem, ingest.guessedTitle);
+    results = attachMatchedProduct(results, catalogItem, ingest.guessedTitle);
 
-    // Merge persisted verified quotes from DB before scrape-only enrichment gaps.
-    const cached = await fetchCachedLiveQuotesForItem(ingest.catalogItem);
-    if (cached.length > 0) {
+    if (persistedQuotes.length > 0) {
       const merged = mergeLivePrices(
         results,
-        cached,
-        ingest.catalogItem,
+        persistedQuotes,
+        catalogItem,
         intent,
         "scraped",
+        { skipRelevanceFilter: true },
       );
-      results = attachMatchedProduct(merged.results, ingest.catalogItem, ingest.guessedTitle);
+      results = {
+        ...attachMatchedProduct(merged.results, catalogItem, ingest.guessedTitle),
+        verifiedInventoryHit: verifiedHit ?? results.verifiedInventoryHit,
+      };
     }
 
-    // Flagship link compare: only show verified alternatives cheaper than pasted reference price.
-    if (ingest.priceVerified && ingest.referencePrice > 0) {
+    // When only persisted inventory exists, show verified offers — do not strip reference-priced rows.
+    if (ingest.priceFromPersistedCache && results.online.length === 0 && persistedQuotes.length > 0) {
+      const merged = mergeLivePrices(
+        { ...results, online: [], local: [] },
+        persistedQuotes,
+        catalogItem,
+        intent,
+        "scraped",
+        { skipRelevanceFilter: true },
+      );
+      results = attachMatchedProduct(merged.results, catalogItem, ingest.guessedTitle);
+    } else if (ingest.priceVerified && ingest.referencePrice > 0 && !ingest.priceFromPersistedCache) {
       results = {
         ...results,
         online: results.online.filter(
@@ -112,7 +163,6 @@ export async function buildLinkSearchResults(
     };
   }
 
-  const item = catalogItemForIngest(ingest);
   results = await enrichOffersAtSearch(results, item, intent);
   results = finalizeSearchPrices(results);
 
@@ -127,9 +177,7 @@ export async function buildLinkSearchResults(
     };
   }
 
-  // Link flagship: only show verified alternatives that pass consumer trust gates.
-  // Suppress low-confidence cross-retailer matches from similar-mode fallback.
-  if (!ingest.useExactCompare) {
+  if (!ingest.useExactCompare && persistedQuotes.length === 0) {
     results = {
       ...results,
       online: results.online.filter(
@@ -140,5 +188,8 @@ export async function buildLinkSearchResults(
   }
 
   results = await finalizeResultsForUser(results, item, intent);
-  return results;
+  return {
+    ...results,
+    verifiedInventoryHit: verifiedHit ?? results.verifiedInventoryHit,
+  };
 }

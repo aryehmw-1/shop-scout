@@ -3,31 +3,33 @@
 import { useSearchParams } from "next/navigation";
 import { ChatApp } from "@/components/ChatApp";
 
-/** Category shortcuts only — never auto-send placeholder URLs */
+/** Category shortcuts — grocery-first; apparel marked experimental */
 const CATEGORY_STARTS: Record<string, string> = {
-  shoes: "running shoes",
-  clothing: "mens hoodie",
-  sports: "basketball",
-  dairy: "milk and eggs",
-  meat: "boneless chicken breast",
+  pantry: "honey nut cereal",
+  dairy: "whole milk",
   household: "paper towels",
-  salad: "salad greens",
-  pantry: "ground coffee",
-  produce: "bananas",
+  salad: "organic spinach",
+  meat: "chicken breast",
+  produce: "orange juice",
   bakery: "whole wheat bread",
+  clothing: "mens hoodie",
+  shoes: "running shoes",
+  sports: "basketball",
 };
 
 export function ChatPageClient() {
   const params = useSearchParams();
   const start = params.get("start");
   const hint = params.get("hint");
+  const q = params.get("q");
 
   const pasteLinkMode = hint === "link" || start === "link";
 
   const initialMessage =
-    start && !pasteLinkMode
-      ? CATEGORY_STARTS[start] ?? `I'm looking for ${start}`
-      : undefined;
+    q?.trim() ? q.trim()
+    : start && !pasteLinkMode ?
+      CATEGORY_STARTS[start] ?? `I'm looking for ${start}`
+    : undefined;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">

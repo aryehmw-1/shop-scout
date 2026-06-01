@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-05-29T22:53:15.082Z",
+  "retailerId": "hyvee",
+  "url": "https://www.hy-vee.com/aisles-online/search?search=organic%20milk",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:cloudflare",
+    "vendor": "cloudflare",
+    "confidence": 0.85,
+    "indicators": [
+      "html:cloudflare-challenge",
+      "header:hdr-cf-server"
+    ],
+    "status": 200,
+    "bytes": 83013
+  },
+  "headers": {
+    "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+    "cf-cache-status": "DYNAMIC",
+    "cf-ray": "a03912f68e286d1f-MIA",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Fri, 29 May 2026 22:53:15 GMT",
+    "server": "cloudflare",
+    "set-cookie": "__cf_bm",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding",
+    "x-envoy-upstream-service-time": "290",
+    "x-powered-by": "Next.js"
+  },
+  "htmlBytes": 83013,
+  "screenshotSaved": false
+}

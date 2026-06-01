@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-05-31T03:41:16.996Z",
+  "retailerId": "kroger",
+  "url": "https://www.kroger.com/search?query=New%20Balance%20990v5%20Running%20Shoes&searchType=default",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 3,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 377
+  },
+  "headers": {
+    "akamai-grn": "0.0a72cc17.1780198876.1c7299fe",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "connection": "close",
+    "content-length": "377",
+    "content-type": "text/html",
+    "date": "Sun, 31 May 2026 03:41:16 GMT",
+    "expires": "Sun, 31 May 2026 03:41:16 GMT",
+    "link": "<https://www.kroger.com/cdn/b79518c0a8eb9a48d20f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin,<https://www.kroger.com/cdn/f3be6f7f945b6214f87f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin, <https://cdn.cookielaw.org>;rel=\"preconnect\",<https://assets.adobedtm.com>;rel=\"preconnect\",<https://cdnws.softcoin.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780198876957_399274506_477272574_15_19385_9_15_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000 ; preload",
+    "x-correlation-id": "akam_1780198876_f9c7e525-f9b6-4ee5-b5bf-82b4edfe86a6",
+    "x-frame-options": "SAMEORIGIN",
+    "x-kt-acr-lma-ct": "true"
+  },
+  "htmlBytes": 377,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

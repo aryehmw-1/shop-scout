@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "note": "Single source of truth for anti-bot/block classification. Consumed by src/lib/net/response-classification.ts (app) and scripts/response-classify.mjs (node scripts). Patterns are case-insensitive regex sources matched against response HTML.",
+  "htmlSignatures": [
+    { "id": "perimeterx-px-captcha", "vendor": "perimeterx", "category": "captcha", "weight": 0.95, "pattern": "px-captcha|_px(?:hd|3)|captcha\\.px-cloud|perimeterx" },
+    { "id": "datadome", "vendor": "datadome", "category": "captcha", "weight": 0.95, "pattern": "datadome|geo\\.captcha-delivery|dd_cookie|interstitial\\.captcha-delivery" },
+    { "id": "akamai-bm", "vendor": "akamai", "category": "js_challenge", "weight": 0.8, "pattern": "ak_bmsc|_abck|akamai|bm_sz" },
+    { "id": "cloudflare-challenge", "vendor": "cloudflare", "category": "js_challenge", "weight": 0.85, "pattern": "cf-browser-verification|cf_chl_|challenge-platform|cdn-cgi/challenge|checking your browser before|attention required" },
+    { "id": "incapsula", "vendor": "incapsula", "category": "js_challenge", "weight": 0.85, "pattern": "incapsula|_incap_|visid_incap|imperva" },
+    { "id": "recaptcha", "vendor": "recaptcha", "category": "captcha", "weight": 0.9, "pattern": "g-recaptcha|recaptcha/api|grecaptcha" },
+    { "id": "hcaptcha", "vendor": "hcaptcha", "category": "captcha", "weight": 0.9, "pattern": "hcaptcha|h-captcha|js\\.hcaptcha\\.com" },
+    { "id": "amazon-captcha", "vendor": "amazon", "category": "captcha", "weight": 0.92, "pattern": "enter the characters you see|automated access to amazon data|api-services-support@amazon|to discuss automated access|type the characters you see in this image" },
+    { "id": "press-and-hold", "vendor": "perimeterx", "category": "interstitial", "weight": 0.85, "pattern": "press\\s*&?\\s*hold|press and hold to confirm" },
+    { "id": "robot-or-human", "vendor": null, "category": "captcha", "weight": 0.85, "pattern": "robot or human|are you a human|verify you are (?:a )?human|prove you(?:'| a)re (?:not a robot|human)|i'm not a robot" },
+    { "id": "access-denied", "vendor": null, "category": "access_denied", "weight": 0.8, "pattern": "access denied|request blocked|you (?:have been|are) blocked|access to this page has been denied|403 forbidden|forbidden access" },
+    { "id": "rate-limited", "vendor": null, "category": "rate_limited", "weight": 0.75, "pattern": "unusual traffic|too many requests|automated requests|rate limit|slow down" },
+    { "id": "security-check", "vendor": null, "category": "interstitial", "weight": 0.7, "pattern": "security check|verify your identity|complete the security check|one more step|just a moment" },
+    { "id": "login-wall", "vendor": null, "category": "login_wall", "weight": 0.45, "pattern": "sign in to continue|please log in to continue|create an account to view|log in to see prices|members? only" },
+    { "id": "js-required", "vendor": null, "category": "js_challenge", "weight": 0.35, "pattern": "please enable javascript|javascript is required|enable cookies to continue|this site requires javascript" }
+  ],
+  "productMarkers": {
+    "amazon": "data-asin=[\"'][A-Z0-9]{10}|/dp/[A-Z0-9]{10}",
+    "walmart": "\"usItemId\"|itemStacks|/ip/",
+    "target": "\"tcin\"|data-test=\"product",
+    "kroger": "\"productId\"|/p/",
+    "costco": "product-tile|\"productId\""
+  },
+  "headerSignatures": [
+    { "id": "hdr-datadome", "vendor": "datadome", "category": "captcha", "header": "x-datadome", "pattern": ".+", "weight": 0.9 },
+    { "id": "hdr-datadome-cid", "vendor": "datadome", "category": "captcha", "header": "x-datadome-cid", "pattern": ".+", "weight": 0.9 },
+    { "id": "hdr-cf-server", "vendor": "cloudflare", "category": "js_challenge", "header": "server", "pattern": "cloudflare", "weight": 0.5 },
+    { "id": "hdr-cf-mitigated", "vendor": "cloudflare", "category": "js_challenge", "header": "cf-mitigated", "pattern": "challenge", "weight": 0.9 },
+    { "id": "hdr-akamai-cookie", "vendor": "akamai", "category": "js_challenge", "header": "set-cookie", "pattern": "_abck=|ak_bmsc=|bm_sz=", "weight": 0.82 },
+    { "id": "hdr-incap-cookie", "vendor": "incapsula", "category": "js_challenge", "header": "set-cookie", "pattern": "incap_ses|visid_incap", "weight": 0.82 },
+    { "id": "hdr-datadome-cookie", "vendor": "datadome", "category": "captcha", "header": "set-cookie", "pattern": "datadome=", "weight": 0.9 }
+  ]
+}

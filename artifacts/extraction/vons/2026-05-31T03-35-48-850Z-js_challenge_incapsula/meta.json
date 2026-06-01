@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-05-31T03:35:48.850Z",
+  "retailerId": "vons",
+  "url": "https://www.vons.com/shop/search-results.html?q=Honey%20nut%20cereal",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:incapsula",
+    "vendor": "incapsula",
+    "confidence": 0.85,
+    "indicators": [
+      "html:incapsula",
+      "header:hdr-incap-cookie"
+    ],
+    "status": 200,
+    "bytes": 4540
+  },
+  "headers": {
+    "cache-control": "no-cache, no-store",
+    "connection": "close",
+    "content-length": "4540",
+    "content-type": "text/html",
+    "set-cookie": "incap_ses_1430_1610354",
+    "x-iinfo": "10-62541496-0 NNNY RT(1780198548746 43) q(0 -1 -1 6) r(0 -1) B10(14,0,0) U24"
+  },
+  "htmlBytes": 4540,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

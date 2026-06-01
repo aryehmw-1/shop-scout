@@ -6,7 +6,13 @@
 import { isGenericCatalogImage, isRetailerHostedImage } from "../indexing/retailer-page-image";
 import type { ProductOffer } from "../types";
 import { isPdpProductUrl, isSearchProductUrl } from "./url-classifier";
-import { isVerifiedOffer } from "./offer-trust";
+import { isExactMatchBand, isAuthoritativeMatchBand } from "./product-match-analysis";
+import { isVerifiedOffer, isPersistedVerifiedOffer } from "./offer-trust";
+import {
+  classifyOfferFreshness,
+  isQuoteVisibleForDisplay,
+  isQuoteFreshStrict,
+} from "../pricing/quote-freshness-policy";
 
 /** Minimum match confidence for consumer UI (raised from persist floor 0.58). */
 export const MIN_CONSUMER_MATCH_CONFIDENCE = 0.72;
@@ -20,29 +26,26 @@ export const MIN_CONSUMER_IDENTITY_CONFIDENCE = 0.65;
 /** Best-deal badge requires even higher confidence for link/compare flows. */
 export const MIN_CONSUMER_BEST_DEAL_CONFIDENCE = 0.78;
 
-/** Max age for cached/indexed quotes shown as live (ms). */
-export const CONSUMER_QUOTE_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+/** @deprecated Tiered model uses retailer policies — kept for legacy diagnostics. */
+export const CONSUMER_QUOTE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 const PLACEHOLDER_IMAGE =
   /unsplash\.com|placeholder|via\.placeholder|dummyimage|placehold\.co/i;
 
+/** True when quote is in fresh or aging tier (strict freshness). */
 export function isQuoteFreshForDisplay(offer: ProductOffer): boolean {
-  const now = Date.now();
+  return isQuoteFreshStrict(offer);
+}
 
-  if (offer.priceExpiresAt) {
-    return new Date(offer.priceExpiresAt).getTime() > now;
+/** Tier-aware visibility — stale offers remain visible unless critically low confidence. */
+export function passesFreshnessVisibilityGate(offer: ProductOffer): boolean {
+  if (!isQuoteVisibleForDisplay(offer)) return false;
+  const meta = classifyOfferFreshness(offer);
+  if (meta.shouldSoftHidePrice && (offer.matchConfidence ?? 0) < 0.5) return false;
+  if (meta.tier === "expired" && meta.decayedPriceConfidence < meta.policy.minDisplayConfidence) {
+    return (offer.matchConfidence ?? 0) >= 0.62;
   }
-
-  if (offer.priceAsOf) {
-    return now - new Date(offer.priceAsOf).getTime() <= CONSUMER_QUOTE_MAX_AGE_MS;
-  }
-
-  // Search-time scrape / API — treated as fresh when just fetched
-  if (offer.priceSource === "scraped" || offer.priceSource === "connector_api") {
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
 export function passesImageTrustGate(offer: ProductOffer): boolean {
@@ -84,22 +87,46 @@ export function passesRetailerLinkGate(offer: ProductOffer): boolean {
   return true;
 }
 
+/** Relaxed gates for verified persisted inventory — trust the indexed catalog match. */
+export function passesPersistedInventoryTrustGates(offer: ProductOffer): boolean {
+  if (!isPersistedVerifiedOffer(offer)) return false;
+  if (offer.matchBand === "rejected" || offer.matchBand === "weak") return false;
+  if (offer.pipelineDebug?.validationStatus === "rejected") return false;
+  if (!isVerifiedOffer(offer)) return false;
+  if ((offer.matchConfidence ?? 0) < MIN_CONSUMER_MATCH_CONFIDENCE) return false;
+  if (!offer.price || offer.price <= 0) return false;
+  if (!passesRetailerLinkGate(offer)) return false;
+  if (!passesFreshnessVisibilityGate(offer)) return false;
+  if (!offer.imageUrl?.startsWith("https://")) return false;
+  return true;
+}
+
 /** Full consumer trust gate — use for main UI display. */
 export function passesConsumerTrustGates(offer: ProductOffer): boolean {
-  if (!isVerifiedOffer(offer)) return false;
+  if (offer.matchBand === "rejected" || offer.matchBand === "weak") return false;
   if (offer.pipelineDebug?.validationStatus === "rejected") return false;
+  if (passesPersistedInventoryTrustGates(offer)) {
+    if (!isExactMatchBand(offer.matchBand) && (offer.matchConfidence ?? 0) < 0.78) {
+      return false;
+    }
+    return true;
+  }
+  if (!isVerifiedOffer(offer)) return false;
   if ((offer.matchConfidence ?? 0) < MIN_CONSUMER_MATCH_CONFIDENCE) return false;
   if (!offer.price || offer.price <= 0) return false;
   if (!passesRetailerLinkGate(offer)) return false;
   if (!passesImageTrustGate(offer)) return false;
   if (!passesIdentifierAlignment(offer)) return false;
-  if (!isQuoteFreshForDisplay(offer)) return false;
+  if (!passesFreshnessVisibilityGate(offer)) return false;
   return true;
 }
 
 export function shouldShowConsumerBestDeal(offer: ProductOffer): boolean {
+  const freshEnough = isQuoteFreshStrict(offer) || classifyOfferFreshness(offer).tier === "aging";
   return (
+    freshEnough &&
     passesConsumerTrustGates(offer) &&
+    isAuthoritativeMatchBand(offer.matchBand) &&
     (offer.matchConfidence ?? 0) >= MIN_CONSUMER_BEST_DEAL_CONFIDENCE
   );
 }

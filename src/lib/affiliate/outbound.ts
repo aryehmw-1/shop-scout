@@ -1,6 +1,7 @@
 import type { ProductOffer } from "../types";
 import { buildAffiliateUrl } from "../affiliate";
 import { allExperimentVariants } from "../experiments/flags";
+import { decodeBase64Url, encodeBase64Url } from "../encoding/base64url";
 
 export interface OutboundClickContext {
   catalogId?: string;
@@ -39,23 +40,10 @@ export function buildOutboundUrl(
   return `/api/outbound?${params.toString()}`;
 }
 
-function encodeBase64Url(value: string): string {
-  if (typeof Buffer !== "undefined") {
-    return Buffer.from(value, "utf8").toString("base64url");
-  }
-  const bytes = new TextEncoder().encode(value);
-  let binary = "";
-  for (const b of bytes) binary += String.fromCharCode(b);
-  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-}
-
-/** Decode affiliate destination from outbound query param. */
+/** Decode affiliate destination from outbound query param. Never throws. */
 export function decodeOutboundTarget(encoded: string): string | null {
-  try {
-    const url = Buffer.from(encoded, "base64url").toString("utf8");
-    if (!url.startsWith("http://") && !url.startsWith("https://")) return null;
-    return url;
-  } catch {
-    return null;
-  }
+  const url = decodeBase64Url(encoded);
+  if (!url) return null;
+  if (!url.startsWith("http://") && !url.startsWith("https://")) return null;
+  return url;
 }

@@ -11,12 +11,14 @@ import type {
   ShoppingChannel,
   ShoppingIntent,
 } from "../types";
+import { analyzeProductMatch } from "../offers/product-match-analysis";
 import { isLiveQuoteRelevant } from "./live-quote-filter";
 import { imageSourceForLiveQuote } from "./product-image-source";
 import type { LiveQuote } from "./providers/live-quote";
 import type { PriceSource } from "./types";
-
-const QUOTE_TTL_MS = 30 * 60 * 1000;
+import {
+  computePersistExpiresAt,
+} from "../pricing/quote-freshness-policy";
 
 function extractBrandFromLiveTitle(title: string): string | undefined {
   const first = title.split(/\s+/)[0];
@@ -41,7 +43,7 @@ function applyLiveToOffer(
   defaultLivePriceSource: PriceSource,
 ): ProductOffer {
   const livePriceSource = quote.priceSource ?? defaultLivePriceSource;
-  const now = new Date().toISOString();
+  const now = quote.fetchedAt ?? new Date().toISOString();
   const { productUrl, affiliateUrl } = buildOfferClickUrl(
     offer.retailer,
     item,
@@ -57,6 +59,11 @@ function applyLiveToOffer(
     offer.retailer,
     productUrl,
   );
+
+  const persisted = quote.verifiedPersistedInventory === true;
+
+  const listingTitle = quote.storeTitle.trim() || offer.title;
+  const matchAnalysis = analyzeProductMatch(listingTitle, item, intent, quote.matchConfidence);
 
   return {
     ...offer,
@@ -78,15 +85,27 @@ function applyLiveToOffer(
     affiliateUrl,
     imageUrl: liveImage,
     imageSource,
-    matchConfidence: Math.max(offer.matchConfidence, 0.94),
+    matchConfidence: matchAnalysis.confidence,
+    matchBand: matchAnalysis.band,
+    matchDisplayLabel: matchAnalysis.displayLabel,
+    packSizeLabel: matchAnalysis.packSizeLabel,
+    identityConfidence: quote.identityConfidence ?? matchAnalysis.confidence,
+    imageConfidence: quote.imageConfidence ?? 0.75,
+    confidenceReasons: [
+      ...(quote.confidenceReasons ?? offer.confidenceReasons ?? []),
+      ...matchAnalysis.reasons,
+    ],
     priceSource: livePriceSource,
     priceAsOf: now,
-    priceExpiresAt: new Date(Date.now() + QUOTE_TTL_MS).toISOString(),
-    priceNote:
-      livePriceSource === "cached_quote" ?
-        "Recent price"
-      : "Live price",
+    priceExpiresAt:
+      quote.expiresAt ??
+      computePersistExpiresAt(new Date(now), offer.retailer).toISOString(),
+    priceNote: persisted ? "Recently verified price" : livePriceSource === "cached_quote" ? "Recently verified" : "Verified live price",
     inStock: true,
+    verifiedPersistedInventory: persisted || offer.verifiedPersistedInventory,
+    normalizationStatus: quote.normalizationNote,
+    qaStatus: quote.qaStatus ?? offer.qaStatus,
+    lastVerifiedAt: quote.fetchedAt ?? offer.lastVerifiedAt,
   };
 }
 
@@ -117,6 +136,9 @@ function buildLiveOffer(
     productUrl,
   );
 
+  const persisted = quote.verifiedPersistedInventory === true;
+  const matchAnalysis = analyzeProductMatch(liveTitle, item, intent, quote.matchConfidence);
+
   return {
     id: `live-${item.id}-${quote.retailerId}-${channel}`,
     catalogId: item.id,
@@ -138,14 +160,26 @@ function buildLiveOffer(
     landedCost: quote.price,
     productUrl,
     affiliateUrl,
-    matchConfidence: 0.94,
+    matchConfidence: matchAnalysis.confidence,
+    matchBand: matchAnalysis.band,
+    matchDisplayLabel: matchAnalysis.displayLabel,
+    packSizeLabel: matchAnalysis.packSizeLabel,
+    identityConfidence: quote.identityConfidence ?? matchAnalysis.confidence,
+    imageConfidence: quote.imageConfidence ?? 0.75,
+    confidenceReasons: [
+      ...(quote.confidenceReasons ?? []),
+      ...matchAnalysis.reasons,
+    ],
     priceSource: livePriceSource,
-    priceAsOf: now,
-    priceExpiresAt: new Date(Date.now() + QUOTE_TTL_MS).toISOString(),
-    priceNote:
-      livePriceSource === "cached_quote" ?
-        "Recent price"
-      : "Live price",
+    priceAsOf: quote.fetchedAt ?? now,
+    priceExpiresAt:
+      quote.expiresAt ??
+      computePersistExpiresAt(new Date(now), quote.retailerId).toISOString(),
+    priceNote: persisted ? "Recently verified price" : livePriceSource === "cached_quote" ? "Recently verified" : "Verified live price",
+    verifiedPersistedInventory: persisted,
+    normalizationStatus: quote.normalizationNote,
+    qaStatus: quote.qaStatus,
+    lastVerifiedAt: quote.fetchedAt,
   };
 }
 
@@ -155,6 +189,7 @@ export function mergeLivePrices(
   item: CatalogItem,
   intent: ShoppingIntent,
   livePriceSource: PriceSource = "connector_api",
+  options: { skipRelevanceFilter?: boolean } = {},
 ): { results: ProductSearchResults; liveCount: number } {
   if (!quotes.length) {
     return { results: catalog, liveCount: 0 };
@@ -166,12 +201,18 @@ export function mergeLivePrices(
   let liveCount = 0;
 
   const searchQ = buildFullSearchQuery(intent);
+  const hasPersisted = quotes.some((q) => q.verifiedPersistedInventory);
+
+  const quoteRelevant = (quote: LiveQuote) =>
+    options.skipRelevanceFilter ||
+    quote.verifiedPersistedInventory ||
+    isLiveQuoteRelevant(quote, item, searchQ, intent);
 
   const patchRow = (offers: ProductOffer[]) =>
     offers.map((o) => {
       const quote = quoteMap.get(o.retailer);
       if (!quote) return o;
-      if (!isLiveQuoteRelevant(quote, item, searchQ, intent)) return o;
+      if (!quoteRelevant(quote)) return o;
       liveCount += 1;
       quoteMap.delete(o.retailer);
       return applyLiveToOffer(o, quote, item, intent, livePriceSource);
@@ -188,7 +229,7 @@ export function mergeLivePrices(
 
   for (const quote of quoteMap.values()) {
     if (existing.has(quote.retailerId)) continue;
-    if (!isLiveQuoteRelevant(quote, item, searchQ, intent)) continue;
+    if (!quoteRelevant(quote)) continue;
     const channel: ShoppingChannel = isRetailerNearZip(zip, quote.retailerId) ?
       "local"
     : "online";
@@ -202,7 +243,12 @@ export function mergeLivePrices(
   markBestDeal(online);
 
   return {
-    results: { ...catalog, local, online },
+    results: {
+      ...catalog,
+      local,
+      online,
+      verifiedInventoryHit: hasPersisted ? catalog.verifiedInventoryHit : undefined,
+    },
     liveCount,
   };
 }

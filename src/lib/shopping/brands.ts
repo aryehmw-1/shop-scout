@@ -56,7 +56,63 @@ export const KNOWN_BRANDS: Record<string, string> = {
   tumi: "Tumi",
   away: "Away",
   herschel: "Herschel",
+  "great value": "Great Value",
+  greatvalue: "Great Value",
+  kirkland: "Kirkland",
+  "kirkland signature": "Kirkland",
+  "member's mark": "Member's Mark",
+  membersmark: "Member's Mark",
+  "365": "365",
+  "365 everyday value": "365",
+  goodgather: "Good & Gather",
+  "good & gather": "Good & Gather",
+  marketside: "Marketside",
+  equate: "Equate",
+  upup: "up & up",
+  "up & up": "up & up",
+  folgers: "Folgers",
+  cheerios: "Cheerios",
+  "nature valley": "Nature Valley",
+  chobani: "Chobani",
+  bounty: "Bounty",
+  charmin: "Charmin",
+  tide: "Tide",
+  dawn: "Dawn",
+  "cheez-it": "Cheez-It",
+  cheezit: "Cheez-It",
+  "cheez it": "Cheez-It",
+  goldfish: "Goldfish",
+  ritz: "Ritz",
+  oreo: "Oreo",
 };
+
+/** Walmart/Costco/Target private-label store brands. */
+export const PRIVATE_LABEL_BRANDS: Record<string, string> = {
+  "great value": "Great Value",
+  greatvalue: "Great Value",
+  kirkland: "Kirkland",
+  "kirkland signature": "Kirkland",
+  "member's mark": "Member's Mark",
+  membersmark: "Member's Mark",
+  "365 everyday value": "365",
+  "365": "365",
+  goodgather: "Good & Gather",
+  "good & gather": "Good & Gather",
+  marketside: "Marketside",
+  equate: "Equate",
+  upup: "up & up",
+  "up & up": "up & up",
+};
+
+export function parsePrivateLabelBrand(text: string): string | undefined {
+  const lower = text.toLowerCase();
+  const sorted = Object.keys(PRIVATE_LABEL_BRANDS).sort((a, b) => b.length - a.length);
+  for (const key of sorted) {
+    const re = new RegExp(`\\b${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+    if (re.test(lower)) return PRIVATE_LABEL_BRANDS[key];
+  }
+  return undefined;
+}
 
 export function parseBrandFromText(text: string): string | undefined {
   const lower = text.toLowerCase();

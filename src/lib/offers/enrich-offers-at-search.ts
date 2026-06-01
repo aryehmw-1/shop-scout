@@ -29,7 +29,9 @@ import {
 } from "./enrichment-report";
 import { applyFinalOfferValidation } from "./offer-final-validation";
 import { logAmazonMatchDecision, validateAmazonOffer } from "./amazon-validation";
+import { applyOfferFreshness } from "./offer-freshness";
 import { inferRetailerStatus } from "./retailer-enrichment-status";
+import { recordRetailerFetchOutcome, prioritizeRetailersByHealth } from "../retailers/health/retailer-health";
 import {
   logPipelineDebug,
   pipelineDebugEnabled,
@@ -119,9 +121,12 @@ export async function enrichOffersAtSearch(
     if (!byRetailer.has(o.retailer)) byRetailer.set(o.retailer, o);
   }
 
-  const targets = [...byRetailer.values()]
-    .filter(needsScrape)
-    .sort((a, b) => a.retailer.localeCompare(b.retailer))
+  const targets = prioritizeRetailersByHealth(
+    [...byRetailer.values()]
+      .filter(needsScrape)
+      .map((o) => o.retailer),
+  )
+    .map((id) => byRetailer.get(id)!)
     .slice(0, maxRetailers());
 
   for (const offer of targets) {
@@ -140,6 +145,7 @@ export async function enrichOffersAtSearch(
     const fetchMs = Date.now() - fetchStarted;
 
     if (!page) {
+      recordRetailerFetchOutcome(offer.retailer, false, false, "fetch_failed");
       const failed = attachPipelineDebug(offer, {
         validationStatus: "rejected",
         rejectedReason: "fetch_failed",
@@ -213,6 +219,8 @@ export async function enrichOffersAtSearch(
       matchConfidence: offer.matchConfidence,
     });
 
+    recordRetailerFetchOutcome(offer.retailer, true, parserFoundMatch);
+
     if (!page.priceUsd) {
       attachPipelineDebug(offer, {
         rejectedReason: "scrape_no_price",
@@ -261,7 +269,7 @@ export async function enrichOffersAtSearch(
   );
 
   const finalPass = applyFinalOfferValidation(offers, item, intent, enrichmentReport.attempts);
-  offers = finalPass.offers;
+  offers = finalPass.offers.map(applyOfferFreshness);
 
   recordPersistRejections(
     enrichmentReport,

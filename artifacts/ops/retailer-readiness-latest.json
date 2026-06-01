@@ -1,0 +1,135 @@
+{
+  "generatedAt": "2026-05-31T02:59:57.652Z",
+  "platformPositioning": [
+    "Product comparison",
+    "Shopping intelligence",
+    "Recommendation engine",
+    "Commerce discovery",
+    "Pricing aggregation"
+  ],
+  "retailers": [
+    {
+      "retailerId": "amazon",
+      "displayName": "Amazon",
+      "status": "partial",
+      "works": false,
+      "acquisitionMethod": "official_api",
+      "confidenceScore": 0.92,
+      "persistenceStatus": "empty",
+      "affiliateReadiness": "configured",
+      "challengeRate": 0.5,
+      "activeQuotes": 0,
+      "totalQuotes": 18,
+      "productsWithQuotes": 0,
+      "productionGaps": [
+        "Amazon PA-API credentials not configured",
+        "No active persisted quotes"
+      ],
+      "recommendedNextSteps": [
+        "Set AMAZON_PA_API_ACCESS_KEY, SECRET_KEY, PARTNER_TAG",
+        "Run npm run index:full:local with retailer images enabled"
+      ]
+    },
+    {
+      "retailerId": "target",
+      "displayName": "Target",
+      "status": "partial",
+      "works": false,
+      "acquisitionMethod": "cached_structured",
+      "confidenceScore": 0.55,
+      "persistenceStatus": "empty",
+      "affiliateReadiness": "missing",
+      "challengeRate": 0.45,
+      "activeQuotes": 0,
+      "totalQuotes": 0,
+      "productsWithQuotes": 0,
+      "productionGaps": [
+        "Affiliate tag missing",
+        "No active persisted quotes"
+      ],
+      "recommendedNextSteps": [
+        "Configure /api/outbound env keys",
+        "Run npm run index:full:local with retailer images enabled"
+      ]
+    },
+    {
+      "retailerId": "walmart",
+      "displayName": "Walmart",
+      "status": "experimental",
+      "works": false,
+      "acquisitionMethod": "cached_structured",
+      "confidenceScore": 0.45,
+      "persistenceStatus": "empty",
+      "affiliateReadiness": "n/a",
+      "challengeRate": 0.7,
+      "activeQuotes": 0,
+      "totalQuotes": 0,
+      "productsWithQuotes": 0,
+      "productionGaps": [
+        "No active persisted quotes",
+        "Browser-rendered path experimental — PerimeterX challenge rate high"
+      ],
+      "recommendedNextSteps": [
+        "Run npm run index:full:local with retailer images enabled",
+        "Use cached_structured + merchant feed; keep experiments observability-only"
+      ]
+    },
+    {
+      "retailerId": "kroger",
+      "displayName": "kroger",
+      "status": "blocked",
+      "works": false,
+      "acquisitionMethod": "cached_structured",
+      "confidenceScore": 0.25,
+      "persistenceStatus": "empty",
+      "affiliateReadiness": "missing",
+      "challengeRate": 0.85,
+      "activeQuotes": 0,
+      "totalQuotes": 0,
+      "productsWithQuotes": 0,
+      "productionGaps": [
+        "Affiliate tag missing",
+        "No active persisted quotes"
+      ],
+      "recommendedNextSteps": [
+        "Configure /api/outbound env keys",
+        "Run npm run index:full:local with retailer images enabled"
+      ]
+    },
+    {
+      "retailerId": "costco",
+      "displayName": "costco",
+      "status": "blocked",
+      "works": false,
+      "acquisitionMethod": "browser_rendered",
+      "confidenceScore": 0.2,
+      "persistenceStatus": "empty",
+      "affiliateReadiness": "missing",
+      "challengeRate": 0.9,
+      "activeQuotes": 0,
+      "totalQuotes": 0,
+      "productsWithQuotes": 0,
+      "productionGaps": [
+        "Affiliate tag missing",
+        "No active persisted quotes"
+      ],
+      "recommendedNextSteps": [
+        "Configure /api/outbound env keys",
+        "Run npm run index:full:local with retailer images enabled"
+      ]
+    }
+  ],
+  "orchestrationSummary": {
+    "totalEvents": 0,
+    "residentialUsagePct": 0,
+    "avgCostPerSuccess": 0,
+    "challengeRateByTransport": {},
+    "fallbackFrequency": 0,
+    "retailerReliability": []
+  },
+  "persistenceDiagnostics": {
+    "totalProducts": 78,
+    "productsWithoutActiveQuotes": 78,
+    "expiredQuoteRatio": 1
+  }
+}

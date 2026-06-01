@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     }
 
     const session: SessionState = body.session ?? defaultSession();
-    const zipCode = body.zipCode ?? session.intent.zipCode ?? "78701";
+    const zipCode = body.zipCode ?? session.intent.zipCode ?? "";
 
     const userId = (await getSessionUserId()) ?? undefined;
 

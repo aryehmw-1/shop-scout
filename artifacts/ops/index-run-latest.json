@@ -1,0 +1,198 @@
+{
+  "generatedAt": "2026-05-31T14:51:24.339Z",
+  "report": {
+    "productsIndexed": 0,
+    "offersWritten": 0,
+    "amazonPaapi": false,
+    "retailersTonight": 20,
+    "totalRetailers": 156
+  },
+  "telemetry": {
+    "progressPct": 100,
+    "productsCompleted": 3,
+    "productsTotal": 3,
+    "productsWithOffers": 0,
+    "productsZeroOffers": 3,
+    "offersWritten": 0,
+    "rejections": 0,
+    "retries": 0,
+    "retailersAttempted": 60,
+    "elapsedMs": 1908,
+    "etaMs": 0,
+    "avgProductMs": 636,
+    "memoryMb": {
+      "rss": 185,
+      "heapUsed": 37,
+      "heapTotal": 62
+    },
+    "throughputProductsPerMin": 94.33962264150944,
+    "currentCategory": "clothing",
+    "categoryProgress": {
+      "dairy": {
+        "done": 1,
+        "total": 1
+      },
+      "pantry": {
+        "done": 1,
+        "total": 1
+      },
+      "clothing": {
+        "done": 1,
+        "total": 1
+      }
+    },
+    "bottleneck": "complete"
+  },
+  "retailerSummary": {
+    "fetchByRetailer": [],
+    "persistByRetailer": {
+      "heb": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 2
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "wholefoods": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 2
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "instacart": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 2
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "gerber": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "primary": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "gap": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "puma": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "tommyhilfiger": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "macys": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "zappos": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "scheels": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "zara": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "sportsmanswarehouse": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "potterybarnkids": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "away": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      },
+      "longchamp": {
+        "persisted": 0,
+        "rejected": {
+          "non_persistable_source": 1
+        },
+        "verifiedPersistenceRate": 0,
+        "trustRejectionRate": 1
+      }
+    },
+    "failureClasses": {
+      "success": 0,
+      "blocked": 0,
+      "empty_parse": 0,
+      "selector_mismatch": 0,
+      "anti_bot": 0,
+      "timeout": 0,
+      "partial_success": 0,
+      "no_price_extracted": 0
+    },
+    "rates": {
+      "fetchSuccessRate": 0,
+      "parseSuccessRate": 0,
+      "verifiedPersistenceRate": 0,
+      "trustRejectionRate": 1
+    },
+    "normalizationFailures": 0,
+    "proxyConfigured": false,
+    "proxyPoolSize": 0
+  }
+}

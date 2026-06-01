@@ -8,8 +8,8 @@ const steps = [
   },
   {
     icon: Rows3,
-    title: "Compare online prices",
-    desc: "One search across groceries, clothes, gear, and home — every store that ships to your area.",
+    title: "Compare live prices",
+    desc: "We check major retailers for the same product and surface verified prices side by side.",
   },
   {
     icon: MousePointerClick,
@@ -26,8 +26,7 @@ export function HowItWorks() {
           How it works
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-center text-ink-600">
-          Simple as asking a neighbor who shops everywhere — built for your whole
-          list.
+          Search, compare, and buy — always on the retailer&apos;s site.
         </p>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">

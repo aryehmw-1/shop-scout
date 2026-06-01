@@ -1,0 +1,52 @@
+{
+  "products": 5,
+  "retailers": 3,
+  "proxy": {
+    "enabled": true,
+    "configuredCount": 1,
+    "provider": "decodo",
+    "mode": "datacenter"
+  },
+  "totalRequests": 25,
+  "cacheHits": 0,
+  "cacheMisses": 25,
+  "proxyRequests": 10,
+  "directRequests": 15,
+  "blocked": 20,
+  "success": 5,
+  "bytes": 9894064,
+  "latencyMs": 36322,
+  "perRetailer": {
+    "amazon": {
+      "requests": 5,
+      "success": 5,
+      "blocked": 0,
+      "bytes": 8174891,
+      "latencyMs": 4607,
+      "proxy": 0,
+      "direct": 5
+    },
+    "walmart": {
+      "requests": 10,
+      "success": 0,
+      "blocked": 10,
+      "bytes": 153810,
+      "latencyMs": 15932,
+      "proxy": 5,
+      "direct": 5
+    },
+    "target": {
+      "requests": 10,
+      "success": 0,
+      "blocked": 10,
+      "bytes": 1565363,
+      "latencyMs": 15783,
+      "proxy": 5,
+      "direct": 5
+    }
+  },
+  "avgLatencyMs": 1453,
+  "avgKbPerRequest": 386.49,
+  "nightlyGbEstimate": 0.009,
+  "monthlyGbEstimate": 0.276
+}

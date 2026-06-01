@@ -14,10 +14,7 @@ export function Logo({ showTagline = false, size = "md" }: LogoProps) {
 
   return (
     <Link href="/" className="group flex items-center gap-2.5">
-      <BrandHomeMark
-        size={markSize}
-        className="transition group-hover:shadow-xl group-hover:shadow-orange-500/35"
-      />
+      <BrandHomeMark size={markSize} />
       <div>
         <p
           className={`font-display font-bold tracking-tight text-ink-900 ${textSize}`}

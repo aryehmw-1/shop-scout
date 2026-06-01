@@ -1,23 +1,32 @@
-# Icon audit checklist
+# Brand mark audit checklist
 
-Verified in repo:
+Run: `npm run audit:brand` (also runs checks in CI via `npm run build` → `brand:generate`).
 
-- [x] No `favicon.ico` (avoids conflict with `app/icon.svg`)
-- [x] No `metadata.icons` override in `layout.tsx`
-- [x] `src/app/icon.svg` = home mark (matches Logo)
-- [x] `src/app/apple-icon.svg` = same home mark
-- [x] `public/brand/icon.svg` = same (manifest + static)
-- [x] Removed `public/brand/shop-scout-icon.svg` (old magnifying-glass)
-- [x] Removed `ShopScoutMark.tsx` (unused alternate)
-- [x] No Lucide `Scale` in navigation
-- [x] `ShopScoutCompareIcon` only on `/chat` nav items
+## Single canonical file
 
-## Contrast / DPI
+- [x] `public/brand/mark.svg` is the only hand-edited mark
+- [x] No `icon.svg`, stroke-outline house, or Lucide `Home` in brand UI
+- [x] `BrandHomeMark` renders `/brand/mark.svg` (same file as favicon source)
 
-- Home mark: white stroke on saturated gradient (WCAG-friendly on tile)
-- SVG `viewBox="0 0 32 32"` scales cleanly on retina
-- `BrandHomeMark` uses vector Lucide `Home` + CSS gradient (sharp at all DPR)
+## Generated exports (from mark.svg)
 
-## Dark themes
+| File | Size | Use |
+|------|------|-----|
+| `mark-16.png` | 16×16 | Favicon readability audit |
+| `mark-32.png` | 32×32 | Tab icon |
+| `mark-180.png` | 180×180 | Apple touch |
+| `mark-512.png` / `og-mark.png` | 512×512 | OG / social |
+| `mark.ico` | 16+32 | Legacy favicon requests |
 
-User theme presets change page background, not the brand tile. Mark stays gradient + white icon on all themes.
+Legacy aliases `ss-tab-*` are regenerated for Safari cache compatibility.
+
+## Automated checks
+
+- PNG hashes match fresh resvg render from `mark.svg`
+- 16px export has sufficient non-background pixels
+- `mark.generated.ts` contains current house path
+- No forbidden legacy asset paths on disk
+
+## Manual visual check
+
+Open `/debug/icons` — navbar SVG and 32px PNG should be unmistakably the same house.

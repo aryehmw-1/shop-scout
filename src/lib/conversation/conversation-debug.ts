@@ -4,6 +4,7 @@
 
 import type { SessionState, ShoppingIntent } from "../types";
 import { buildFullSearchQuery } from "../shopping/intent-merge";
+import type { IntentTransitionDecision } from "../shopping/intent-transition";
 
 export interface ConversationDebugSnapshot {
   action: string;
@@ -21,6 +22,18 @@ export interface ConversationDebugSnapshot {
     maxPrice?: number;
     productSubtype?: string;
   };
+  intentTransition?: {
+    action: IntentTransitionDecision["action"];
+    shouldMerge: boolean;
+    confidence: number;
+    reason: string;
+    priorCategoryFamily?: string;
+    nextCategoryFamily?: string;
+    tokenOverlap: number;
+    taxonomyOverlap: number;
+    priorTaxonomy: string[];
+    nextTaxonomy: string[];
+  };
 }
 
 export function buildConversationDebugSnapshot(input: {
@@ -29,6 +42,7 @@ export function buildConversationDebugSnapshot(input: {
   priorSession: SessionState;
   nextSession: SessionState;
   merged: boolean;
+  transition?: IntentTransitionDecision;
 }): ConversationDebugSnapshot {
   const intent = input.nextSession.intent;
   const full = enrichMinimalIntent(intent);
@@ -49,6 +63,20 @@ export function buildConversationDebugSnapshot(input: {
       maxPrice: intent.maxPrice,
       productSubtype: intent.productSubtype,
     },
+    intentTransition: input.transition
+      ? {
+          action: input.transition.action,
+          shouldMerge: input.transition.shouldMerge,
+          confidence: input.transition.confidence,
+          reason: input.transition.reason,
+          priorCategoryFamily: input.transition.priorCategoryFamily,
+          nextCategoryFamily: input.transition.nextCategoryFamily,
+          tokenOverlap: input.transition.tokenOverlap,
+          taxonomyOverlap: input.transition.taxonomyOverlap,
+          priorTaxonomy: input.transition.priorTaxonomy,
+          nextTaxonomy: input.transition.nextTaxonomy,
+        }
+      : undefined,
   };
 }
 

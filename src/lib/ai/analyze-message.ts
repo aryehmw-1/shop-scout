@@ -1,5 +1,6 @@
 import type { ChatHistoryMessage } from "./generate-reply";
 import { detectClarificationNeeded } from "./clarify-intent";
+import { isObviousProductSearch } from "./product-query-specificity";
 import { findBroadKeywordRule } from "./shopping-keywords";
 import { parseSizeFromText } from "../shopping/sizes";
 import type { ClarificationState } from "../types";
@@ -125,9 +126,8 @@ ${ruleHint}`;
     };
 
     const wantsClarify =
-      parsed.needs_clarification === true ||
-      Boolean(ruleClarify) ||
-      Boolean(findBroadKeywordRule(message));
+      !isObviousProductSearch(message, intent) &&
+      (parsed.needs_clarification === true || Boolean(ruleClarify));
 
     if (!wantsClarify) {
       return { intent, needsClarification: false };
@@ -196,6 +196,13 @@ export async function analyzeShoppingMessage(
       parseSizeFromText(message) ??
       undefined,
   };
+
+  if (isObviousProductSearch(message, mergedRules)) {
+    return {
+      intent: mergedRules,
+      needsClarification: false,
+    };
+  }
 
   const ruleClarify = detectClarificationNeeded(
     mergedRules.query ?? message,

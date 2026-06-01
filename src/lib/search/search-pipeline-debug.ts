@@ -7,7 +7,8 @@ import { parseQueryAttributes, scoreItem } from "../retailers/search";
 import { extractIntentFromMessage } from "../ai/extract-intent";
 import { suggestCatalogProducts, normalizeSearchQuery } from "./query-normalize";
 import { resolvePrimaryProduct } from "./product-resolver";
-import { fetchCachedLiveQuotesForItem } from "./providers/cached-quotes";
+import { loadPersistedLiveQuotes } from "../inventory/verified-inventory-resolver";
+import type { VerifiedInventoryResolution } from "../inventory/verified-inventory-resolver";
 import { fetchLiveQuotes } from "./fetch-live-quotes";
 import { compareProduct, searchCatalog } from "../retailers/catalog";
 import type { CatalogItem } from "../retailers/catalog";
@@ -48,10 +49,13 @@ export interface SearchPipelineTrace {
   }>;
   keywordFallbackUsed: boolean;
   semanticNote: string;
+  verifiedInventoryResolution?: import("../types").VerifiedInventoryHitMeta;
 }
 
 function whyNotDisplayable(offer: ProductOffer): string[] {
   const reasons: string[] = [];
+  if (offer.matchBand) reasons.push(`match_band:${offer.matchBand}`);
+  if (offer.matchDisplayLabel) reasons.push(offer.matchDisplayLabel);
   if ((offer.matchConfidence ?? 0) < 0.58) reasons.push("low_match_confidence");
   if (offer.priceSource === "catalog_model") reasons.push("catalog_estimate");
   if (!isVerifiedOffer(offer)) reasons.push("not_verified_offer");
@@ -76,12 +80,27 @@ export async function traceSearchPipeline(
   options: {
     afterEnrich?: ProductSearchResults;
     item?: CatalogItem;
+    verifiedResolution?: VerifiedInventoryResolution;
   } = {},
 ): Promise<SearchPipelineTrace> {
   const q = normalizeSearchQuery(intent.query.trim());
   const parsedIntent = extractIntentFromMessage(q, intent.zipCode);
   const attrs = parseQueryAttributes(q);
   const stages: SearchPipelineStage[] = [];
+
+  const verifiedResolution = options.verifiedResolution;
+  if (verifiedResolution) {
+    stages.push({
+      stage: "0_verified_inventory_resolver",
+      count: verifiedResolution.candidates.length,
+      detail: verifiedResolution.hit ?
+        `HIT ${verifiedResolution.catalogItem?.id} via ${verifiedResolution.matchMethod} (score=${verifiedResolution.matchScore}) · ${verifiedResolution.quotes.length} quote(s)`
+      : `MISS — ${verifiedResolution.candidates.length} candidate(s)`,
+      samples: verifiedResolution.candidates.slice(0, 5).map(
+        (c) => `${c.catalogId}:${c.score}${c.hasPersistedQuotes ? "✓" : "✗"}${c.rejectedReason ? ` (${c.rejectedReason})` : ""}`,
+      ),
+    });
+  }
 
   stages.push({
     stage: "1_query_parse",
@@ -116,10 +135,12 @@ export async function traceSearchPipeline(
     detail: "not_configured — lexical catalog scoring only (SEMANTIC_EMBEDDINGS stub)",
   });
 
-  let { item, resolved } = resolvePrimaryProduct(intent);
+  let { item, resolved } = options.item && verifiedResolution?.hit && verifiedResolution.resolved ?
+    { item: options.item, resolved: verifiedResolution.resolved }
+  : resolvePrimaryProduct(intent);
   let keywordFallbackUsed = false;
 
-  if (resolved.synthetic && suggestions[0]) {
+  if (!verifiedResolution?.hit && resolved.synthetic && suggestions[0]) {
     const fallback = CATALOG.find((c) => c.id === suggestions[0]!.catalogId);
     if (fallback) {
       item = fallback;
@@ -157,7 +178,9 @@ export async function traceSearchPipeline(
     detail: `estimates from ${catalogResults.online.length} retailers`,
   });
 
-  const cached = await fetchCachedLiveQuotesForItem(item);
+  const cached = verifiedResolution?.quotes?.length ?
+    verifiedResolution.quotes
+  : await loadPersistedLiveQuotes(item.id);
   const live = await fetchLiveQuotes(intent, item, { allowLiveRetailerApis: true });
   stages.push({
     stage: "7_db_cached_quotes",
@@ -226,7 +249,25 @@ export async function traceSearchPipeline(
       trustScore: trustScores.get(id) ?? 0.5,
     })),
     keywordFallbackUsed,
-    semanticNote: "Vector retrieval disabled; catalog keyword scoring + suggestCatalogProducts fallback",
+    semanticNote: "Vector retrieval disabled; verified inventory resolver + catalog keyword scoring",
+    verifiedInventoryResolution: verifiedResolution ? {
+      matched: verifiedResolution.hit,
+      catalogId: verifiedResolution.catalogItem?.id,
+      matchMethod: verifiedResolution.matchMethod,
+      matchScore: verifiedResolution.matchScore,
+      lastVerifiedAt: verifiedResolution.lastVerifiedAt,
+      confidence: verifiedResolution.resolved?.confidence,
+      normalizationStatus: verifiedResolution.normalizationNote,
+      qaStatus: verifiedResolution.qaStatus,
+      candidateCount: verifiedResolution.candidates.length,
+      candidates: verifiedResolution.candidates.map((c) => ({
+        catalogId: c.catalogId,
+        title: c.title,
+        score: c.score,
+        hasPersistedQuotes: c.hasPersistedQuotes,
+        rejectedReason: c.rejectedReason,
+      })),
+    } : undefined,
   };
 }
 

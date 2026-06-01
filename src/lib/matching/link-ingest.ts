@@ -1,6 +1,7 @@
 import { fetchRetailerPageData } from "../offers/retailer-page-extract";
 import { isSearchProductUrl } from "../offers/url-classifier";
 import { identifiersFromRecord, mergeIdentifiers } from "../identity/product-identifiers";
+import type { CatalogItem } from "../retailers/catalog";
 import type { ProductCategory, RetailerId } from "../types";
 import type { ProductIdentifiers } from "../identity/types";
 import { parseProductUrl, type ParsedProductUrl } from "./url-parser";
@@ -9,6 +10,9 @@ import { parseVariantFromTitle } from "./link-variant-parse";
 import {
   lookupPersistedQuoteByAsin,
 } from "../search/link-persisted-lookup";
+import {
+  resolveVerifiedInventoryByAsin,
+} from "../inventory/verified-inventory-resolver";
 import {
   resolveLinkCanonicalProduct,
   type LinkCanonicalResult,
@@ -80,18 +84,33 @@ export async function ingestLinkProduct(rawUrl: string): Promise<LinkIngestResul
 
   // Prefer persisted verified quote for known Amazon ASIN before live scrape.
   if (externalIds.asin && parsed.sourceRetailer === "amazon") {
-    const cached = await lookupPersistedQuoteByAsin(externalIds.asin, rawUrl);
-    if (cached.hit && cached.priceUsd) {
-      referencePrice = cached.priceUsd;
+    const verified = await resolveVerifiedInventoryByAsin(externalIds.asin);
+    if (verified.hit && verified.quotes[0]?.price) {
+      const cached = verified.quotes[0];
+      referencePrice = cached.price;
       priceVerified = true;
       priceFromPersistedCache = true;
-      normalizationNote = cached.normalizationNote;
+      normalizationNote = verified.normalizationNote;
       if (cached.storeTitle) {
         storeTitle = cached.storeTitle;
         title = cached.storeTitle;
       }
       if (cached.imageUrl) imageUrl = cached.imageUrl;
       pdpFetchOk = true;
+    } else {
+      const cached = await lookupPersistedQuoteByAsin(externalIds.asin, rawUrl);
+      if (cached.hit && cached.priceUsd) {
+        referencePrice = cached.priceUsd;
+        priceVerified = true;
+        priceFromPersistedCache = true;
+        normalizationNote = cached.normalizationNote;
+        if (cached.storeTitle) {
+          storeTitle = cached.storeTitle;
+          title = cached.storeTitle;
+        }
+        if (cached.imageUrl) imageUrl = cached.imageUrl;
+        pdpFetchOk = true;
+      }
     }
   }
 
@@ -131,16 +150,30 @@ export async function ingestLinkProduct(rawUrl: string): Promise<LinkIngestResul
   );
 
   const brand = brandFromTitle(title);
+
+  // If ASIN resolves to persisted inventory, prefer that catalog item for compare.
+  let persistedCatalogItem: CatalogItem | undefined;
+  if (externalIds.asin && parsed.sourceRetailer === "amazon" && priceFromPersistedCache) {
+    const verified = await resolveVerifiedInventoryByAsin(externalIds.asin);
+    if (verified.hit && verified.catalogItem) {
+      persistedCatalogItem = verified.catalogItem;
+    }
+  }
+
   const canonical = await resolveLinkCanonicalProduct({
     title,
     brand,
-    category: parsed.category,
+    category: parsed.category ?? persistedCatalogItem?.category,
     identifiers,
     variant: parseVariantFromTitle(title),
     referencePrice,
   });
 
+  const catalogItem = persistedCatalogItem ?? canonical.catalogItem;
+  const catalogId = persistedCatalogItem?.id ?? canonical.catalogId;
+
   const useExactCompare =
+    Boolean(persistedCatalogItem) ||
     canonical.matchTier === "exact" ||
     (canonical.matchTier === "near" && canonical.matchConfidence >= 0.75 && !canonical.variantWarning);
 
@@ -149,8 +182,8 @@ export async function ingestLinkProduct(rawUrl: string): Promise<LinkIngestResul
     sourceRetailer: parsed.sourceRetailer,
     hostname: parsed.hostname,
     guessedTitle: title,
-    brand: canonical.catalogItem?.brand ?? brand,
-    category: parsed.category ?? (canonical.catalogItem?.category as ProductCategory | undefined),
+    brand: catalogItem?.brand ?? brand,
+    category: parsed.category ?? (catalogItem?.category as ProductCategory | undefined),
     referencePrice,
     priceVerified,
     priceFromPersistedCache,
@@ -160,11 +193,13 @@ export async function ingestLinkProduct(rawUrl: string): Promise<LinkIngestResul
     identifiers,
     externalIds,
     variant,
-    catalogId: canonical.catalogId,
-    catalogItem: canonical.catalogItem,
-    matchTier: canonical.matchTier,
-    matchConfidence: canonical.matchConfidence,
-    equivalenceReasons: canonical.equivalenceReasons,
+    catalogId,
+    catalogItem,
+    matchTier: persistedCatalogItem ? "exact" as const : canonical.matchTier,
+    matchConfidence: persistedCatalogItem ? 0.95 : canonical.matchConfidence,
+    equivalenceReasons: persistedCatalogItem ?
+      ["Matched via persisted verified inventory ASIN", ...canonical.equivalenceReasons]
+    : canonical.equivalenceReasons,
     variantWarning: canonical.variantWarning,
     pdpFetchOk,
     pdpFetchMs,

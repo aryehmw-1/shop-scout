@@ -1,0 +1,105 @@
+{
+  "timestamp": "2026-05-31T02:12:07.533Z",
+  "retailerId": "walmart",
+  "url": "https://www.walmart.com/search?q=whole+milk",
+  "status": 407,
+  "method": "playwright",
+  "behavior": "cold",
+  "transport": "residential",
+  "identity": {
+    "ok": false,
+    "error": "TypeError: fetch failed",
+    "latencyMs": 3196
+  },
+  "geoCountry": "us",
+  "proxyUsed": true,
+  "proxyEndpoint": "http://***:***@gate.decodo.com:10001",
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "http_error",
+    "reason": "http_407",
+    "confidence": 0.8,
+    "indicators": [],
+    "status": 407,
+    "bytes": 0
+  },
+  "headers": {
+    "content-length": "121",
+    "proxy-authenticate": "Basic"
+  },
+  "htmlBytes": 0,
+  "redirectChain": [
+    "407 https://www.walmart.com/",
+    "407 https://www.walmart.com/search?q=whole+milk"
+  ],
+  "realism": {
+    "webdriver": null,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "platform": "MacIntel",
+    "languages": [
+      "en-US"
+    ],
+    "language": "en-US",
+    "hardwareConcurrency": 10,
+    "deviceMemory": 16,
+    "pluginsLength": 3,
+    "webglVendor": "Intel Inc.",
+    "webglRenderer": "Intel Iris OpenGL Engine",
+    "timezone": "America/New_York",
+    "locale": "en-US",
+    "innerWidth": 1366,
+    "innerHeight": 900,
+    "devicePixelRatio": 1,
+    "hasChromeObject": true,
+    "canvasHash": "-1812192639",
+    "permissionsConsistent": null
+  },
+  "realismScores": {
+    "suspicion": {
+      "score": 0,
+      "reasons": []
+    },
+    "challenge": {
+      "score": 0.11,
+      "factors": [
+        "block=0",
+        "suspicion=0",
+        "difficulty=0.6",
+        "proxy_adjustment"
+      ]
+    }
+  },
+  "lifecycle": {
+    "waitStrategy": "adaptive",
+    "committed": true,
+    "domContentLoaded": false,
+    "loadEvent": false,
+    "networkIdle": false,
+    "becameInteractive": false,
+    "challengeDetected": false,
+    "partialExtraction": false,
+    "domBytesAtExtraction": 0,
+    "timedOut": false,
+    "blockedRequests": 0,
+    "blockedBytesApprox": 0,
+    "stages": [
+      {
+        "stage": "committed",
+        "atMs": 12231,
+        "note": "status=407"
+      },
+      {
+        "stage": "extracted",
+        "atMs": 37902,
+        "note": "bytes=0"
+      }
+    ],
+    "firstByteMs": 12230,
+    "documentStatus": 407,
+    "readyState": "loading"
+  },
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

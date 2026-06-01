@@ -252,6 +252,18 @@ export interface ProductOffer {
   inStock: boolean;
   pickupAvailable: boolean;
   deliveryFee?: number;
+  /** Estimated shipping component of delivered total. */
+  estimatedShipping?: number;
+  /** Estimated sales tax component of delivered total. */
+  estimatedTax?: number;
+  /** Item + shipping + tax — primary ranking key. */
+  deliveredTotal?: number;
+  deliveredPriceConfidence?: number;
+  deliveredPriceNote?: string;
+  freeShippingThreshold?: number;
+  freeShippingEligible?: boolean;
+  memberPricingApplied?: boolean;
+  pickupEligible?: boolean;
   landedCost: number;
   productUrl: string;
   affiliateUrl: string;
@@ -274,6 +286,12 @@ export interface ProductOffer {
     | "nightly_index";
   priceAsOf?: string;
   priceExpiresAt?: string;
+  /** Tiered freshness — fresh | aging | stale_visible | expired */
+  freshnessTier?: "fresh" | "aging" | "stale_visible" | "expired";
+  freshnessLabel?: string;
+  lastUpdatedAt?: string;
+  /** Price confidence after freshness decay */
+  displayPriceConfidence?: number;
   isBestDeal?: boolean;
   priceNote?: string;
   /** Composite deal ranking score (0–1). Higher = better trustworthy deal. */
@@ -289,7 +307,7 @@ export interface ProductOffer {
   retailerTrustScore?: number;
   isGoodDeal?: boolean;
   isHistoricalLow?: boolean;
-  dealLabel?: "best_deal" | "good_deal" | "verified";
+  dealLabel?: "best_deal" | "good_deal" | "verified" | "closest_match";
   /** Sparkline points (oldest→newest) for mini price chart */
   priceHistorySparkline?: number[];
   /** User-facing explanation of deal ranking */
@@ -302,6 +320,20 @@ export interface ProductOffer {
   };
   /** Server-side pipeline trace for debug UI (stripped in production unless enabled). */
   pipelineDebug?: OfferPipelineDebug;
+  /** True when offer came from verified persisted inventory DB row. */
+  verifiedPersistedInventory?: boolean;
+  normalizationStatus?: string;
+  qaStatus?: "approved" | "pending" | "rejected" | "none";
+  /** Retrieval relevance band — drives trust-preserving UI labels. */
+  matchBand?:
+    | "exact_verified"
+    | "likely_match"
+    | "similar"
+    | "brand_alternative"
+    | "weak"
+    | "rejected";
+  matchDisplayLabel?: string;
+  packSizeLabel?: string;
 }
 
 export interface ReferenceProduct {
@@ -338,6 +370,64 @@ export interface MatchedProductSummary {
   imageSource?: ProductImageSource;
 }
 
+export interface VerifiedInventoryHitMeta {
+  matched: boolean;
+  catalogId?: string;
+  matchMethod?: string;
+  matchScore?: number;
+  lastVerifiedAt?: string;
+  confidence?: number;
+  normalizationStatus?: string;
+  qaStatus?: "approved" | "pending" | "rejected" | "none";
+  candidateCount?: number;
+  candidates?: Array<{
+    catalogId: string;
+    title: string;
+    score: number;
+    hasPersistedQuotes: boolean;
+    rejectedReason?: string;
+  }>;
+}
+
+export interface RetrievalMeta {
+  tier?: string;
+  matchReason?: string;
+  confidence?: number;
+  catalogId?: string;
+  matchedTitle?: string;
+  matchedBrand?: string;
+  normalizationMessage?: string;
+  offerQuality?: "exact" | "verified" | "estimated" | "closest_match";
+}
+
+export interface GroceryRetrievalDebugSummary {
+  query: string;
+  normalizedQuery: string;
+  isGroceryQuery: boolean;
+  parsedBrand?: string;
+  parsedCategory?: string;
+  productTypes: string[];
+  privateLabel?: string;
+  tierReached?: string;
+  tierRank?: number;
+  resolvedCatalogId?: string;
+  resolvedTitle?: string;
+  matchReason?: string;
+  resolverConfidence?: number;
+  candidateRetrievals: Array<{
+    catalogId: string;
+    title: string;
+    brand: string;
+    score: number;
+    tier?: string;
+  }>;
+  fallbackTierExecuted: boolean;
+  rejectionReasons: string[];
+  displayableOfferCount: number;
+  verifiedOfferCount: number;
+  closestMatchOfferCount: number;
+}
+
 export interface SearchPipelineDebugSummary {
   query: string;
   resolvedCatalogId: string;
@@ -353,6 +443,7 @@ export interface SearchPipelineDebugSummary {
   }>;
   keywordFallbackUsed: boolean;
   semanticNote: string;
+  verifiedInventoryResolution?: VerifiedInventoryHitMeta;
 }
 
 export interface ProductSearchResults {
@@ -374,8 +465,32 @@ export interface ProductSearchResults {
   linkMatch?: LinkMatchMeta;
   /** Filtered offers with reasons — shown in debug / low-confidence UI */
   lowConfidenceOnline?: ProductOffer[];
+  /** True when no exact/likely match passed trust gates — only similar/weak remain. */
+  noExactMatchFound?: boolean;
+  /** Grocery search surfaced catalog estimates when no verified quotes exist. */
+  closestMatchFallback?: boolean;
+  /** User has not set ZIP — shipping/tax are generic estimates. */
+  needsZipForShipping?: boolean;
+  /** Structured trace when grocery retrieval dead-ends (debug). */
+  groceryRetrievalDebug?: GroceryRetrievalDebugSummary;
+  /** User-visible retrieval tier + normalization context. */
+  retrievalMeta?: RetrievalMeta;
+  /** Grouped retrieval tiers for trust-preserving display. */
+  matchTiers?: {
+    exact: ProductOffer[];
+    similar: ProductOffer[];
+    brandAlternatives: ProductOffer[];
+  };
   /** End-to-end pipeline trace when SEARCH_PIPELINE_DEBUG or NEXT_PUBLIC_SEARCH_DEBUG */
   searchDebug?: SearchPipelineDebugSummary;
+  /** Set when search resolved via verified persisted inventory. */
+  verifiedInventoryHit?: VerifiedInventoryHitMeta;
+  /** Shown when most offers are stale — catalog still visible with labeling. */
+  catalogFreshnessWarning?: {
+    staleCount: number;
+    totalCount: number;
+    message: string;
+  };
 }
 
 export interface ChatMessage {
@@ -489,6 +604,18 @@ export interface ConversationDebugSnapshot {
     maxPrice?: number;
     productSubtype?: string;
   };
+  intentTransition?: {
+    action: "refine_current" | "replace_current" | "ambiguous" | "unrelated";
+    shouldMerge: boolean;
+    confidence: number;
+    reason: string;
+    priorCategoryFamily?: string;
+    nextCategoryFamily?: string;
+    tokenOverlap: number;
+    taxonomyOverlap: number;
+    priorTaxonomy: string[];
+    nextTaxonomy: string[];
+  };
 }
 
 export interface ChatResponse {
@@ -513,6 +640,10 @@ export interface UserPreferences {
   locationSet?: boolean;
   organicPreferred?: boolean;
   favoriteRetailers?: RetailerId[];
+  hasPrime?: boolean;
+  hasWalmartPlus?: boolean;
+  hasTargetCircle?: boolean;
+  fulfillmentPreference?: "shipping" | "pickup" | "either";
   learningProfile?: LearningProfile;
   /** Screen color theme — see Settings */
   colorTheme?: ThemeId;

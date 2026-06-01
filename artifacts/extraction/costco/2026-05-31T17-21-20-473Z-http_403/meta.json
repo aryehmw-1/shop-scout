@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-05-31T17:21:20.473Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=Eggland's%20Best%20Large%20Grade%20A%20Eggs",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 386
+  },
+  "headers": {
+    "cache-control": "max-age=900",
+    "connection": "close",
+    "content-length": "386",
+    "content-type": "text/html",
+    "date": "Sun, 31 May 2026 17:21:20 GMT",
+    "expires": "Sun, 31 May 2026 17:36:20 GMT",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780248080389_399274515_294684364_19_24089_9_14_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000;includeSubDomains"
+  },
+  "htmlBytes": 386,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

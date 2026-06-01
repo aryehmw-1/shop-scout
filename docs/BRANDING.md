@@ -1,33 +1,32 @@
 # Shop Scout branding
 
-## Home mark (logo, chat, favicon)
+## Single source of truth
 
-Single visual: **orange → amber → rose gradient tile + house icon**.
+**`public/brand/mark.svg`** — the only hand-edited brand mark file.
 
-| Use | Implementation |
-|-----|----------------|
-| Sidebar wordmark | `Logo` → `BrandHomeMark` |
-| Chat assistant | `BrandHomeMark size="xs"` |
-| Loading state | `BrandHomeMark pulse` |
-| Browser tab | `src/app/icon.svg` (App Router file convention) |
-| Apple touch | `src/app/apple-icon.svg` |
-| PWA manifest | `src/app/manifest.ts` → `/brand/icon.svg` |
-| Static copy | `public/brand/icon.svg` (keep in sync with `app/icon.svg`) |
+All other assets are generated:
 
-Do **not** add `metadata.icons` in `layout.tsx` — that duplicated the old magnifying-glass asset and fought `app/icon.svg`.
+```bash
+npm run brand:generate   # runs automatically before build
+npm run audit:brand      # consistency checks
+```
 
-## Compare nav only
+| Use | Asset |
+|-----|-------|
+| Navbar, chat avatar, loading | `/brand/mark.svg` via `BrandHomeMark` |
+| Browser tab (32px) | `/brand/mark-32.png` |
+| Favicon ICO | `/brand/mark.ico` |
+| Apple touch | `/brand/mark-180.png` |
+| Open Graph / Twitter | `/brand/og-mark.png` |
+| PWA manifest | `/brand/mark-180.png`, `/brand/mark-32.png`, `/brand/mark.svg` |
 
-`ShopScoutCompareIcon` — search + tag pulse next to **Compare prices** in `Sidebar` and `MobileNav` only.
+## Rules
 
-## Cache busting (stale favicon in browser)
+- Do **not** use Lucide `Home` or stroke-outline house icons for brand marks
+- Do **not** duplicate SVG paths in TS files — edit `mark.svg` only
+- Do **not** add `public/brand/icon.svg` or other parallel marks
+- Run `npm run audit:brand` after any brand change
 
-After icon changes:
+## Visual debug
 
-1. Hard refresh (Cmd+Shift+R) or clear site data for localhost.
-2. Restart dev server: `npm run clean && npm run dev`
-3. Safari iOS: remove home-screen shortcut and re-add after deploy.
-
-## Extension
-
-Chrome extension `extension/manifest.json` has no icons yet; add `public/brand/icon.svg` paths when publishing to the store.
+`/debug/icons` — side-by-side navbar mark vs 32px tab PNG

@@ -1,24 +1,24 @@
 "use client";
 
-import { ShieldCheck, LineChart, Sparkles } from "lucide-react";
+import { ShieldCheck, Tag, Sparkles } from "lucide-react";
 
-/** Surfaces differentiation vs Honey / Google Shopping / CamelCamelCamel. */
+/** Consumer-facing value props — no backend jargon. */
 export function ValueProposition({ compact }: { compact?: boolean }) {
   const items = [
     {
       icon: ShieldCheck,
-      title: "Verified, not guessed",
-      body: "Live scraped prices with trust scores — estimates are clearly labeled.",
+      title: "Verified live prices",
+      body: "We show real retailer prices — not guesses — and label estimates clearly.",
+    },
+    {
+      icon: Tag,
+      title: "Fair pack-size comparison",
+      body: "Multipacks and variety boxes won't masquerade as single-item matches.",
     },
     {
       icon: Sparkles,
-      title: "Explainable Best Deal",
-      body: "See why we picked a winner: market comparison, retailer reliability, and savings.",
-    },
-    {
-      icon: LineChart,
-      title: "Historical context",
-      body: "Price trends and good-time-to-buy signals — not just today's lowest tag.",
+      title: "Shop your way",
+      body: "Search by name or paste a product link — compare before you buy.",
     },
   ];
 
@@ -30,7 +30,7 @@ export function ValueProposition({ compact }: { compact?: boolean }) {
       {items.map(({ icon: Icon, title, body }) => (
         <div
           key={title}
-          className="rounded-xl border border-stone-200/80 bg-white p-3 shadow-sm"
+          className="rounded-xl border border-sage-200/80 bg-white p-3 shadow-sm"
         >
           <div className="mb-1.5 flex items-center gap-2">
             <Icon size={16} className="shrink-0 text-sage-600" aria-hidden />

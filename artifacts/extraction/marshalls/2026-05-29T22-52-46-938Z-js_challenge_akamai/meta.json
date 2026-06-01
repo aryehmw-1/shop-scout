@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-05-29T22:52:46.938Z",
+  "retailerId": "marshalls",
+  "url": "https://www.marshalls.com/us/store/shop/?Ntt=mens%20running%20shoes%20Organic%20Baby%20Spinach",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:akamai",
+    "vendor": "akamai",
+    "confidence": 0.8,
+    "indicators": [
+      "html:akamai-bm"
+    ],
+    "status": 200,
+    "bytes": 40770
+  },
+  "headers": {
+    "akamai-grn": "0.16fc3117.1780095166.2efb1c65",
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-length": "17181",
+    "content-type": "text/html",
+    "date": "Fri, 29 May 2026 22:52:46 GMT",
+    "expires": "0",
+    "link": "<https://static.marshalls.com>;rel=\"preconnect\",<https://www.google.com>;rel=\"preconnect\",<https://www.gstatic.com>;rel=\"preconnect\",<https://nexus.ensighten.com>;rel=\"preconnect\",<https://cdn.cookielaw.org>;rel=\"preconnect\",<https://www.googletagmanager.com>;rel=\"preconnect\",<https://resources.digital-cloud-west.medallia.com>;rel=\"preconnect\",<https://www.google-analytics.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=93, ak_p; desc=\"1780095166789_389151766_788208741_11906_29752_8_0_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000 ; includeSubDomains ; preload",
+    "vary": "Accept-Encoding",
+    "x-akamai-transformed": "9l - 0 pmb=mRUM,2",
+    "x-frame-options": "SAMEORIGIN"
+  },
+  "htmlBytes": 40770,
+  "screenshotSaved": false
+}

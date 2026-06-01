@@ -113,6 +113,14 @@ function parseProductTypes(lower: string): string[] {
   if (/chip/.test(lower)) types.push("chips", "chip");
   if (/popcorn/.test(lower)) types.push("popcorn");
   if (/cracker/.test(lower)) types.push("cracker", "crackers");
+  if (/\bcoffee\b|ground coffee|folgers|maxwell|starbucks|espresso/.test(lower))
+    types.push("coffee", "ground coffee");
+  if (/paper\s+towels?|bounty/.test(lower))
+    types.push("paper towels", "towel", "household");
+  if (/\bcereal\b|cheerios|frosted flakes|honey nut/.test(lower))
+    types.push("cereal");
+  if (/\blaptop\b|macbook|notebook computer/.test(lower))
+    types.push("laptop", "computer");
   if (/milk/.test(lower)) types.push("milk");
   if (/egg/.test(lower)) types.push("egg", "eggs");
   if (/polo/.test(lower)) types.push("polo");

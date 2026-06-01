@@ -3,6 +3,8 @@
  */
 
 import type { ProductSearchResults } from "../types";
+import { getCategoryConfidenceMessage } from "../inventory/category-messaging";
+import { inferQueryCategoryFamily } from "../inventory/category-coverage";
 
 export interface RetrievalTrustDiagnostic {
   headline: string;
@@ -19,10 +21,8 @@ export function buildRetrievalTrustDiagnostic(
   const low = results.lowConfidenceOnline?.length ?? 0;
   const estimated = results.estimatedOnline?.length ?? 0;
   const debug = results.searchDebug;
-  const category = debug?.resolvedCatalogId?.includes("jogger") ||
-    query?.match(/jogger|hoodie|jeans|shoe|apparel|mens|womens/i) ?
-      "apparel"
-    : query?.match(/milk|egg|pasta|grocery|spinach/i) ? "grocery" : "general";
+  const family = inferQueryCategoryFamily(query);
+  const categoryMsg = getCategoryConfidenceMessage(query);
 
   if (verified > 0) {
     return {
@@ -38,16 +38,18 @@ export function buildRetrievalTrustDiagnostic(
       headline: "No verified offers passed trust gates",
       detail: `${low || estimated} lower-confidence match${(low || estimated) === 1 ? "" : "es"} found below — retailers may have responded but offers failed verification.`,
       hints: [
-        "Enable debug mode to inspect filtered offers",
-        "Try a more specific product name or paste a direct product link",
+        family === "apparel"
+          ? "Paste a direct Amazon product URL for apparel — live retailer blocking is common"
+          : "Try a more specific product name or paste a direct product link",
+        "Browse verified grocery inventory where coverage is production-grade",
       ],
       severity: "filtered",
     };
   }
 
-  const hints: string[] = [];
-  let detail = "We could not verify live prices for this search.";
-  let headline = "No verified offers yet";
+  const hints: string[] = [...categoryMsg.tips.slice(0, 2)];
+  let detail = categoryMsg.detail;
+  let headline = categoryMsg.headline;
 
   if (debug) {
     const cached = debug.stages.find((s) => s.stage === "7_db_cached_quotes")?.count ?? 0;
@@ -56,14 +58,16 @@ export function buildRetrievalTrustDiagnostic(
     const displayable = debug.stages.find((s) => s.stage === "12_consumer_displayable")?.count ?? 0;
 
     if (cached > 0 && displayable === 0) {
-      detail = `${cached} persisted quote(s) exist but did not pass consumer trust gates for this query.`;
+      detail = `${cached} persisted quote(s) exist but did not pass consumer trust gates for this query. ${detail}`;
       hints.push("Indexed inventory may need manual QA approval");
     } else if (postEnrich > 0 && displayable === 0) {
       detail = `${postEnrich} offer(s) retrieved but all were filtered by confidence, image, or identity checks.`;
       hints.push("Verification thresholds may be too strict for this category");
     } else if (cached === 0 && live === 0 && postEnrich === 0) {
-      detail = "Live retailer scrape and cached quotes both unavailable.";
-      hints.push("Retailers may be temporarily blocked — proxy not configured for Walmart/Target");
+      detail = "Live retailer pricing and cached quotes both unavailable. " + detail;
+      if (family === "apparel") {
+        hints.push("Walmart/Target apparel often blocks without residential proxy");
+      }
     }
 
     const topReasons = debug.filterReasons
@@ -80,17 +84,8 @@ export function buildRetrievalTrustDiagnostic(
       hints.push("Consumer trust gates (0.72 match, image, identity) rejected matches");
     }
     if (dominant === "catalog-estimate" || dominant === "non-verified-source") {
-      hints.push("Only catalog model prices available — no live scrape succeeded");
+      hints.push("Only estimated catalog prices available — try again or paste a product link");
     }
-  }
-
-  if (category === "apparel") {
-    headline = "Limited verified apparel coverage";
-    detail =
-      detail +
-      " Apparel is deprioritized for indexing; catalog has ~67 SKUs and most apparel retailers block without residential proxy.";
-    hints.push("Paste a direct Amazon/product URL for best results");
-    hints.push("Flagship grocery inventory is verified separately via nightly index");
   }
 
   if (debug?.keywordFallbackUsed) {

@@ -22,6 +22,7 @@
 
 # misc
 .DS_Store
+.tmp/
 *.pem
 
 # debug
@@ -33,6 +34,7 @@ scripts/.accuracy-run.mjs
 
 # env files (can opt-in for committing if needed)
 .env*
+.env.local
 
 # user accounts (local dev database)
 /data/users.json

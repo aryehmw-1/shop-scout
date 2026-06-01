@@ -2,6 +2,8 @@ import type { ProductOffer } from "../types";
 import { isVerifiedOffer, offerTrustLabel } from "../offers/offer-trust";
 import { formatPrice } from "../utils/format";
 import { formatLastVerified } from "./deal-display";
+import { consumerPriceNote } from "./consumer-copy";
+import { classifyOfferFreshness } from "../pricing/quote-freshness-policy";
 
 export interface OfferPriceDisplay {
   main: string;
@@ -15,6 +17,7 @@ export interface OfferPriceDisplay {
   dealHeadline?: string;
   marketComparison?: string;
   lastVerifiedLabel?: string;
+  freshnessLabel?: string;
   trustedMatchLabel?: string;
 }
 
@@ -57,24 +60,50 @@ function marketComparison(offer: ProductOffer): string | undefined {
 export function getOfferPriceDisplay(offer: ProductOffer): OfferPriceDisplay {
   const trustLabel = offerTrustLabel(offer);
   const reason = unavailableReason(offer);
-  const lastVerifiedLabel = formatLastVerified(offer);
+  const freshnessMeta = classifyOfferFreshness(offer);
+  const lastVerifiedLabel =
+    formatLastVerified(offer) ?? freshnessMeta.displayLabel;
+  const freshnessLabel = freshnessMeta.displayLabel;
   const trustedMatchLabel =
-    (offer.matchConfidence ?? 0) >= 0.62 ? "Trusted match" : undefined;
+    offer.matchDisplayLabel ??
+    ((offer.matchConfidence ?? 0) >= 0.85
+      ? "Exact verified match"
+      : (offer.matchConfidence ?? 0) >= 0.72
+        ? "Likely match"
+        : (offer.matchConfidence ?? 0) >= 0.55
+          ? "Closest available match"
+          : undefined);
 
   if (isVerifiedOffer(offer) && offer.price > 0) {
     const headline = dealHeadline(offer);
+    const note = consumerPriceNote(offer.priceNote);
+    const sub =
+      freshnessMeta.tier === "stale_visible" || freshnessMeta.tier === "expired"
+        ? freshnessLabel
+        : headline ?? note ?? trustLabel;
+    const trustTier: OfferPriceDisplay["trustTier"] =
+      freshnessMeta.shouldSoftHidePrice ? "estimated"
+      : freshnessMeta.tier === "stale_visible" || freshnessMeta.tier === "expired" ? "estimated"
+      : "verified";
     return {
-      main: formatPrice(offer.price),
-      sub: headline ?? offer.priceNote ?? trustLabel,
+      main:
+        freshnessMeta.shouldSoftHidePrice ? "Check retailer" : formatPrice(offer.price),
+      sub,
       showWasPrice: Boolean(
-        offer.movingAvgPrice && offer.movingAvgPrice > offer.price + 0.01,
+        !freshnessMeta.shouldSoftHidePrice &&
+          offer.movingAvgPrice &&
+          offer.movingAvgPrice > offer.price + 0.01,
       ),
       trustLabel,
-      trustTier: "verified",
-      badgeLabel: "VERIFIED PRICE",
+      trustTier,
+      badgeLabel:
+        freshnessMeta.tier === "fresh" || freshnessMeta.tier === "aging"
+          ? "VERIFIED PRICE"
+        : "ESTIMATED PRICE",
       dealHeadline: headline,
       marketComparison: marketComparison(offer),
       lastVerifiedLabel,
+      freshnessLabel,
       trustedMatchLabel,
     };
   }
@@ -122,7 +151,7 @@ export function getOfferPriceDisplay(offer: ProductOffer): OfferPriceDisplay {
 
   return {
     main: fallbackMain,
-    sub: offer.priceNote ?? "Estimated · verify at retailer",
+    sub: consumerPriceNote(offer.priceNote) ?? "Estimated · verify at retailer",
     showWasPrice: false,
     trustLabel,
     trustTier: "estimated",

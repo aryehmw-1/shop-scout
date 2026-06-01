@@ -1,0 +1,148 @@
+{
+  "runId": "2026-05-31T01-26-17-916Z",
+  "retailer": "walmart",
+  "url": "https://www.walmart.com/search?q=whole+milk",
+  "transports": [
+    "direct",
+    "datacenter",
+    "residential"
+  ],
+  "behaviors": [
+    "cold",
+    "humanized"
+  ],
+  "cells": [
+    {
+      "transport": "direct",
+      "behavior": "cold",
+      "ok": false,
+      "status": 200,
+      "category": "captcha",
+      "reason": "captcha:perimeterx",
+      "vendor": "perimeterx",
+      "sticky": false,
+      "ip": "99.92.177.32",
+      "asn": "AS7018 AT&T Enterprises, LLC",
+      "isp": "AT&T Enterprises, LLC",
+      "geo": "US",
+      "suspicion": 0,
+      "timingMs": 1479,
+      "error": ""
+    },
+    {
+      "transport": "direct",
+      "behavior": "humanized",
+      "ok": false,
+      "status": 200,
+      "category": "captcha",
+      "reason": "captcha:perimeterx",
+      "vendor": "perimeterx",
+      "sticky": false,
+      "ip": "99.92.177.32",
+      "asn": "AS7018 AT&T Enterprises, LLC",
+      "isp": "AT&T Enterprises, LLC",
+      "geo": "US",
+      "suspicion": 0,
+      "timingMs": 10348,
+      "error": ""
+    },
+    {
+      "transport": "datacenter",
+      "behavior": "cold",
+      "ok": false,
+      "status": 200,
+      "category": "captcha",
+      "reason": "captcha:perimeterx",
+      "vendor": "perimeterx",
+      "sticky": false,
+      "ip": "45.156.64.0",
+      "asn": "AS40676 Psychz Networks",
+      "isp": "HOSTWAGON",
+      "geo": "AU",
+      "suspicion": 0,
+      "timingMs": 3612,
+      "error": ""
+    },
+    {
+      "transport": "datacenter",
+      "behavior": "humanized",
+      "ok": false,
+      "status": 200,
+      "category": "captcha",
+      "reason": "captcha:perimeterx",
+      "vendor": "perimeterx",
+      "sticky": false,
+      "ip": "45.156.64.0",
+      "asn": "AS40676 Psychz Networks",
+      "isp": "HOSTWAGON",
+      "geo": "AU",
+      "suspicion": 0,
+      "timingMs": 18605,
+      "error": ""
+    },
+    {
+      "transport": "residential",
+      "behavior": "cold",
+      "ok": false,
+      "status": 0,
+      "category": "http_error",
+      "reason": "render_error: TimeoutError: page.goto: Timeout 45000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://www.walmart.com/search?q=whole+milk\", waiting until \"domcontentloade",
+      "vendor": "-",
+      "sticky": true,
+      "ip": "-",
+      "asn": "-",
+      "isp": "-",
+      "geo": "-",
+      "suspicion": "-",
+      "timingMs": 48261,
+      "error": "render_error: TimeoutError: page.goto: Timeout 45000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://www.walmart.com/search?q=whole+milk\", waiting until \"domcontentloade"
+    },
+    {
+      "transport": "residential",
+      "behavior": "humanized",
+      "ok": false,
+      "status": 0,
+      "category": "http_error",
+      "reason": "render_error: TimeoutError: page.goto: Timeout 45000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://www.walmart.com/search?q=whole+milk\", waiting until \"domcontentloade",
+      "vendor": "-",
+      "sticky": true,
+      "ip": "-",
+      "asn": "-",
+      "isp": "-",
+      "geo": "-",
+      "suspicion": "-",
+      "timingMs": 80053,
+      "error": "render_error: TimeoutError: page.goto: Timeout 45000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"https://www.walmart.com/search?q=whole+milk\", waiting until \"domcontentloade"
+    }
+  ],
+  "recommendation": {
+    "retailerId": "walmart",
+    "rationale": "no transport reached 60% success yet — needs stronger transport or more samples",
+    "options": [
+      {
+        "transport": "direct",
+        "attempts": 2,
+        "successRate": 0,
+        "blockRate": 100,
+        "avgLatencyMs": 5914,
+        "cost": 0
+      },
+      {
+        "transport": "datacenter",
+        "attempts": 2,
+        "successRate": 0,
+        "blockRate": 100,
+        "avgLatencyMs": 11109,
+        "cost": 1
+      },
+      {
+        "transport": "residential",
+        "attempts": 2,
+        "successRate": 0,
+        "blockRate": 0,
+        "avgLatencyMs": 64157,
+        "cost": 2
+      }
+    ]
+  }
+}

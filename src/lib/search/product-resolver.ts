@@ -12,6 +12,7 @@ import {
 import type { ShoppingIntent } from "../types";
 import { normalizeSearchQuery, suggestCatalogProducts } from "./query-normalize";
 import type { ResolvedProduct } from "./types";
+import { isGroceryQuery, resolveGroceryProduct } from "./grocery-retrieval";
 
 /**
  * Multi-signal product resolution: strict apparel filters, type disambiguation,
@@ -23,6 +24,13 @@ export function resolvePrimaryProduct(intent: ShoppingIntent): {
 } {
   const q = normalizeSearchQuery(intent.query.trim());
   const searchIntent = q ? { ...intent, query: q } : intent;
+
+  if (isGroceryQuery(q, searchIntent)) {
+    const grocery = resolveGroceryProduct(searchIntent);
+    if (grocery) {
+      return { item: grocery.item, resolved: grocery.resolved };
+    }
+  }
 
   if (!q) {
     const item = CATALOG[0];

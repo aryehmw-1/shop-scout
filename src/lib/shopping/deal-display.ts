@@ -1,7 +1,12 @@
 import type { ProductOffer } from "../types";
+import { classifyOfferFreshness } from "../pricing/quote-freshness-policy";
 
 export function formatLastVerified(offer: ProductOffer): string | undefined {
-  const ts = offer.lastVerifiedAt ?? offer.priceAsOf;
+  const meta = classifyOfferFreshness(offer);
+  if (meta.tier === "stale_visible" || meta.tier === "expired") {
+    return meta.displayLabel;
+  }
+  const ts = offer.lastUpdatedAt ?? offer.lastVerifiedAt ?? offer.priceAsOf;
   if (!ts) return undefined;
   const ms = Date.now() - new Date(ts).getTime();
   if (!Number.isFinite(ms) || ms < 0) return undefined;

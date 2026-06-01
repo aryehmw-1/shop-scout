@@ -160,10 +160,18 @@ function fallbackReply(ctx: ReplyContext): string {
     case "refine": {
       if (!productResults) return `Searching for ${q}…`;
       const total = productResults.online.length;
+      const zipNote = productResults.needsZipForShipping
+        ? "\n\nAdd your **ZIP** anytime for regional shipping and tax estimates."
+        : "";
       if (total === 0) {
-        return `I looked across our online stores for ${q} but didn't find a strong match. Try different wording or paste a product link.`;
+        const closest = productResults.closestMatchFallback;
+        if (closest) {
+          return `I found **closest matches** for ${q} — prices are estimated while we expand verified inventory. Browse the cards below or paste a product link for an exact match.${zipNote}`;
+        }
+        return `I looked across our online stores for ${q} but didn't find a strong match. Try different wording or paste a product link.${zipNote}`;
       }
       const online = productResults.online[0];
+      const bestPrice = online?.deliveredTotal ?? online?.landedCost ?? online?.price;
       const ref = productResults.referenceProduct;
       if (ref) {
         const cheaper = online && online.price < ref.referencePrice;
@@ -175,10 +183,12 @@ function fallbackReply(ctx: ReplyContext): string {
         ctx.action === "refine"
           ? `Got it — I updated your search${ctx.intent?.colors?.length ? ` (**${ctx.intent.colors.join(", ")}**)` : ""}${ctx.intent?.size ? ` in **${ctx.intent.size}**` : ""}${ctx.intent?.brand ? ` from **${ctx.intent.brand}**` : ""} and rechecked all stores.\n\n`
           : "";
-      const summary = `Here's what I found for ${q} — **${productResults.online.length}** stores online${zipCode ? ` (shipping to **${zipCode}**)` : ""}.`;
+      const summary = `Here's what I found for ${q} — **${productResults.online.length}** options${zipCode ? ` (shipping to **${zipCode}**)` : ""}.`;
       return `${refined}${summary}\n\n${
-        online ? `Best price: **${online.retailerName}** · **$${online.price.toFixed(2)}**` : ""
-      }\n\nTap **View deal** on any card to open that store with your search ready.`;
+        online && bestPrice != null
+          ? `Best delivered value: **${online.retailerName}** · **$${bestPrice.toFixed(2)}**`
+          : ""
+      }\n\nTap **View deal** on any card to open that store with your search ready.${zipNote}`;
     }
 
     case "conversational":
@@ -187,7 +197,7 @@ function fallbackReply(ctx: ReplyContext): string {
       if (/^(hi|hello|hey|yo)\b/.test(lower)) {
         return zipCode
           ? `Hey! I'm Shop Scout — your ZIP **${zipCode}** is set for shipping estimates. Ask for anything (groceries, **men's** or **women's** clothes, toddler gear, home) or paste a product link and I'll compare online prices.`
-          : `Hi there! I'm Shop Scout. Share your ZIP for shipping estimates, then tell me what to compare online.`;
+          : `Hi there! I'm Shop Scout — search any product right away. I'll compare prices across stores; add your **ZIP** later for shipping and tax estimates.`;
       }
       if (/thank/.test(lower)) {
         return "You're welcome! Want me to **recheck** a search, try something else, or dig into a specific store from the results?";

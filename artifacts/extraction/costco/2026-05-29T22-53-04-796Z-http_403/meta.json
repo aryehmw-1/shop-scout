@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-05-29T22:53:04.796Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=organic%20milk",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 384
+  },
+  "headers": {
+    "cache-control": "max-age=900",
+    "connection": "close",
+    "content-length": "384",
+    "content-type": "text/html",
+    "date": "Fri, 29 May 2026 22:53:04 GMT",
+    "expires": "Fri, 29 May 2026 23:08:04 GMT",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780095184606_399274511_2305861984_17_29430_9_145_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000;includeSubDomains"
+  },
+  "htmlBytes": 384,
+  "screenshotSaved": false
+}

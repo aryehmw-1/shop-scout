@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, Heart, Settings, LogIn, LogOut } from "lucide-react";
+import { Home, Heart, Settings, LogIn, LogOut, ShieldCheck } from "lucide-react";
 import { ShopScoutCompareIcon } from "@/components/brand/ShopScoutCompareIcon";
 import { Logo } from "./Logo";
 import { COMPARE_NAV_LABEL } from "@/lib/constants";
@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const nav = [
   { href: "/", label: "Home", icon: Home },
   { href: "/chat", label: COMPARE_NAV_LABEL, icon: ShopScoutCompareIcon },
+  { href: "/verified", label: "Verified inventory", icon: ShieldCheck },
   { href: "/saved", label: "Saved deals", icon: Heart },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
@@ -106,7 +107,7 @@ export function Sidebar() {
             })}
           </div>
           <p className="mt-2 shrink-0 text-[10px] leading-snug text-ink-400">
-            Grocery · fashion · home · sports · {SHOPPABLE_STORE_COUNT} total
+            Verified grocery first · apparel experimental · {SHOPPABLE_STORE_COUNT} stores
           </p>
         </div>
       </div>

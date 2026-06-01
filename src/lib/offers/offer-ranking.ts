@@ -8,7 +8,18 @@ import { hasUniqueRetailerImage, isVerifiedOffer } from "./offer-trust";
 import { applyOfferImageFallback } from "./offer-image-fallback";
 import { syncPriceBadge } from "./offer-pipeline-meta";
 import { isDisplayableOffer, showEstimatedOffersInUi } from "./offer-persist-validation";
+import { isGroceryQuery, GROCERY_CATEGORIES } from "../search/grocery-retrieval";
+import { applyDeliveredPricing } from "../pricing/delivered-price";
+import { applyOfferFreshness } from "./offer-freshness";
 import { rankOffersByDealScore } from "../pricing/deal-score";
+import { categoryRankingBoost, inferQueryCategoryFamily } from "../inventory/category-coverage";
+import { isExactMatchBand } from "./product-match-analysis";
+import {
+  passesConsumerTrustGates,
+  passesFreshnessVisibilityGate,
+  passesRetailerLinkGate,
+} from "./consumer-trust";
+import { classifyOfferFreshness } from "../pricing/quote-freshness-policy";
 
 export const DISPLAY_OFFER_LIMIT = 10;
 export const DISPLAY_ESTIMATED_LIMIT = 6;
@@ -41,9 +52,14 @@ export interface OfferRankFactors {
 export function computeOfferRankScore(
   offer: ProductOffer,
   catalogTitle?: string,
+  categoryId?: string,
 ): OfferRankFactors {
   const penalties: string[] = [];
   let score = (offer.matchConfidence ?? 0.4) * 40;
+
+  if (categoryId) {
+    score += categoryRankingBoost(categoryId) * 100;
+  }
 
   if (NON_VERIFIED_SOURCES.has(offer.priceSource ?? "catalog_model")) {
     score -= 80;
@@ -95,6 +111,22 @@ export function computeOfferRankScore(
 
   if (isVerifiedOffer(offer)) score += 40;
 
+  if (offer.matchBand === "rejected" || offer.matchBand === "weak") {
+    score -= 120;
+    penalties.push("weak-match-band");
+  } else if (offer.matchBand === "brand_alternative") {
+    score -= 55;
+    penalties.push("brand-alternative");
+  } else if (offer.matchBand === "similar") {
+    score -= 25;
+    penalties.push("similar-not-exact");
+  }
+
+  if ((offer.confidenceReasons ?? []).some((r) => r.code === "match.variety_pack")) {
+    score -= 100;
+    penalties.push("variety-pack-mismatch");
+  }
+
   return {
     score: Math.round(score * 10) / 10,
     pdp: isPdpProductUrl(offer.productUrl),
@@ -107,10 +139,11 @@ export function computeOfferRankScore(
 export function rankOffersForDisplay(
   offers: ProductOffer[],
   catalogTitle?: string,
+  categoryId?: string,
 ): ProductOffer[] {
   const scored = offers.map((o) => ({
     offer: o,
-    rank: computeOfferRankScore(o, catalogTitle),
+    rank: computeOfferRankScore(o, catalogTitle, categoryId),
   }));
 
   scored.sort((a, b) => {
@@ -124,44 +157,126 @@ export function rankOffersForDisplay(
   return scored.map((s) => s.offer);
 }
 
+function shouldUseClosestMatchFallback(
+  intent: ShoppingIntent | undefined,
+  item?: CatalogItem,
+): boolean {
+  if (!intent) return false;
+  if (isGroceryQuery(intent.query, intent)) return true;
+  if (item && GROCERY_CATEGORIES.has(item.category)) return true;
+  return false;
+}
+
 function finalizeOfferRow(
   offer: ProductOffer,
   item?: CatalogItem,
   intent?: ShoppingIntent,
 ): ProductOffer {
   const q = intent ? buildFullSearchQuery(intent) : undefined;
-  return syncPriceBadge(applyOfferImageFallback(offer, item, q));
+  const withImage = applyOfferImageFallback(offer, item, q);
+  const withDelivered = intent ? applyDeliveredPricing(withImage, intent) : withImage;
+  return syncPriceBadge(applyOfferFreshness(withDelivered));
+}
+
+function tierForOffer(offer: ProductOffer): "exact" | "similar" | "brand" | "other" {
+  const band = offer.matchBand;
+  if (band === "exact_verified" || band === "likely_match") return "exact";
+  if (band === "brand_alternative") return "brand";
+  if (band === "similar") return "similar";
+  if (isExactMatchBand(band) && passesConsumerTrustGates(offer)) return "exact";
+  return "other";
+}
+
+/** Relaxed gates for stale-but-visible offers when fresh quotes are unavailable. */
+function passesStaleVisibleFallbackGates(offer: ProductOffer): boolean {
+  if (offer.matchBand === "rejected" || offer.matchBand === "weak") return false;
+  if (!passesFreshnessVisibilityGate(offer)) return false;
+  if ((offer.matchConfidence ?? 0) < 0.55) return false;
+  if (!offer.price || offer.price <= 0) return false;
+  if (!passesRetailerLinkGate(offer)) return false;
+  return isVerifiedOffer(offer) || Boolean(offer.verifiedPersistedInventory);
 }
 
 /** Verified and displayable offers only — estimated hidden unless env flag set. */
 export function prepareResultsForDisplay(
   results: ProductSearchResults,
-  options: { limit?: number; item?: CatalogItem; intent?: ShoppingIntent } = {},
+  options: { limit?: number; item?: CatalogItem; intent?: ShoppingIntent; searchQuery?: string } = {},
 ): ProductSearchResults {
   const limit = options.limit ?? DISPLAY_OFFER_LIMIT;
   const estLimit = DISPLAY_ESTIMATED_LIMIT;
   const lowLimit = DISPLAY_LOW_CONFIDENCE_LIMIT;
   const catalogTitle = results.matchedProduct?.title;
+  const categoryId =
+    options.item?.category ?? (options.intent?.category as string | undefined);
+  const queryFamily = inferQueryCategoryFamily(
+    options.searchQuery ?? options.intent?.query,
+  );
   const merged = rankOffersForDisplay(
     [...results.online, ...results.local],
     catalogTitle,
+    categoryId,
   );
 
   const displayableRaw = merged.filter(isDisplayableOffer);
   const rankedDisplayable = rankOffersByDealScore(displayableRaw);
-  const verifiedRaw = rankedDisplayable.filter(isVerifiedOffer);
+  const consumerVerified = rankedDisplayable.filter(passesConsumerTrustGates);
+  const staleVisibleFallback =
+    consumerVerified.length === 0 ?
+      rankedDisplayable.filter(passesStaleVisibleFallbackGates)
+    : [];
+  const exactTier = consumerVerified.filter((o) => tierForOffer(o) === "exact");
+  const similarTier = consumerVerified.filter((o) => tierForOffer(o) === "similar");
+  const brandTier = consumerVerified.filter((o) => tierForOffer(o) === "brand");
+  const verifiedSource =
+    consumerVerified.length > 0 ? consumerVerified
+    : staleVisibleFallback.length > 0 ? staleVisibleFallback
+    : rankedDisplayable.filter(isVerifiedOffer);
+  const verifiedRaw =
+    exactTier.length > 0 ? exactTier : verifiedSource.length > 0 ? verifiedSource : rankedDisplayable.filter(isVerifiedOffer);
+  const noExactMatchFound =
+    exactTier.length === 0 &&
+    consumerVerified.length > 0 &&
+    (similarTier.length > 0 || brandTier.length > 0);
   const estimatedRaw = showEstimatedOffersInUi()
     ? merged.filter((o) => !isDisplayableOffer(o) && !isVerifiedOffer(o))
     : [];
 
+  const showLowForApparel = queryFamily === "apparel";
   const lowConfidenceRaw =
-    searchDebugUiEnabled() || showEstimatedOffersInUi() ?
+    searchDebugUiEnabled() || showEstimatedOffersInUi() || showLowForApparel ?
       merged.filter((o) => !isVerifiedOffer(o) && (o.matchConfidence ?? 0) >= 0.35)
     : [];
 
   const verified = verifiedRaw
     .slice(0, limit)
     .map((o) => finalizeOfferRow(o, options.item, options.intent));
+
+  const groceryClosest =
+    verified.length === 0 &&
+    shouldUseClosestMatchFallback(options.intent, options.item) ?
+      merged
+        .filter(
+          (o) =>
+            o.priceSource === "catalog_model" &&
+            o.price > 0 &&
+            o.productUrl?.startsWith("http"),
+        )
+        .slice(0, limit)
+        .map((o) =>
+          finalizeOfferRow(
+            {
+              ...o,
+              dealLabel: "closest_match",
+              priceNote: o.priceNote ?? "Estimated · closest catalog match",
+              matchConfidence: o.matchConfidence ?? 0.62,
+            },
+            options.item,
+            options.intent,
+          ),
+        )
+    : [];
+
+  const displayVerified = verified.length > 0 ? verified : groceryClosest;
 
   const estimated = estimatedRaw
     .slice(0, estLimit)
@@ -173,10 +288,10 @@ export function prepareResultsForDisplay(
     .map((o) => finalizeOfferRow(o, options.item, options.intent));
 
   const bestId =
-    verified.find((o) => o.isBestDeal)?.id ??
-    [...verified].sort((a, b) => a.landedCost - b.landedCost)[0]?.id;
+    displayVerified.find((o) => o.isBestDeal)?.id ??
+    [...displayVerified].sort((a, b) => a.landedCost - b.landedCost)[0]?.id;
 
-  const online = verified.map((o) => ({
+  const online = displayVerified.map((o) => ({
     ...o,
     isBestDeal: bestId ? o.id === bestId : false,
     dealLabel:
@@ -184,12 +299,42 @@ export function prepareResultsForDisplay(
       : o.dealLabel ?? ("verified" as const),
   }));
 
+  const staleCount = online.filter((o) => {
+    const t = classifyOfferFreshness(o).tier;
+    return t === "stale_visible" || t === "expired";
+  }).length;
+  const catalogFreshnessWarning =
+    online.length > 0 && staleCount / online.length >= 0.5 ?
+      {
+        staleCount,
+        totalCount: online.length,
+        message: `${staleCount} of ${online.length} prices may be outdated — verify at retailer before purchase.`,
+      }
+    : staleVisibleFallback.length > 0 && consumerVerified.length === 0 ?
+      {
+        staleCount: staleVisibleFallback.length,
+        totalCount: staleVisibleFallback.length,
+        message: "Showing last known prices — refresh in progress. Verify at retailer checkout.",
+      }
+    : undefined;
+
   return {
     ...results,
     local: [],
     online,
     estimatedOnline: estimated,
     lowConfidenceOnline: lowConfidence.length ? lowConfidence : undefined,
+    catalogFreshnessWarning,
+    noExactMatchFound:
+      verified.length === 0 && groceryClosest.length > 0 ?
+        true
+      : noExactMatchFound,
+    closestMatchFallback: groceryClosest.length > 0,
+    matchTiers: {
+      exact: exactTier.slice(0, limit).map((o) => finalizeOfferRow(o, options.item, options.intent)),
+      similar: similarTier.slice(0, lowLimit).map((o) => finalizeOfferRow(o, options.item, options.intent)),
+      brandAlternatives: brandTier.slice(0, lowLimit).map((o) => finalizeOfferRow(o, options.item, options.intent)),
+    },
   };
 }
 

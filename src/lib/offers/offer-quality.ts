@@ -12,6 +12,9 @@ import {
   amazonNormalizationEnabled,
   normalizeAmazonListingPrice,
 } from "./amazon-normalization";
+import {
+  applyProductMatchToOffer,
+} from "./product-match-analysis";
 import { attachPipelineDebug } from "./offer-pipeline-meta";
 import type { RetailerPageExtraction } from "./retailer-page-extract";
 import {
@@ -154,7 +157,7 @@ export function applyOfferQualityGates(
   }
 
   o.matchConfidence = Math.min(o.matchConfidence ?? 0.5, meta.priceConfidence + 0.15);
-  return o;
+  return applyProductMatchToOffer(o, item, intent);
 }
 
 export function applyRetailerExtractionToOffer(
@@ -226,7 +229,7 @@ export function applyRetailerExtractionToOffer(
     trustExtractedPrice
   ) {
     let priceToApply = extraction.priceUsd;
-    let priceNote = "Price from retailer page · verify at checkout";
+    let priceNote = "Live retailer pricing";
     const storeTitle = extraction.storeTitle ?? o.storeTitle ?? o.title;
 
     if (!isPlausiblePrice(extraction.priceUsd, item.basePrice)) {
@@ -299,9 +302,12 @@ export function applyRetailerExtractionToOffer(
         -0.35,
       );
       o.matchConfidence = Math.min(o.matchConfidence ?? 0.5, 0.35);
+      // Preserve PA-API connector prices; only revert scraped estimates.
       if (o.priceSource === "scraped") {
         o.priceSource = "catalog_model";
         o.priceNote = "Amazon match rejected · verify manually";
+      } else if (o.priceSource === "connector_api") {
+        o.priceNote = "Amazon PA-API · match review recommended";
       }
       return attachPipelineDebug(applyOfferQualityGates(o, item, intentFromItem(item)), {
         validationStatus: "rejected",

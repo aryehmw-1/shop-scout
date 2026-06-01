@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-05-31T03:40:48.754Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=Tropicana%20Orange%20Juice",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 384
+  },
+  "headers": {
+    "cache-control": "max-age=900",
+    "connection": "close",
+    "content-length": "384",
+    "content-type": "text/html",
+    "date": "Sun, 31 May 2026 03:40:48 GMT",
+    "expires": "Sun, 31 May 2026 03:55:48 GMT",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780198848606_399274504_2626079814_18_28444_9_112_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000;includeSubDomains"
+  },
+  "htmlBytes": 384,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-05-31T03:41:01.495Z",
+  "retailerId": "amazon",
+  "url": "https://www.amazon.com/s?k=Orville%20Redenbacher%20Butter%20Microwave%20Popcorn",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 3,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:akamai",
+    "vendor": "akamai",
+    "confidence": 0.82,
+    "indicators": [
+      "header:hdr-akamai-cookie"
+    ],
+    "status": 200,
+    "bytes": 2457
+  },
+  "headers": {
+    "akamai-request-bc": "[a=23.204.114.9,b=937676271,c=g,n=US_FL_MIAMI,o=20940]",
+    "alt-svc": "h3=\":443\"; ma=93600",
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-length": "1492",
+    "content-type": "text/html",
+    "date": "Sun, 31 May 2026 03:41:01 GMT",
+    "expires": "0",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "set-cookie": "ak_bmsc",
+    "vary": "Accept-Encoding",
+    "x-amzn-cdn-id": "ak-0.972cc17.1780198861.37e3cdef"
+  },
+  "htmlBytes": 2457,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

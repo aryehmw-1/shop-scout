@@ -1,6 +1,7 @@
 import type { ProductOffer } from "../types";
 import { formatPrice } from "../utils/format";
 import { formatLastVerified } from "./deal-display";
+import { consumerConfidenceReason } from "./consumer-copy";
 
 export interface DealExplanation {
   headline: string;
@@ -54,12 +55,15 @@ export function buildDealExplanation(offer: ProductOffer): DealExplanation {
   }
 
   if (offer.priceSource === "connector_api") {
-    bullets.push("Price confirmed via retailer API");
+    bullets.push("Recently verified from retailer");
   } else if (offer.priceSource === "scraped") {
-    bullets.push("Price scraped from live product page");
+    bullets.push("Verified live price");
   }
 
-  const reasons = offer.confidenceReasons?.slice(0, 3).map((r) => r.message) ?? [];
+  const reasons =
+    offer.confidenceReasons
+      ?.map((r) => consumerConfidenceReason(r.message))
+      .filter((r): r is string => Boolean(r)) ?? [];
   for (const r of reasons) {
     if (!bullets.some((b) => b.includes(r))) bullets.push(r);
   }

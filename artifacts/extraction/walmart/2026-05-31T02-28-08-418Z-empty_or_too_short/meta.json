@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-05-31T02:28:08.418Z",
+  "retailerId": "walmart",
+  "url": "https://www.walmart.com/search?q=whole+milk",
+  "status": 200,
+  "method": "playwright",
+  "behavior": "cold",
+  "transport": "residential",
+  "identity": {
+    "ok": false,
+    "error": "TypeError: fetch failed",
+    "latencyMs": 419
+  },
+  "geoCountry": "us",
+  "proxyUsed": true,
+  "proxyEndpoint": "http://***:***@gate.decodo.com:10001",
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "empty",
+    "reason": "empty_or_too_short",
+    "confidence": 0.7,
+    "indicators": [],
+    "status": 200,
+    "bytes": 39
+  },
+  "headers": {},
+  "htmlBytes": 39,
+  "redirectChain": [],
+  "realism": {
+    "webdriver": null,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "platform": "MacIntel",
+    "languages": [
+      "en-US"
+    ],
+    "language": "en-US",
+    "hardwareConcurrency": 10,
+    "deviceMemory": null,
+    "pluginsLength": 3,
+    "webglVendor": "Intel Inc.",
+    "webglRenderer": "Intel Iris OpenGL Engine",
+    "timezone": "America/New_York",
+    "locale": "en-US",
+    "innerWidth": 1366,
+    "innerHeight": 900,
+    "devicePixelRatio": 1,
+    "hasChromeObject": true,
+    "canvasHash": "-1812192639",
+    "permissionsConsistent": null
+  },
+  "realismScores": {
+    "suspicion": {
+      "score": 0.03,
+      "reasons": [
+        "deviceMemory undefined"
+      ]
+    },
+    "challenge": {
+      "score": 0.12,
+      "factors": [
+        "block=0",
+        "suspicion=0.03",
+        "difficulty=0.6",
+        "proxy_adjustment"
+      ]
+    }
+  },
+  "lifecycle": {
+    "waitStrategy": "adaptive",
+    "committed": false,
+    "domContentLoaded": false,
+    "loadEvent": true,
+    "networkIdle": false,
+    "becameInteractive": true,
+    "challengeDetected": false,
+    "partialExtraction": false,
+    "domBytesAtExtraction": 39,
+    "timedOut": true,
+    "blockedRequests": 0,
+    "blockedBytesApprox": 0,
+    "stages": [
+      {
+        "stage": "goto_timeout",
+        "atMs": 30935,
+        "note": "TimeoutError: page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating "
+      },
+      {
+        "stage": "extracted",
+        "atMs": 56104,
+        "note": "bytes=39"
+      }
+    ],
+    "readyState": "complete"
+  },
+  "warmupMode": "none",
+  "screenshotSaved": true,
+  "harSaved": false,
+  "renderedDomSaved": true
+}

@@ -1,4 +1,5 @@
 import { CATALOG } from "../retailers/catalog";
+import { getProductionCategoryIds } from "../inventory/category-coverage";
 
 /** Simple Damerau-Levenshtein-lite: min edit distance (cap word length). */
 function editDistance(a: string, b: string): number {
@@ -35,6 +36,8 @@ const TYPO_MAP: Record<string, string> = {
   mens: "men's",
   tomatoe: "tomato",
   brocoli: "broccoli",
+  cheezit: "cheez-it",
+  "cheez it": "cheez-it",
 };
 
 export function normalizeSearchQuery(raw: string): string {
@@ -46,7 +49,7 @@ export function normalizeSearchQuery(raw: string): string {
     .trim();
 
   for (const [typo, fix] of Object.entries(TYPO_MAP)) {
-    q = q.replace(new RegExp(`\\b${typo}\\b`, "g"), fix);
+    q = q.replace(new RegExp(`\\b${typo.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "g"), fix);
   }
   return q;
 }
@@ -100,12 +103,14 @@ export function suggestCatalogProducts(query: string, limit = 8): CatalogSuggest
 }
 
 export const POPULAR_QUERIES = [
-  "Boneless chicken breast",
-  "Slim fit jeans",
-  "Women's wide-leg pants",
-  "Organic eggs",
-  "Running shoes",
+  "Honey nut cereal",
+  "Whole milk",
+  "Ground coffee",
   "Greek yogurt",
+  "Paper towels",
+  "Spaghetti",
+  "Organic spinach",
+  "Mens joggers",
 ];
 
 export function suggestQueries(query: string, limit = 6): string[] {
@@ -115,9 +120,15 @@ export function suggestQueries(query: string, limit = 6): string[] {
   const fromPopular = POPULAR_QUERIES.filter((p) =>
     p.toLowerCase().includes(q),
   );
-  const fromCatalog = suggestCatalogProducts(q, limit).map(
-    (h) => `${h.brand} ${h.title}`.trim(),
-  );
+  const productionIds = new Set(getProductionCategoryIds());
+  const fromCatalog = suggestCatalogProducts(q, limit * 2)
+    .sort((a, b) => {
+      const aBoost = productionIds.has(a.category) ? 1 : 0;
+      const bBoost = productionIds.has(b.category) ? 1 : 0;
+      return bBoost - aBoost || b.score - a.score;
+    })
+    .slice(0, limit)
+    .map((h) => `${h.brand} ${h.title}`.trim());
 
   return [...new Set([...fromPopular, ...fromCatalog])].slice(0, limit);
 }

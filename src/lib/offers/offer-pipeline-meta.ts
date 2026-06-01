@@ -1,5 +1,6 @@
 import type { ProductOffer } from "../types";
 import { isVerifiedOffer } from "./offer-trust";
+import { consumerVerificationAgeLabel } from "../shopping/consumer-copy";
 
 export type PriceBadgeKind =
   | "verified_live"
@@ -62,11 +63,7 @@ export function scrapeAgeMinutes(offer: ProductOffer): number | undefined {
 
 export function formatScrapeAgeLabel(offer: ProductOffer): string | null {
   const mins = scrapeAgeMinutes(offer);
-  if (mins == null) return null;
-  if (mins < 1) return "SCRAPED just now";
-  if (mins < 60) return `SCRAPED ${mins} min ago`;
-  const hrs = Math.round(mins / 60);
-  return `SCRAPED ${hrs}h ago`;
+  return consumerVerificationAgeLabel(mins);
 }
 
 export function syncPriceBadge(offer: ProductOffer): ProductOffer {

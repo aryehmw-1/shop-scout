@@ -1,43 +1,92 @@
-import { Home } from "lucide-react";
+"use client";
+
+import {
+  BRAND_NAV_ICON_URL,
+  brandAssetUrl,
+} from "@/lib/brand/mark-config";
+import { useEffect, useState } from "react";
 
 export type BrandHomeMarkSize = "xs" | "sm" | "md" | "lg";
 
-const BOX: Record<BrandHomeMarkSize, string> = {
-  xs: "h-9 w-9 rounded-xl",
-  sm: "h-8 w-8 rounded-xl",
-  md: "h-10 w-10 rounded-xl",
-  lg: "h-11 w-11 rounded-xl",
-};
+const FORCE_PARITY_STORAGE_KEY = "brand.force.parity";
 
-const ICON: Record<BrandHomeMarkSize, number> = {
-  xs: 16,
-  sm: 14,
-  md: 20,
-  lg: 26,
+/** Navbar/tab parity baseline: same source PNG, no visual modifiers. */
+const SPECS: Record<
+  BrandHomeMarkSize,
+  { src: string; px: number; label: string }
+> = {
+  xs: { src: brandAssetUrl(BRAND_NAV_ICON_URL), px: 32, label: "32px tab parity" },
+  sm: { src: brandAssetUrl(BRAND_NAV_ICON_URL), px: 32, label: "32px tab parity" },
+  md: { src: brandAssetUrl(BRAND_NAV_ICON_URL), px: 32, label: "32px tab parity" },
+  lg: { src: brandAssetUrl(BRAND_NAV_ICON_URL), px: 32, label: "32px tab parity" },
 };
 
 interface BrandHomeMarkProps {
   size?: BrandHomeMarkSize;
   className?: string;
-  /** Loading / thinking state */
   pulse?: boolean;
 }
 
 /**
- * Shared Shop Scout home mark — same gradient + house icon as sidebar Logo.
- * Use for chat avatar, loading states, and anywhere the brand icon appears without wordmark.
+ * Navbar brand mark — renders the same 32×32 PNG bytes as the browser tab favicon.
+ * No CSS rounding, shadows, or filters: optical identity matches mark-32.png exactly.
  */
 export function BrandHomeMark({
   size = "md",
   className = "",
   pulse = false,
 }: BrandHomeMarkProps) {
+  const [forcedParity, setForcedParity] = useState(true);
+
+  useEffect(() => {
+    const read = () => {
+      if (typeof window === "undefined") return;
+      const url = new URL(window.location.href);
+      const fromQuery = url.searchParams.get("brandParity");
+      if (fromQuery === "1") {
+        localStorage.setItem(FORCE_PARITY_STORAGE_KEY, "1");
+        setForcedParity(true);
+        return;
+      }
+      if (fromQuery === "0") {
+        localStorage.setItem(FORCE_PARITY_STORAGE_KEY, "0");
+        setForcedParity(false);
+        return;
+      }
+      const stored = localStorage.getItem(FORCE_PARITY_STORAGE_KEY);
+      setForcedParity(stored !== "0");
+    };
+    read();
+    window.addEventListener("storage", read);
+    window.addEventListener("brand:parity-mode", read as EventListener);
+    return () => {
+      window.removeEventListener("storage", read);
+      window.removeEventListener("brand:parity-mode", read as EventListener);
+    };
+  }, []);
+
+  const base = SPECS[size];
+  const spec =
+    forcedParity ?
+      { src: brandAssetUrl(BRAND_NAV_ICON_URL), px: 32, label: "forced parity: mark-32.png" }
+    : base;
+
   return (
-    <span
-      className={`flex shrink-0 items-center justify-center bg-gradient-to-br from-orange-500 via-amber-500 to-rose-500 text-white shadow-lg shadow-orange-500/30 ${BOX[size]} ${pulse ? "animate-pulse" : ""} ${className}`}
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={spec.src}
+      alt=""
+      width={spec.px}
+      height={spec.px}
       aria-hidden
-    >
-      <Home size={ICON[size]} strokeWidth={2.5} className="drop-shadow-sm" />
-    </span>
+      data-brand-mark-size={size}
+      data-brand-mark-parity={spec.label}
+      className={`block shrink-0 ${pulse ? "animate-pulse" : ""} ${className}`}
+      style={{
+        width: spec.px,
+        height: spec.px,
+        imageRendering: spec.px <= 32 ? "crisp-edges" : "auto",
+      }}
+    />
   );
 }

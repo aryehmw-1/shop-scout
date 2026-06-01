@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-05-31T03:40:23.788Z",
+  "retailerId": "kroger",
+  "url": "https://www.kroger.com/search?query=Nature's%20Own%20100%25%20Whole%20Wheat%20Bread&searchType=default",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 3,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "http_403:akamai",
+    "vendor": "akamai",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied",
+      "header:hdr-akamai-cookie"
+    ],
+    "status": 403,
+    "bytes": 531
+  },
+  "headers": {
+    "akamai-grn": "0.0a72cc17.1780198823.1c6fbfda",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "connection": "close",
+    "content-type": "text/html",
+    "date": "Sun, 31 May 2026 03:40:23 GMT",
+    "expires": "Sun, 31 May 2026 03:40:23 GMT",
+    "link": "<https://www.kroger.com/cdn/b79518c0a8eb9a48d20f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin,<https://www.kroger.com/cdn/f3be6f7f945b6214f87f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin, <https://cdn.cookielaw.org>;rel=\"preconnect\",<https://assets.adobedtm.com>;rel=\"preconnect\",<https://cdnws.softcoin.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=57, ak_p; desc=\"1780198823677_399274506_477085658_5720_18978_11_10_-\";dur=1",
+    "set-cookie": "bm_sz",
+    "strict-transport-security": "max-age=31536000 ; preload",
+    "x-akamai-transformed": "0 - 0 -",
+    "x-correlation-id": "akam_1780198823_fe64b9c5-0b8d-425b-8818-8e76dd236644",
+    "x-frame-options": "SAMEORIGIN",
+    "x-kt-acr-lma-ct": "true"
+  },
+  "htmlBytes": 531,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

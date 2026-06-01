@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-05-29T22:53:16.101Z",
+  "retailerId": "albertsons",
+  "url": "https://www.albertsons.com/shop/search-results.html?q=organic%20milk",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:incapsula",
+    "vendor": "incapsula",
+    "confidence": 0.85,
+    "indicators": [
+      "html:incapsula",
+      "header:hdr-incap-cookie"
+    ],
+    "status": 200,
+    "bytes": 4540
+  },
+  "headers": {
+    "cache-control": "no-cache, no-store",
+    "connection": "close",
+    "content-length": "4540",
+    "content-type": "text/html",
+    "set-cookie": "incap_ses_1430_1980972",
+    "x-iinfo": "9-42699835-0 NNNY RT(1780095195989 45) q(0 -1 -1 4) r(1 -1) B10(14,0,0) U24"
+  },
+  "htmlBytes": 4540,
+  "screenshotSaved": false
+}

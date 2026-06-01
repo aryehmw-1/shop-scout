@@ -10,6 +10,7 @@
  * See docs/OWN_DATABASE.md
  */
 import { runNightlyPriceIndex } from "../src/lib/indexing/nightly-quotes";
+import { formatIndexRetailerSummaryMarkdown } from "../src/lib/indexing/index-retailer-summary";
 import { getFullIndexRotationPlan } from "../src/lib/indexing/weekly-retailer-schedule";
 import {
   isValidProxyUrl,
@@ -66,6 +67,10 @@ async function main() {
   });
 
   console.log("[nightly-index] done", JSON.stringify(report, null, 2));
+
+  if (report.retailerSummary) {
+    console.log("\n" + formatIndexRetailerSummaryMarkdown(report.retailerSummary));
+  }
 }
 
 main().catch((e) => {

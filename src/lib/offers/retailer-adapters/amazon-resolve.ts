@@ -67,14 +67,20 @@ export function resolveAmazonFromHtml(
   return amazonAdapter.extractSearchResults(html, resolvedUrl);
 }
 
-/** HTML first, then PA-API if blocked or empty. */
+/** HTML first, then PA-API if blocked or empty. When PA-API configured, prefer API for price. */
 export async function resolveAmazonWithFallback(
   html: string,
   resolvedUrl: string,
   item: CatalogItem,
   intent: ShoppingIntent,
 ): Promise<RetailerSearchHit | null> {
+  if (amazonPaapiFallbackEnabled() && isAmazonPaapiConfigured()) {
+    const fromPaapi = await resolveAmazonPaapiFallback(item, intent, resolvedUrl);
+    if (fromPaapi?.priceUsd && fromPaapi.pdpUrl) return fromPaapi;
+  }
+
   const fromHtml = resolveAmazonFromHtml(html, resolvedUrl);
   if (fromHtml && (fromHtml.priceUsd || fromHtml.pdpUrl)) return fromHtml;
+
   return resolveAmazonPaapiFallback(item, intent, resolvedUrl);
 }

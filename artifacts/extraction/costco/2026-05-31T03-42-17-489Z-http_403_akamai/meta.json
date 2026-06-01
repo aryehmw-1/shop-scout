@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-05-31T03:42:17.489Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=Carter's%20Cotton%20Onesie%205-Pack",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "http_403:akamai",
+    "vendor": "akamai",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied",
+      "header:hdr-akamai-cookie"
+    ],
+    "status": 403,
+    "bytes": 541
+  },
+  "headers": {
+    "cache-control": "max-age=900",
+    "connection": "close",
+    "content-type": "text/html",
+    "date": "Sun, 31 May 2026 03:42:17 GMT",
+    "expires": "Sun, 31 May 2026 03:57:17 GMT",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=266, ak_p; desc=\"1780198936889_399274504_2626453208_26628_30539_10_58_-\";dur=1",
+    "set-cookie": "bm_sz",
+    "strict-transport-security": "max-age=31536000;includeSubDomains",
+    "x-akamai-transformed": "0 - 0 -"
+  },
+  "htmlBytes": 541,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

@@ -34,7 +34,11 @@ import { indexVariantGroupImagesEnabled } from "./index-variant-group-images";
 import {
   getIndexRetailerRunSummary,
   resetIndexRetailerSummary,
+  formatIndexRetailerSummaryMarkdown,
 } from "./index-retailer-summary";
+import { computePersistExpiresAt } from "../pricing/quote-freshness-policy";
+import { saveIndexRunArtifact } from "./index-run-artifact";
+import { persistAmazonPaapiIdentity } from "../offers/offer-metadata-persist";
 
 const NIGHTLY_SOURCE = DAILY_INDEX_SOURCE;
 
@@ -42,6 +46,11 @@ export async function purgeExpiredPriceQuotes(): Promise<number> {
   const result = await prisma.priceQuote.deleteMany({
     where: { expiresAt: { lt: new Date() } },
   });
+  if (result.count > 0) {
+    console.log(
+      `[cleanup] purgeExpiredPriceQuotes removed ${result.count} expired rows at ${new Date().toISOString()}`,
+    );
+  }
   return result.count;
 }
 
@@ -91,19 +100,22 @@ export async function persistNightlySearchResults(
     intent: options.intent,
     validatedOnly: true,
   });
-  if (!rows.length) return 0;
-
-  if (options.partialRetailers) {
-    const retailerIds = [...new Set(rows.map((r) => r.retailerId))];
-    await clearNightlyQuotesForRetailers(product.id, retailerIds);
-  } else {
-    await clearNightlyQuotesForProduct(product.id);
+  if (!rows.length) {
+    indexLog("persist: zero verified offers — preserving existing quotes", {
+      catalogId,
+    });
+    return 0;
   }
+
+  const retailerIds = [...new Set(rows.map((r) => r.retailerId))];
+  await clearNightlyQuotesForRetailers(product.id, retailerIds);
 
   const now = new Date();
 
   await prisma.priceQuote.createMany({
-    data: rows.map((o) => ({
+    data: rows.map((o) => {
+      const fetched = new Date(o.priceAsOf ?? now.toISOString());
+      return {
       productId: product.id,
       retailerId: o.retailerId,
       channel: o.channel,
@@ -124,9 +136,10 @@ export async function persistNightlySearchResults(
       source: o.source,
       productUrl: o.productUrl,
       affiliateUrl: o.affiliateUrl,
-      fetchedAt: new Date(o.priceAsOf ?? now.toISOString()),
-      expiresAt,
-    })),
+      fetchedAt: fetched,
+      expiresAt: computePersistExpiresAt(fetched, o.retailerId as RetailerId),
+    };
+    }),
   });
 
   return rows.length;
@@ -165,7 +178,7 @@ export async function indexCatalogItemNightly(
   results = finalizeSearchPrices(results);
 
   if (isAmazonPaapiConfigured() && allow.has("amazon")) {
-    indexLog("product: amazon PA-API", { catalogId: item.id });
+    indexLog("product: amazon PA-API (primary)", { catalogId: item.id });
     const amazonStarted = Date.now();
     const amazonQuotes = (await fetchAmazonLiveQuotes(intent, resolvedItem)).filter((q) =>
       allow.has(q.retailerId),
@@ -184,6 +197,22 @@ export async function indexCatalogItemNightly(
         "connector_api",
       );
       results = finalizeSearchPrices(merged.results);
+
+      const product = await prisma.product.findUnique({
+        where: { catalogId: item.id },
+        select: { id: true },
+      });
+      if (product) {
+        for (const offer of [...results.online, ...results.local]) {
+          if (offer.retailer === "amazon" && offer.priceSource === "connector_api") {
+            await persistAmazonPaapiIdentity({
+              productDbId: product.id,
+              item: resolvedItem,
+              offer,
+            });
+          }
+        }
+      }
     }
   }
 
@@ -446,6 +475,22 @@ export async function runNightlyPriceIndex(
   });
 
   const telemetry = finalizeIndexTelemetry();
+  const retailerSummary = getIndexRetailerRunSummary();
+
+  await saveIndexRunArtifact({
+    report: {
+      productsIndexed,
+      offersWritten,
+      amazonPaapi: isAmazonPaapiConfigured(),
+      retailersTonight: plan.retailersTonight.length,
+      totalRetailers: plan.totalRetailers,
+      telemetry,
+      retailerSummary,
+    },
+    retailerSummaryMarkdown: formatIndexRetailerSummaryMarkdown(retailerSummary),
+  }).catch((e) => {
+    indexLogAlways("artifact save failed", { error: String(e) });
+  });
 
   return {
     productsIndexed,
@@ -464,6 +509,6 @@ export async function runNightlyPriceIndex(
     retailersTonight: plan.retailersTonight.length,
     totalRetailers: plan.totalRetailers,
     telemetry,
-    retailerSummary: getIndexRetailerRunSummary(),
+    retailerSummary,
   };
 }

@@ -10,4 +10,15 @@ export interface LiveQuote {
   imageUrl?: string;
   sourceLabel: string;
   priceSource?: PriceSource;
+  /** From persisted DB row — used for trust gates and UI. */
+  matchConfidence?: number;
+  identityConfidence?: number;
+  imageConfidence?: number;
+  confidenceReasons?: Array<{ code: string; message: string; weight: number }>;
+  fetchedAt?: string;
+  expiresAt?: string;
+  verifiedPersistedInventory?: boolean;
+  qaStatus?: "approved" | "pending" | "rejected" | "none";
+  normalizationNote?: string;
+  dbSource?: string;
 }

@@ -1,0 +1,28 @@
+{
+  "capturedAt": "2026-05-31T02:43:58.738Z",
+  "signals": {
+    "webdriver": null,
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+    "platform": "MacIntel",
+    "languages": [
+      "en-US"
+    ],
+    "language": "en-US",
+    "hardwareConcurrency": 10,
+    "deviceMemory": 16,
+    "pluginsLength": 3,
+    "webglVendor": "Intel Inc.",
+    "webglRenderer": "Intel Iris OpenGL Engine",
+    "timezone": "America/New_York",
+    "locale": "en-US",
+    "innerWidth": 1366,
+    "innerHeight": 900,
+    "devicePixelRatio": 1,
+    "hasChromeObject": true,
+    "canvasHash": "-1812192639",
+    "permissionsConsistent": null
+  },
+  "coherenceScore": 1,
+  "storageAvailable": false,
+  "cookieEnabled": true
+}

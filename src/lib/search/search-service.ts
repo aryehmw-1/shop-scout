@@ -13,6 +13,9 @@ import {
 } from "../db/search-repository";
 import { resolvePrimaryProduct } from "./product-resolver";
 import { runSearchWithLivePricing } from "./live-pricing";
+import {
+  resolveVerifiedInventoryQuery,
+} from "../inventory/verified-inventory-resolver";
 import { mergeLivePrices } from "./merge-live-prices";
 import { attachMatchedProduct } from "./matched-product";
 import { enrichSearchResultsWithImages } from "./product-image-lookup";
@@ -21,6 +24,14 @@ import { finalizePricesWithHistory, shouldUseHistoricalModel } from "../pricing/
 import { enrichOffersAtSearch } from "../offers/enrich-offers-at-search";
 import { finalizeResultsForUser } from "../pricing/deal-intelligence";
 import { finalizeSearchPrices } from "./price-truth";
+import { resolveCatalogZip, hasUserZip } from "../constants";
+import {
+  buildGroceryRetrievalDebug,
+  logGroceryRetrievalFailure,
+  groceryRetrievalDebugEnabled,
+} from "./grocery-retrieval-debug";
+import { isGroceryQuery, resolveGroceryProduct } from "./grocery-retrieval";
+import { buildRetrievalMetaFromGrocery } from "./retrieval-meta";
 import {
   searchPipelineDebugEnabled,
   traceSearchPipeline,
@@ -90,8 +101,9 @@ export class SearchService {
     options: SearchServiceOptions = {},
   ): Promise<EnrichedSearchResults> {
     const mode = options.mode ?? "search";
-    const zip = intent.zipCode ?? "78701";
-    const fullIntent = { ...intent, query: intent.query || catalogId, zipCode: zip };
+    const userZip = intent.zipCode?.trim() ?? "";
+    const catalogZip = resolveCatalogZip(userZip);
+    const fullIntent = { ...intent, query: intent.query || catalogId, zipCode: catalogZip };
     const started = Date.now();
 
     const cached = getCachedSearch(fullIntent, mode);
@@ -138,8 +150,9 @@ export class SearchService {
     options: SearchServiceOptions = {},
   ): Promise<EnrichedSearchResults> {
     const mode = options.mode ?? "search";
-    const zip = intent.zipCode ?? "78701";
-    const fullIntent = { ...intent, zipCode: zip };
+    const userZip = intent.zipCode?.trim() ?? "";
+    const catalogZip = resolveCatalogZip(userZip);
+    const fullIntent = { ...intent, zipCode: catalogZip };
     const started = Date.now();
 
     if (!options.skipCache) {
@@ -179,9 +192,55 @@ export class SearchService {
       }
     }
 
-    const { item, resolved } = resolvePrimaryProduct(fullIntent);
-    const { results: rawResults, priceSource, liveQuoteCount } =
-      await runSearchWithLivePricing(fullIntent, item);
+    const verifiedResolution = await resolveVerifiedInventoryQuery(fullIntent.query);
+
+    let item: CatalogItem;
+    let resolved: import("./types").ResolvedProduct;
+
+    if (verifiedResolution.hit && verifiedResolution.catalogItem && verifiedResolution.resolved) {
+      item = verifiedResolution.catalogItem;
+      resolved = verifiedResolution.resolved;
+    } else if (verifiedResolution.catalogItem && verifiedResolution.resolved) {
+      item = verifiedResolution.catalogItem;
+      resolved = verifiedResolution.resolved;
+    } else {
+      ({ item, resolved } = resolvePrimaryProduct(fullIntent));
+    }
+
+    const verifiedHitMeta = verifiedResolution.hit ? {
+      matched: true,
+      catalogId: verifiedResolution.catalogItem?.id,
+      matchMethod: verifiedResolution.matchMethod,
+      matchScore: verifiedResolution.matchScore,
+      lastVerifiedAt: verifiedResolution.lastVerifiedAt,
+      confidence: verifiedResolution.resolved?.confidence,
+      normalizationStatus: verifiedResolution.normalizationNote,
+      qaStatus: verifiedResolution.qaStatus,
+      candidateCount: verifiedResolution.candidates.length,
+      candidates: verifiedResolution.candidates.map((c) => ({
+        catalogId: c.catalogId,
+        title: c.title,
+        score: c.score,
+        hasPersistedQuotes: c.hasPersistedQuotes,
+        rejectedReason: c.rejectedReason,
+      })),
+    } : verifiedResolution.candidates.length > 0 ? {
+      matched: false,
+      candidateCount: verifiedResolution.candidates.length,
+      candidates: verifiedResolution.candidates.map((c) => ({
+        catalogId: c.catalogId,
+        title: c.title,
+        score: c.score,
+        hasPersistedQuotes: c.hasPersistedQuotes,
+        rejectedReason: c.rejectedReason,
+      })),
+    } : undefined;
+
+    const { results: rawResults, priceSource, liveQuoteCount, verifiedInventoryHit } =
+      await runSearchWithLivePricing(fullIntent, item, {
+        persistedQuotes: verifiedResolution.quotes,
+        verifiedInventoryHit: verifiedHitMeta,
+      });
     let results =
       options.skipImages ?
         rawResults
@@ -198,12 +257,56 @@ export class SearchService {
     results = finalizeSearchPrices(results);
     results = await this.finishSearchResults(results, item, fullIntent, options);
 
+    results = {
+      ...results,
+      zipCode: hasUserZip(userZip) ? userZip : "",
+      needsZipForShipping: !hasUserZip(userZip),
+    };
+
+    if (isGroceryQuery(fullIntent.query, fullIntent)) {
+      const grocery = resolveGroceryProduct(fullIntent);
+      if (grocery) {
+        results = {
+          ...results,
+          retrievalMeta: buildRetrievalMetaFromGrocery(
+            fullIntent.query,
+            grocery,
+            results.closestMatchFallback,
+          ),
+        };
+      }
+    }
+
+    if (results.online.length === 0 || results.closestMatchFallback) {
+      const groceryDebug = logGroceryRetrievalFailure(fullIntent, [
+        ...results.online,
+        ...(results.estimatedOnline ?? []),
+        ...(results.lowConfidenceOnline ?? []),
+      ]);
+      if (groceryDebug) {
+        results = { ...results, groceryRetrievalDebug: groceryDebug };
+      } else if (groceryRetrievalDebugEnabled()) {
+        results = {
+          ...results,
+          groceryRetrievalDebug: buildGroceryRetrievalDebug(fullIntent, results.online),
+        };
+      }
+    }
+
+    if (verifiedInventoryHit || results.verifiedInventoryHit) {
+      results = {
+        ...results,
+        verifiedInventoryHit: verifiedInventoryHit ?? results.verifiedInventoryHit,
+      };
+    }
+
     if (searchPipelineDebugEnabled()) {
       const trace = await traceSearchPipeline(fullIntent, {
         afterEnrich: results,
         item,
+        verifiedResolution,
       });
-      results = { ...results, searchDebug: trace };
+      results = { ...results, searchDebug: trace, verifiedInventoryHit: verifiedInventoryHit ?? results.verifiedInventoryHit };
       console.log("[search-pipeline]", formatSearchPipelineLog(trace));
     }
 
@@ -219,7 +322,7 @@ export class SearchService {
         await ensureCatalogSynced();
         sessionId = await persistSearchSession({
           userId: options.userId,
-          zipCode: zip,
+          zipCode: catalogZip,
           queryRaw: intent.query,
           intent: fullIntent,
           mode,

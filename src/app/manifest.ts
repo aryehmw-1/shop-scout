@@ -1,5 +1,10 @@
 import type { MetadataRoute } from "next";
 import { APP_DESCRIPTION, APP_NAME, APP_TAGLINE } from "@/lib/constants";
+import {
+  BRAND_MARK_CANONICAL_URL,
+  BRAND_ICON_32_URL,
+  BRAND_ICON_180_URL,
+} from "@/lib/brand/mark-config";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -12,13 +17,19 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#ea580c",
     icons: [
       {
-        src: "/brand/icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
+        src: BRAND_ICON_180_URL,
+        sizes: "180x180",
+        type: "image/png",
         purpose: "any",
       },
       {
-        src: "/brand/icon.svg",
+        src: BRAND_ICON_32_URL,
+        sizes: "32x32",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: BRAND_MARK_CANONICAL_URL,
         sizes: "any",
         type: "image/svg+xml",
         purpose: "maskable",
