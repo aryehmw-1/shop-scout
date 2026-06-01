@@ -1,13 +1,7 @@
-import type { CommerceRetrievalPayload } from "../commerce-intelligence/ai/retrieval-payload";
-import { COMMERCE_ANALYST_SUPPLEMENT } from "../commerce-intelligence/ai/commerce-analyst-prompt";
-import { summarizeRetrievalPayload } from "../commerce-intelligence/ai/summarize-retrieval-payload";
-import type { IntelligenceInsight } from "../types";
 import type { ProductSearchResults } from "../types";
 import { buildFullSearchQuery } from "../shopping/intent-merge";
 import { extractIntentFromMessage } from "./extract-intent";
 import { summarizeSearchResults } from "./summarize-results";
-import { orchestratedGenerate } from "./orchestration/generate-text";
-import { launchFlags } from "../commerce-intelligence/ops/feature-flags";
 import type { ShoppingIntent } from "../types";
 
 export type ChatAction =
@@ -35,8 +29,6 @@ export interface ReplyContext {
   ageGroup?: string;
   nearStores?: string[];
   productResults?: ProductSearchResults;
-  retrievalPayload?: CommerceRetrievalPayload;
-  commerceInsight?: IntelligenceInsight;
   referenceProductTitle?: string;
   history?: ChatHistoryMessage[];
   intent?: Partial<ShoppingIntent>;
@@ -51,9 +43,7 @@ Guidelines:
 - Sound natural and human — like a helpful friend, not a robot.
 - Keep replies concise (usually 2–5 sentences) unless the user asks for detail.
 - Use **bold** for store names, prices, and product names (markdown).
-- When COMMERCE INTELLIGENCE (structured retrieval) is provided, reason ONLY from that payload — cite confidence %, evidence, and consensus pricing. Never invent products or dollar amounts.
-- When SEARCH RESULTS are provided (without intelligence payload), explain what you found using ONLY those prices and stores.
-- Always state why a recommendation exists, what evidence supports it, how confident the system is, and where uncertainty remains (e.g. high price spread).
+- When SEARCH RESULTS are provided, explain what you found using ONLY those prices and stores — never invent products or dollar amounts.
 - For action "clarify": ask ONE friendly follow-up question to narrow the product (e.g. jeans vs joggers for pants, running vs dress shoes). Mention they can tap a chip below.
 - For vague requests like "mens pants" or "shoes" without a type, always clarify before pretending you searched.
 - For recheck/refresh: say you're updating or rechecking and summarize the fresh results.
@@ -119,47 +109,7 @@ function buildUserContext(ctx: ReplyContext): string {
     parts.push("User must pick a product type from the chips — do not list prices yet.");
   }
 
-  if (ctx.retrievalPayload) {
-    parts.push(
-      "COMMERCE INTELLIGENCE (structured retrieval — use ONLY this data, never HTML or scraped snippets):\n" +
-        summarizeRetrievalPayload(ctx.retrievalPayload),
-    );
-  }
-  if (ctx.commerceInsight) {
-    const c = ctx.commerceInsight;
-    const analyst: string[] = ["ANALYST SUMMARY:"];
-    if (c.bestValue) {
-      analyst.push(
-        `Best value: ${c.bestValue.retailer} at $${c.bestValue.price.toFixed(2)} — ${c.bestValue.reason}`,
-      );
-    }
-    if (c.safestPurchase) {
-      analyst.push(`Safest purchase: ${c.safestPurchase.retailer} — ${c.safestPurchase.reason}`);
-    }
-    if (c.worthWaiting) {
-      analyst.push(
-        `${c.worthWaiting.suggest ? "Consider waiting" : "Reasonable to buy now"}: ${c.worthWaiting.reason}`,
-      );
-    }
-    for (const w of c.fakeDiscountWarnings.slice(0, 2)) {
-      analyst.push(`Discount check (${w.retailer}): ${w.message}`);
-    }
-    for (const u of c.uncertainty.slice(0, 2)) {
-      analyst.push(`Uncertainty: ${u.message}`);
-    }
-    if (c.decision) {
-      analyst.push(`DECISION: ${c.decision.winnerRationale}`);
-      analyst.push(`Why this wins: ${c.decision.whyThisWins.join(" | ")}`);
-      if (c.decision.counterfactuals[0]) {
-        analyst.push(`Counterfactual: ${c.decision.counterfactuals[0].description}`);
-      }
-      if (c.decision.stability.volatile && c.decision.stability.note) {
-        analyst.push(`Stability: ${c.decision.stability.note}`);
-      }
-    }
-    parts.push(analyst.join("\n"));
-  }
-  if (!ctx.retrievalPayload && ctx.productResults) {
+  if (ctx.productResults) {
     const total = ctx.productResults.online.length;
     if (total === 0) {
       parts.push("SEARCH RESULTS: none matched — suggest trying another name or a product link.");
@@ -277,38 +227,11 @@ export async function generateAssistantReply(ctx: ReplyContext): Promise<string>
       content: m.content.slice(0, 1200),
     }));
 
-  const systemContent =
-    ctx.retrievalPayload || ctx.commerceInsight ?
-      `${SYSTEM_PROMPT}\n\n${COMMERCE_ANALYST_SUPPLEMENT}`
-    : SYSTEM_PROMPT;
-
   const messages = [
-    { role: "system", content: systemContent },
+    { role: "system", content: SYSTEM_PROMPT },
     ...historyMessages,
     { role: "user", content: buildUserContext(ctx) },
   ];
-
-  const useRouter = launchFlags.chatRouter && !launchFlags.safeMode;
-  if (useRouter) {
-    const grounded =
-      ctx.retrievalPayload ?
-        summarizeRetrievalPayload(ctx.retrievalPayload)
-      : ctx.productResults && !ctx.retrievalPayload ?
-        summarizeSearchResults(ctx.productResults)
-      : undefined;
-
-    const routed = await orchestratedGenerate({
-      workload: ctx.retrievalPayload || ctx.commerceInsight ? "synthesis" : "classification",
-      messages: messages.map((m) => ({
-        role: m.role as "system" | "user" | "assistant",
-        content: m.content,
-      })),
-      groundedPayload: grounded,
-      allowedRetailers: ctx.productResults?.online.map((o) => o.retailer),
-      requireHighQuality: Boolean(ctx.commerceInsight?.decision),
-    });
-    if (routed.text) return routed.text;
-  }
 
   const ai = await callOpenAI(messages);
   if (ai) return ai;
@@ -317,6 +240,5 @@ export async function generateAssistantReply(ctx: ReplyContext): Promise<string>
 }
 
 export function isAiEnabled(): boolean {
-  if (process.env.AI_USE_ROUTER === "1") return true;
   return Boolean(process.env.OPENAI_API_KEY?.trim());
 }

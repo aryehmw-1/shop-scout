@@ -1,4 +1,4 @@
-import { filterPublicOffers } from "../retailers/public-retailers";
+import { filterPublicOffers } from "@/lib/retailers/public-retailers";
 import { isGenericCatalogImage } from "../indexing/retailer-page-image";
 import { titleSimilarity } from "../catalog/title-similarity";
 import type { CatalogItem } from "../retailers/catalog";

@@ -1,8 +1,6 @@
 import type { RetailerId } from "../types";
 import type { RetailerMeta } from "./meta";
 import { RETAILERS } from "./meta";
-import type { CanonicalCatalogResult, CanonicalProduct } from "../demo-commerce/canonical/types";
-import type { DemoCatalogResult } from "../demo-commerce/types";
 
 /** Hidden from marketing, directory, and compare UI until affiliate integrations are live. */
 export const TEMPORARILY_HIDDEN_RETAILERS = new Set<RetailerId>([
@@ -34,14 +32,23 @@ export function filterPublicOffers<T extends { retailer: RetailerId }>(offers: r
   return offers.filter((o) => isPublicRetailer(o.retailer));
 }
 
-export function filterPublicCanonicalProduct(product: CanonicalProduct): CanonicalProduct {
+/** Generic offer filter for canonical/demo catalog shapes (no demo-commerce import). */
+export function filterPublicCanonicalProduct<
+  T extends { offers: ReadonlyArray<{ retailer: RetailerId }> },
+>(product: T): T {
   const offers = product.offers.filter((o) => isPublicRetailer(o.retailer));
   return { ...product, offers };
 }
 
-export function filterPublicCanonicalCatalog(
-  catalog: CanonicalCatalogResult,
-): CanonicalCatalogResult {
+export function filterPublicCanonicalCatalog<
+  T extends {
+    products: ReadonlyArray<{ offers: ReadonlyArray<{ retailer: RetailerId }> }>;
+    retailers: readonly string[];
+    total: number;
+    categories: readonly string[];
+    updatedAt: string | null;
+  },
+>(catalog: T): T {
   const products = catalog.products
     .map(filterPublicCanonicalProduct)
     .filter((p) => p.offers.length >= 2);
@@ -56,7 +63,15 @@ export function filterPublicCanonicalCatalog(
   };
 }
 
-export function filterPublicDemoCatalog(catalog: DemoCatalogResult): DemoCatalogResult {
+export function filterPublicDemoCatalog<
+  T extends {
+    products: ReadonlyArray<{ retailer: string }>;
+    retailers: readonly string[];
+    total: number;
+    categories: readonly string[];
+    updatedAt: string | null;
+  },
+>(catalog: T): T {
   const products = catalog.products.filter((p) =>
     isPublicRetailer(p.retailer as RetailerId),
   );
