@@ -9,9 +9,15 @@ import type { ShoppingIntent } from "../../types";
 import { amazonPartnerTag } from "./amazon-paapi-config";
 import type { LiveQuote } from "./live-quote";
 
-const require = createRequire(import.meta.url);
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const ProductAdvertisingAPIv1 = require("paapi5-nodejs-sdk") as PaapiSdk;
+let _sdk: PaapiSdk | null = null;
+function getSDK(): PaapiSdk {
+  if (!_sdk) {
+    const req = createRequire(import.meta.url);
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    _sdk = req("paapi5-nodejs-sdk") as PaapiSdk;
+  }
+  return _sdk;
+}
 
 type PaapiSdk = {
   ApiClient: {
@@ -44,6 +50,12 @@ const RESOURCES = [
   "Offers.Listings.SavingBasis",
 ];
 
+const ENRICHMENT_RESOURCES = [
+  ...RESOURCES,
+  "ItemInfo.Classifications",
+  "BrowseNodeInfo.BrowseNodes",
+];
+
 const QUOTE_CACHE = new Map<string, { quotes: LiveQuote[]; expiresAt: number }>();
 const CACHE_TTL_MS = 30 * 60 * 1000;
 
@@ -69,13 +81,14 @@ function configureClient(): InstanceType<PaapiSdk["DefaultApi"]> | null {
   const tag = amazonPartnerTag();
   if (!accessKey || !secretKey || !tag) return null;
 
-  const client = ProductAdvertisingAPIv1.ApiClient.instance;
+  const sdk = getSDK();
+  const client = sdk.ApiClient.instance;
   client.accessKey = accessKey;
   client.secretKey = secretKey;
   client.host = process.env.AMAZON_PA_API_HOST?.trim() || "webservices.amazon.com";
   client.region = process.env.AMAZON_PA_API_REGION?.trim() || "us-east-1";
 
-  return new ProductAdvertisingAPIv1.DefaultApi();
+  return new sdk.DefaultApi();
 }
 
 function promisify<T>(
@@ -132,18 +145,31 @@ function itemsFromGetResponse(data: unknown): PaapiItem[] {
   return body.ItemsResult?.Items ?? [];
 }
 
-async function searchItems(keywords: string, itemCount = 3): Promise<PaapiItem[]> {
+/** Bulk catalog ingest — search Amazon PA-API by keyword. */
+export async function amazonPaapiSearchItems(
+  keywords: string,
+  itemCount = 10,
+  opts?: { enrichment?: boolean },
+): Promise<PaapiItem[]> {
+  return searchItems(keywords, itemCount, opts?.enrichment ? ENRICHMENT_RESOURCES : RESOURCES);
+}
+
+async function searchItems(
+  keywords: string,
+  itemCount = 3,
+  resources: string[] = RESOURCES,
+): Promise<PaapiItem[]> {
   const api = configureClient();
   const tag = amazonPartnerTag();
   if (!api || !tag || !keywords.trim()) return [];
 
-  const searchItemsRequest = new ProductAdvertisingAPIv1.SearchItemsRequest();
+  const searchItemsRequest = new (getSDK().SearchItemsRequest)();
   searchItemsRequest.PartnerTag = tag;
-  searchItemsRequest.PartnerType = ProductAdvertisingAPIv1.PartnerType.Associates;
+  searchItemsRequest.PartnerType = getSDK().PartnerType.Associates;
   searchItemsRequest.Keywords = keywords.trim().slice(0, 200);
   searchItemsRequest.SearchIndex = "All";
   searchItemsRequest.ItemCount = itemCount;
-  searchItemsRequest.Resources = RESOURCES;
+  searchItemsRequest.Resources = resources;
 
   try {
     const data = await promisify<unknown>((cb) =>
@@ -161,9 +187,9 @@ async function getItemsByAsin(asin: string): Promise<PaapiItem[]> {
   const tag = amazonPartnerTag();
   if (!api || !tag) return [];
 
-  const getItemsRequest = new ProductAdvertisingAPIv1.GetItemsRequest();
+  const getItemsRequest = new (getSDK().GetItemsRequest)();
   getItemsRequest.PartnerTag = tag;
-  getItemsRequest.PartnerType = ProductAdvertisingAPIv1.PartnerType.Associates;
+  getItemsRequest.PartnerType = getSDK().PartnerType.Associates;
   getItemsRequest.ItemIds = [asin];
   getItemsRequest.Resources = RESOURCES;
 
