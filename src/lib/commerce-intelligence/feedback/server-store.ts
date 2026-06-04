@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { RetailerId } from "@/lib/types";
 import type { TrustMemoryEventType } from "../trust-memory/types";
+import { intelligenceGraphDir } from "../storage-root";
 
 /** Server-side behavioral aggregates — isolated from factual/trust scoring. */
 export interface ServerBehavioralStore {
@@ -22,7 +23,7 @@ export interface ServerBehavioralStore {
   canonicals: Record<string, { clicks: number; saves: number; ignores: number }>;
 }
 
-const PATH = join(process.cwd(), "data", "intelligence-graph", "behavioral-feedback.json");
+const PATH = join(intelligenceGraphDir(), "behavioral-feedback.json");
 const MAX_PER_RETAILER = 5000;
 
 function empty(): ServerBehavioralStore {
@@ -40,7 +41,7 @@ export function loadServerBehavioralStore(): ServerBehavioralStore {
 
 function save(store: ServerBehavioralStore): void {
   store.updatedAt = new Date().toISOString();
-  mkdirSync(join(process.cwd(), "data", "intelligence-graph"), { recursive: true });
+  mkdirSync(intelligenceGraphDir(), { recursive: true });
   writeFileSync(PATH, JSON.stringify(store, null, 2));
 }
 

@@ -6,8 +6,9 @@ import type { RecommendationExplanation } from "../explain/types";
 import { defaultBetaCohortFromEnv, normalizeBetaCohort } from "../beta/cohort";
 import { launchFlags } from "../ops/feature-flags";
 import type { SessionReplayFile, SessionReplayRecord } from "./types";
+import { intelligenceGraphDir } from "../storage-root";
 
-const PATH = join(process.cwd(), "data", "intelligence-graph", "session-replay.json");
+const PATH = join(intelligenceGraphDir(), "session-replay.json");
 const MAX_SESSIONS = 500;
 
 function empty(): SessionReplayFile {
@@ -61,7 +62,7 @@ export function recordSessionReplay(opts: {
   store.sessions.unshift(record);
   store.sessions = store.sessions.slice(0, MAX_SESSIONS);
   store.updatedAt = new Date().toISOString();
-  mkdirSync(join(process.cwd(), "data", "intelligence-graph"), { recursive: true });
+  mkdirSync(intelligenceGraphDir(), { recursive: true });
   writeFileSync(PATH, JSON.stringify(store, null, 2));
 
   return record;

@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { RetailerId } from "@/lib/types";
+import { intelligenceGraphDir } from "../storage-root";
 
 export interface DecisionSnapshot {
   at: string;
@@ -19,7 +20,7 @@ export interface SnapshotHistoryFile {
   snapshots: DecisionSnapshot[];
 }
 
-const DIR = join(process.cwd(), "data", "intelligence-graph", "decision-snapshots");
+const DIR = join(intelligenceGraphDir(), "decision-snapshots");
 const MAX_PER_CANONICAL = 30;
 
 function pathFor(canonicalId: string): string {

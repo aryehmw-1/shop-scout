@@ -12,6 +12,7 @@ import { getLaunchFlagsSnapshot } from "@/lib/commerce-intelligence/ops/feature-
 import { buildIntelligenceObservabilitySnapshot } from "@/lib/commerce-intelligence/ops/observability";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { intelligenceGraphDir } from "@/lib/commerce-intelligence/storage-root";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ export async function GET() {
   }
 
   const snapshot = buildIntelligenceObservabilitySnapshot();
-  const maintenancePath = join(process.cwd(), "data", "intelligence-graph", "ops-snapshot.json");
+  const maintenancePath = join(intelligenceGraphDir(), "ops-snapshot.json");
   let lastMaintenance = null;
   if (existsSync(maintenancePath)) {
     try {

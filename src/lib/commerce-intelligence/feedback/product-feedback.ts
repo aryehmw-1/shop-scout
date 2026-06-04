@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { intelligenceGraphDir } from "../storage-root";
 
 export type WhyNotReason = "price" | "wrong_product" | "trust" | "other";
 
@@ -20,7 +21,7 @@ export interface ProductFeedbackFile {
   entries: ProductFeedbackEntry[];
 }
 
-const PATH = join(process.cwd(), "data", "intelligence-graph", "product-feedback.json");
+const PATH = join(intelligenceGraphDir(), "product-feedback.json");
 const MAX = 3000;
 
 function empty(): ProductFeedbackFile {
@@ -41,7 +42,7 @@ export function recordProductFeedback(entry: Omit<ProductFeedbackEntry, "at">): 
   store.entries.unshift({ ...entry, at: new Date().toISOString() });
   store.entries = store.entries.slice(0, MAX);
   store.updatedAt = new Date().toISOString();
-  mkdirSync(join(process.cwd(), "data", "intelligence-graph"), { recursive: true });
+  mkdirSync(intelligenceGraphDir(), { recursive: true });
   writeFileSync(PATH, JSON.stringify(store, null, 2));
 }
 

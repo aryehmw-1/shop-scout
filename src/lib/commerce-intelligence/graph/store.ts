@@ -12,8 +12,9 @@ import { recomputeExistingGraph } from "../confidence/recompute-graph";
 import { invalidatePublishedGraphCache } from "../retrieval/graph-query-cache";
 import type { CanonicalProduct } from "@/lib/demo-commerce/canonical/types";
 import { mapGraphToDemoCanonical } from "./map-to-demo";
+import { intelligenceGraphDir } from "../storage-root";
 
-const GRAPH_DIR = join(/* turbopackIgnore: true */ process.cwd(), "data", "intelligence-graph");
+const GRAPH_DIR = intelligenceGraphDir();
 const INDEX_FILE = join(GRAPH_DIR, "index.json");
 const PRODUCTS_DIR = join(GRAPH_DIR, "products");
 const REPORT_FILE = join(GRAPH_DIR, "last-ingest-report.json");

@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { intelligenceGraphDir } from "../storage-root";
 
 export type IntelligenceAnalyticsEvent =
   | "recommendation_shown"
@@ -33,7 +34,7 @@ export interface AnalyticsStoreFile {
   events: AnalyticsEventRecord[];
 }
 
-const PATH = join(process.cwd(), "data", "intelligence-graph", "analytics-events.json");
+const PATH = join(intelligenceGraphDir(), "analytics-events.json");
 const MAX_EVENTS = 5000;
 
 function empty(): AnalyticsStoreFile {
@@ -56,7 +57,7 @@ export function recordAnalyticsEvent(
   store.events.unshift({ ...event, at: new Date().toISOString() });
   store.events = store.events.slice(0, MAX_EVENTS);
   store.updatedAt = new Date().toISOString();
-  mkdirSync(join(process.cwd(), "data", "intelligence-graph"), { recursive: true });
+  mkdirSync(intelligenceGraphDir(), { recursive: true });
   writeFileSync(PATH, JSON.stringify(store, null, 2));
 }
 

@@ -2,8 +2,9 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { MemoryEntry, MemoryLayer, MemoryStoreFile } from "./types";
 import { MEMORY_TTL_DAYS } from "./types";
+import { intelligenceGraphDir } from "../storage-root";
 
-const MEMORY_PATH = join(process.cwd(), "data", "intelligence-graph", "structured-memory.json");
+const MEMORY_PATH = join(intelligenceGraphDir(), "structured-memory.json");
 
 function emptyStore(): MemoryStoreFile {
   return { version: 1, updatedAt: new Date().toISOString(), entries: [] };
@@ -55,7 +56,7 @@ export function upsertMemoryEntry(
   else store.entries.push(entry);
 
   store.updatedAt = new Date().toISOString();
-  mkdirSync(join(process.cwd(), "data", "intelligence-graph"), { recursive: true });
+  mkdirSync(intelligenceGraphDir(), { recursive: true });
   writeFileSync(MEMORY_PATH, JSON.stringify(store, null, 2));
 }
 

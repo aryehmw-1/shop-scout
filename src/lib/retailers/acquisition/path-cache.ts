@@ -8,8 +8,10 @@ import { join } from "node:path";
 import type { RetailerId } from "../../types";
 import type { AcquisitionMethod } from "./types";
 import type { TransportClass } from "./transport-policy";
+import { writableArtifactsDir } from "@/lib/commerce-intelligence/storage-root";
 
-const CACHE_FILE = join(process.cwd(), "artifacts", "ops", "acquisition-path-cache.json");
+const OPS_DIR = join(writableArtifactsDir(), "ops");
+const CACHE_FILE = join(OPS_DIR, "acquisition-path-cache.json");
 
 export interface CachedAcquisitionPath {
   retailerId: RetailerId;
@@ -34,7 +36,7 @@ async function loadCache(): Promise<CacheStore> {
 }
 
 async function saveCache(store: CacheStore): Promise<void> {
-  await mkdir(join(process.cwd(), "artifacts", "ops"), { recursive: true });
+  await mkdir(OPS_DIR, { recursive: true });
   await writeFile(CACHE_FILE, `${JSON.stringify(store, null, 2)}\n`, "utf8");
 }
 

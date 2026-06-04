@@ -4,8 +4,9 @@ import { MEMORY_TTL_DAYS, type MemoryLayer } from "./types";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { intelligenceOpsConfig } from "../ops/config";
+import { intelligenceGraphDir } from "../storage-root";
 
-const MEMORY_PATH = join(process.cwd(), "data", "intelligence-graph", "structured-memory.json");
+const MEMORY_PATH = join(intelligenceGraphDir(), "structured-memory.json");
 
 function pruneExpired(store: MemoryStoreFile): MemoryStoreFile {
   const now = Date.now();
@@ -68,7 +69,7 @@ export function compactStructuredMemory(): MemoryCompactionResult {
   }
 
   store.updatedAt = new Date().toISOString();
-  mkdirSync(join(process.cwd(), "data", "intelligence-graph"), { recursive: true });
+  mkdirSync(intelligenceGraphDir(), { recursive: true });
   writeFileSync(MEMORY_PATH, JSON.stringify(store, null, 2));
 
   return {

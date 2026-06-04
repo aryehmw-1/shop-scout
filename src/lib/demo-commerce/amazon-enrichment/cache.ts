@@ -1,8 +1,9 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { AmazonEnrichmentCacheFile, AmazonEnrichmentEntry } from "./types";
+import { writableDataDir } from "@/lib/commerce-intelligence/storage-root";
 
-const CACHE_FILE = join(process.cwd(), "data", "amazon-enrichment-cache.json");
+const CACHE_FILE = join(writableDataDir(), "amazon-enrichment-cache.json");
 
 export function loadEnrichmentCache(): AmazonEnrichmentCacheFile {
   if (!existsSync(CACHE_FILE)) {
@@ -33,7 +34,7 @@ export function saveEnrichmentEntry(entry: AmazonEnrichmentEntry): void {
   const cache = loadEnrichmentCache();
   cache.entries[entry.cacheKey] = entry;
   cache.updatedAt = new Date().toISOString();
-  mkdirSync(join(process.cwd(), "data"), { recursive: true });
+  mkdirSync(writableDataDir(), { recursive: true });
   writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2));
 }
 

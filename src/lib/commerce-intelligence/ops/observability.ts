@@ -11,8 +11,9 @@ import type { CalibrationReport } from "../eval/calibration";
 import type { DriftReport } from "../drift/analyze";
 import type { RegressionGateReport } from "../eval/regression-gates";
 import type { AdversarialSuiteReport } from "../eval/adversarial-cases";
+import { intelligenceGraphDir } from "../storage-root";
 
-const GRAPH_DIR = join(process.cwd(), "data", "intelligence-graph");
+const GRAPH_DIR = intelligenceGraphDir();
 
 function readJson<T>(name: string): T | null {
   const p = join(GRAPH_DIR, name);

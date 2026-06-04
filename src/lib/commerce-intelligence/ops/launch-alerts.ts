@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { validateProductionConfig } from "./production-config";
 import { launchFlags } from "./feature-flags";
 import type { RegressionGateReport } from "../eval/regression-gates";
+import { intelligenceGraphDir } from "../storage-root";
 
 export type AlertSeverity = "info" | "warning" | "critical";
 
@@ -14,7 +15,7 @@ export interface LaunchAlert {
 }
 
 function readRegressionGates(): RegressionGateReport | null {
-  const p = join(process.cwd(), "data", "intelligence-graph", "regression-gates.json");
+  const p = join(intelligenceGraphDir(), "regression-gates.json");
   if (!existsSync(p)) return null;
   try {
     return JSON.parse(readFileSync(p, "utf8")) as RegressionGateReport;
@@ -58,7 +59,7 @@ export function buildLaunchAlerts(): LaunchAlert[] {
     }
   }
 
-  if (!existsSync(join(process.cwd(), "data", "intelligence-graph", "index.json"))) {
+  if (!existsSync(join(intelligenceGraphDir(), "index.json"))) {
     alerts.push({
       id: "no_graph_index",
       severity: "warning",

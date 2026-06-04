@@ -17,6 +17,7 @@ import { runIngestStressSuite, type IngestStressReport } from "./ingest-stress";
 import { analyzeRecommendationUsefulness } from "../analytics/usefulness";
 import type { UsefulnessReport } from "../analytics/usefulness";
 import { runIntelligenceMaintenance } from "../ops/maintenance";
+import { intelligenceGraphDir } from "../storage-root";
 
 export interface FullIntelligenceEvalReport {
   evaluatedAt: string;
@@ -67,7 +68,7 @@ export function runFullIntelligenceEval(): FullIntelligenceEvalReport {
 
 export function runFullIntelligenceEvalAndSave(): FullIntelligenceEvalReport {
   const report = runFullIntelligenceEval();
-  const dir = join(process.cwd(), "data", "intelligence-graph");
+  const dir = intelligenceGraphDir();
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "eval-report.json"), JSON.stringify(report.metrics, null, 2));
   writeFileSync(join(dir, "calibration-report.json"), JSON.stringify(report.calibration, null, 2));

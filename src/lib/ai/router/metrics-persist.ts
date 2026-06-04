@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { getInferenceMetricsSummary, type InferenceMetricEntry } from "./instrumentation";
+import { intelligenceGraphDir } from "@/lib/commerce-intelligence/storage-root";
 
 export interface PersistedInferenceMetrics {
   version: 1;
@@ -11,7 +12,7 @@ export interface PersistedInferenceMetrics {
   recent: InferenceMetricEntry[];
 }
 
-const PATH = join(process.cwd(), "data", "intelligence-graph", "inference-metrics.json");
+const PATH = join(intelligenceGraphDir(), "inference-metrics.json");
 
 let escalationOutcomes = { escalated: 0, helped: 0, wasted: 0 };
 let recommendationCalls = 0;
@@ -68,7 +69,7 @@ export function persistInferenceMetrics(): void {
     recent: [...live.recent, ...prev.recent].slice(0, 50),
   };
 
-  mkdirSync(join(process.cwd(), "data", "intelligence-graph"), { recursive: true });
+  mkdirSync(intelligenceGraphDir(), { recursive: true });
   writeFileSync(PATH, JSON.stringify(file, null, 2));
 
   recommendationCalls = 0;

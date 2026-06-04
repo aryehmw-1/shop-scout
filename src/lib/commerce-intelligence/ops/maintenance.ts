@@ -8,6 +8,7 @@ import { buildIntelligenceObservabilitySnapshot } from "./observability";
 import { intelligenceOpsConfig } from "./config";
 import { persistInferenceMetrics } from "@/lib/ai/router/metrics-persist";
 import { compactAllSnapshotHistories } from "../drift/snapshots";
+import { intelligenceGraphDir } from "../storage-root";
 
 export type MaintenanceSource = "ingest" | "eval" | "cron" | "manual";
 
@@ -21,7 +22,7 @@ export interface IntelligenceMaintenanceResult {
   observability: ReturnType<typeof buildIntelligenceObservabilitySnapshot>;
 }
 
-const OPS_SNAPSHOT_PATH = join(process.cwd(), "data", "intelligence-graph", "ops-snapshot.json");
+const OPS_SNAPSHOT_PATH = join(intelligenceGraphDir(), "ops-snapshot.json");
 
 /**
  * Scheduled learning: snapshots → longitudinal memory → compaction → lifecycle → observability.
@@ -68,7 +69,7 @@ export function runIntelligenceMaintenance(
     observability,
   };
 
-  mkdirSync(join(process.cwd(), "data", "intelligence-graph"), { recursive: true });
+  mkdirSync(intelligenceGraphDir(), { recursive: true });
   writeFileSync(OPS_SNAPSHOT_PATH, JSON.stringify(result, null, 2));
 
   return result;

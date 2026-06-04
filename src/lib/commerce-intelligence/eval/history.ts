@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { intelligenceGraphDir } from "../storage-root";
 
 export interface EvalHistoryEntry {
   at: string;
@@ -15,7 +16,7 @@ export interface EvalHistoryFile {
   entries: EvalHistoryEntry[];
 }
 
-const HISTORY_PATH = join(process.cwd(), "data", "intelligence-graph", "calibration-history.json");
+const HISTORY_PATH = join(intelligenceGraphDir(), "calibration-history.json");
 const MAX_ENTRIES = 120;
 
 export function loadEvalHistory(): EvalHistoryFile {
@@ -32,7 +33,7 @@ export function loadEvalHistory(): EvalHistoryFile {
 export function appendEvalHistory(entry: EvalHistoryEntry): EvalHistoryFile {
   const file = loadEvalHistory();
   file.entries = [entry, ...file.entries].slice(0, MAX_ENTRIES);
-  mkdirSync(join(process.cwd(), "data", "intelligence-graph"), { recursive: true });
+  mkdirSync(intelligenceGraphDir(), { recursive: true });
   writeFileSync(HISTORY_PATH, JSON.stringify(file, null, 2));
   return file;
 }
