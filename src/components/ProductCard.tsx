@@ -10,12 +10,12 @@ import { ProductImage } from "./ProductImage";
 import { PhotoSourceLabel } from "./PhotoSourceLabel";
 import { OfferPriceBadge } from "./OfferPriceBadge";
 import { RetailerTrustBadge } from "./RetailerTrustBadge";
-import { BestDealExplainer } from "./BestDealExplainer";
 import { OfferInspectionPanel } from "./OfferInspectionPanel";
 import { OutboundLink } from "./OutboundLink";
 import { DeliveredPriceBreakdown } from "./DeliveredPriceBreakdown";
 import { OfferFeedback } from "./OfferFeedback";
 import { FreshnessIndicator } from "./FreshnessIndicator";
+import { OfferConfidenceChip } from "./trust/OfferConfidenceChip";
 import { useExperiment } from "@/lib/experiments/useExperiment";
 
 interface ProductCardProps {
@@ -41,6 +41,14 @@ export function ProductCard({
   const trustPlacement = useExperiment("trust_placement");
   const logoFallback = (offer.pipelineDebug?.imageFallbackLevel ?? 0) >= 5;
   const displayMain = priceDisplay.main?.trim() || "Check retailer";
+  const intelConfidence = offer.matchConfidence ?? 0;
+  const intelBand =
+    intelConfidence >= 0.72 ? "high"
+    : intelConfidence >= 0.52 ? "medium"
+    : "low";
+  const showIntelChip =
+    intelConfidence >= 0.52 &&
+    (offer.priceSource === "catalog_model" || offer.matchBand === "exact_verified");
 
   return (
     <article
@@ -96,6 +104,13 @@ export function ProductCard({
             {offer.retailerName}
           </span>
           {trustPlacement === "badge" && <RetailerTrustBadge offer={offer} compact />}
+          {showIntelChip && (
+            <OfferConfidenceChip
+              confidence={intelConfidence}
+              band={intelBand}
+              compact
+            />
+          )}
         </div>
         {trustPlacement === "inline" && (
           <p className="text-[10px] text-stone-500">
@@ -164,10 +179,6 @@ export function ProductCard({
         )}
         {priceDisplay.lastVerifiedLabel && (
           <p className="text-[10px] text-stone-400">{priceDisplay.lastVerifiedLabel}</p>
-        )}
-
-        {offer.isBestDeal && (
-          <BestDealExplainer offer={offer} defaultOpen={false} className="mt-1" />
         )}
 
         <OfferInspectionPanel offer={offer} />

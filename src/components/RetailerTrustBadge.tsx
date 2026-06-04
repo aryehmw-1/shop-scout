@@ -21,7 +21,7 @@ export function RetailerTrustBadge({ offer, compact }: RetailerTrustBadgeProps) 
     return (
       <span className="inline-flex items-center gap-0.5 text-[10px] font-medium text-sage-700">
         <Shield size={10} />
-        {Math.round(score * 100)}%
+        Trusted
       </span>
     );
   }

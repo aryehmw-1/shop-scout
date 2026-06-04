@@ -120,11 +120,11 @@ export function SearchEmptyRecovery({
       </div>
 
       <Link
-        href="/verified"
+        href="/inventory"
         className="flex items-center justify-center gap-2 rounded-xl border border-sage-300 bg-sage-50 px-4 py-3 text-sm font-semibold text-sage-900 hover:bg-sage-100"
       >
         <ShieldCheck size={16} aria-hidden />
-        Browse all verified inventory
+        Browse inventory
       </Link>
     </div>
   );

@@ -28,11 +28,6 @@ export function RetrievalNormalizationBanner({
   const quality = retrievalMeta?.offerQuality ??
     (closestMatchFallback ? "closest_match" : noExactMatchFound ? "closest_match" : "estimated");
 
-  const confidencePct =
-    retrievalMeta?.confidence != null ?
-      Math.round(retrievalMeta.confidence * 100)
-    : null;
-
   return (
     <div
       className="rounded-xl border border-sky-200 bg-sky-50/90 px-4 py-3 text-sm text-sky-950"
@@ -48,12 +43,7 @@ export function RetrievalNormalizationBanner({
             </span>
             {retrievalMeta?.tier && (
               <span className="rounded-full bg-white px-2 py-0.5 ring-1 ring-sky-200">
-                Tier: {tierDisplayLabel(retrievalMeta.tier)}
-              </span>
-            )}
-            {confidencePct != null && (
-              <span className="rounded-full bg-white px-2 py-0.5 ring-1 ring-sky-200">
-                {confidencePct}% match confidence
+                {tierDisplayLabel(retrievalMeta.tier)}
               </span>
             )}
           </div>

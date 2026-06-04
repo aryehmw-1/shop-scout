@@ -9,7 +9,7 @@ const steps = [
   {
     icon: Rows3,
     title: "Compare live prices",
-    desc: "We check major retailers for the same product and surface verified prices side by side.",
+    desc: "We check major retailers for the same product and surface compare pricing side by side.",
   },
   {
     icon: MousePointerClick,

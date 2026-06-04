@@ -15,7 +15,7 @@ export function CategoryGrid() {
     <section className="px-4 py-14 sm:px-6 lg:px-12">
       <div className="mx-auto max-w-5xl">
         <h2 className="font-homy text-2xl font-bold text-ink-900">
-          Start with verified categories
+          Start with inventory categories
         </h2>
         <p className="mt-2 text-ink-600">
           Grocery and household first — apparel marked experimental until live
@@ -46,8 +46,8 @@ export function CategoryGrid() {
         </div>
 
         <p className="mt-6 text-center text-sm text-ink-500">
-          <Link href="/verified" className="font-semibold text-sage-700 hover:underline">
-            Browse all verified inventory →
+          <Link href="/inventory" className="font-semibold text-sage-700 hover:underline">
+            Browse inventory →
           </Link>
         </p>
       </div>

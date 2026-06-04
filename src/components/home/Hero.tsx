@@ -29,18 +29,20 @@ export function Hero() {
           </p>
 
           <div className="mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-            <Link
-              href="/chat"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 px-8 py-4 text-lg font-semibold text-white shadow-xl shadow-orange-500/30 transition hover:from-orange-600 hover:via-amber-600 hover:to-orange-700 hover:shadow-2xl sm:w-auto"
-            >
+          <Link
+            href="/chat"
+            scroll={false}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 px-8 py-4 text-lg font-semibold text-white shadow-xl shadow-orange-500/30 transition hover:from-orange-600 hover:via-amber-600 hover:to-orange-700 hover:shadow-2xl sm:w-auto"
+          >
               <Search size={20} aria-hidden />
               Search for a product
               <ArrowRight size={20} aria-hidden />
             </Link>
-            <Link
-              href="/chat?hint=link"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-orange-200/80 bg-cream-50/95 px-6 py-3.5 text-base font-semibold text-ink-700 shadow-sm backdrop-blur-sm transition hover:border-orange-300 hover:bg-orange-50 sm:w-auto"
-            >
+          <Link
+            href="/chat?hint=link"
+            scroll={false}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-orange-200/80 bg-cream-50/95 px-6 py-3.5 text-base font-semibold text-ink-700 shadow-sm backdrop-blur-sm transition hover:border-orange-300 hover:bg-orange-50 sm:w-auto"
+          >
               <Link2 size={18} className="text-ink-400" aria-hidden />
               I have a product link
             </Link>

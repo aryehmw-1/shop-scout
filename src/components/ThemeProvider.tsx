@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { DEFAULT_THEME_ID, getThemePreset, type ThemeId } from "@/lib/theme/presets";
 import { loadPreferences } from "@/lib/storage";
 
-const STORAGE_KEY = "shop-scout-theme";
+const STORAGE_KEY = "homivion-theme";
 
 export function getStoredThemeId(): ThemeId {
   if (typeof window === "undefined") return DEFAULT_THEME_ID;

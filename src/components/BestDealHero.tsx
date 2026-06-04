@@ -19,7 +19,7 @@ export function BestDealHero({ offer, onShopClick }: BestDealHeroProps) {
   const savingsVariant = useExperiment("savings_copy");
   const explainVariant = useExperiment("explain_ux");
 
-  if (!offer.isBestDeal && offer.dealLabel !== "best_deal") return null;
+  if (!offer.price || offer.price <= 0) return null;
 
   const savingsCopy =
     savingsVariant === "dollar" &&
@@ -34,7 +34,7 @@ export function BestDealHero({ offer, onShopClick }: BestDealHeroProps) {
     return (
       <section className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sage-300 bg-sage-50 px-4 py-3">
         <div className="min-w-0">
-          <p className="text-xs font-bold uppercase text-sage-800">Best deal</p>
+          <p className="text-xs font-bold uppercase text-sage-800">Best price</p>
           <p className="font-semibold text-stone-900">
             {formatPrice(offer.price)} · {offer.retailerName}
           </p>
@@ -48,7 +48,7 @@ export function BestDealHero({ offer, onShopClick }: BestDealHeroProps) {
           onNavigate={onShopClick}
           className="shrink-0 rounded-xl bg-sage-600 px-4 py-2 text-sm font-semibold text-white hover:bg-sage-700"
         >
-          Shop deal
+          View price
         </OutboundLink>
       </section>
     );
@@ -64,7 +64,7 @@ export function BestDealHero({ offer, onShopClick }: BestDealHeroProps) {
             </span>
             <div>
               <p className="text-xs font-bold uppercase tracking-wider text-sage-800">
-                Best Deal
+                Best price
               </p>
               <p className="text-lg font-bold text-stone-900 sm:text-xl">
                 {formatPrice(offer.price)} at {offer.retailerName}
@@ -108,7 +108,7 @@ export function BestDealHero({ offer, onShopClick }: BestDealHeroProps) {
           onNavigate={onShopClick}
           className="inline-flex w-full items-center justify-center rounded-xl bg-sage-600 py-3 text-sm font-semibold text-white hover:bg-sage-700 sm:w-auto sm:px-6"
         >
-          Shop this deal at {offer.retailerName}
+          View at {offer.retailerName}
         </OutboundLink>
       </div>
     </section>

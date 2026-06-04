@@ -18,7 +18,7 @@ export function MatchQualityBanner({ noExactMatchFound, query }: MatchQualityBan
       <div className="flex items-start gap-2">
         <AlertTriangle size={18} className="mt-0.5 shrink-0 text-amber-600" aria-hidden />
         <div>
-          <p className="font-semibold">No confident exact match found</p>
+          <p className="font-semibold">No exact match found</p>
           <p className="mt-1 text-amber-900/90">
             {query
               ? `We couldn't verify an exact listing for “${query}”.`

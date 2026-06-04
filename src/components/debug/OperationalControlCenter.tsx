@@ -80,6 +80,10 @@ export function OperationalControlCenter() {
           Unified visual parity + ingestion/proxy observability dashboard.{" "}
           <a href="/debug/experiments" className="text-sage-700 underline">
             Detection experiments →
+          </a>{" "}
+          ·{" "}
+          <a href="/debug/intelligence-ops" className="text-sage-700 underline">
+            Intelligence ops →
           </a>
         </p>
         <button

@@ -1,19 +1,22 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { ProductOffer, ProductSearchResults } from "@/lib/types";
 import { shouldShowBestDealBadge } from "@/lib/offers/offer-trust";
 import { getOfferPriceDisplay } from "@/lib/shopping/offer-price-display";
 import { formatPrice } from "@/lib/utils/format";
 import { getRetailerMeta } from "@/lib/retailers/meta";
-import { Trophy, TrendingDown } from "lucide-react";
+import { CheckCircle2, Info, Trophy, TrendingDown } from "lucide-react";
 import { ProductImage } from "./ProductImage";
+import { PhotoSourceLabel } from "./PhotoSourceLabel";
 import { RetailerTrustBadge } from "./RetailerTrustBadge";
 import { PriceHistoryMiniChart } from "./PriceHistoryMiniChart";
-import { BestDealExplainer } from "./BestDealExplainer";
 import { OutboundLink } from "./OutboundLink";
 import { OfferFeedback } from "./OfferFeedback";
 import { CompareTable } from "./CompareTable";
+import { DeliveredPriceBreakdown } from "./DeliveredPriceBreakdown";
+import { FreshnessIndicator } from "./FreshnessIndicator";
+import { TrustSummaryCard } from "./trust/TrustSummaryCard";
 import { useExperiment } from "@/lib/experiments/useExperiment";
 import { trackEvent } from "@/lib/analytics/track-client";
 
@@ -23,6 +26,8 @@ interface CompareExperienceProps {
   onSave?: (offer: ProductOffer) => void;
   onShopClick?: (offer: ProductOffer) => void;
   searchQuery?: string;
+  /** Side-by-side retailer cards (compare page) vs stacked list (chat). */
+  layoutMode?: "stack" | "grid";
 }
 
 function SavingsLine({ offer, variant }: { offer: ProductOffer; variant: string }) {
@@ -42,6 +47,421 @@ function SavingsLine({ offer, variant }: { offer: ProductOffer; variant: string 
     );
   }
   return null;
+}
+
+function comparePriceMain(offer: ProductOffer, display: { main: string }): string {
+  if (display.main === "Check retailer" && offer.price > 0) {
+    return `~${formatPrice(offer.price)}`;
+  }
+  return display.main;
+}
+
+function ProductIdentityHeader({
+  matched,
+  bestOffer,
+  offerCount,
+  zipCode,
+  liveSourceLabel,
+  offerCountLabel,
+}: {
+  matched?: ProductSearchResults["matchedProduct"];
+  bestOffer: ProductOffer;
+  offerCount: number;
+  zipCode: string;
+  liveSourceLabel: string;
+  offerCountLabel: string;
+}) {
+  const title = matched?.title ?? bestOffer.storeTitle ?? `${bestOffer.brand} ${bestOffer.title}`;
+  const brand = matched?.brand ?? bestOffer.brand;
+  const image = matched?.imageUrl ?? bestOffer.imageUrl;
+  const matchLabel =
+    bestOffer.matchDisplayLabel ??
+    (bestOffer.matchBand === "exact_verified" ? "Exact product match" : "Product match");
+
+  return (
+    <header className="grid gap-4 rounded-2xl border border-orange-100 bg-white p-4 shadow-sm sm:grid-cols-[116px_1fr] sm:p-5 lg:grid-cols-[132px_1fr]">
+      <div className="relative mx-auto h-40 w-40 overflow-hidden rounded-2xl border border-stone-100 bg-stone-50 sm:mx-0 sm:h-[116px] sm:w-[116px] lg:h-[132px] lg:w-[132px]">
+        <ProductImage
+          src={image}
+          alt={title}
+          retailerId={bestOffer.retailer}
+          className="h-full w-full object-contain p-3"
+        />
+      </div>
+      <div className="min-w-0">
+        <p className="text-xs font-semibold uppercase tracking-wide text-sage-700">
+          {liveSourceLabel}
+        </p>
+        <h1 className="font-homy mt-1 text-2xl font-bold leading-tight text-stone-950 sm:text-3xl">
+          {title}
+        </h1>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-1 rounded-full bg-sage-50 px-2.5 py-1 text-xs font-semibold text-sage-800">
+            <CheckCircle2 size={13} aria-hidden />
+            {matchLabel}
+          </span>
+          {bestOffer.packSizeLabel || bestOffer.size ? (
+            <span className="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-semibold text-stone-700">
+              {bestOffer.packSizeLabel ?? bestOffer.size}
+            </span>
+          ) : null}
+          <span className="rounded-full bg-orange-50 px-2.5 py-1 text-xs font-semibold text-orange-800">
+            {offerCountLabel}
+          </span>
+          <span className="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-semibold text-stone-700">
+            Ships to {zipCode}
+          </span>
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-stone-500">
+          <span>{brand}</span>
+          <PhotoSourceLabel source={matched?.imageSource ?? bestOffer.imageSource} />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function BestOfferAnswer({
+  offer,
+  onShopClick,
+  searchQuery,
+  catalogId,
+}: {
+  offer: ProductOffer;
+  onShopClick?: (offer: ProductOffer) => void;
+  searchQuery?: string;
+  catalogId?: string;
+}) {
+  const meta = getRetailerMeta(offer.retailer);
+  const priceDisplay = getOfferPriceDisplay(offer);
+  const shipping = offer.estimatedShipping ?? offer.deliveryFee;
+  const deliveredTotal = offer.deliveredTotal ?? offer.landedCost;
+  const hasDeliveredPrice =
+    deliveredTotal != null && deliveredTotal > 0 && Math.abs(deliveredTotal - offer.price) > 0.009;
+  const mainPrice =
+    hasDeliveredPrice ? formatPrice(deliveredTotal) : comparePriceMain(offer, priceDisplay);
+  const reason =
+    hasDeliveredPrice ?
+      "Lowest delivered price in this comparison. We include shipping when the provider gives it to us."
+    : "Lowest price in this comparison. Offers are sorted from cheapest to most expensive.";
+
+  return (
+    <section className="rounded-2xl border border-sage-200 bg-sage-50/80 p-4 shadow-sm sm:p-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-[10px] font-bold text-white"
+              style={{ backgroundColor: meta.color }}
+              aria-hidden
+            >
+              {meta.shortName.slice(0, 2).toUpperCase()}
+            </span>
+            <p className="font-bold text-sage-950">
+              {offer.retailerName} has the lowest {hasDeliveredPrice ? "delivered " : ""}price right now
+            </p>
+            <span className="inline-flex items-center gap-1 rounded-full bg-sage-700 px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+              <Trophy size={10} aria-hidden />
+              {hasDeliveredPrice ? "Best delivered" : "Lowest price"}
+            </span>
+          </div>
+          <p className="mt-2 text-sm leading-relaxed text-sage-900/85">{reason}</p>
+        </div>
+        <div className="flex shrink-0 items-center gap-3 sm:text-right">
+          <div>
+            <p className="text-3xl font-black leading-none text-stone-950">
+              {mainPrice}
+            </p>
+            <p className="mt-1 text-xs font-semibold text-sage-800">
+              {hasDeliveredPrice ? "Delivered total" : priceDisplay.sub}
+            </p>
+            {shipping != null && (
+              <p className="mt-1 text-[11px] font-medium text-stone-500">
+                Item {formatPrice(offer.price)} · shipping {shipping === 0 ? "free" : formatPrice(shipping)}
+              </p>
+            )}
+          </div>
+          <OutboundLink
+            offer={offer}
+            context={{ source: "compare", catalogId, searchQuery }}
+            onNavigate={onShopClick}
+            className="inline-flex items-center justify-center rounded-xl bg-sage-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-sage-800"
+          >
+            View
+          </OutboundLink>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function RetailerOfferRow({
+  offer,
+  rank,
+  onSave,
+  saved,
+  onShopClick,
+  searchQuery,
+  catalogId,
+}: {
+  offer: ProductOffer;
+  rank: number;
+  onSave?: (offer: ProductOffer) => void;
+  saved?: boolean;
+  onShopClick?: (offer: ProductOffer) => void;
+  searchQuery?: string;
+  catalogId?: string;
+}) {
+  const meta = getRetailerMeta(offer.retailer);
+  const priceDisplay = getOfferPriceDisplay(offer);
+  const shipping = offer.estimatedShipping ?? offer.deliveryFee;
+  const deliveredTotal = offer.deliveredTotal ?? offer.landedCost;
+  const hasDeliveredPrice =
+    deliveredTotal != null && deliveredTotal > 0 && Math.abs(deliveredTotal - offer.price) > 0.009;
+  const mainPrice =
+    hasDeliveredPrice ? formatPrice(deliveredTotal) : comparePriceMain(offer, priceDisplay);
+  const isBest = rank === 1;
+  const checkedAt = offer.lastVerifiedAt ?? offer.priceAsOf;
+  const checkedLabel =
+    checkedAt ?
+      new Intl.DateTimeFormat(undefined, {
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      }).format(new Date(checkedAt))
+    : null;
+  const sourceParts = [
+    offer.sourceLabel ?? offer.priceNote,
+    checkedLabel ? `checked ${checkedLabel}` : null,
+    offer.sellerName ? `seller ${offer.sellerName}` : null,
+    offer.condition,
+  ].filter(Boolean);
+
+  return (
+    <article
+      className={`grid gap-3 border-t border-stone-100 px-4 py-4 sm:grid-cols-[1.2fr_0.75fr_1fr_auto] sm:items-center ${
+        isBest ? "bg-sage-50/40" : "bg-white"
+      }`}
+    >
+      <div className="flex min-w-0 items-start gap-3">
+        <span
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[10px] font-bold text-white"
+          style={{ backgroundColor: meta.color }}
+          aria-hidden
+        >
+          {meta.shortName.slice(0, 2).toUpperCase()}
+        </span>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-bold text-stone-900">{offer.retailerName}</h3>
+            {isBest && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-sage-700 px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+                <Trophy size={10} aria-hidden />
+                Lowest
+              </span>
+            )}
+          </div>
+          <p className="mt-1 line-clamp-2 text-xs leading-snug text-stone-500">
+            {offer.storeTitle ?? `${offer.brand} ${offer.title}`}
+          </p>
+          {sourceParts.length ? (
+            <p className="mt-1 text-[11px] leading-snug text-stone-500">
+              {sourceParts.join(" · ")}
+            </p>
+          ) : null}
+          {offer.returnPolicy ? (
+            <p className="mt-0.5 line-clamp-1 text-[11px] text-stone-400">
+              {offer.returnPolicy}
+            </p>
+          ) : null}
+        </div>
+      </div>
+
+      <div>
+        <p className="text-2xl font-black leading-tight text-stone-950">
+          {mainPrice}
+        </p>
+        {offer.wasPrice && offer.wasPrice > offer.price && (
+          <p className="text-xs text-stone-400 line-through">
+            Was {formatPrice(offer.wasPrice)}
+          </p>
+        )}
+        <p className="mt-1 text-xs text-stone-500">
+          {hasDeliveredPrice ?
+            `Item ${formatPrice(offer.price)} · shipping ${
+              shipping === 0 ? "free" : shipping != null ? formatPrice(shipping) : "unknown"
+            }`
+          : priceDisplay.sub}
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex flex-wrap gap-1.5">
+          <FreshnessIndicator offer={offer} compact />
+          <RetailerTrustBadge offer={offer} compact />
+        </div>
+        <DeliveredPriceBreakdown offer={offer} compact />
+      </div>
+
+      <div className="flex items-center gap-2 sm:justify-end">
+        {onSave && (
+          <button
+            type="button"
+            onClick={() => onSave(offer)}
+            className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs font-semibold text-stone-600 hover:bg-stone-50"
+            aria-label={saved ? "Remove from watchlist" : "Save to watchlist"}
+          >
+            {saved ? "Saved" : "Save"}
+          </button>
+        )}
+        <OutboundLink
+          offer={offer}
+          context={{ source: "compare", catalogId, searchQuery }}
+          onNavigate={onShopClick}
+          className="inline-flex items-center justify-center rounded-xl bg-stone-900 px-4 py-2 text-xs font-semibold text-white hover:bg-stone-800"
+        >
+          View
+        </OutboundLink>
+      </div>
+    </article>
+  );
+}
+
+function PriceExplanationCard({
+  offers,
+  bestOffer,
+}: {
+  offers: ProductOffer[];
+  bestOffer: ProductOffer;
+}) {
+  const nextOffer = offers[1];
+  const bestTotal = bestOffer.deliveredTotal ?? bestOffer.landedCost ?? bestOffer.price;
+  const nextTotal = nextOffer ? nextOffer.deliveredTotal ?? nextOffer.landedCost ?? nextOffer.price : null;
+  const priceGap =
+    nextTotal != null && nextTotal > bestTotal ?
+      nextTotal - bestTotal
+    : null;
+  const shipping = bestOffer.estimatedShipping ?? bestOffer.deliveryFee;
+  const usesDeliveredPrice =
+    bestTotal > 0 && Math.abs(bestTotal - bestOffer.price) > 0.009;
+
+  return (
+    <section className="h-full rounded-2xl border border-sage-200 bg-white p-4 shadow-sm sm:p-5">
+      <p className="flex items-center gap-2 font-bold text-stone-950">
+        <Info size={18} className="text-sage-700" aria-hidden />
+        Why this price
+      </p>
+      <p className="mt-3 text-sm leading-relaxed text-stone-600">
+        {bestOffer.retailerName} is shown first because it has the lowest{" "}
+        {usesDeliveredPrice ? "delivered total" : "listed price"} in this comparison at{" "}
+        {formatPrice(bestTotal)}.
+      </p>
+      {usesDeliveredPrice && shipping != null && (
+        <p className="mt-3 text-sm leading-relaxed text-stone-600">
+          That is item price {formatPrice(bestOffer.price)} plus{" "}
+          {shipping === 0 ? "free shipping" : `${formatPrice(shipping)} shipping`}.
+        </p>
+      )}
+      {nextOffer && priceGap != null && (
+        <p className="mt-3 text-sm leading-relaxed text-stone-600">
+          The next closest option is {formatPrice(nextTotal ?? nextOffer.price)} at{" "}
+          {nextOffer.retailerName}, which is {formatPrice(priceGap)} more.
+        </p>
+      )}
+      <p className="mt-3 text-xs leading-relaxed text-stone-500">
+        If a row says estimated, open the retailer page to confirm the current
+        price before checking out.
+      </p>
+    </section>
+  );
+}
+
+function CompareEvidenceLayout({
+  offers,
+  matched,
+  savedIds,
+  onSave,
+  onShopClick,
+  searchQuery,
+  catalogId,
+  zipCode,
+}: {
+  offers: ProductOffer[];
+  matched?: ProductSearchResults["matchedProduct"];
+  savedIds: Set<string>;
+  onSave?: (offer: ProductOffer) => void;
+  onShopClick?: (offer: ProductOffer) => void;
+  searchQuery?: string;
+  catalogId?: string;
+  zipCode: string;
+}) {
+  const bestOffer = offers[0];
+  if (!bestOffer) return null;
+  const remainingOffers = offers.slice(1);
+  const allEbay = offers.every((offer) => offer.providerSource === "ebay");
+  const allProvider = offers.every((offer) => Boolean(offer.providerSource));
+  const liveSourceLabel =
+    allEbay ? "Live eBay marketplace pricing"
+    : allProvider ? "Live provider pricing"
+    : "One product. We compare for you.";
+  const offerCountLabel =
+    allEbay ?
+      `${offers.length} verified eBay offer${offers.length === 1 ? "" : "s"}`
+    : `${offers.length} offer${offers.length === 1 ? "" : "s"} checked`;
+
+  return (
+    <div className="space-y-4">
+      <ProductIdentityHeader
+        matched={matched}
+        bestOffer={bestOffer}
+        offerCount={offers.length}
+        zipCode={zipCode}
+        liveSourceLabel={liveSourceLabel}
+        offerCountLabel={offerCountLabel}
+      />
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.8fr)]">
+        <BestOfferAnswer
+          offer={bestOffer}
+          onShopClick={onShopClick}
+          searchQuery={searchQuery}
+          catalogId={catalogId}
+        />
+        <PriceExplanationCard offers={offers} bestOffer={bestOffer} />
+      </div>
+      <section className="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
+        <div className="flex flex-col gap-1 bg-stone-50/80 px-4 py-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="font-bold text-stone-950">Other places to buy it</h2>
+            <p className="text-xs text-stone-500">
+              Cheapest delivered price first when shipping is known.
+            </p>
+          </div>
+          <p className="text-xs font-semibold text-stone-500">
+            {remainingOffers.length} more offer{remainingOffers.length === 1 ? "" : "s"}
+          </p>
+        </div>
+        {remainingOffers.length ? (
+          remainingOffers.map((offer, i) => (
+            <RetailerOfferRow
+              key={offer.id}
+              offer={offer}
+              rank={i + 2}
+              saved={savedIds.has(offer.id)}
+              onSave={onSave}
+              onShopClick={onShopClick}
+              searchQuery={searchQuery}
+              catalogId={catalogId}
+            />
+          ))
+        ) : (
+          <p className="border-t border-stone-100 px-4 py-4 text-sm text-stone-500">
+            We only found one place to buy this right now.
+          </p>
+        )}
+      </section>
+    </div>
+  );
 }
 
 function CompareCard({
@@ -118,10 +538,6 @@ function CompareCard({
         )}
       </div>
 
-      {isBest && (
-        <BestDealExplainer offer={offer} defaultOpen className="mt-3" />
-      )}
-
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <OutboundLink
           offer={offer}
@@ -154,34 +570,51 @@ export function CompareExperience({
   onSave,
   onShopClick,
   searchQuery,
+  layoutMode = "stack",
 }: CompareExperienceProps) {
-  const layout = useExperiment("compare_layout");
+  const experimentLayout = useExperiment("compare_layout");
   const savingsVariant = useExperiment("savings_copy");
   const trustVariant = useExperiment("trust_placement");
+  const useGrid = layoutMode === "grid";
+  const useTable = !useGrid && experimentLayout === "table";
 
-  const offers = [...results.online].sort((a, b) => a.price - b.price);
+  const offers = useMemo(
+    () =>
+      [...results.online].sort((a, b) => {
+        const aLanded = a.deliveredTotal ?? a.landedCost ?? a.price;
+        const bLanded = b.deliveredTotal ?? b.landedCost ?? b.price;
+        const aPrice = aLanded > 0 ? aLanded : Number.POSITIVE_INFINITY;
+        const bPrice = bLanded > 0 ? bLanded : Number.POSITIVE_INFINITY;
+        return aPrice - bPrice;
+      }).slice(0, 5),
+    [results.online],
+  );
   const matched = results.matchedProduct;
   const catalogId = offers[0]?.catalogId ?? results.enrichmentCatalogId;
+  const trackedView = useRef<string | null>(null);
 
   useEffect(() => {
+    const key = `${catalogId ?? ""}:${searchQuery ?? ""}:${offers.length}`;
+    if (trackedView.current === key) return;
+    trackedView.current = key;
     trackEvent({
       name: "compare_view",
       properties: {
         catalogId,
         query: searchQuery,
         offerCount: offers.length,
-        layout,
+        layout: useGrid ? "grid" : experimentLayout,
       },
     });
-  }, [catalogId, searchQuery, offers.length, layout]);
+  }, [catalogId, searchQuery, offers.length, useGrid, experimentLayout]);
 
   if (!offers.length) {
     return (
       <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-8 text-center">
         <TrendingDown className="mx-auto mb-3 text-stone-400" size={32} />
-        <p className="font-medium text-stone-800">No verified prices yet</p>
+        <p className="font-medium text-stone-800">No compare pricing yet</p>
         <p className="mt-1 text-sm text-stone-500">
-          We&apos;re still checking stores. Try again in a moment or search in chat.
+          Try a product name from inventory or search in chat.
         </p>
       </div>
     );
@@ -189,7 +622,11 @@ export function CompareExperience({
 
   return (
     <div className="space-y-4">
-      {matched && (
+      {results.intelligenceInsight && !useGrid && (
+        <TrustSummaryCard insight={results.intelligenceInsight} />
+      )}
+
+      {matched && !useGrid && (
         <header className="flex gap-4 rounded-2xl border border-stone-200 bg-white p-4">
           <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-stone-100">
             <ProductImage src={matched.imageUrl} alt={matched.title} className="h-full w-full object-cover" />
@@ -203,13 +640,13 @@ export function CompareExperience({
             </h1>
             <p className="text-sm text-stone-600">{matched.brand}</p>
             <p className="mt-1 text-sm text-stone-500">
-              {offers.length} verified store{offers.length === 1 ? "" : "s"} · ships to {results.zipCode}
+              {offers.length} store{offers.length === 1 ? "" : "s"} · ships to {results.zipCode}
             </p>
           </div>
         </header>
       )}
 
-      {layout === "table" && offers.length > 1 ?
+      {useTable && offers.length > 1 ?
         <CompareTable
           products={offers}
           savedIds={savedIds}
@@ -218,7 +655,19 @@ export function CompareExperience({
           catalogId={catalogId}
           searchQuery={searchQuery}
         />
-      : <div className="space-y-3">
+      : useGrid ?
+        <CompareEvidenceLayout
+          offers={offers}
+          matched={matched}
+          savedIds={savedIds}
+          onSave={onSave}
+          onShopClick={onShopClick}
+          searchQuery={searchQuery}
+          catalogId={catalogId}
+          zipCode={results.zipCode}
+        />
+      : (
+        <div className="space-y-3">
           {offers.map((offer, i) => (
             <CompareCard
               key={offer.id}
@@ -234,7 +683,7 @@ export function CompareExperience({
             />
           ))}
         </div>
-      }
+      )}
     </div>
   );
 }

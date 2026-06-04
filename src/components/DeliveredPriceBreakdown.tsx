@@ -19,7 +19,7 @@ export function DeliveredPriceBreakdown({ offer, compact }: DeliveredPriceBreakd
   const confidence = offer.deliveredPriceConfidence;
   const confidenceLabel =
     confidence == null ? null
-    : confidence >= 0.75 ? "High confidence estimate"
+    : confidence >= 0.75 ? "Strong estimate"
     : confidence >= 0.55 ? "Estimated delivered total"
     : "Rough estimate — add ZIP";
 

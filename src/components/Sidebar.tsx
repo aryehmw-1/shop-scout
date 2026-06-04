@@ -2,116 +2,185 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, Heart, Settings, LogIn, LogOut, ShieldCheck, ShoppingBag } from "lucide-react";
-import { ShopScoutCompareIcon } from "@/components/brand/ShopScoutCompareIcon";
-import { Logo } from "./Logo";
-import { COMPARE_NAV_LABEL } from "@/lib/constants";
-import { getRetailerMeta } from "@/lib/retailers/meta";
-import { PUBLIC_SHOPPABLE_STORE_COUNT } from "@/lib/retailers/public-retailers";
-import { SIDEBAR_FEATURED_RETAILERS } from "@/lib/retailers/featured-retailers";
+import { Heart, LogIn, LogOut, Package, Search, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
+import { APP_NAME } from "@/lib/constants";
+import { useEffect, useState } from "react";
 
-const nav = [
-  { href: "/", label: "Home", icon: Home },
-  { href: "/chat", label: COMPARE_NAV_LABEL, icon: ShopScoutCompareIcon },
-  { href: "/verified", label: "Verified inventory", icon: ShieldCheck },
-  { href: "/demo", label: "Demo catalog", icon: ShoppingBag },
-  { href: "/saved", label: "Saved deals", icon: Heart },
-  { href: "/settings", label: "Settings", icon: Settings },
+const mainNav = [
+  { href: "/", label: "Compare", icon: Search },
+  { href: "/inventory", label: "Inventory", icon: Package },
+  { href: "/saved", label: "Saved", icon: Heart },
 ];
+
+const STORAGE_KEY = "homivion-sidebar-expanded";
+
+function Tooltip({ label }: { label: string }) {
+  return (
+    <span className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap rounded-lg bg-stone-900 px-2.5 py-1.5 text-xs font-semibold text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
+      {label}
+    </span>
+  );
+}
 
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
+  const [expanded, setExpanded] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored !== null) setExpanded(stored === "true");
+    setMounted(true);
+  }, []);
+
+  function toggle() {
+    setExpanded((v) => {
+      const next = !v;
+      localStorage.setItem(STORAGE_KEY, String(next));
+      return next;
+    });
+  }
+
+  if (!mounted) return null;
 
   return (
-    <aside className="sticky top-0 hidden h-screen max-h-[100dvh] w-64 shrink-0 flex-col overflow-hidden self-start border-r border-orange-100/80 bg-cream-50/95 backdrop-blur-xl lg:flex">
-      <div className="flex h-full min-h-0 flex-col p-5">
-        <div className="shrink-0">
-          <Logo showTagline />
+    <aside
+      className={`sticky top-0 hidden h-screen max-h-[100dvh] shrink-0 flex-col self-start border-r border-stone-200 bg-white/90 backdrop-blur-xl transition-[width] duration-200 ease-in-out lg:flex ${
+        expanded ? "w-60" : "w-16"
+      }`}
+    >
+      <div className="flex h-full min-h-0 flex-col overflow-hidden py-5">
 
-          <nav className="mt-8 flex flex-col gap-1">
-            {nav.map(({ href, label, icon: Icon }) => {
-              const active =
-                href === "/" ? pathname === "/" : pathname.startsWith(href);
-              const isCompare = href === "/chat";
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                    active
-                      ? isCompare
-                        ? "bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 text-white shadow-lg shadow-orange-500/25"
-                        : "bg-ink-800 text-white shadow-md"
-                      : "text-ink-600 hover:bg-orange-50/80"
-                  }`}
-                >
-                  <Icon size={18} strokeWidth={2} />
-                  {label}
-                </Link>
-              );
-            })}
-          </nav>
+        {/* Logo / toggle */}
+        <div className={`flex items-center ${expanded ? "px-5" : "justify-center px-0"}`}>
+          {/* Logo mark — always just toggles sidebar */}
+          <button
+            type="button"
+            onClick={toggle}
+            className="flex shrink-0 items-center justify-center rounded-xl p-1 transition hover:bg-stone-100"
+            aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+          >
+            <BrandHomeMark size="md" />
+          </button>
 
-          <div className="mt-6 rounded-xl border border-orange-100 bg-white/70 p-3">
-            {user ? (
-              <>
-                <p className="text-xs font-semibold text-ink-800">{user.name}</p>
-                <p className="truncate text-[11px] text-ink-400">{user.email}</p>
-                <p className="mt-1 text-[11px] text-ink-500">
-                  ZIP {user.address.zipCode}
-                </p>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await logout();
-                    router.refresh();
-                  }}
-                  className="mt-2 flex items-center gap-1 text-[11px] font-medium text-ink-600 hover:text-sage-700"
-                >
-                  <LogOut size={12} /> Sign out
-                </button>
-              </>
-            ) : (
-              <Link
-                href="/login"
-                className="flex items-center gap-2 text-sm font-semibold text-sage-700 hover:text-sage-800"
-              >
-                <LogIn size={16} /> Sign in / Create account
-              </Link>
-            )}
-          </div>
+          {/* Name — only shown when expanded, navigates to compare page */}
+          {expanded && (
+            <Link href="/" className="min-w-0 flex-1 truncate font-display text-lg font-bold tracking-tight text-ink-900 hover:text-orange-700 transition ml-1.5">
+              {APP_NAME}
+            </Link>
+          )}
         </div>
 
-        <div className="mt-4 flex min-h-0 flex-1 flex-col">
-          <p className="mb-2 shrink-0 text-xs font-semibold uppercase tracking-wider text-ink-400">
-            Top stores we compare
-          </p>
-          <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1 scrollbar-thin">
-            {SIDEBAR_FEATURED_RETAILERS.map((id) => {
-              const r = getRetailerMeta(id);
-              return (
-                <div
-                  key={r.id}
-                  className="flex items-center gap-2 rounded-lg bg-white/90 px-2.5 py-2 ring-1 ring-orange-100/60"
+        {/* Main nav */}
+        <nav
+          className={`mt-8 flex flex-col gap-1 ${expanded ? "px-3" : "items-center px-2"}`}
+          aria-label="Main navigation"
+        >
+          {mainNav.map(({ href, label, icon: Icon }) => {
+            const active =
+              href === "/"
+                ? pathname === "/" || pathname.startsWith("/chat") || pathname.startsWith("/compare")
+                : pathname.startsWith(href);
+
+            return (
+              <div key={href} className="group relative">
+                <Link
+                  href={href}
+                  scroll={false}
+                  className={`flex items-center rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+                    expanded ? "gap-3" : "justify-center"
+                  } ${
+                    active
+                      ? "bg-orange-50 text-orange-700"
+                      : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
+                  }`}
                 >
-                  <span
-                    className="h-2 w-2 shrink-0 rounded-full"
-                    style={{ backgroundColor: r.color }}
-                  />
-                  <span className="truncate text-[11px] font-medium text-ink-700">
-                    {r.name}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-          <p className="mt-2 shrink-0 text-[10px] leading-snug text-ink-400">
-            Verified grocery first · apparel experimental · {PUBLIC_SHOPPABLE_STORE_COUNT}{" "}
-            stores
+                  <Icon size={18} strokeWidth={2} aria-hidden />
+                  {expanded && label}
+                </Link>
+                <Tooltip label={label} />
+              </div>
+            );
+          })}
+        </nav>
+
+        {/* Promo card — fades in when expanded, doesn't reflow-animate */}
+        <div
+          className={`mx-3 mt-6 rounded-2xl border border-stone-200 bg-stone-50 p-4 transition-opacity duration-200 ${
+            expanded ? "opacity-100" : "pointer-events-none h-0 overflow-hidden opacity-0 p-0 mt-0 border-0"
+          }`}
+        >
+          <p className="text-sm font-bold text-stone-950">Search once. Compare fast.</p>
+          <p className="mt-1 text-sm leading-6 text-stone-600">
+            We line up prices from cheapest to highest so the best option is easy to spot.
           </p>
+        </div>
+
+        {/* Bottom section */}
+        <div className={`mt-auto space-y-3 pt-6 ${expanded ? "px-3" : "flex flex-col items-center px-2"}`}>
+
+          {/* Settings */}
+          <div className="group relative w-full">
+            <Link
+              href="/settings"
+              scroll={false}
+              className={`flex items-center rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+                expanded ? "gap-3" : "justify-center"
+              } ${
+                pathname.startsWith("/settings")
+                  ? "bg-orange-50 text-orange-700"
+                  : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
+              }`}
+            >
+              <Settings size={18} aria-hidden />
+              {expanded && "Settings"}
+            </Link>
+            <Tooltip label="Settings" />
+          </div>
+
+          {/* User card / sign in */}
+          {expanded ? (
+            <div className="rounded-2xl border border-stone-200 bg-white p-3">
+              {user ? (
+                <>
+                  <p className="truncate text-sm font-bold text-stone-950">{user.name}</p>
+                  <p className="truncate text-xs text-stone-500">{user.email}</p>
+                  <button
+                    type="button"
+                    onClick={async () => { await logout(); router.refresh(); }}
+                    className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-stone-600 hover:text-stone-950"
+                  >
+                    <LogOut size={15} aria-hidden /> Sign out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-2 text-sm font-bold text-stone-700 hover:text-stone-950"
+                >
+                  <LogIn size={16} aria-hidden /> Sign in
+                </Link>
+              )}
+            </div>
+          ) : (
+            <div className="group relative">
+              <button
+                type="button"
+                onClick={async () => {
+                  if (user) { await logout(); router.refresh(); }
+                  else router.push("/login");
+                }}
+                className="flex items-center justify-center rounded-xl px-3 py-2.5 text-stone-600 transition hover:bg-stone-100 hover:text-stone-950"
+              >
+                {user ? <LogOut size={18} aria-hidden /> : <LogIn size={18} aria-hidden />}
+              </button>
+              <Tooltip label={user ? "Sign out" : "Sign in"} />
+            </div>
+          )}
         </div>
       </div>
     </aside>

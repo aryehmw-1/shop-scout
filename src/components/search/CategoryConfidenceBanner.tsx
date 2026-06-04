@@ -59,7 +59,7 @@ export function CategoryConfidenceBanner({
           )}
           {msg.emphasizeVerifiedInventory && (
             <Link
-              href="/verified"
+              href="/inventory"
               className="mt-3 inline-flex text-sm font-semibold underline underline-offset-2 hover:opacity-80"
             >
               See popular products →

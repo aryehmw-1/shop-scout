@@ -58,14 +58,18 @@ export function VerifiedOnboardingPaths({
 
         if (path.id === "search" && onTrySearch) {
           return (
-            <button
+            <Link
               key={path.id}
-              type="button"
-              onClick={() => onTrySearch("whole milk")}
+              href="/compare?q=whole%20milk"
+              scroll={false}
+              onClick={(event) => {
+                event.preventDefault();
+                onTrySearch("whole milk");
+              }}
               className={`rounded-2xl border p-4 text-left transition ${path.tone}`}
             >
               {inner}
-            </button>
+            </Link>
           );
         }
 
@@ -73,6 +77,7 @@ export function VerifiedOnboardingPaths({
           <Link
             key={path.id}
             href={path.href}
+            scroll={false}
             className={`rounded-2xl border p-4 transition ${path.tone}`}
           >
             {inner}

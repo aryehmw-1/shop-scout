@@ -25,7 +25,7 @@ export function ValueProposition({ compact }: { compact?: boolean }) {
   return (
     <section
       className={`grid gap-3 ${compact ? "sm:grid-cols-3" : "sm:grid-cols-3"}`}
-      aria-label="Why Shop Scout"
+      aria-label="Why Homivion"
     >
       {items.map(({ icon: Icon, title, body }) => (
         <div

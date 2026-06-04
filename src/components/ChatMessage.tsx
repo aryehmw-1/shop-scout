@@ -41,11 +41,11 @@ export function ChatMessageBubble({
         className={`flex flex-col ${isUser ? "max-w-[min(100%,28rem)] items-end" : "w-full max-w-full items-start"}`}
       >
         <div
-          className={`rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
+          className={
             isUser
-              ? "bg-sage-600 text-white rounded-br-sm"
-              : "rounded-bl-sm border border-stone-200/80 bg-white text-stone-700 shadow-sm"
-          }`}
+              ? "rounded-2xl rounded-br-sm bg-sage-600 px-4 py-3 text-[15px] leading-relaxed text-white"
+              : "text-[15px] leading-relaxed text-stone-800"
+          }
         >
           <FormattedText text={message.content} />
         </div>

@@ -17,7 +17,7 @@ interface VerifiedInventoryClientProps {
 const MODES: { id: Mode; label: string; desc: string }[] = [
   {
     id: "all",
-    label: "All verified",
+    label: "All persisted pricing",
     desc: "Active persisted quotes from nightly indexing",
   },
   {
@@ -27,8 +27,8 @@ const MODES: { id: Mode; label: string; desc: string }[] = [
   },
   {
     id: "persisted",
-    label: "Persisted inventory",
-    desc: "Same verified DB rows — transparency view",
+    label: "Persisted pricing",
+    desc: "Same persisted pricing rows — transparency view",
   },
 ];
 
@@ -58,11 +58,10 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
         <div className="flex items-start gap-3">
           <ShieldCheck className="mt-0.5 shrink-0 text-sage-700" size={24} />
           <div>
-            <h2 className="text-lg font-bold text-sage-950">Verified Inventory mode</h2>
+            <h2 className="text-lg font-bold text-sage-950">Persisted pricing</h2>
             <p className="mt-1 text-sm leading-relaxed text-sage-900/85">
-              Browse products with persisted, verified Amazon pricing. These are indexed
-              nightly with pack normalization — our strongest trust experience today.
-              Apparel and fashion coverage is experimental; start here for honest pricing.
+              Products with persisted pricing indexed nightly with pack
+              normalization. Start here for the most reliable compare pricing in inventory.
             </p>
           </div>
         </div>
@@ -89,14 +88,14 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
       <p className="text-sm text-stone-600">
         {MODES.find((m) => m.id === mode)?.desc} ·{" "}
         <strong>{data.totalProducts}</strong> products ·{" "}
-        <strong>{data.totalQuotes}</strong> verified quotes
+        <strong>{data.totalQuotes}</strong> persisted price quotes
         {data.qaApprovedCount > 0 && (
           <> · <strong>{data.qaApprovedCount}</strong> QA approved</>
         )}
       </p>
 
       {loading && (
-        <p className="text-sm text-stone-500">Loading verified inventory…</p>
+        <p className="text-sm text-stone-500">Loading inventory…</p>
       )}
 
       {!loading && data.products.length === 0 && (
@@ -105,13 +104,13 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
           <p className="mt-2 text-sm text-stone-600">
             {mode === "qa_approved"
               ? "QA-approved products will appear here after manual review at /admin/qa."
-              : "Run nightly indexing to populate verified quotes."}
+              : "Run nightly indexing to populate persisted pricing."}
           </p>
           <Link
             href="/chat"
             className="mt-4 inline-flex rounded-xl bg-sage-700 px-4 py-2 text-sm font-semibold text-white hover:bg-sage-800"
           >
-            Search verified grocery instead
+            Compare grocery pricing instead
           </Link>
         </div>
       )}

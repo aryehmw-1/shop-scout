@@ -1,9 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ProductOffer, ProductSearchResults } from "@/lib/types";
 import { prepareResultsForDisplay } from "@/lib/offers/offer-ranking";
-import { isVerifiedOffer } from "@/lib/offers/offer-trust";
 import { showEstimatedOffersInUi } from "@/lib/offers/offer-persist-validation";
 import { cheapestVerifiedPrice } from "@/lib/search/price-truth";
 import { formatPrice } from "@/lib/utils/format";
@@ -13,27 +12,66 @@ import { ProductImage } from "./ProductImage";
 import { PhotoSourceLabel } from "./PhotoSourceLabel";
 import { LayoutGrid, List, Truck, AlertTriangle, Loader2, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { BestDealHero } from "./BestDealHero";
 import { LinkProductHero } from "./LinkProductHero";
 import { CompareExperience } from "./CompareExperience";
-import { useExperiment } from "@/lib/experiments/useExperiment";
 import {
   SearchPipelineDebugPanel,
   searchDebugEnabledClient,
 } from "./SearchPipelineDebugPanel";
 import { ConversationDebugPanel } from "./ConversationDebugPanel";
 import { buildRetrievalTrustDiagnostic } from "@/lib/search/retrieval-trust-message";
-import { CategoryConfidenceBanner } from "./search/CategoryConfidenceBanner";
-import { SearchEmptyRecovery } from "./search/SearchEmptyRecovery";
+import { ProductRequestForm } from "./ProductRequestForm";
 import { VerifiedCompareHeader } from "./search/VerifiedCompareHeader";
-import { VerifiedInventoryHitBanner } from "./search/VerifiedInventoryHitBanner";
-import { MatchQualityBanner } from "./search/MatchQualityBanner";
-import { RetrievalNormalizationBanner } from "./search/RetrievalNormalizationBanner";
 import { CatalogFreshnessBanner } from "./FreshnessIndicator";
 import { inferQueryCategoryFamily } from "@/lib/inventory/category-coverage";
 import { CATALOG } from "@/lib/retailers/catalog";
 
 const VIEW_STORAGE_KEY = "shop-scout-results-view";
+
+function ResultsViewToggle({
+  view,
+  onChange,
+  className = "",
+}: {
+  view: "cards" | "table";
+  onChange: (next: "cards" | "table") => void;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`flex rounded-lg border border-stone-200 bg-white p-0.5 ${className}`}
+      role="group"
+      aria-label="Results layout"
+    >
+      <button
+        type="button"
+        onClick={() => onChange("cards")}
+        aria-pressed={view === "cards"}
+        className={`rounded-md p-1.5 transition ${
+          view === "cards"
+            ? "bg-sage-100 text-sage-800"
+            : "text-stone-400 hover:text-stone-600"
+        }`}
+        aria-label="Grid view"
+      >
+        <LayoutGrid size={16} />
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange("table")}
+        aria-pressed={view === "table"}
+        className={`rounded-md p-1.5 transition ${
+          view === "table"
+            ? "bg-sage-100 text-sage-800"
+            : "text-stone-400 hover:text-stone-600"
+        }`}
+        aria-label="List view"
+      >
+        <List size={16} />
+      </button>
+    </div>
+  );
+}
 
 interface ProductResultsProps {
   results: ProductSearchResults;
@@ -54,13 +92,23 @@ export function ProductResults({
   searchQuery,
   conversationDebug,
 }: ProductResultsProps) {
-  const compareLayout = useExperiment("compare_layout");
   const display =
     results.estimatedOnline !== undefined ?
       results
     : prepareResultsForDisplay(results, { searchQuery });
-  const { online, estimatedOnline = [], lowConfidenceOnline = [], zipCode, compareMode, referenceProduct, similarMode } =
+  const { online: rawOnline, estimatedOnline = [], lowConfidenceOnline = [], zipCode, compareMode, referenceProduct, similarMode } =
     display;
+  const online = useMemo(
+    () =>
+      [...rawOnline].sort((a, b) => {
+        const aDelivered = a.deliveredTotal ?? a.landedCost ?? a.price;
+        const bDelivered = b.deliveredTotal ?? b.landedCost ?? b.price;
+        const aPrice = aDelivered > 0 ? aDelivered : Number.POSITIVE_INFINITY;
+        const bPrice = bDelivered > 0 ? bDelivered : Number.POSITIVE_INFINITY;
+        return aPrice - bPrice;
+      }).slice(0, 5),
+    [rawOnline],
+  );
   const queryFamily = inferQueryCategoryFamily(searchQuery ?? results.matchedProduct?.title);
   const hasLowConfidence = (lowConfidenceOnline?.length ?? 0) > 0;
   const showLowConfidence =
@@ -69,20 +117,27 @@ export function ProductResults({
       showEstimatedOffersInUi() ||
       queryFamily === "apparel");
 
-  const defaultView = compareMode ? "table" : "cards";
+  const defaultView = "cards";
   const [view, setView] = useState<"cards" | "table">(defaultView);
   const [viewReady, setViewReady] = useState(false);
 
   useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem(VIEW_STORAGE_KEY);
-      if (stored === "cards" || stored === "table") {
-        setView(stored);
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      try {
+        const stored = sessionStorage.getItem(VIEW_STORAGE_KEY);
+        if (stored === "cards" || stored === "table") {
+          setView(stored);
+        }
+      } catch {
+        /* ignore */
       }
-    } catch {
-      /* ignore */
-    }
-    setViewReady(true);
+      setViewReady(true);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const setViewPersisted = useCallback((next: "cards" | "table") => {
@@ -96,11 +151,29 @@ export function ProductResults({
 
   if (!online.length && !estimatedOnline.length && !showLowConfidence) {
     const q = searchQuery ?? results.matchedProduct?.title ?? "";
-    const trust = buildRetrievalTrustDiagnostic(results, q);
+    const catalogCount = CATALOG.length;
     return (
       <div className="mt-4 space-y-4">
-        {q && <CategoryConfidenceBanner query={q} compact={false} />}
-        <SearchEmptyRecovery query={q} trust={trust} />
+        <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-5 py-5 space-y-4">
+          <p className="text-sm text-stone-600 leading-relaxed">
+            {q ? (
+              <>
+                Sorry, we don&apos;t have{" "}
+                <span className="font-semibold text-stone-800">{q}</span>{" "}
+                in our inventory right now. We currently carry{" "}
+                <span className="font-semibold text-stone-800">{catalogCount} products</span>{" "}
+                across grocery, pantry, household, and more.
+              </>
+            ) : (
+              <>
+                We didn&apos;t find a match. We currently carry{" "}
+                <span className="font-semibold text-stone-800">{catalogCount} products</span>{" "}
+                — try a different search or request a new product below.
+              </>
+            )}
+          </p>
+          <ProductRequestForm searchQuery={q} />
+        </div>
         {results.searchDebug && searchDebugEnabledClient() && (
           <SearchPipelineDebugPanel debug={results.searchDebug} />
         )}
@@ -111,44 +184,8 @@ export function ProductResults({
     );
   }
 
-  const ViewToggle = ({ className = "" }: { className?: string }) => (
-    <div
-      className={`flex rounded-lg border border-stone-200 bg-white p-0.5 ${className}`}
-      role="group"
-      aria-label="Results layout"
-    >
-      <button
-        type="button"
-        onClick={() => setViewPersisted("cards")}
-        aria-pressed={view === "cards"}
-        className={`rounded-md p-1.5 transition ${
-          view === "cards"
-            ? "bg-sage-100 text-sage-800"
-            : "text-stone-400 hover:text-stone-600"
-        }`}
-        aria-label="Grid view"
-      >
-        <LayoutGrid size={16} />
-      </button>
-      <button
-        type="button"
-        onClick={() => setViewPersisted("table")}
-        aria-pressed={view === "table"}
-        className={`rounded-md p-1.5 transition ${
-          view === "table"
-            ? "bg-sage-100 text-sage-800"
-            : "text-stone-400 hover:text-stone-600"
-        }`}
-        aria-label="List view"
-      >
-        <List size={16} />
-      </button>
-    </div>
-  );
-
   const matched = display.matchedProduct;
   const verifiedFrom = cheapestVerifiedPrice(display);
-  const bestOffer = online.find((o) => o.isBestDeal) ?? online[0];
   const resultCategoryId =
     results.searchDebug?.resolvedCatalogId ??
     online[0]?.catalogId ??
@@ -161,14 +198,27 @@ export function ProductResults({
     matched?.title ||
     (online[0] ? `${online[0].brand} ${online[0].title}`.trim() : "");
   const compareHref =
-    compareQuery ?
-      `/compare?q=${encodeURIComponent(compareQuery)}${
-        online[0]?.catalogId ? `&catalog=${encodeURIComponent(online[0].catalogId)}` : ""
-      }`
+    online[0]?.catalogId ?
+      `/compare?product=${encodeURIComponent(online[0].catalogId)}`
+    : compareQuery ?
+      `/compare?q=${encodeURIComponent(compareQuery)}`
     : null;
 
   const renderOffers = (offers: ProductOffer[], layout: "grid" | "carousel" = "grid") => {
     if (!offers.length) return null;
+
+    if (compareMode) {
+      return (
+        <CompareExperience
+          results={{ ...display, online: offers }}
+          savedIds={savedIds}
+          onSave={onSave}
+          onShopClick={onShopClick}
+          searchQuery={searchQuery}
+          layoutMode="grid"
+        />
+      );
+    }
 
     if (view === "table") {
       return (
@@ -178,18 +228,6 @@ export function ProductResults({
           onSave={onSave}
           onShopClick={onShopClick}
           catalogId={offers[0]?.catalogId}
-          searchQuery={searchQuery}
-        />
-      );
-    }
-
-    if (compareMode && compareLayout === "cards") {
-      return (
-        <CompareExperience
-          results={{ ...display, online: offers }}
-          savedIds={savedIds}
-          onSave={onSave}
-          onShopClick={onShopClick}
           searchQuery={searchQuery}
         />
       );
@@ -210,22 +248,6 @@ export function ProductResults({
 
   return (
     <div className="mt-4 w-full max-w-full space-y-4">
-      {display.verifiedInventoryHit?.matched && (
-        <VerifiedInventoryHitBanner hit={display.verifiedInventoryHit} />
-      )}
-
-      <RetrievalNormalizationBanner
-        query={searchQuery ?? matched?.title}
-        retrievalMeta={display.retrievalMeta}
-        closestMatchFallback={display.closestMatchFallback}
-        noExactMatchFound={display.noExactMatchFound}
-      />
-
-      <MatchQualityBanner
-        noExactMatchFound={display.noExactMatchFound && !display.closestMatchFallback}
-        query={searchQuery ?? matched?.title}
-      />
-
       {display.catalogFreshnessWarning && (
         <CatalogFreshnessBanner
           message={display.catalogFreshnessWarning.message}
@@ -257,10 +279,7 @@ export function ProductResults({
           </details>
         )}
 
-      {searchQuery && (
-        <CategoryConfidenceBanner query={searchQuery} compact={online.length > 0} />
-      )}
-      {compareHref && online.length > 0 && (
+      {compareHref && online.length > 0 && !compareMode && (
         <div className="flex justify-end">
           <Link
             href={compareHref}
@@ -272,7 +291,7 @@ export function ProductResults({
         </div>
       )}
 
-      {matched && !similarMode && (
+      {matched && !similarMode && !compareMode && (
         <div className="flex gap-4 rounded-2xl border border-orange-200/80 bg-cream-50/90 p-4 sm:p-5">
           <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-white shadow-sm sm:h-28 sm:w-28">
             <ProductImage
@@ -320,7 +339,7 @@ export function ProductResults({
 
       {showViewToggle && !compareMode && (
         <div className="flex items-center justify-end">
-          <ViewToggle />
+          <ResultsViewToggle view={view} onChange={setViewPersisted} />
         </div>
       )}
 
@@ -331,11 +350,18 @@ export function ProductResults({
         </div>
       )}
 
-      {bestOffer && online.length > 0 && (
-        <BestDealHero offer={bestOffer} onShopClick={onShopClick} />
+      {compareMode && online.length > 0 && (
+        <CompareExperience
+          results={{ ...display, online }}
+          savedIds={savedIds}
+          onSave={onSave}
+          onShopClick={onShopClick}
+          searchQuery={searchQuery}
+          layoutMode="grid"
+        />
       )}
 
-      {online.length > 0 && (
+      {online.length > 0 && !compareMode && (
         <section className="flex min-w-0 flex-col rounded-2xl border-2 border-sage-400/70 bg-sage-50/30 p-4 sm:p-5">
           <VerifiedCompareHeader
             categoryId={categoryId}
@@ -363,7 +389,9 @@ export function ProductResults({
                 </p>
               </div>
             </div>
-            {showViewToggle && <ViewToggle />}
+            {showViewToggle && (
+              <ResultsViewToggle view={view} onChange={setViewPersisted} />
+            )}
           </div>
           {renderOffers(online)}
         </section>
@@ -467,12 +495,7 @@ export function ProductResults({
         <ConversationDebugPanel debug={conversationDebug} />
       )}
 
-      {online.length === 0 && (showLowConfidence || estimatedOnline.length > 0) && searchQuery && (
-        <SearchEmptyRecovery
-          query={searchQuery}
-          trust={buildRetrievalTrustDiagnostic(results, searchQuery)}
-        />
-      )}
+
 
       {online.length === 0 && showEstimatedOffersInUi() && estimatedOnline.length > 0 && (
         <p className="text-center text-sm text-amber-800">
