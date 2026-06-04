@@ -1,11 +1,11 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
-const COOKIE_NAME = "pantry_session";
+const COOKIE_NAME = "homivion_session";
 const MAX_AGE = 60 * 60 * 24 * 90; // 90 days — stay signed in
 
 function getSecret() {
-  const secret = process.env.AUTH_SECRET ?? "pantry-scout-dev-secret-change-me";
+  const secret = process.env.AUTH_SECRET ?? "homivion-dev-secret-change-me";
   return new TextEncoder().encode(secret);
 }
 

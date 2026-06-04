@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   getExperimentVariant,
   type ExperimentId,
@@ -11,16 +11,17 @@ import { trackEvent } from "../analytics/track-client";
 export function useExperiment<T extends ExperimentId>(
   id: T,
 ): ExperimentVariant<T> {
-  const [variant, setVariant] = useState<string>(() => getExperimentVariant(id));
+  const variant = getExperimentVariant(id);
+  const tracked = useRef(false);
 
   useEffect(() => {
-    const v = getExperimentVariant(id);
-    setVariant(v);
+    if (tracked.current) return;
+    tracked.current = true;
     trackEvent({
       name: "experiment_exposure",
-      properties: { experiment: id, variant: v },
+      properties: { experiment: id, variant },
     });
-  }, [id]);
+  }, [id, variant]);
 
   return variant as ExperimentVariant<T>;
 }

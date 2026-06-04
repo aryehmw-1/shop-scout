@@ -16,6 +16,7 @@ import { runSearchWithLivePricing } from "./live-pricing";
 import {
   resolveVerifiedInventoryQuery,
 } from "../inventory/verified-inventory-resolver";
+import { inventoryService } from "../inventory/inventory-service";
 import { mergeLivePrices } from "./merge-live-prices";
 import { attachMatchedProduct } from "./matched-product";
 import { enrichSearchResultsWithImages } from "./product-image-lookup";
@@ -25,6 +26,11 @@ import { enrichOffersAtSearch } from "../offers/enrich-offers-at-search";
 import { finalizeResultsForUser } from "../pricing/deal-intelligence";
 import { finalizeSearchPrices } from "./price-truth";
 import { resolveCatalogZip, hasUserZip } from "../constants";
+import {
+  productDataToSearchResults,
+  searchProductDataProviders,
+} from "../product-data";
+import { persistScrapedQuotesForCatalog } from "./persist-scraped-quotes";
 import {
   buildGroceryRetrievalDebug,
   logGroceryRetrievalFailure,
@@ -55,10 +61,85 @@ import type {
 } from "./types";
 
 /**
- * Central search orchestrator: cache → connector → enrich → persist quotes & session.
- * Live retailer APIs plug in as additional PriceConnector implementations.
+ * Central search orchestrator:
+ *   1. Cache hit → return immediately
+ *   2. DB (verified PriceQuotes) → return + skip live fetch
+ *   3. Live providers (eBay Browse API, ShopSavvy) → ingest into DB + return
+ *   4. Catalog estimates (fallback only — labeled "Estimated" in UI)
  */
 export class SearchService {
+  /**
+   * When the DB has no fresh quotes for this query, call eBay Browse API /
+   * ShopSavvy immediately, convert their results to ProductSearchResults,
+   * and fire-and-forget an ingest to DB for the next search.
+   */
+  private async liveProviderFallback(
+    intent: ShoppingIntent,
+    item: CatalogItem,
+    base: ProductSearchResults,
+  ): Promise<ProductSearchResults> {
+    try {
+      const products = await searchProductDataProviders(intent.query || item.title);
+      if (!products.length) return base;
+
+      const merged = productDataToSearchResults(products, item, intent, base);
+      if (!merged) return base;
+
+      // Relevance guard: only accept live results whose top offer title has
+      // meaningful token overlap with the query. Prevents eBay returning
+      // "Romaine Hearts" when the user searched for "Cheerios".
+      const queryTokens = (intent.query || item.title)
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, " ")
+        .split(/\s+/)
+        .filter((t) => t.length > 2);
+
+      const relevantOffers = merged.online.filter((offer) => {
+        const offerText = `${offer.storeTitle ?? ""} ${offer.title} ${offer.brand ?? ""}`.toLowerCase();
+        return queryTokens.some((t) => offerText.includes(t));
+      });
+
+      if (!relevantOffers.length) {
+        console.log("[SearchService] live-provider results rejected (no query overlap)", {
+          query: intent.query,
+          titles: merged.online.slice(0, 3).map((o) => o.storeTitle ?? o.title),
+        });
+        return base;
+      }
+
+      const filtered = { ...merged, online: relevantOffers };
+
+      // Ingest relevant live offers into DB so the next search is a fast DB-first hit.
+      const liveOffers = relevantOffers.filter(
+        (o) => o.priceSource === "connector_api" || o.priceSource === "scraped",
+      );
+      if (liveOffers.length && item.id && !item.id.startsWith("syn-")) {
+        persistScrapedQuotesForCatalog(item.id, liveOffers, item, intent).catch(
+          (e) => console.error("[SearchService] live-provider ingest failed", e),
+        );
+      }
+
+      return filtered;
+    } catch (e) {
+      console.error("[SearchService] liveProviderFallback failed", e);
+      return base;
+    }
+  }
+  private async addProductDataProviders(
+    results: ProductSearchResults,
+    item: CatalogItem,
+    fullIntent: ShoppingIntent,
+  ): Promise<ProductSearchResults> {
+    try {
+      const products = await searchProductDataProviders(fullIntent.query || item.title);
+      const merged = productDataToSearchResults(products, item, fullIntent, results);
+      return merged ?? results;
+    } catch (e) {
+      console.error("[SearchService] product data providers failed", e);
+      return results;
+    }
+  }
+
   private async finishSearchResults(
     results: ProductSearchResults,
     item: CatalogItem,
@@ -171,6 +252,7 @@ export class SearchService {
           enriched = await enrichOffersAtSearch(enriched, item, fullIntent);
           enriched = finalizeSearchPrices(enriched);
         }
+        enriched = await this.addProductDataProviders(enriched, item, fullIntent);
         enriched = await finalizeResultsForUser(enriched, item, fullIntent);
         if (options.fastOnly) {
           enriched = {
@@ -190,6 +272,67 @@ export class SearchService {
           quoteCount: enriched.online.length,
         });
       }
+    }
+
+    const dbFirst = await inventoryService.searchProducts(fullIntent.query, { freshOnly: true, limit: 5 });
+    const minimumDbFirstOffers = mode === "compare" ? 2 : 1;
+    if (dbFirst && dbFirst.online.length >= minimumDbFirstOffers) {
+      const { item, resolved } = resolvePrimaryProduct(fullIntent);
+      const durationMs = Date.now() - started;
+      let sessionId: string | undefined;
+
+      if (!options.skipPersist) {
+        try {
+          sessionId = await persistSearchSession({
+            userId: options.userId,
+            zipCode: catalogZip,
+            queryRaw: intent.query,
+            intent: fullIntent,
+            mode,
+            results: dbFirst,
+            resolved,
+            durationMs,
+          });
+        } catch (e) {
+          console.error("[SearchService] db-first session persist failed", e);
+        }
+      }
+
+      if (!options.skipCache) {
+        setCachedSearch(fullIntent, mode, dbFirst);
+      }
+
+      return attachMeta(dbFirst, {
+        sessionId,
+        resolved,
+        durationMs,
+        cacheHit: false,
+        priceSource: "cached_quote",
+        quoteCount: dbFirst.online.length,
+      });
+    }
+
+    // DB had nothing — try live providers (eBay Browse API, ShopSavvy) before
+    // falling back to catalog estimates. Results are ingested into DB so the
+    // next identical search will be a fast DB-first hit.
+    const { item: liveItem, resolved: liveResolved } = resolvePrimaryProduct(fullIntent);
+    const liveProviderResults = await this.liveProviderFallback(
+      fullIntent,
+      liveItem,
+      { local: [], online: [], zipCode: fullIntent.zipCode ?? "78701", compareMode: false },
+    );
+    if (liveProviderResults.online.length > 0) {
+      const durationMs = Date.now() - started;
+      let finalized = finalizeSearchPrices(liveProviderResults);
+      finalized = await finalizeResultsForUser(finalized, liveItem, fullIntent);
+      if (!options.skipCache) setCachedSearch(fullIntent, mode, finalized);
+      return attachMeta(finalized, {
+        resolved: liveResolved,
+        durationMs,
+        cacheHit: false,
+        priceSource: "connector_api",
+        quoteCount: finalized.online.length,
+      });
     }
 
     const verifiedResolution = await resolveVerifiedInventoryQuery(fullIntent.query);
@@ -256,6 +399,8 @@ export class SearchService {
 
     results = finalizeSearchPrices(results);
     results = await this.finishSearchResults(results, item, fullIntent, options);
+    results = await this.addProductDataProviders(results, item, fullIntent);
+    results = await finalizeResultsForUser(results, item, fullIntent);
 
     results = {
       ...results,
@@ -393,6 +538,7 @@ export class SearchService {
     results = finalizeSearchPrices(results);
     results = await enrichOffersAtSearch(results, item, intent);
     results = finalizeSearchPrices(results);
+    results = await this.addProductDataProviders(results, item, intent);
     results = await finalizeResultsForUser(results, item, intent);
 
     const resolvedProduct = {

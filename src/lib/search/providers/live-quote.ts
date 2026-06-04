@@ -10,6 +10,16 @@ export interface LiveQuote {
   imageUrl?: string;
   sourceLabel: string;
   priceSource?: PriceSource;
+  shippingCost?: number;
+  estimatedTax?: number;
+  deliveredTotal?: number;
+  providerSource?: "ebay" | "shopsavvy";
+  externalOfferId?: string;
+  sellerName?: string;
+  sellerFeedbackPct?: number;
+  sellerFeedbackScore?: number;
+  condition?: string;
+  returnPolicy?: string;
   /** From persisted DB row — used for trust gates and UI. */
   matchConfidence?: number;
   identityConfidence?: number;

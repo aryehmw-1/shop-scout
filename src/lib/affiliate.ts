@@ -5,6 +5,7 @@ const AFFILIATE_TAGS: Partial<Record<RetailerId, string | undefined>> = {
   walmart: process.env.AFFILIATE_WALMART_TAG,
   target: process.env.AFFILIATE_TARGET_TAG,
   amazon: process.env.AFFILIATE_AMAZON_TAG,
+  ebay: process.env.AFFILIATE_EBAY_TAG,
   kroger: process.env.AFFILIATE_KROGER_TAG,
   instacart: process.env.AFFILIATE_INSTACART_TAG,
   costco: process.env.AFFILIATE_COSTCO_TAG,
@@ -43,6 +44,12 @@ export function buildRetailerSearchUrl(
       return `https://www.target.com/s?searchTerm=${q}`;
     case "amazon":
       return `https://www.amazon.com/s?k=${q}`;
+    case "ebay":
+      return `https://www.ebay.com/sch/i.html?_nkw=${q}`;
+    case "shopsavvy":
+      return googleShoppingFallback(searchQuery);
+    case "bestbuy":
+      return `https://www.bestbuy.com/site/searchpage.jsp?st=${q}`;
     case "kroger":
       return `https://www.kroger.com/search?query=${q}&searchType=default`;
     case "publix":
@@ -433,11 +440,43 @@ function isRetailerSearchUrl(productUrl: string): boolean {
   }
 }
 
+/**
+ * Convert any eBay URL into an EPN (eBay Partner Network) affiliate URL.
+ * Works on both product pages (/itm/...) and search pages (/sch/...).
+ * Falls back to the original URL if campaign ID is missing or URL is malformed.
+ */
+export function buildEbayAffiliateUrl(productUrl: string): string {
+  const campaignId = process.env.AFFILIATE_EBAY_CAMPAIGN_ID?.trim();
+  if (!campaignId) return productUrl;
+  try {
+    const url = new URL(productUrl);
+    const marketplaceId =
+      process.env.AFFILIATE_EBAY_MARKETPLACE_ID?.trim() ?? "711-53200-19255-0";
+    const customId = process.env.AFFILIATE_EBAY_CUSTOM_ID?.trim();
+    url.searchParams.set("mkcid", "1");
+    url.searchParams.set("mkrid", marketplaceId);
+    url.searchParams.set("siteid", "0");
+    url.searchParams.set("campid", campaignId);
+    url.searchParams.set("toolid", "10001");
+    if (customId) url.searchParams.set("customid", customId);
+    return url.toString();
+  } catch {
+    return productUrl;
+  }
+}
+
 export function buildAffiliateUrl(
   retailer: RetailerId,
   productUrl: string,
 ): string {
   try {
+    // eBay: EPN tracking applies to ALL eBay URLs (product + search).
+    // Gated on AFFILIATE_EBAY_CAMPAIGN_ID alone — AFFILIATE_EBAY_TAG is just
+    // a marker that the retailer is enrolled; the real tracking ID is the campaign.
+    if (retailer === "ebay") {
+      return buildEbayAffiliateUrl(productUrl);
+    }
+
     const url = new URL(productUrl);
     const tag = AFFILIATE_TAGS[retailer];
     // Affiliate params on search URLs often break TJX / Oracle Commerce stores.

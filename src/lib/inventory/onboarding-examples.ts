@@ -23,7 +23,7 @@ export const APPAREL_ONBOARDING_EXAMPLES = [
 ] as const;
 
 export const GENERAL_ONBOARDING_EXAMPLES = [
-  "Browse verified inventory",
+  "Browse inventory",
   "Whole milk",
   "Paste an Amazon link",
 ] as const;
@@ -44,7 +44,7 @@ export function getOnboardingContext(query?: string): OnboardingContext {
       family,
       headline: "Apparel — experimental coverage",
       subhead:
-        "Live retailer blocking limits verified apparel pricing. Paste a direct product URL for the most reliable compare.",
+        "Live retailer blocking limits apparel compare pricing. Paste a direct product URL for the most reliable compare.",
       chips: [
         "Paste an Amazon product link",
         "Whole milk",
@@ -57,19 +57,19 @@ export function getOnboardingContext(query?: string): OnboardingContext {
   if (family === "grocery") {
     return {
       family,
-      headline: "Verified grocery pricing",
+      headline: "Grocery compare pricing",
       subhead:
-        "Persisted, pack-normalized Amazon prices indexed nightly with manual QA review.",
-      chips: [...GROCERY_ONBOARDING_EXAMPLES.slice(0, 4), "Browse verified inventory"],
+        "Persisted pricing indexed nightly with pack normalization and manual QA review.",
+      chips: [...GROCERY_ONBOARDING_EXAMPLES.slice(0, 4), "Browse inventory"],
       primaryPath: "verified",
     };
   }
 
   return {
     family: "general",
-    headline: "Start with verified inventory",
+    headline: "Start with inventory",
     subhead:
-      "Grocery and household are production-grade. Apparel is experimental — paste a link for those.",
+      "Grocery and household have the strongest persisted pricing. Apparel is experimental — paste a link for those.",
     chips: [...GENERAL_ONBOARDING_EXAMPLES],
     primaryPath: "verified",
   };

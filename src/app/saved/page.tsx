@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AppShell } from "@/components/AppShell";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { loadSavedOffers, toggleSavedOffer } from "@/lib/storage";
@@ -27,7 +26,7 @@ export default function SavedPage() {
   };
 
   return (
-    <AppShell>
+    
       <div className="flex flex-1 flex-col">
         <header className="border-b border-stone-200/60 bg-white/80 px-6 py-8 lg:px-12">
           <div className="mx-auto flex max-w-4xl items-center gap-3">
@@ -77,6 +76,6 @@ export default function SavedPage() {
 
         <Footer />
       </div>
-    </AppShell>
+    
   );
 }

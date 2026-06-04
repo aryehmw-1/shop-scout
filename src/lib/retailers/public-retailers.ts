@@ -3,10 +3,7 @@ import type { RetailerMeta } from "./meta";
 import { RETAILERS } from "./meta";
 
 /** Hidden from marketing, directory, and compare UI until affiliate integrations are live. */
-export const TEMPORARILY_HIDDEN_RETAILERS = new Set<RetailerId>([
-  "walmart",
-  "target",
-]);
+export const TEMPORARILY_HIDDEN_RETAILERS = new Set<RetailerId>([]);
 
 export const RETAILER_TRADEMARK_DISCLAIMER =
   "Retailer names and trademarks belong to their respective owners. Inclusion does not imply affiliation or endorsement.";

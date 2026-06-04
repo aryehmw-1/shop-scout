@@ -101,10 +101,26 @@ export function passesPersistedInventoryTrustGates(offer: ProductOffer): boolean
   return true;
 }
 
+/** Provider APIs can supply marketplace image/CDN URLs that are not the PDP host. */
+export function passesProviderApiTrustGates(offer: ProductOffer): boolean {
+  if (!offer.providerSource) return false;
+  if (offer.priceSource !== "connector_api") return false;
+  if (!isVerifiedOffer(offer)) return false;
+  if ((offer.matchConfidence ?? 0) < 0.58) return false;
+  if (!offer.price || offer.price <= 0) return false;
+  if (!passesRetailerLinkGate(offer)) return false;
+  if (!passesFreshnessVisibilityGate(offer)) return false;
+  if (!offer.imageUrl?.startsWith("https://")) return false;
+  if (PLACEHOLDER_IMAGE.test(offer.imageUrl)) return false;
+  if (isGenericCatalogImage(offer.imageUrl)) return false;
+  return true;
+}
+
 /** Full consumer trust gate — use for main UI display. */
 export function passesConsumerTrustGates(offer: ProductOffer): boolean {
   if (offer.matchBand === "rejected" || offer.matchBand === "weak") return false;
   if (offer.pipelineDebug?.validationStatus === "rejected") return false;
+  if (passesProviderApiTrustGates(offer)) return true;
   if (passesPersistedInventoryTrustGates(offer)) {
     if (!isExactMatchBand(offer.matchBand) && (offer.matchConfidence ?? 0) < 0.78) {
       return false;

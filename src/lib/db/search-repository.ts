@@ -76,11 +76,21 @@ export async function persistPriceQuotes(
 
   if (!rows.length) return;
 
+  const marketplaceUrls = rows
+    .filter((r) => r.providerSource === "ebay" || r.providerSource === "shopsavvy")
+    .map((r) => r.productUrl);
+  const standardRetailers = rows
+    .filter((r) => r.providerSource !== "ebay" && r.providerSource !== "shopsavvy")
+    .map((r) => r.retailer);
+
   await prisma.priceQuote.deleteMany({
     where: {
       productId: product.id,
-      retailerId: { in: rows.map((r) => r.retailer) },
       source: { in: ["scraped", "connector_api", "catalog_model", "catalog_estimate"] },
+      OR: [
+        ...(standardRetailers.length ? [{ retailerId: { in: standardRetailers } }] : []),
+        ...(marketplaceUrls.length ? [{ productUrl: { in: marketplaceUrls } }] : []),
+      ],
     },
   });
 
@@ -93,6 +103,9 @@ export async function persistPriceQuotes(
       imageUrl: o.imageUrl?.startsWith("https://") ? o.imageUrl : null,
       priceUsd: o.price,
       wasPriceUsd: o.wasPrice ?? null,
+      shippingUsd: o.estimatedShipping ?? o.deliveryFee ?? null,
+      estimatedTaxUsd: o.estimatedTax ?? null,
+      deliveredTotalUsd: o.deliveredTotal ?? null,
       landedCostUsd: o.landedCost,
       unitPriceUsd: o.unitPrice,
       inStock: o.inStock,
@@ -102,6 +115,12 @@ export async function persistPriceQuotes(
       imageConfidence: o.imageConfidence ?? null,
       confidenceReasonsJson: JSON.stringify(o.confidenceReasons ?? []),
       source: o.priceSource === "connector_api" ? "connector_api" : "scraped",
+      providerSource: o.providerSource ?? null,
+      sourceLabel: o.sourceLabel ?? null,
+      externalOfferId: o.providerSource ? o.id : null,
+      sellerName: o.sellerName ?? null,
+      condition: o.condition ?? null,
+      returnPolicy: o.returnPolicy ?? null,
       productUrl: o.productUrl,
       affiliateUrl: o.affiliateUrl,
       fetchedAt: o.priceAsOf ? new Date(o.priceAsOf) : now,

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AppShell } from "@/components/AppShell";
 import { Footer } from "@/components/Footer";
 import { applyTheme } from "@/components/ThemeProvider";
 import { useAuth } from "@/contexts/AuthContext";
@@ -51,7 +50,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <AppShell>
+    
       <div className="flex flex-1 flex-col">
         <header className="border-b border-stone-200/60 bg-white/80 px-6 py-8 lg:px-12">
           <div className="mx-auto max-w-2xl">
@@ -176,6 +175,6 @@ export default function SettingsPage() {
 
         <Footer />
       </div>
-    </AppShell>
+    
   );
 }

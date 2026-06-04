@@ -14,7 +14,7 @@ import type { FetchMethod } from "./fetch-strategy";
  *   INDEX_EXTRACTION_ARTIFACTS=0     -> disable entirely
  *   INDEX_EXTRACTION_ARTIFACTS=all   -> capture successes too (verbose)
  */
-const ARTIFACT_ROOT = join(process.cwd(), "artifacts", "extraction");
+const ARTIFACT_ROOT = join(/* turbopackIgnore: true */ process.cwd(), "artifacts", "extraction");
 const MAX_HTML_BYTES = 600_000;
 
 export interface ExtractionArtifactInput {

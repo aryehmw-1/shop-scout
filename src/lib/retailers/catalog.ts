@@ -629,20 +629,6 @@ const CATALOG: CatalogItem[] = [
     slug: "br-mens-dress-pants",
   },
   {
-    id: "womens-pants",
-    title: "Women's Wide-Leg Pants",
-    brand: "Zara",
-    size: "Women's 8",
-    upc: "091200003022",
-    imageUrl: "",
-    category: "clothing",
-    keywords: ["pants", "trousers", "womens", "women", "ladies", "clothing"],
-    organic: false,
-    basePrice: 49.99,
-    unitLabel: "each",
-    slug: "zara-womens-pants",
-  },
-  {
     id: "hoodie-fleece",
     title: "Fleece Pullover Hoodie",
     brand: "Hanes",
@@ -656,20 +642,6 @@ const CATALOG: CatalogItem[] = [
     basePrice: 24.99,
     unitLabel: "each",
     slug: "fleece-hoodie",
-  },
-  {
-    id: "hoodie-black-mens",
-    title: "Black Fleece Hoodie",
-    brand: "Champion",
-    size: "M",
-    upc: "091200003020",
-    imageUrl: "https://placehold.co/500x500/141414/e8e8e8?text=Black+Hoodie&font=roboto",
-    category: "clothing",
-    keywords: ["hoodie", "hoody", "black", "sweatshirt", "pullover", "fleece", "mens", "men"],
-    organic: false,
-    basePrice: 34.99,
-    unitLabel: "each",
-    slug: "champion-black-hoodie",
   },
   {
     id: "hoodie-navy-mens",
@@ -700,118 +672,6 @@ const CATALOG: CatalogItem[] = [
     basePrice: 29.99,
     unitLabel: "each",
     slug: "hanes-white-hoodie",
-  },
-  {
-    id: "hoodie-black-womens",
-    title: "Fleece Pullover Hoodie",
-    brand: "Hanes",
-    size: "Women's M",
-    upc: "091200003001",
-    imageUrl: "",
-    category: "clothing",
-    keywords: ["hoodie", "hoody", "black", "sweatshirt", "pullover", "womens", "women", "ladies"],
-    organic: false,
-    basePrice: 32.99,
-    unitLabel: "each",
-    slug: "hanes-black-hoodie-womens",
-  },
-  {
-    id: "hoodie-gray-womens",
-    title: "Classic Hoodie",
-    brand: "Gap",
-    size: "Women's S",
-    upc: "091200003002",
-    imageUrl: "",
-    category: "clothing",
-    keywords: ["hoodie", "hoody", "gray", "grey", "sweatshirt", "womens", "women"],
-    organic: false,
-    basePrice: 44.99,
-    unitLabel: "each",
-    slug: "gap-gray-hoodie-womens",
-  },
-  {
-    id: "womens-leggings",
-    title: "High-Rise Leggings",
-    brand: "Athleta",
-    size: "Women's M",
-    upc: "091200003003",
-    imageUrl: "",
-    category: "clothing",
-    keywords: ["leggings", "yoga", "athletic", "womens", "women", "pants", "activewear"],
-    organic: false,
-    basePrice: 89.99,
-    unitLabel: "each",
-    slug: "athleta-leggings-womens",
-  },
-  {
-    id: "toddler-hoodie",
-    title: "Toddler Fleece Hoodie",
-    brand: "Carter's",
-    size: "3T",
-    upc: "091200003010",
-    imageUrl: "",
-    category: "clothing",
-    keywords: ["hoodie", "hoody", "toddler", "baby", "kids", "children", "3t", "fleece"],
-    organic: false,
-    basePrice: 18.99,
-    unitLabel: "each",
-    slug: "carters-toddler-hoodie",
-  },
-  {
-    id: "toddler-shoes",
-    title: "Toddler Sneakers",
-    brand: "Stride Rite",
-    size: "Size 7 Toddler",
-    upc: "091200003011",
-    imageUrl: "",
-    category: "shoes",
-    keywords: ["shoes", "sneakers", "toddler", "baby", "kids", "children", "7t", "footwear"],
-    organic: false,
-    basePrice: 34.99,
-    unitLabel: "pair",
-    slug: "stride-rite-toddler-shoes",
-  },
-  {
-    id: "toddler-onesie-pack",
-    title: "Cotton Onesie 5-Pack",
-    brand: "Carter's",
-    size: "18M",
-    upc: "091200003012",
-    imageUrl: "",
-    category: "clothing",
-    keywords: ["onesie", "bodysuit", "toddler", "baby", "infant", "18m", "pack", "cotton"],
-    organic: false,
-    basePrice: 22.99,
-    unitLabel: "pack",
-    slug: "carters-onesie-pack",
-  },
-  {
-    id: "boys-hoodie-kids",
-    title: "Boys Fleece Hoodie",
-    brand: "The Children's Place",
-    size: "Kids L (10-12)",
-    upc: "091200003013",
-    imageUrl: "",
-    category: "clothing",
-    keywords: ["hoodie", "hoody", "boys", "kids", "children", "youth", "fleece"],
-    organic: false,
-    basePrice: 24.99,
-    unitLabel: "each",
-    slug: "tcp-boys-hoodie",
-  },
-  {
-    id: "girls-dress-kids",
-    title: "Girls Knit Dress",
-    brand: "OshKosh",
-    size: "Kids 8",
-    upc: "091200003014",
-    imageUrl: "",
-    category: "clothing",
-    keywords: ["dress", "girls", "kids", "children", "youth", "knit"],
-    organic: false,
-    basePrice: 28.99,
-    unitLabel: "each",
-    slug: "oshkosh-girls-dress",
   },
   {
     id: "basketball",
@@ -1210,36 +1070,6 @@ const CATALOG: CatalogItem[] = [
     slug: "charmin-ultra-soft-12",
   },
   {
-    id: "dish-soap",
-    title: "Ultra Dishwashing Liquid",
-    brand: "Dawn",
-    size: "24 fl oz",
-    upc: "030000000456",
-    imageUrl:
-      "https://images.unsplash.com/photo-1584556819299-afa27beb7f33?w=500&h=500&fit=crop",
-    category: "household",
-    keywords: ["dish", "soap", "dawn", "cleaning", "kitchen"],
-    organic: false,
-    basePrice: 4.99,
-    unitLabel: "oz",
-    slug: "dawn-dish-soap",
-  },
-  {
-    id: "laundry-detergent",
-    title: "Liquid Laundry Detergent",
-    brand: "Tide",
-    size: "100 fl oz",
-    upc: "030000000789",
-    imageUrl:
-      "https://images.unsplash.com/photo-1584556819299-afa27beb7f33?w=500&h=500&fit=crop",
-    category: "household",
-    keywords: ["laundry", "detergent", "tide", "cleaning", "wash"],
-    organic: false,
-    basePrice: 12.97,
-    unitLabel: "oz",
-    slug: "tide-liquid-detergent",
-  },
-  {
     id: "frozen-pizza",
     title: "Pepperoni Frozen Pizza",
     brand: "DiGiorno",
@@ -1328,6 +1158,9 @@ const RETAILER_PRICE_MULTIPLIERS: Record<RetailerId, number> = {
   kroger: 1.0,
   aldi: 0.84,
   amazon: 1.05,
+  ebay: 0.9,
+  shopsavvy: 1.0,
+  bestbuy: 0.98,
   instacart: 1.14,
   costco: 0.87,
   sams: 0.89,
@@ -1555,7 +1388,12 @@ function inferCategoryFromQuery(query: string): CatalogItem["category"] {
   return "general";
 }
 
-/** When nothing in catalog matches, still return prices for what they asked */
+/**
+ * Creates a synthetic placeholder item for demo/compare flows only.
+ * NEVER pass synthetic items to the primary search path — they generate fake
+ * estimated prices and have no real retailer inventory behind them.
+ * Use this only in: compareByUpc, searchSimilarFromLink, and explicit compare flows.
+ */
 export function createSyntheticCatalogItem(
   query: string,
   categoryOverride?: CatalogItem["category"],
@@ -1985,10 +1823,17 @@ export function compareByUpc(
   );
 }
 
-/** Search — one exact product priced at every eligible store (cheapest first) */
+/** Search — one exact product priced at every eligible store (cheapest first).
+ *  Returns empty results if no real catalog item matches (no synthetic fallback). */
 export function searchCatalog(intent: ShoppingIntent): ProductSearchResults {
   const zip = intent.zipCode ?? "78701";
   const item = pickPrimaryCatalogItem(intent);
+
+  // Synthetic items have no real inventory — return empty so the DB connector
+  // or live APIs can serve real results instead of fake "Estimated" prices.
+  if (item.id.startsWith("syn-")) {
+    return { local: [], online: [], zipCode: zip, compareMode: false };
+  }
 
   const onlineRetailers = getOnlineRetailersForZip(zip);
 

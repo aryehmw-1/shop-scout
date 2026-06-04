@@ -34,6 +34,15 @@ export const CATEGORY_IMAGES: Record<ProductCategory | "general", string> = {
 };
 
 const PRODUCT_IMAGES: Record<string, string> = {
+  "cheerios-cereal": placeholder("Cheerios", "fde68a", "7c2d12"),
+  "chobani-greek-yogurt": placeholder("Greek Yogurt", "dbeafe", "1e3a8a"),
+  "organic-whole-milk": placeholder("Organic Milk", "fef3c7", "44403c"),
+  "organic-eggs-dozen": placeholder("Organic Eggs", "fde68a", "44403c"),
+  "bounty-paper-towels": placeholder("Paper Towels", "dbeafe", "334155"),
+  "la-croix-sparkling": placeholder("Sparkling Water", "cffafe", "155e75"),
+  "dove-body-wash": placeholder("Body Wash", "fce7f3", "831843"),
+  "oxo-good-grips-can-opener": placeholder("Can Opener", "e5e7eb", "374151"),
+  "yeti-rambler-30": placeholder("Tumbler", "e0f2fe", "0c4a6e"),
   "super-pretzel": CATEGORY_IMAGES.pantry,
   "potato-chips": CATEGORY_IMAGES.pantry,
   "microwave-popcorn": CATEGORY_IMAGES.pantry,

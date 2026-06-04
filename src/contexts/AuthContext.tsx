@@ -40,8 +40,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       locationSet: true,
       organicPreferred: u.preferences.organicPreferred,
     });
-    localStorage.setItem("pantry-scout-zip", u.address.zipCode);
-    localStorage.setItem("pantry-scout-saved-offers", JSON.stringify(u.savedOffers));
+    localStorage.setItem("homivion-zip", u.address.zipCode);
+    localStorage.setItem("homivion-saved-offers", JSON.stringify(u.savedOffers));
   }, []);
 
   const refresh = useCallback(async () => {
@@ -118,7 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const syncSavedOffers = async (offers: ProductOffer[]) => {
     if (!user) {
-      localStorage.setItem("pantry-scout-saved-offers", JSON.stringify(offers));
+      localStorage.setItem("homivion-saved-offers", JSON.stringify(offers));
       return;
     }
     const res = await fetch("/api/auth/profile", {

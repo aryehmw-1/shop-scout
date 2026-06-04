@@ -2,6 +2,7 @@ import type { CatalogItem } from "../retailers/catalog";
 import type { ProductSearchResults, ShoppingIntent, VerifiedInventoryHitMeta } from "../types";
 import type { PriceSource } from "./types";
 import { catalogConnector } from "./connectors/catalog-connector";
+import { dbConnector } from "./connectors/db-connector";
 import {
   fetchLiveQuotes,
   priceSourceForLiveOrigin,
@@ -41,8 +42,12 @@ export async function runSearchWithLivePricing(
     verifiedInventoryHit?: VerifiedInventoryHitMeta;
   } = {},
 ): Promise<LiveEnrichedSearch> {
-  let results = await catalogConnector.search(intent);
-  let priceSource: PriceSource = "catalog_model";
+  // Try DB connector first (real persisted prices). Fall back to in-memory catalog
+  // if DB returns nothing — catalog results are labeled "Estimated" in the UI.
+  const dbResults = await dbConnector.search(intent);
+  let results: ProductSearchResults =
+    dbResults.online.length > 0 ? dbResults : await catalogConnector.search(intent);
+  let priceSource: PriceSource = dbResults.online.length > 0 ? "cached_quote" : "catalog_model";
   let liveQuoteCount = 0;
 
   const persisted =

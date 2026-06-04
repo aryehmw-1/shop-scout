@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AppShell } from "@/components/AppShell";
 import { Footer } from "@/components/Footer";
 import { APP_NAME } from "@/lib/constants";
 import { CONTACT_EMAIL, getSiteUrl } from "@/lib/site";
@@ -15,7 +14,7 @@ export default function AboutPage() {
   const siteUrl = getSiteUrl();
 
   return (
-    <AppShell>
+    <>
       <article className="mx-auto max-w-2xl flex-1 px-6 py-12 lg:px-12">
         <h1 className="font-homy text-3xl font-bold text-ink-900">About {APP_NAME}</h1>
         <p className="mt-2 text-sm text-ink-500">{siteUrl}</p>
@@ -78,6 +77,6 @@ export default function AboutPage() {
         </div>
       </article>
       <Footer />
-    </AppShell>
+    </>
   );
 }

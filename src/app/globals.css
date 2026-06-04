@@ -150,6 +150,15 @@ body {
   animation: float 4s ease-in-out infinite;
 }
 
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
 .scrollbar-thin::-webkit-scrollbar {
   height: 6px;
   width: 6px;

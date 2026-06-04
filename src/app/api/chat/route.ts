@@ -29,9 +29,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json(result);
   } catch (e) {
-    console.error("chat error", e);
+    const msg = e instanceof Error ? e.message : String(e);
+    const stack = e instanceof Error ? e.stack?.slice(0, 500) : "";
+    console.error("chat error:", msg, stack);
     return NextResponse.json(
-      { error: "Something went wrong. Please try again." },
+      { error: "Something went wrong. Please try again.", detail: msg },
       { status: 500 },
     );
   }

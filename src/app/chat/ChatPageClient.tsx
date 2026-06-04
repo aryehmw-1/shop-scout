@@ -21,7 +21,7 @@ export function ChatPageClient() {
   const params = useSearchParams();
   const start = params.get("start");
   const hint = params.get("hint");
-  const q = params.get("q");
+  const q = params.get("q") ?? params.get("query");
 
   const pasteLinkMode = hint === "link" || start === "link";
 

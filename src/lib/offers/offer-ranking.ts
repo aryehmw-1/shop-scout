@@ -22,9 +22,9 @@ import {
 } from "./consumer-trust";
 import { classifyOfferFreshness } from "../pricing/quote-freshness-policy";
 
-export const DISPLAY_OFFER_LIMIT = 10;
-export const DISPLAY_ESTIMATED_LIMIT = 6;
-export const DISPLAY_LOW_CONFIDENCE_LIMIT = 8;
+export const DISPLAY_OFFER_LIMIT = 5;
+export const DISPLAY_ESTIMATED_LIMIT = 5;
+export const DISPLAY_LOW_CONFIDENCE_LIMIT = 5;
 
 export function searchDebugUiEnabled(): boolean {
   if (typeof process !== "undefined") {

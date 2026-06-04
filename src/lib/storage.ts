@@ -1,8 +1,8 @@
 import type { ProductOffer, UserAddress, UserPreferences } from "./types";
 
-const SAVED_KEY = "pantry-scout-saved-offers";
-const PREFS_KEY = "pantry-scout-prefs";
-const ADDRESS_KEY = "pantry-scout-address";
+const SAVED_KEY = "homivion-saved-offers";
+const PREFS_KEY = "homivion-prefs";
+const ADDRESS_KEY = "homivion-address";
 
 export function loadSavedOffers(): ProductOffer[] {
   if (typeof window === "undefined") return [];
@@ -45,13 +45,13 @@ export function loadAddress(): UserAddress | null {
 function writePreferencesOnly(prefs: UserPreferences) {
   localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
   if (prefs.zipCode) {
-    localStorage.setItem("pantry-scout-zip", prefs.zipCode);
+    localStorage.setItem("homivion-zip", prefs.zipCode);
   }
 }
 
 export function saveAddress(address: UserAddress) {
   localStorage.setItem(ADDRESS_KEY, JSON.stringify(address));
-  localStorage.setItem("pantry-scout-zip", address.zipCode);
+  localStorage.setItem("homivion-zip", address.zipCode);
   const prefs = loadPreferences();
   writePreferencesOnly({
     ...prefs,
@@ -73,7 +73,7 @@ export function loadPreferences(): UserPreferences {
       return prefs;
     }
     const zip =
-      addr?.zipCode ?? localStorage.getItem("pantry-scout-zip") ?? "";
+      addr?.zipCode ?? localStorage.getItem("homivion-zip") ?? "";
     return { zipCode: zip, locationSet: zip.length === 5 };
   } catch {
     return { zipCode: "" };

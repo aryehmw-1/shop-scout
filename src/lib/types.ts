@@ -6,6 +6,9 @@ export type RetailerId =
   | "kroger"
   | "aldi"
   | "amazon"
+  | "ebay"
+  | "shopsavvy"
+  | "bestbuy"
   | "instacart"
   | "costco"
   | "sams"
@@ -334,6 +337,14 @@ export interface ProductOffer {
     | "rejected";
   matchDisplayLabel?: string;
   packSizeLabel?: string;
+  /** External normalized provider source used for bootstrapping real product data. */
+  providerSource?: "ebay" | "shopsavvy";
+  sellerName?: string;
+  sellerFeedbackPct?: number;
+  sellerFeedbackScore?: number;
+  condition?: string;
+  returnPolicy?: string;
+  sourceLabel?: string;
 }
 
 export interface ReferenceProduct {
@@ -446,6 +457,9 @@ export interface SearchPipelineDebugSummary {
   verifiedInventoryResolution?: VerifiedInventoryHitMeta;
 }
 
+/** Evidence-backed recommendation copy from commerce intelligence graph. */
+export type IntelligenceInsight = import("@/lib/commerce-intelligence/explain").RecommendationExplanation;
+
 export interface ProductSearchResults {
   local: ProductOffer[];
   online: ProductOffer[];
@@ -491,6 +505,8 @@ export interface ProductSearchResults {
     totalCount: number;
     message: string;
   };
+  /** Deterministic trust + explanation from intelligence graph (when present). */
+  intelligenceInsight?: IntelligenceInsight;
 }
 
 export interface ChatMessage {
@@ -499,6 +515,7 @@ export interface ChatMessage {
   content: string;
   products?: ProductOffer[];
   productResults?: ProductSearchResults;
+  commerceInsight?: IntelligenceInsight;
   compareMode?: boolean;
   chips?: string[];
   timestamp: number;
@@ -622,6 +639,7 @@ export interface ChatResponse {
   reply: string;
   chips?: string[];
   productResults?: ProductSearchResults;
+  commerceInsight?: IntelligenceInsight;
   compareMode?: boolean;
   session: SessionState;
   conversationDebug?: ConversationDebugSnapshot;

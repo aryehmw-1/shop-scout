@@ -10,6 +10,7 @@ import {
   shouldMergeWithPreviousSearch,
 } from "../shopping/intent-merge";
 import type { SessionState, ShoppingIntent } from "../types";
+import { generateAIText, isGeminiConfigured, isClaudeConfigured } from "./index";
 
 export interface MessageAnalysis {
   intent: Partial<ShoppingIntent>;
@@ -32,17 +33,17 @@ function mergeClarification(
   };
 }
 
-async function callOpenAIAnalysis(
+function isAiAvailable(): boolean {
+  return isGeminiConfigured() || isClaudeConfigured();
+}
+
+async function callAIAnalysis(
   message: string,
   session: SessionState,
   history?: ChatHistoryMessage[],
   ruleClarify?: ClarificationState | null,
 ): Promise<Partial<MessageAnalysis> | null> {
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!apiKey) return null;
-
-  const baseUrl = (process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1").replace(/\/$/, "");
-  const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
+  if (!isAiAvailable()) return null;
 
   const hist = (history ?? [])
     .slice(-6)
@@ -56,7 +57,7 @@ async function callOpenAIAnalysis(
       ? `Keyword detected (${keywordHint.id}): likely needs clarification — ${keywordHint.defaultQuestion}`
       : "No rule clarification yet.";
 
-  const system = `You analyze shopping requests for Shop Scout (price comparison app). Return JSON only:
+  const system = `You analyze shopping requests for Homivion (price comparison app). Return JSON only — no markdown, no code fences:
 {
   "query": "normalized product search string",
   "category": "clothing|shoes|salad|dairy|produce|meat|pantry|bakery|null",
@@ -75,33 +76,19 @@ Rules:
 - If a rule-based clarification was already detected, you may refine the question/options but keep needs_clarification=true unless the user was already specific.
 ${ruleHint}`;
 
+  const userContent = `Session phase: ${session.phase}\nPrior query: ${session.intent?.query ?? "none"}\nHistory:\n${hist}\n\nNew message: "${message}"`;
+
   try {
-    const res = await fetch(`${baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.25,
-        max_tokens: 400,
-        response_format: { type: "json_object" },
-        messages: [
-          { role: "system", content: system },
-          {
-            role: "user",
-            content: `Session phase: ${session.phase}\nPrior query: ${session.intent?.query ?? "none"}\nHistory:\n${hist}\n\nNew message: "${message}"`,
-          },
-        ],
-      }),
+    const result = await generateAIText(`${userContent}`, {
+      system,
+      temperature: 0.25,
+      maxOutputTokens: 400,
+      retries: 1,
+      timeoutMs: 8_000,
     });
 
-    if (!res.ok) return null;
-    const data = (await res.json()) as {
-      choices?: { message?: { content?: string } }[];
-    };
-    const raw = data.choices?.[0]?.message?.content;
+    // Strip possible markdown code fences
+    const raw = result.text.replace(/^```[a-z]*\n?/i, "").replace(/```$/m, "").trim();
     if (!raw) return null;
 
     const parsed = JSON.parse(raw) as {
@@ -209,7 +196,7 @@ export async function analyzeShoppingMessage(
     mergedRules,
   );
 
-  const ai = await callOpenAIAnalysis(message, session, history, ruleClarify);
+  const ai = await callAIAnalysis(message, session, history, ruleClarify);
 
   if (ai) {
     if (ai.needsClarification && ai.clarification) {

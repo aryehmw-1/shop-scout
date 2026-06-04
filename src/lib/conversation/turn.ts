@@ -1,5 +1,7 @@
 import { getStoresNearZip } from "../retailers/catalog";
 import { searchService } from "../search/search-service";
+import { tryIntelligenceSearch } from "../commerce-intelligence/retrieval/intelligence-search";
+import type { CommerceRetrievalPayload } from "../commerce-intelligence/ai/retrieval-payload";
 import { parseProductUrl } from "../matching/url-parser";
 import { ingestLinkProduct } from "../matching/link-ingest";
 import { recordAnalyticsEvent } from "../analytics/record";
@@ -30,6 +32,7 @@ import { DEFAULT_CHAT_CHIPS, GROCERY_DEMO_CHIPS } from "../inventory/demo-sugges
 import { getDynamicOnboardingChips } from "../inventory/onboarding-examples";
 import type {
   ConversationDebugSnapshot,
+  IntelligenceInsight,
   LearningProfile,
   ProductSearchResults,
   SessionState,
@@ -126,14 +129,27 @@ function isProductSearchMessage(text: string): boolean {
   return t.length >= 3;
 }
 
+function isAdvisoryQuestion(text: string): boolean {
+  const t = text.trim().toLowerCase();
+  // "what TV should I buy?", "what's a good laptop?", "recommend me headphones", etc.
+  return (
+    /\bwhat\b.{0,30}\bshould (i|we)\b.{0,20}\b(buy|get|pick|choose|go with)\b/i.test(t) ||
+    /\b(recommend|suggest|advise).{0,30}\b(tv|laptop|phone|headphones?|camera|tablet|monitor|mattress|fridge|refrigerator|washer|dryer|blender|vacuum|router|speaker)\b/i.test(t) ||
+    /\bwhat('s| is) (a |the )?(best|good|great|right)\b.{0,40}\b(for me|to buy|to get)\b/i.test(t) ||
+    /\bhelp me (pick|choose|decide|find the (best|right))\b/i.test(t) ||
+    /\b(which|what kind of) .{0,30}\b(should i|would you recommend|is better|is best)\b/i.test(t)
+  );
+}
+
 function isConversationalOnly(text: string, session?: SessionState): boolean {
   const t = text.trim();
   if (session && shouldMergeWithPreviousSearch(t, session)) return false;
   if (looksLikeShoppingQuery(t)) return false;
   if (GREETING.test(t)) return true;
   if (/^thanks|thank you|thx$/i.test(t)) return true;
-  if (/^help$|how (does|do) (this|shop scout) work/i.test(t)) return true;
+  if (/^help$|how (does|do) (this|homivion|shop scout) work/i.test(t)) return true;
   if (isFollowUpAboutResults(t)) return true;
+  if (isAdvisoryQuestion(t)) return true;
   if (t.length < 12 && !/\d/.test(t)) return true;
   return false;
 }
@@ -142,6 +158,9 @@ export interface ResolvedChatTurn {
   action: ChatAction;
   session: SessionState;
   productResults?: ProductSearchResults;
+  /** Structured retrieval for LLM — never raw HTML or scrapes. */
+  retrievalPayload?: CommerceRetrievalPayload;
+  commerceInsight?: IntelligenceInsight;
   compareMode: boolean;
   chips?: string[];
   zipCode: string;
@@ -150,6 +169,31 @@ export interface ResolvedChatTurn {
   referenceProductTitle?: string;
   clarifyQuestion?: string;
   conversationDebug?: ConversationDebugSnapshot;
+}
+
+async function searchWithIntelligenceFirst(
+  fullIntent: ShoppingIntent,
+  zip: string,
+  userId?: string,
+  progressive = true,
+): Promise<{
+  productResults: ProductSearchResults;
+  retrievalPayload?: CommerceRetrievalPayload;
+  commerceInsight?: IntelligenceInsight;
+}> {
+  const intel = tryIntelligenceSearch(fullIntent, zip);
+  if (intel) {
+    return {
+      productResults: intel.productResults,
+      retrievalPayload: intel.retrievalPayload,
+      commerceInsight: intel.commerceInsight,
+    };
+  }
+  const productResults = await searchService.search(fullIntent, {
+    userId,
+    fastOnly: progressive,
+  });
+  return { productResults };
 }
 
 function withConversationDebug(
@@ -325,23 +369,33 @@ export async function resolveChatTurn(
     (isRecheckMessage(text) || /cheaper|again|refresh/i.test(text))
   ) {
     const fullIntent = fullIntentFromSession();
-    const productResults = sourceUrl
-      ? await searchService.searchFromLink(
-          {
-            guessedTitle: sourceProductTitle ?? fullIntent.query,
-            category: fullIntent.category,
-            referencePrice: fullIntent.maxPrice ?? 49.99,
-            sourceUrl,
-          },
-          fullIntent,
-          { userId },
-        )
-      : await searchService.search(fullIntent, searchOpts(userId, progressive));
+    let productResults: ProductSearchResults;
+    let retrievalPayload: CommerceRetrievalPayload | undefined;
+    let commerceInsight: IntelligenceInsight | undefined;
+    if (sourceUrl) {
+      productResults = await searchService.searchFromLink(
+        {
+          guessedTitle: sourceProductTitle ?? fullIntent.query,
+          category: fullIntent.category,
+          referencePrice: fullIntent.maxPrice ?? 49.99,
+          sourceUrl,
+        },
+        fullIntent,
+        { userId },
+      );
+    } else {
+      const intel = await searchWithIntelligenceFirst(fullIntent, zip, userId, progressive);
+      productResults = intel.productResults;
+      retrievalPayload = intel.retrievalPayload;
+      commerceInsight = intel.commerceInsight;
+    }
 
     return {
       action: "recheck",
       session,
       productResults,
+      retrievalPayload,
+      commerceInsight,
       compareMode: false,
       zipCode: zip,
       query: fullIntent.query,
@@ -354,7 +408,8 @@ export async function resolveChatTurn(
     const priorSession = session;
     intent = mergeSearchIntent(session.intent, text);
     const fullIntent = enrichIntent({ ...intent, zipCode: zip }, learningProfile);
-    const productResults = await searchService.search(fullIntent, searchOpts(userId, progressive));
+    const { productResults, retrievalPayload, commerceInsight } =
+      await searchWithIntelligenceFirst(fullIntent, zip, userId, progressive);
 
     return withConversationDebug(
       {
@@ -368,6 +423,8 @@ export async function resolveChatTurn(
           compareMode: false,
         },
         productResults,
+        retrievalPayload,
+        commerceInsight,
         compareMode: false,
         zipCode: zip,
         query: fullIntent.query,
@@ -379,11 +436,14 @@ export async function resolveChatTurn(
 
   if (phase === "ready" && isFollowUpAboutResults(text)) {
     const fullIntent = fullIntentFromSession();
-    const productResults = await searchService.search(fullIntent, searchOpts(userId, progressive));
+    const { productResults, retrievalPayload, commerceInsight } =
+      await searchWithIntelligenceFirst(fullIntent, zip, userId, progressive);
     return {
       action: "conversational",
       session,
       productResults,
+      retrievalPayload,
+      commerceInsight,
       compareMode: false,
       zipCode: zip,
       query: fullIntent.query,
@@ -393,15 +453,22 @@ export async function resolveChatTurn(
   if (isConversationalOnly(text, session) && !isProductSearchMessage(text)) {
     const fullIntent =
       phase === "ready" && intent.query ? fullIntentFromSession() : undefined;
-    const productResults =
-      fullIntent && isFollowUpAboutResults(text)
-        ? await searchService.search(fullIntent, searchOpts(userId, progressive))
-        : undefined;
+    let productResults: ProductSearchResults | undefined;
+    let retrievalPayload: CommerceRetrievalPayload | undefined;
+    let commerceInsight: IntelligenceInsight | undefined;
+    if (fullIntent && isFollowUpAboutResults(text)) {
+      const intel = await searchWithIntelligenceFirst(fullIntent, zip, userId, progressive);
+      productResults = intel.productResults;
+      retrievalPayload = intel.retrievalPayload;
+      commerceInsight = intel.commerceInsight;
+    }
 
     return {
       action: "conversational",
       session: { phase: phase === "ready" ? "ready" : "idle", intent: { zipCode: zip, ...intent }, asked, sourceUrl, sourceProductTitle, compareMode: false },
       productResults,
+      retrievalPayload,
+      commerceInsight,
       compareMode: false,
       zipCode: zip,
       query: intent.query,
@@ -435,7 +502,8 @@ export async function resolveChatTurn(
         { ...resolved, zipCode: zip, learningProfile },
         learningProfile,
       );
-      const productResults = await searchService.search(fullIntent, searchOpts(userId, progressive));
+      const { productResults, retrievalPayload, commerceInsight } =
+        await searchWithIntelligenceFirst(fullIntent, zip, userId, progressive);
       return {
         action: "search",
         session: {
@@ -447,6 +515,8 @@ export async function resolveChatTurn(
           compareMode: false,
         },
         productResults,
+        retrievalPayload,
+        commerceInsight,
         compareMode: false,
         zipCode: zip,
         query: fullIntent.query,
@@ -463,7 +533,8 @@ export async function resolveChatTurn(
     ) {
       intent = { ...buildIntentFromQuery(text), zipCode: zip };
       const fullIntent = enrichIntent(intent, learningProfile);
-      const productResults = await searchService.search(fullIntent, searchOpts(userId, progressive));
+      const { productResults, retrievalPayload, commerceInsight } =
+        await searchWithIntelligenceFirst(fullIntent, zip, userId, progressive);
       return {
         action: "search",
         session: {
@@ -475,6 +546,8 @@ export async function resolveChatTurn(
           compareMode: false,
         },
         productResults,
+        retrievalPayload,
+        commerceInsight,
         compareMode: false,
         zipCode: zip,
         query: fullIntent.query,
@@ -544,7 +617,8 @@ export async function resolveChatTurn(
       { ...intent, ...analysis.intent, zipCode: zip },
       learningProfile,
     );
-    const productResults = await searchService.search(fullIntent, searchOpts(userId, progressive));
+    const { productResults, retrievalPayload, commerceInsight } =
+      await searchWithIntelligenceFirst(fullIntent, zip, userId, progressive);
 
     return withConversationDebug(
       {
@@ -558,6 +632,8 @@ export async function resolveChatTurn(
           compareMode: false,
         },
         productResults,
+        retrievalPayload,
+        commerceInsight,
         compareMode: false,
         zipCode: zip,
         query: fullIntent.query,

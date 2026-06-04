@@ -9,6 +9,8 @@ export const URL_HOST_RETAILER: Record<string, RetailerId> = {
   "target.com": "target",
   "kroger.com": "kroger",
   "amazon.com": "amazon",
+  "ebay.com": "ebay",
+  "bestbuy.com": "bestbuy",
   "costco.com": "costco",
   "samsclub.com": "sams",
   "aldi.us": "aldi",

@@ -1,6 +1,8 @@
-import type { ProductSearchResults } from "../types";
+import type { CommerceRetrievalPayload } from "../commerce-intelligence/ai/retrieval-payload";
+import type { IntelligenceInsight, ProductSearchResults } from "../types";
 import { buildFullSearchQuery } from "../shopping/intent-merge";
 import { extractIntentFromMessage } from "./extract-intent";
+import { generateAIText, isClaudeConfigured, isGeminiConfigured } from "./index";
 import { summarizeSearchResults } from "./summarize-results";
 import type { ShoppingIntent } from "../types";
 
@@ -29,63 +31,78 @@ export interface ReplyContext {
   ageGroup?: string;
   nearStores?: string[];
   productResults?: ProductSearchResults;
+  retrievalPayload?: CommerceRetrievalPayload;
+  commerceInsight?: IntelligenceInsight;
   referenceProductTitle?: string;
   history?: ChatHistoryMessage[];
   intent?: Partial<ShoppingIntent>;
   clarifyQuestion?: string;
 }
 
-const SYSTEM_PROMPT = `You are Shop Scout, a warm and capable AI shopping assistant.
+const SYSTEM_PROMPT = `You are Homivion, a warm and capable AI shopping assistant.
 
 You help users compare online prices across many retailers (grocery, fashion, home, sports, books). Their ZIP code is only used for shipping estimates — we do not show local store pickup or in-store pricing.
 
-Guidelines:
-- Sound natural and human — like a helpful friend, not a robot.
-- Keep replies concise (usually 2–5 sentences) unless the user asks for detail.
-- Use **bold** for store names, prices, and product names (markdown).
-- When SEARCH RESULTS are provided, explain what you found using ONLY those prices and stores — never invent products or dollar amounts.
-- For action "clarify": ask ONE friendly follow-up question to narrow the product (e.g. jeans vs joggers for pants, running vs dress shoes). Mention they can tap a chip below.
-- For vague requests like "mens pants" or "shoes" without a type, always clarify before pretending you searched.
-- For recheck/refresh: say you're updating or rechecking and summarize the fresh results.
-- For greetings or thanks: respond warmly and suggest a next step.
-- If they ask which deal is best, compare using the provided results.
-- Amazon rows may show live prices and photos when Amazon PA-API is configured; other stores use estimates and store links.
-- If there are zero results, encourage a clearer product name or a product page link.`;
+## Formatting rules (STRICTLY follow these)
+- NEVER write one long paragraph. Every response must use short paragraphs, line breaks, or bullet points.
+- When showing search results: ALWAYS use a bullet list — one bullet per offer. Format each as:
+  • **[Store]** — $X.XX — [short product name or size]
+- Lead with one short sentence naming the best deal, then the bullet list, then a brief closing line.
+- Use **bold** for store names, prices, and key product specs.
+- A greeting or clarification? One or two short sentences max — no lists needed.
+- Two blank lines between the intro sentence and the bullet list.
 
-async function callOpenAI(messages: { role: string; content: string }[]): Promise<string | null> {
-  const apiKey = process.env.OPENAI_API_KEY?.trim();
-  if (!apiKey) return null;
+## Example of correct price-result format:
+Here's what I found for Honey Nut Cheerios — shipping to your ZIP:
 
-  const baseUrl = (process.env.OPENAI_BASE_URL ?? "https://api.openai.com/v1").replace(/\/$/, "");
-  const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
+• **eBay** — **$3.32** — Honey Nut Cheerios Mega Size 27.2 oz *(best price per oz)*
+• **eBay** — $3.40 — Honey Nut Cheerios Mega Size 27.2 oz
+• **eBay** — $3.94 — Cheerios Protein Cookies & Crème 15 oz
+• **eBay** — $5.37 — Cheerios Heart Healthy Mega Size 24 oz
+
+Let me know if you want a different size or brand!
+
+## Shopping advice / consultation
+- When someone asks "what TV should I buy?" or any open-ended "what should I get?" question — do NOT search yet.
+- Ask 2–3 focused follow-up questions in a friendly, conversational way (not a form).
+- Once they answer, give a specific recommendation with reasoning, then offer to search for prices.
+
+## Content rules
+- When SEARCH RESULTS are provided, use ONLY those prices and stores — never invent numbers.
+- For "clarify": ask ONE friendly follow-up question. Mention they can tap a chip below.
+- For recheck/refresh: briefly say you're rechecking, then show the fresh results in bullet format.
+- For greetings or thanks: be warm and brief, suggest a next step.
+- If zero results: warmly say we don't carry that yet, mention how many products we stock, invite them to request it below.
+- Amazon rows may show live prices; other stores use verified estimates.`;
+
+async function callShopScoutAI(
+  messages: { role: string; content: string }[],
+): Promise<string | null> {
+  if (!isAiEnabled()) return null;
+
+  const system = messages.find((m) => m.role === "system")?.content;
+  const prompt = messages
+    .filter((m) => m.role !== "system")
+    .map((m) => {
+      const label = m.role === "assistant" ? "Assistant" : "User";
+      return `${label}:\n${m.content}`;
+    })
+    .join("\n\n");
 
   try {
-    const res = await fetch(`${baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model,
-        temperature: 0.7,
-        max_tokens: 400,
-        messages,
-      }),
+    const result = await generateAIText(prompt, {
+      system,
+      temperature: 0.55,
+      maxOutputTokens: 700,
+      retries: 1,
+      timeoutMs: 12_000,
     });
-
-    if (!res.ok) {
-      console.error("OpenAI error", res.status, await res.text());
-      return null;
-    }
-
-    const data = (await res.json()) as {
-      choices?: { message?: { content?: string } }[];
-    };
-    const text = data.choices?.[0]?.message?.content?.trim();
-    return text || null;
-  } catch (e) {
-    console.error("OpenAI request failed", e);
+    return result.text.trim() || null;
+  } catch (error) {
+    console.error(
+      "[generate-reply] AI provider failed",
+      error instanceof Error ? error.message : "unknown error",
+    );
     return null;
   }
 }
@@ -164,11 +181,8 @@ function fallbackReply(ctx: ReplyContext): string {
         ? "\n\nAdd your **ZIP** anytime for regional shipping and tax estimates."
         : "";
       if (total === 0) {
-        const closest = productResults.closestMatchFallback;
-        if (closest) {
-          return `I found **closest matches** for ${q} — prices are estimated while we expand verified inventory. Browse the cards below or paste a product link for an exact match.${zipNote}`;
-        }
-        return `I looked across our online stores for ${q} but didn't find a strong match. Try different wording or paste a product link.${zipNote}`;
+        const catalogCount = 66;
+        return `Sorry, we don't have ${q} in our inventory right now. We currently carry **${catalogCount} products** across grocery, pantry, household, and more. Type below to let us know what you'd like us to add — we're always expanding!`;
       }
       const online = productResults.online[0];
       const bestPrice = online?.deliveredTotal ?? online?.landedCost ?? online?.price;
@@ -196,8 +210,8 @@ function fallbackReply(ctx: ReplyContext): string {
       const lower = ctx.userMessage.toLowerCase();
       if (/^(hi|hello|hey|yo)\b/.test(lower)) {
         return zipCode
-          ? `Hey! I'm Shop Scout — your ZIP **${zipCode}** is set for shipping estimates. Ask for anything (groceries, **men's** or **women's** clothes, toddler gear, home) or paste a product link and I'll compare online prices.`
-          : `Hi there! I'm Shop Scout — search any product right away. I'll compare prices across stores; add your **ZIP** later for shipping and tax estimates.`;
+          ? `Hey! I'm Homivion — your ZIP **${zipCode}** is set for shipping estimates. Ask for anything (groceries, **men's** or **women's** clothes, toddler gear, home) or paste a product link and I'll compare online prices.`
+          : `Hi there! I'm Homivion — search any product right away. I'll compare prices across stores; add your **ZIP** later for shipping and tax estimates.`;
       }
       if (/thank/.test(lower)) {
         return "You're welcome! Want me to **recheck** a search, try something else, or dig into a specific store from the results?";
@@ -213,7 +227,7 @@ function fallbackReply(ctx: ReplyContext): string {
       }
       return zipCode
         ? `I'm here to compare **online prices** for delivery to **${zipCode}**. Name a product, say **recheck** to refresh your last search, or paste a link.`
-        : `I'm Shop Scout — I compare online prices across major stores. Set your ZIP for shipping estimates, then tell me what you're shopping for.`;
+        : `I'm Homivion — I compare online prices across major stores. Set your ZIP for shipping estimates, then tell me what you're shopping for.`;
     }
   }
 }
@@ -233,12 +247,12 @@ export async function generateAssistantReply(ctx: ReplyContext): Promise<string>
     { role: "user", content: buildUserContext(ctx) },
   ];
 
-  const ai = await callOpenAI(messages);
+  const ai = await callShopScoutAI(messages);
   if (ai) return ai;
 
   return fallbackReply(ctx);
 }
 
 export function isAiEnabled(): boolean {
-  return Boolean(process.env.OPENAI_API_KEY?.trim());
+  return isGeminiConfigured() || isClaudeConfigured();
 }

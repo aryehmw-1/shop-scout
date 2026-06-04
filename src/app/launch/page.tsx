@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { AppShell } from "@/components/AppShell";
 import { Footer } from "@/components/Footer";
 import { CheckCircle2, Circle } from "lucide-react";
 
@@ -20,12 +19,12 @@ const dataSteps = [
 
 export default function LaunchPage() {
   return (
-    <AppShell>
+    <>
       <div className="flex-1 px-6 py-10 lg:px-12">
         <div className="mx-auto max-w-2xl">
           <h1 className="text-3xl font-bold text-stone-900">Launch guide</h1>
           <p className="mt-2 text-stone-600">
-            Shop Scout is demo-ready. Complete these two gaps to go live and
+            Homivion is demo-ready. Complete these two gaps to go live and
             earn affiliate revenue.
           </p>
 
@@ -86,6 +85,6 @@ export default function LaunchPage() {
         </div>
       </div>
       <Footer />
-    </AppShell>
+    </>
   );
 }

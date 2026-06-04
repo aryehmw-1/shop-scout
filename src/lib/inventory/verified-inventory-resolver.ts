@@ -73,7 +73,6 @@ export const GROCERY_CATALOG_ALIASES: Record<string, string[]> = {
   "mac-cheese": ["mac and cheese", "kraft mac and cheese", "macaroni and cheese"],
   "cola-classic-12": ["coca cola", "coke 12 pack", "coca-cola"],
   "pepsi-12pk": ["pepsi", "pepsi 12 pack"],
-  "laundry-detergent": ["tide detergent", "tide pods", "laundry detergent"],
   "toilet-paper-12": ["charmin toilet paper", "toilet paper"],
   "frozen-pizza": ["digiorno pizza", "frozen pizza"],
 };
@@ -243,12 +242,17 @@ export async function loadPersistedLiveQuotes(catalogId: string): Promise<LiveQu
 
   if (!product?.priceQuotes.length) return [];
 
-  const byRetailer = new Map<RetailerId, LiveQuote>();
+  const quotes: LiveQuote[] = [];
+  const seenStandardRetailers = new Set<RetailerId>();
 
   for (const row of product.priceQuotes) {
     const retailerId = row.retailerId as RetailerId;
-    if (byRetailer.has(retailerId)) continue;
     if (!row.productUrl.startsWith("http")) continue;
+    const isProviderMarketplace = row.providerSource === "ebay" || row.providerSource === "shopsavvy";
+    if (!isProviderMarketplace) {
+      if (seenStandardRetailers.has(retailerId)) continue;
+      seenStandardRetailers.add(retailerId);
+    }
 
     const meta = getRetailerMeta(retailerId);
     const fields = storedRowToLiveQuoteFields({
@@ -256,12 +260,23 @@ export async function loadPersistedLiveQuotes(catalogId: string): Promise<LiveQu
       storeTitle: row.storeTitle,
       imageUrl: row.imageUrl,
       priceUsd: row.priceUsd,
+      shippingUsd: row.shippingUsd,
+      estimatedTaxUsd: row.estimatedTaxUsd,
+      deliveredTotalUsd: row.deliveredTotalUsd,
+      landedCostUsd: row.landedCostUsd,
       productUrl: row.productUrl,
       source: row.source,
-      sourceLabel: meta.name,
+      sourceLabel: row.sourceLabel ?? meta.name,
+      providerSource: row.providerSource,
+      externalOfferId: row.externalOfferId,
+      sellerName: row.sellerName,
+      sellerFeedbackPct: row.sellerFeedbackPct,
+      sellerFeedbackScore: row.sellerFeedbackScore,
+      condition: row.condition,
+      returnPolicy: row.returnPolicy,
     });
 
-    byRetailer.set(retailerId, {
+    quotes.push({
       ...fields,
       matchConfidence: row.matchConfidence ?? 0.86,
       identityConfidence: row.identityConfidence ?? row.matchConfidence ?? 0.86,
@@ -287,7 +302,7 @@ export async function loadPersistedLiveQuotes(catalogId: string): Promise<LiveQu
     });
   }
 
-  return [...byRetailer.values()];
+  return quotes;
 }
 
 export async function resolveVerifiedInventoryQuery(

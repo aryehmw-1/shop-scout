@@ -8,7 +8,7 @@ const SEARCH_PATH =
 const SEARCH_PARAMS = ["q", "query", "keyword", "Ntt", "searchTerm", "search"] as const;
 
 const PDP_PATH =
-  /\/dp\/|\/gp\/product\/|\/ip\/|\/p\/|\/products?\//i;
+  /\/dp\/|\/gp\/product\/|\/ip\/|\/itm\/|\/p\/|\/products?\//i;
 
 const NON_PRODUCT_CATALOG =
   /explore-all-products|\/pages\/explore|\/store\/[^/]+\/pages\/[^/]+$/i;

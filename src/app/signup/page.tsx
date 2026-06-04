@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AppShell } from "@/components/AppShell";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { loadAddress } from "@/lib/storage";
@@ -39,7 +38,7 @@ export default function SignupPage() {
   };
 
   return (
-    <AppShell>
+    
       <div className="flex flex-1 justify-center px-6 py-10">
         <div className="w-full max-w-md rounded-3xl border border-stone-200 bg-white p-8 shadow-lg">
           <div className="mb-6 flex justify-center">
@@ -122,6 +121,6 @@ export default function SignupPage() {
           </p>
         </div>
       </div>
-    </AppShell>
+    
   );
 }

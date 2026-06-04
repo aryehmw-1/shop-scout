@@ -9,6 +9,7 @@ import {
 } from "@/lib/affiliate/impact-verification";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { AppChrome } from "@/components/AppChrome";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -45,6 +46,14 @@ export const metadata: Metadata = {
     "Nike deals",
     "home goods prices",
   ],
+  icons: {
+    icon: [
+      { url: "/brand/mark-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/brand/mark-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/brand/mark.ico", rel: "shortcut icon" },
+    ],
+    apple: { url: "/brand/mark-180.png", sizes: "180x180", type: "image/png" },
+  },
   openGraph: {
     title: APP_NAME,
     description: APP_TAGLINE,
@@ -68,8 +77,8 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-/** Keep homepage metadata in prerendered HTML (crawler-visible without streaming). */
-export const dynamic = "force-static";
+/** Allow dynamic child routes (inventory, chat) without forcing static shell. */
+export const dynamic = "auto";
 
 export default function RootLayout({
   children,
@@ -90,7 +99,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-full antialiased">
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            <AppChrome>{children}</AppChrome>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

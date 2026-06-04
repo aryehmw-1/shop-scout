@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AppShell } from "@/components/AppShell";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -30,7 +29,7 @@ export default function LoginPage() {
   };
 
   return (
-    <AppShell>
+    
       <div className="flex flex-1 items-center justify-center px-6 py-12">
         <div className="w-full max-w-md rounded-3xl border border-stone-200 bg-white p-8 shadow-lg">
           <div className="mb-8 flex justify-center">
@@ -84,6 +83,6 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
-    </AppShell>
+    
   );
 }

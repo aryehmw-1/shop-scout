@@ -1,4 +1,4 @@
-import { readFile, mkdir } from "fs/promises";
+import { readFile } from "fs/promises";
 import path from "path";
 import type { ProductOffer, PublicUser, UserAddress, UserPreferences } from "../types";
 import {
@@ -81,7 +81,6 @@ export async function createUser(input: {
   address: UserAddress;
 }): Promise<PublicUser> {
   await ensureDb();
-  await mkdir(DATA_DIR, { recursive: true });
   return dbCreateUser(input);
 }
 

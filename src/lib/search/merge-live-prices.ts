@@ -35,6 +35,38 @@ function markBestDeal(offers: ProductOffer[]) {
   return offers;
 }
 
+function isMarketplaceQuote(quote: LiveQuote): boolean {
+  return quote.providerSource === "ebay" || quote.providerSource === "shopsavvy";
+}
+
+function liveQuoteKey(quote: LiveQuote): string {
+  return quote.externalOfferId || quote.productUrl || `${quote.retailerId}:${quote.storeTitle}`;
+}
+
+function applyQuoteMetadata(
+  offer: ProductOffer,
+  quote: LiveQuote,
+): ProductOffer {
+  const deliveredTotal = quote.deliveredTotal ?? offer.deliveredTotal ?? offer.landedCost;
+  const landedCost = deliveredTotal ?? offer.landedCost;
+
+  return {
+    ...offer,
+    estimatedShipping: quote.shippingCost ?? offer.estimatedShipping,
+    deliveryFee: quote.shippingCost ?? offer.deliveryFee,
+    estimatedTax: quote.estimatedTax ?? offer.estimatedTax,
+    deliveredTotal,
+    landedCost,
+    providerSource: quote.providerSource ?? offer.providerSource,
+    sellerName: quote.sellerName ?? offer.sellerName,
+    sellerFeedbackPct: quote.sellerFeedbackPct ?? offer.sellerFeedbackPct,
+    sellerFeedbackScore: quote.sellerFeedbackScore ?? offer.sellerFeedbackScore,
+    condition: quote.condition ?? offer.condition,
+    returnPolicy: quote.returnPolicy ?? offer.returnPolicy,
+    sourceLabel: quote.sourceLabel ?? offer.sourceLabel,
+  };
+}
+
 function applyLiveToOffer(
   offer: ProductOffer,
   quote: LiveQuote,
@@ -65,7 +97,7 @@ function applyLiveToOffer(
   const listingTitle = quote.storeTitle.trim() || offer.title;
   const matchAnalysis = analyzeProductMatch(listingTitle, item, intent, quote.matchConfidence);
 
-  return {
+  return applyQuoteMetadata({
     ...offer,
     title: displayTitle.length > offer.title.length ? displayTitle : offer.title,
     storeTitle: quote.storeTitle,
@@ -106,7 +138,7 @@ function applyLiveToOffer(
     normalizationStatus: quote.normalizationNote,
     qaStatus: quote.qaStatus ?? offer.qaStatus,
     lastVerifiedAt: quote.fetchedAt ?? offer.lastVerifiedAt,
-  };
+  }, quote);
 }
 
 function buildLiveOffer(
@@ -139,8 +171,8 @@ function buildLiveOffer(
   const persisted = quote.verifiedPersistedInventory === true;
   const matchAnalysis = analyzeProductMatch(liveTitle, item, intent, quote.matchConfidence);
 
-  return {
-    id: `live-${item.id}-${quote.retailerId}-${channel}`,
+  return applyQuoteMetadata({
+    id: `live-${item.id}-${quote.retailerId}-${liveQuoteKey(quote).replace(/[^a-z0-9]+/gi, "-").slice(0, 80)}-${channel}`,
     catalogId: item.id,
     title: liveTitle,
     storeTitle: quote.storeTitle,
@@ -180,7 +212,7 @@ function buildLiveOffer(
     normalizationStatus: quote.normalizationNote,
     qaStatus: quote.qaStatus,
     lastVerifiedAt: quote.fetchedAt,
-  };
+  }, quote);
 }
 
 export function mergeLivePrices(
@@ -195,9 +227,14 @@ export function mergeLivePrices(
     return { results: catalog, liveCount: 0 };
   }
 
-  const quoteMap = new Map<RetailerId, LiveQuote>(
-    quotes.map((q) => [q.retailerId, q]),
-  );
+  const standardQuoteMap = new Map<RetailerId, LiveQuote>();
+  const marketplaceQuotes: LiveQuote[] = [];
+  for (const quote of quotes) {
+    if (isMarketplaceQuote(quote)) marketplaceQuotes.push(quote);
+    else if (!standardQuoteMap.has(quote.retailerId) || quote.verifiedPersistedInventory) {
+      standardQuoteMap.set(quote.retailerId, quote);
+    }
+  }
   let liveCount = 0;
 
   const searchQ = buildFullSearchQuery(intent);
@@ -210,11 +247,11 @@ export function mergeLivePrices(
 
   const patchRow = (offers: ProductOffer[]) =>
     offers.map((o) => {
-      const quote = quoteMap.get(o.retailer);
+      const quote = standardQuoteMap.get(o.retailer);
       if (!quote) return o;
       if (!quoteRelevant(quote)) return o;
       liveCount += 1;
-      quoteMap.delete(o.retailer);
+      standardQuoteMap.delete(o.retailer);
       return applyLiveToOffer(o, quote, item, intent, livePriceSource);
     });
 
@@ -227,13 +264,29 @@ export function mergeLivePrices(
     ...online.map((o) => o.retailer),
   ]);
 
-  for (const quote of quoteMap.values()) {
+  for (const quote of standardQuoteMap.values()) {
     if (existing.has(quote.retailerId)) continue;
     if (!quoteRelevant(quote)) continue;
     const channel: ShoppingChannel = isRetailerNearZip(zip, quote.retailerId) ?
       "local"
     : "online";
     const offer = buildLiveOffer(item, quote, intent, channel, livePriceSource);
+    if (channel === "local") local.push(offer);
+    else online.push(offer);
+    liveCount += 1;
+  }
+
+  const existingMarketplace = new Set(
+    [...local, ...online].map((offer) => offer.productUrl),
+  );
+  for (const quote of marketplaceQuotes) {
+    if (!quoteRelevant(quote)) continue;
+    if (existingMarketplace.has(quote.productUrl)) continue;
+    const channel: ShoppingChannel = isRetailerNearZip(zip, quote.retailerId) ?
+      "local"
+    : "online";
+    const offer = buildLiveOffer(item, quote, intent, channel, livePriceSource);
+    existingMarketplace.add(quote.productUrl);
     if (channel === "local") local.push(offer);
     else online.push(offer);
     liveCount += 1;

@@ -3,10 +3,15 @@ import type { NextRequest } from "next/server";
 import { IMPACT_VERIFICATION_META_HTML } from "@/lib/affiliate/impact-verification";
 
 /** Prevents middleware fetch loop when rewriting HTML. */
-const HTML_META_SKIP_HEADER = "x-shop-scout-html-meta-skip";
+const HTML_META_SKIP_HEADER = "x-homivion-html-meta-skip";
 
 function shouldInjectImpactMeta(request: NextRequest): boolean {
   if (request.method !== "GET" && request.method !== "HEAD") return false;
+  // Client navigations fetch RSC payloads — never re-fetch full HTML (causes flash/reload).
+  if (request.headers.get("RSC") === "1") return false;
+  if (request.headers.get("Next-Router-Prefetch")) return false;
+  const accept = request.headers.get("accept") ?? "";
+  if (accept.includes("text/x-component")) return false;
   const { pathname } = request.nextUrl;
   if (pathname.startsWith("/api")) return false;
   if (pathname.startsWith("/_next")) return false;
@@ -72,6 +77,10 @@ async function injectImpactVerificationMeta(
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (process.env.NODE_ENV === "development") {
+    return NextResponse.next();
+  }
 
   if (request.headers.get(HTML_META_SKIP_HEADER)) {
     return NextResponse.next();

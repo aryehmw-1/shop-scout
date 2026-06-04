@@ -33,7 +33,7 @@ export function getCategoryConfidenceMessage(
       badge: "Experimental coverage",
       headline: "Apparel search is experimental",
       detail:
-        "Shop Scout works best for groceries and household items. For clothing and shoes, paste a direct product link for the most reliable compare.",
+        "Homivion works best for groceries and household items. For clothing and shoes, paste a direct product link for the most reliable compare.",
       tips: [
         "Paste a direct Amazon or retailer product URL for the most reliable compare",
         "Try refining with brand, size, and color — conversational follow-ups work",

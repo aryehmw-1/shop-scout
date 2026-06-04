@@ -82,6 +82,7 @@ export function estimateDeliveredPrice(
     itemBase,
   );
 
+  const providerShippingKnown = offer.providerSource != null && offer.estimatedShipping != null;
   const threshold = FREE_SHIPPING_THRESHOLDS[offer.retailer];
   const baseShip = BASE_SHIPPING[offer.retailer] ?? 5.99;
   const memberShipFree = memberFreeShipping(offer.retailer, prefs);
@@ -89,13 +90,18 @@ export function estimateDeliveredPrice(
     memberShipFree || (threshold != null && itemPrice >= threshold);
 
   let estimatedShipping = 0;
-  if (!freeShippingEligible) {
+  if (providerShippingKnown) {
+    estimatedShipping = offer.estimatedShipping ?? offer.deliveryFee ?? 0;
+  } else if (!freeShippingEligible) {
     estimatedShipping = offer.deliveryFee ?? baseShip;
   }
 
   const taxRate = estimateTaxRate(zip ?? resolveCatalogZip(intent?.zipCode));
   const taxable = itemPrice + (estimatedShipping > 0 ? estimatedShipping * 0.5 : 0);
-  const estimatedTax = Math.round(taxable * taxRate * 100) / 100;
+  const estimatedTax =
+    providerShippingKnown && offer.estimatedTax != null ?
+      offer.estimatedTax
+    : Math.round(taxable * taxRate * 100) / 100;
   const deliveredTotal = Math.round((itemPrice + estimatedShipping + estimatedTax) * 100) / 100;
 
   let confidence = zip ? 0.72 : 0.48;
@@ -107,6 +113,7 @@ export function estimateDeliveredPrice(
   const notes: string[] = [];
   if (!zip) notes.push("Add ZIP for regional tax/shipping");
   else if (!hasUserZip(intent?.zipCode)) notes.push("Estimated for your region");
+  if (providerShippingKnown) notes.push("Shipping from provider");
   if (freeShippingEligible && threshold && !memberShipFree) {
     notes.push(`Free shipping over $${threshold.toFixed(0)}`);
   }

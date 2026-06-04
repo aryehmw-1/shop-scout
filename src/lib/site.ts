@@ -13,6 +13,6 @@ export function getSiteUrl(): string {
 }
 
 export const CONTACT_EMAIL =
-  process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "support@shopscout.app";
+  process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim() || "support@homivion.com";
 
 export const SITE_LEGAL_NAME = process.env.NEXT_PUBLIC_LEGAL_NAME?.trim() || APP_NAME;
