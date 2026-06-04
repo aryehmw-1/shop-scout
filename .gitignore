@@ -40,6 +40,8 @@ scripts/.accuracy-run.mjs
 /data/users.json
 /data/*.db
 /data/*.db-journal
+/data/chunks/
+/data/products-manifest.json
 .env
 
 # vercel

@@ -1,13 +1,13 @@
 // Shop Scout — relational store for users, catalog, price intelligence, and search history.
-// SQLite for local/dev; set DATABASE_URL to PostgreSQL in production.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")      // pooled — used at runtime
+  directUrl = env("DATABASE_URL_UNPOOLED")    // direct — used for migrations
 }
 
 model User {
@@ -70,6 +70,33 @@ model Product {
   @@index([brand])
   @@index([brandCanonical])
   @@index([refreshPriority])
+}
+
+model Retailer {
+  id              String   @id
+  name            String
+  sourceType      String   @default("direct")
+  websiteUrl      String?
+  affiliateNetwork String?
+  enabled         Boolean  @default(true)
+  qualityScore    Float    @default(0.5)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([enabled])
+  @@index([sourceType])
+}
+
+model Category {
+  id        String   @id
+  name      String
+  parentId  String?
+  path      String   @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([parentId])
+  @@index([path])
 }
 
 model BrandCanonical {
@@ -188,6 +215,9 @@ model PriceQuote {
   imageUrl              String?
   priceUsd              Float
   wasPriceUsd           Float?
+  shippingUsd           Float?
+  estimatedTaxUsd       Float?
+  deliveredTotalUsd     Float?
   landedCostUsd         Float
   unitPriceUsd          Float
   inStock               Boolean  @default(true)
@@ -197,6 +227,14 @@ model PriceQuote {
   imageConfidence       Float?
   confidenceReasonsJson String   @default("[]")
   source                String
+  providerSource        String?
+  sourceLabel           String?
+  externalOfferId       String?
+  sellerName            String?
+  sellerFeedbackPct     Float?
+  sellerFeedbackScore   Int?
+  condition             String?
+  returnPolicy          String?
   productUrl            String
   affiliateUrl          String
   fetchedAt             DateTime @default(now())
@@ -209,6 +247,8 @@ model PriceQuote {
   @@index([variantGroupId])
   @@index([source, expiresAt])
   @@index([retailerId, fetchedAt])
+  @@index([providerSource, fetchedAt])
+  @@index([externalOfferId])
 }
 
 /// Human-in-the-loop QA for persisted verified quotes before scaling inventory.
@@ -394,4 +434,18 @@ model SystemConfig {
   key       String   @id
   valueJson String
   updatedAt DateTime @updatedAt
+}
+
+/// User-submitted product requests from the zero-results "suggest a product" form.
+model ProductRequest {
+  id           String    @id @default(cuid())
+  productQuery String
+  userEmail    String
+  status       String    @default("pending")
+  notifiedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([status, createdAt])
+  @@index([userEmail])
 }
