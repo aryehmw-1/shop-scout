@@ -584,7 +584,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
         <textarea
           ref={inputRef}
           name="q"
-          rows={1}
+          rows={3}
           aria-label="Search products"
           value={input}
           onChange={(e) => {
@@ -605,7 +605,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
               ? "Paste a product page URL"
               : "Ask for a product or paste a link"
           }
-          className="w-full resize-none overflow-y-auto rounded-2xl border border-ink-200 bg-ink-50/80 py-3.5 px-4 text-ink-800 placeholder:text-ink-400 focus:border-sage-400 focus:outline-none focus:ring-2 focus:ring-sage-200/80"
+          className="w-full resize-none overflow-y-auto rounded-2xl border border-ink-200 bg-ink-50/80 py-6 px-5 text-base text-ink-800 placeholder:text-ink-400 focus:border-sage-400 focus:outline-none focus:ring-2 focus:ring-sage-200/80"
           style={{ maxHeight: "14rem" }}
           disabled={loading}
         />
@@ -614,9 +614,9 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
         type="submit"
         disabled={loading}
         aria-label="Send"
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40"
+        className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40"
       >
-        <ArrowUp size={20} strokeWidth={2.5} />
+        <ArrowUp size={24} strokeWidth={2.5} />
       </button>
     </form>
   );
@@ -688,7 +688,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
         {isEmpty ? (
           showHero ? (
             /* Hero layout — home page feel, no component swap */
-            <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-4 pb-16 pt-8 text-center lg:px-8">
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-start overflow-y-auto px-4 pb-16 pt-12 text-center sm:pt-16 lg:px-8">
               <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1 text-sm font-semibold text-stone-600 shadow-sm">
                 <CheckCircle2 size={15} className="text-emerald-500" aria-hidden />
                 Verified prices. Real deals. Trusted results.

@@ -99,21 +99,21 @@ export function TypewriterInput({ onSearch }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-8 flex w-full max-w-2xl items-center rounded-2xl border border-stone-200 bg-white shadow-[0_16px_60px_rgba(41,37,36,0.08)] focus-within:border-orange-300"
+      className="mt-8 flex w-full max-w-3xl items-center rounded-3xl border border-stone-200 bg-white shadow-[0_16px_60px_rgba(41,37,36,0.10)] focus-within:border-orange-300"
     >
       <label htmlFor="home-search" className="sr-only">
         Product to compare
       </label>
-      <Search size={18} className="ml-4 shrink-0 text-stone-400" aria-hidden />
+      <Search size={22} className="ml-6 shrink-0 text-stone-400" aria-hidden />
 
       <div className="relative min-w-0 flex-1">
         {showAnimation && (
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 flex items-center px-3 text-base"
+            className="pointer-events-none absolute inset-0 flex items-center px-5 text-xl"
           >
             <span className="text-stone-700">{displayed}</span>
-            <span className="animate-blink ml-px inline-block h-5 w-[2px] bg-stone-400" />
+            <span className="animate-blink ml-px inline-block h-7 w-[2px] bg-stone-400" />
           </div>
         )}
 
@@ -128,7 +128,7 @@ export function TypewriterInput({ onSearch }: Props) {
           onFocus={handleFocus}
           onBlur={handleBlur}
           placeholder={showPlaceholder ? "Ask for a product or paste a link…" : ""}
-          className={`w-full bg-transparent py-4 pl-3 pr-2 text-base outline-none placeholder:text-stone-400 ${
+          className={`w-full bg-transparent py-14 pl-5 pr-3 text-xl outline-none placeholder:text-stone-400 ${
             showAnimation ? "text-transparent caret-transparent" : "text-stone-900"
           }`}
         />
@@ -138,9 +138,9 @@ export function TypewriterInput({ onSearch }: Props) {
       <button
         type="submit"
         aria-label="Search"
-        className="mr-2 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600"
+        className="mr-3 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600"
       >
-        <ShoppingCart size={18} strokeWidth={2} aria-hidden />
+        <ShoppingCart size={24} strokeWidth={2} aria-hidden />
       </button>
     </form>
   );

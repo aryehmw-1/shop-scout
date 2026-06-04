@@ -6,7 +6,7 @@ import { Heart, LogIn, LogOut, Package, Search, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { APP_NAME } from "@/lib/constants";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const mainNav = [
   { href: "/", label: "Compare", icon: Search },
@@ -17,9 +17,24 @@ const mainNav = [
 const STORAGE_KEY = "homivion-sidebar-expanded";
 
 function Tooltip({ label }: { label: string }) {
+  const [pos, setPos] = React.useState<{ top: number; left: number } | null>(null);
   return (
-    <span className="pointer-events-none absolute left-full top-1/2 z-50 ml-3 -translate-y-1/2 whitespace-nowrap rounded-lg bg-stone-900 px-2.5 py-1.5 text-xs font-semibold text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100">
-      {label}
+    <span
+      onMouseEnter={(e) => {
+        const rect = (e.currentTarget.parentElement as HTMLElement).getBoundingClientRect();
+        setPos({ top: rect.top + rect.height / 2, left: rect.right + 12 });
+      }}
+      onMouseLeave={() => setPos(null)}
+      className="absolute inset-0 z-50"
+    >
+      {pos && (
+        <span
+          style={{ top: pos.top, left: pos.left, transform: "translateY(-50%)" }}
+          className="pointer-events-none fixed z-[9999] whitespace-nowrap rounded-lg bg-stone-900 px-2.5 py-1.5 text-xs font-semibold text-white shadow-lg"
+        >
+          {label}
+        </span>
+      )}
     </span>
   );
 }
@@ -53,7 +68,7 @@ export function Sidebar() {
         expanded ? "w-60" : "w-16"
       }`}
     >
-      <div className="flex h-full min-h-0 flex-col overflow-x-visible overflow-y-auto py-5">
+      <div className="flex h-full min-h-0 flex-col overflow-hidden py-5">
 
         {/* Logo / toggle */}
         <div className={`flex items-center ${expanded ? "px-5" : "justify-center px-0"}`}>
