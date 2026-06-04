@@ -216,8 +216,8 @@ function fallbackReply(ctx: ReplyContext): string {
       if (/thank/.test(lower)) {
         return "You're welcome! Want me to **recheck** a search, try something else, or dig into a specific store from the results?";
       }
-      if (/help|how (does|do) this work/.test(lower)) {
-        return "Easy: tell me what you want (e.g. **organic milk** or **women's black hoodie**), or paste a product link. I'll show **online prices** from major stores — click any card to shop that retailer.";
+      if (/help|how (does|do) (this|it|you) work|what (do|can) you do|what('s| is) this|who are you|what do you do/.test(lower)) {
+        return "I'm **Homivion**, your shopping assistant. Tell me a product — like **organic milk**, **AirPods Pro**, or a **women's black hoodie** — or paste a product link, and I'll compare **online prices across major stores** so you can grab the best deal.\n\nYour ZIP is only used for shipping estimates. What are you shopping for?";
       }
       if (productResults) {
         const online = productResults.online[0];

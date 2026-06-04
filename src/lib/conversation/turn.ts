@@ -119,12 +119,32 @@ function isFollowUpAboutResults(text: string): boolean {
   );
 }
 
+/**
+ * Questions about the assistant/service itself ("what do you do?", "who are
+ * you?", "how does this work?", "are you an AI?"). These are NOT product
+ * searches and must not hit the inventory-miss path.
+ */
+function isMetaQuestion(text: string): boolean {
+  const t = text.trim().toLowerCase();
+  return (
+    /\bwhat (do|can) (you|this|homivion|it)\b.{0,20}\b(do|help|find|search|offer)/.test(t) ||
+    /\bwhat('s| is| are)\b.{0,20}\b(this|you|homivion|your (purpose|job|name|deal))/.test(t) ||
+    /\bwho are you\b/.test(t) ||
+    /\bhow (do|does) (you|this|it|homivion)\b.{0,20}\bwork/.test(t) ||
+    /\bwhat can you do\b/.test(t) ||
+    /\bwhat do you do\b/.test(t) ||
+    /\bare you (an? )?(ai|bot|robot|human|real|person)\b/.test(t) ||
+    /\bwhat (kind|type) of (site|app|tool|service|thing) (is|are) (this|you)\b/.test(t)
+  );
+}
+
 function isProductSearchMessage(text: string): boolean {
   const t = text.trim();
   if (t.length < 2 || isValidZip(t) || GREETING.test(t)) return false;
   if (extractUrl(t)) return false;
   if (isRecheckMessage(t) || isFollowUpAboutResults(t)) return false;
   if (/^(help|how does this work|\?)$/i.test(t)) return false;
+  if (isMetaQuestion(t)) return false;
   if (looksLikeShoppingQuery(t)) return true;
   return t.length >= 3;
 }
@@ -148,6 +168,7 @@ function isConversationalOnly(text: string, session?: SessionState): boolean {
   if (GREETING.test(t)) return true;
   if (/^thanks|thank you|thx$/i.test(t)) return true;
   if (/^help$|how (does|do) (this|homivion|shop scout) work/i.test(t)) return true;
+  if (isMetaQuestion(t)) return true;
   if (isFollowUpAboutResults(t)) return true;
   if (isAdvisoryQuestion(t)) return true;
   if (t.length < 12 && !/\d/.test(t)) return true;
