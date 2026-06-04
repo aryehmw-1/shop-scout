@@ -234,6 +234,11 @@ function fallbackReply(ctx: ReplyContext): string {
           return `From your last search, **${online.retailerName}** at **$${online.price.toFixed(2)}** is the lowest I've got. Want me to **recheck** or search something different?`;
         }
       }
+      // A question that isn't about shopping — acknowledge it honestly instead of
+      // repeating the same canned redirect.
+      if (/[?]\s*$/.test(ctx.userMessage.trim()) || /\b(can|could|would|will|do|does|how|what|why|when|should|is|are)\b/.test(lower)) {
+        return "That's a bit outside what I can dig into — I'm **Homivion**, a shopping price-comparison assistant, so I'm best at finding and comparing prices rather than general questions.\n\n• **Name a product** and I'll compare prices across stores\n• **Paste a link** and I'll find cheaper alternatives\n• Ask me **how I work** or for **buying advice** on something\n\nWhat can I help you shop for?";
+      }
       return zipCode
         ? `I'm here to compare **online prices** for delivery to **${zipCode}**. Name a product, say **recheck** to refresh your last search, or paste a link.`
         : `I'm Homivion — I compare online prices across major stores. Set your ZIP for shipping estimates, then tell me what you're shopping for.`;

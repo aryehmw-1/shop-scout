@@ -28,7 +28,14 @@ export function TypewriterInput({ onSearch }: Props) {
 
   const [mode, setMode] = useState<"animating" | "focused" | "typing">("animating");
   const [value, setValue] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  function autoResize() {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }
 
   useEffect(() => {
     if (mode !== "animating") return;
@@ -74,13 +81,21 @@ export function TypewriterInput({ onSearch }: Props) {
     // (never resume the animation)
   }
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setMode("typing");
     setValue(e.target.value);
     if (e.target.value === "") setMode("focused");
+    autoResize();
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  }
+
+  function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
     if (mode === "animating") {
       // No user input — open chat with welcome screen
@@ -99,12 +114,12 @@ export function TypewriterInput({ onSearch }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-8 flex w-full max-w-3xl items-center rounded-3xl border border-stone-200 bg-white shadow-[0_16px_60px_rgba(41,37,36,0.10)] focus-within:border-orange-300"
+      className="mt-8 flex w-full max-w-3xl items-end rounded-3xl border border-stone-200 bg-white shadow-[0_16px_60px_rgba(41,37,36,0.10)] focus-within:border-orange-300"
     >
       <label htmlFor="home-search" className="sr-only">
         Product to compare
       </label>
-      <Search size={22} className="ml-6 shrink-0 text-stone-400" aria-hidden />
+      <Search size={22} className="mb-7 ml-6 shrink-0 text-stone-400" aria-hidden />
 
       <div className="relative min-w-0 flex-1">
         {showAnimation && (
@@ -117,18 +132,20 @@ export function TypewriterInput({ onSearch }: Props) {
           </div>
         )}
 
-        <input
+        <textarea
           ref={inputRef}
           id="home-search"
           name="q"
-          type="search"
+          rows={1}
           autoComplete="off"
           value={inputVal}
           onChange={handleChange}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
           placeholder={showPlaceholder ? "Ask for a product or paste a link…" : ""}
-          className={`w-full bg-transparent py-8 pl-3 pr-3 text-lg outline-none placeholder:text-stone-400 ${
+          style={{ maxHeight: "16rem" }}
+          className={`w-full resize-none overflow-y-auto bg-transparent py-8 pl-3 pr-3 text-lg leading-snug outline-none placeholder:text-stone-400 ${
             showAnimation ? "text-transparent caret-transparent" : "text-stone-900"
           }`}
         />
@@ -138,7 +155,7 @@ export function TypewriterInput({ onSearch }: Props) {
       <button
         type="submit"
         aria-label="Search"
-        className="mr-3 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600"
+        className="mb-4 mr-3 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600"
       >
         <ShoppingCart size={24} strokeWidth={2} aria-hidden />
       </button>
