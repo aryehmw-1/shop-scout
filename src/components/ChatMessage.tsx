@@ -43,7 +43,7 @@ export function ChatMessageBubble({
         <div
           className={
             isUser
-              ? "rounded-2xl rounded-br-sm border border-sage-200 bg-sage-50 px-4 py-3 text-[15px] leading-relaxed text-stone-800"
+              ? "rounded-2xl rounded-br-sm border border-orange-200/70 bg-white px-4 py-3 text-[15px] leading-relaxed text-stone-800"
               : "text-[15px] leading-relaxed text-stone-800"
           }
         >
