@@ -1,0 +1,360 @@
+{
+  "at": "2026-06-01T23:32:38.693Z",
+  "source": "eval",
+  "snapshotsRecorded": 0,
+  "snapshotsCompacted": {
+    "files": 2,
+    "trimmed": 0
+  },
+  "memoryCompaction": {
+    "beforeCount": 8,
+    "afterCount": 8,
+    "prunedExpired": 0,
+    "cappedLayers": {}
+  },
+  "lifecycle": {
+    "evaluatedAt": "2026-06-01T23:32:38.692Z",
+    "entries": [
+      {
+        "canonicalId": "gtin-012345678905",
+        "title": "Keurig K-Elite Single Serve Coffee Maker",
+        "currentWinnerRetailer": "walmart",
+        "recommendationAgeHours": 0,
+        "winnerReplacementCount": 14,
+        "estimatedHalfLifeHours": 25,
+        "regime": "shifting"
+      },
+      {
+        "canonicalId": "gtin-019876543210",
+        "title": "Nike Dri-FIT Men's Training T-Shirt",
+        "currentWinnerRetailer": "walmart",
+        "recommendationAgeHours": 0,
+        "winnerReplacementCount": 0,
+        "estimatedHalfLifeHours": 48,
+        "regime": "stable"
+      }
+    ],
+    "retailerReliabilityDelta": [
+      {
+        "retailer": "walmart",
+        "trustScore": 0.817,
+        "staleOfferRate": 0
+      },
+      {
+        "retailer": "target",
+        "trustScore": 0.767,
+        "staleOfferRate": 0
+      }
+    ],
+    "marketRegimeNote": "Catalog recommendations are stable across recent snapshots."
+  },
+  "observability": {
+    "at": "2026-06-01T23:32:38.692Z",
+    "graphCount": 2,
+    "confidenceDistribution": {
+      "high": 0,
+      "medium": 2,
+      "low": 0
+    },
+    "drift": {
+      "evaluatedAt": "2026-06-01T23:32:38.685Z",
+      "canonicalsTracked": 2,
+      "volatileCanonicals": [],
+      "meanVolatility": 0.167,
+      "confidenceDriftAlerts": [],
+      "unstableRegions": [],
+      "notes": []
+    },
+    "calibration": {
+      "evaluatedAt": "2026-06-01T23:32:38.680Z",
+      "offerCount": 4,
+      "buckets": [
+        {
+          "label": "0–35%",
+          "min": 0,
+          "max": 0.35,
+          "count": 0,
+          "meanPredicted": 0,
+          "meanActualProxy": 0,
+          "miscalibration": 0
+        },
+        {
+          "label": "35–52%",
+          "min": 0.35,
+          "max": 0.52,
+          "count": 0,
+          "meanPredicted": 0,
+          "meanActualProxy": 0,
+          "miscalibration": 0
+        },
+        {
+          "label": "52–72%",
+          "min": 0.52,
+          "max": 0.72,
+          "count": 1,
+          "meanPredicted": 0.687,
+          "meanActualProxy": 0.825,
+          "miscalibration": 0.1379999999999999
+        },
+        {
+          "label": "72–100%",
+          "min": 0.72,
+          "max": 1,
+          "count": 3,
+          "meanPredicted": 0.8079999999999999,
+          "meanActualProxy": 0.9547619047619048,
+          "miscalibration": 0.14676190476190487
+        }
+      ],
+      "calibrationScore": 0.858,
+      "identityDisagreements": [
+        {
+          "canonicalId": "gtin-012345678905",
+          "title": "Keurig K-Elite Single Serve Coffee Maker",
+          "overall": 0.654,
+          "identifierAgreement": 0.4,
+          "titleConsensus": 0.786,
+          "message": "Identity score is moderate/high but identifiers do not agree — surface uncertainty in UX."
+        },
+        {
+          "canonicalId": "gtin-019876543210",
+          "title": "Nike Dri-FIT Men's Training T-Shirt",
+          "overall": 0.638,
+          "identifierAgreement": 0.4,
+          "titleConsensus": 0.722,
+          "message": "Identity score is moderate/high but identifiers do not agree — surface uncertainty in UX."
+        }
+      ],
+      "offerAnomalies": [],
+      "falsePositiveSignals": [],
+      "notes": [
+        "2 identity disagreement diagnostic(s) — ensure uncertainty banners fire."
+      ]
+    },
+    "regressionGates": {
+      "passed": true,
+      "gates": [
+        {
+          "id": "calibration_floor",
+          "description": "Confidence calibration score meets minimum",
+          "passed": true,
+          "detail": "Score 0.858 (min 0.7)"
+        },
+        {
+          "id": "no_false_positive_surge",
+          "description": "False positive signals below threshold",
+          "passed": true,
+          "detail": "0 signal(s)"
+        },
+        {
+          "id": "golden_pass_rate",
+          "description": "Golden query suite pass rate",
+          "passed": true,
+          "detail": "100% (min 85%)"
+        },
+        {
+          "id": "hallucination_grounding",
+          "description": "Recommendations cite only validated retailers",
+          "passed": true,
+          "detail": "All matched cases grounded"
+        },
+        {
+          "id": "decision_present",
+          "description": "Matched queries produce purchase decisions",
+          "passed": true,
+          "detail": "6/6 matched with decision checks"
+        },
+        {
+          "id": "recommendation_quality",
+          "description": "Heuristic recommendation quality score",
+          "passed": true,
+          "detail": "Score 0.9 (min 0.65) · satisfaction proxy 0.9"
+        },
+        {
+          "id": "ingest_stress",
+          "description": "Ingest validation stress suite",
+          "passed": true,
+          "detail": "5/5 (100%)"
+        },
+        {
+          "id": "adversarial_suite",
+          "description": "Adversarial synthetic edge-case suite pass rate",
+          "passed": true,
+          "detail": "7/7 (100%, min 100%)"
+        }
+      ]
+    },
+    "adversarial": {
+      "evaluatedAt": "2026-06-01T23:32:38.688Z",
+      "total": 7,
+      "passed": 7,
+      "cases": [
+        {
+          "id": "near_duplicate_title",
+          "description": "Whitespace-padded title does not crash explanation",
+          "passed": true,
+          "detail": "Recommended: Walmart"
+        },
+        {
+          "id": "extreme_pricing",
+          "description": "Extreme price spread surfaces uncertainty or market signals",
+          "passed": true,
+          "detail": "2 uncertainty, 1 market signals"
+        },
+        {
+          "id": "sparse_evidence",
+          "description": "Minimal query still produces bounded explanation",
+          "passed": true,
+          "detail": "evidence=0 identity=0.654"
+        },
+        {
+          "id": "manipulated_title",
+          "description": "Spammy title still yields structured output",
+          "passed": true,
+          "detail": "FREE iPhone 15 Pro Max 100% OFF"
+        },
+        {
+          "id": "single_validated_offer",
+          "description": "Single-offer graph still produces decision or clear uncertainty",
+          "passed": true,
+          "detail": "has decision"
+        },
+        {
+          "id": "conflicting_titles",
+          "description": "Conflicting retailer titles do not crash explanation pipeline",
+          "passed": true,
+          "detail": "identity=0.478"
+        },
+        {
+          "id": "retailer_grounding",
+          "description": "Offer insights only cite retailers present in graph",
+          "passed": true,
+          "detail": "2 retailers cited"
+        }
+      ]
+    },
+    "evalHistory": {
+      "version": 1,
+      "entries": [
+        {
+          "at": "2026-06-01T23:32:38.689Z",
+          "calibrationScore": 0.858,
+          "goldenPassRate": 1,
+          "meanIdentityConfidence": 0.646,
+          "falsePositiveCount": 0,
+          "graphCount": 2
+        },
+        {
+          "at": "2026-06-01T21:30:01.862Z",
+          "calibrationScore": 0.858,
+          "goldenPassRate": 1,
+          "meanIdentityConfidence": 0.646,
+          "falsePositiveCount": 0,
+          "graphCount": 2
+        },
+        {
+          "at": "2026-06-01T21:29:13.184Z",
+          "calibrationScore": 0.858,
+          "goldenPassRate": 1,
+          "meanIdentityConfidence": 0.646,
+          "falsePositiveCount": 0,
+          "graphCount": 2
+        },
+        {
+          "at": "2026-06-01T21:20:48.841Z",
+          "calibrationScore": 0.858,
+          "goldenPassRate": 1,
+          "meanIdentityConfidence": 0.646,
+          "falsePositiveCount": 0,
+          "graphCount": 2
+        },
+        {
+          "at": "2026-06-01T21:11:36.813Z",
+          "calibrationScore": 0.858,
+          "goldenPassRate": 1,
+          "meanIdentityConfidence": 0.646,
+          "falsePositiveCount": 0,
+          "graphCount": 2
+        },
+        {
+          "at": "2026-06-01T20:59:39.199Z",
+          "calibrationScore": 0.858,
+          "goldenPassRate": 1,
+          "meanIdentityConfidence": 0.646,
+          "falsePositiveCount": 0,
+          "graphCount": 2
+        },
+        {
+          "at": "2026-06-01T20:43:47.835Z",
+          "calibrationScore": 0.858,
+          "goldenPassRate": 1,
+          "meanIdentityConfidence": 0.646,
+          "falsePositiveCount": 0,
+          "graphCount": 2
+        },
+        {
+          "at": "2026-06-01T20:42:39.622Z",
+          "calibrationScore": 0.858,
+          "goldenPassRate": 0.9,
+          "meanIdentityConfidence": 0.646,
+          "falsePositiveCount": 0,
+          "graphCount": 2
+        },
+        {
+          "at": "2026-06-01T20:32:47.695Z",
+          "calibrationScore": 0.858,
+          "goldenPassRate": 1,
+          "meanIdentityConfidence": 0.646,
+          "falsePositiveCount": 0,
+          "graphCount": 2
+        }
+      ]
+    },
+    "retailerVolatility": [
+      {
+        "retailer": "walmart",
+        "trustScore": 0.817,
+        "pricingVolatility": 0.8,
+        "disagreementFrequency": 0
+      },
+      {
+        "retailer": "target",
+        "trustScore": 0.767,
+        "pricingVolatility": 0.8,
+        "disagreementFrequency": 0
+      }
+    ],
+    "inference": {
+      "totalCalls": 0,
+      "totalEstimatedUsd": 0,
+      "cacheHitRate": 0,
+      "escalationRate": 0,
+      "byProvider": {},
+      "recent": [],
+      "persisted": {
+        "version": 1,
+        "updatedAt": "2026-06-01T23:32:38.692Z",
+        "totalEstimatedUsd": 0,
+        "recommendationCalls": 0,
+        "escalationOutcomes": {
+          "escalated": 0,
+          "helped": 0,
+          "wasted": 0
+        },
+        "recent": []
+      },
+      "costPerRecommendationUsd": null,
+      "escalationMarginalValue": null
+    },
+    "circuitBreakers": {},
+    "anomalyFrequency": {
+      "falsePositives": 0,
+      "calibrationAnomalies": 0,
+      "volatileCanonicals": 0
+    },
+    "productAnalytics": {
+      "last24h": {},
+      "totals": {}
+    }
+  }
+}

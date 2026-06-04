@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.964Z",
+      "canonicalId": "ipad-10th-gen",
+      "winnerOfferId": "ipad-10th-gen-target",
+      "winnerRetailer": "target",
+      "winnerPrice": 335.14,
+      "compositeScore": 0.932,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.038859732140296574
+    }
+  ]
+}

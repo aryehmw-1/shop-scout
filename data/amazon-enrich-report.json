@@ -1,0 +1,13 @@
+{
+  "candidates": 8,
+  "enriched": 0,
+  "productsBuilt": 0,
+  "published": 0,
+  "cacheStats": {
+    "total": 0,
+    "accepted": 0,
+    "rejected": 0,
+    "updatedAt": "1970-01-01T00:00:00.000Z"
+  },
+  "paapiConfigured": false
+}

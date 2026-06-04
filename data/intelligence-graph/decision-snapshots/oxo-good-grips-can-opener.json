@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.416Z",
+      "canonicalId": "oxo-good-grips-can-opener",
+      "winnerOfferId": "oxo-good-grips-can-opener-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 15.04,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.05941213258286435
+    },
+    {
+      "at": "2026-06-02T02:16:33.296Z",
+      "canonicalId": "oxo-good-grips-can-opener",
+      "winnerOfferId": "oxo-good-grips-can-opener-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 15.04,
+      "compositeScore": 0.927,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.05941213258286435
+    },
+    {
+      "at": "2026-06-02T02:16:32.939Z",
+      "canonicalId": "oxo-good-grips-can-opener",
+      "winnerOfferId": "oxo-good-grips-can-opener-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 15.04,
+      "compositeScore": 0.927,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.05941213258286435
+    }
+  ]
+}

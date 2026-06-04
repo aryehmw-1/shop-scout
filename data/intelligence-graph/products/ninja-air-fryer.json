@@ -1,0 +1,220 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.128Z",
+  "canonical": {
+    "canonical_id": "ninja-air-fryer",
+    "version": 1,
+    "title": "Ninja Air Fryer Max XL",
+    "title_normalized": "Ninja Air Fryer Max XL",
+    "brand": "Ninja",
+    "brand_canonical": "ninja",
+    "category": "Kitchen",
+    "canonical_image": "https://m.media-amazon.com/images/I/71vFKBpKakL._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B07S85TPLG"
+    },
+    "keywords": [
+      "air fryer",
+      "ninja",
+      "kitchen",
+      "max",
+      "xl",
+      "5.5-quart",
+      "capacity,",
+      "crisp"
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "ninja-air-fryer-costco",
+      "canonical_id": "ninja-air-fryer",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Ninja Air Fryer Max XL",
+      "product_url": "https://www.costco.com/ninja-air-fryer-max-xl.product.984399381.html",
+      "affiliate_url": "https://www.costco.com/ninja-air-fryer-max-xl.product.984399381.html",
+      "price": 124.9,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "ninja-air-fryer-walmart",
+      "canonical_id": "ninja-air-fryer",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Ninja Air Fryer Max XL",
+      "product_url": "https://www.walmart.com/ip/ninja-air-fryer-max-xl/392257066",
+      "affiliate_url": "https://www.walmart.com/ip/ninja-air-fryer-max-xl/392257066",
+      "price": 125.13,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "ninja-air-fryer-amazon",
+      "canonical_id": "ninja-air-fryer",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Ninja Air Fryer Max XL",
+      "product_url": "https://www.amazon.com/dp/B07S85TPLG",
+      "affiliate_url": "https://www.amazon.com/dp/B07S85TPLG",
+      "price": 130.29,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "ninja-air-fryer-target",
+      "canonical_id": "ninja-air-fryer",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Ninja Air Fryer Max XL",
+      "product_url": "https://www.target.com/p/ninja-air-fryer-max-xl/-/A-78329567",
+      "affiliate_url": "https://www.target.com/p/ninja-air-fryer-max-xl/-/A-78329567",
+      "price": 131.54,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "ninja-air-fryer-amazon-meta",
+      "canonical_id": "ninja-air-fryer",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B07S85TPLG",
+        "image": "https://m.media-amazon.com/images/I/71vFKBpKakL._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

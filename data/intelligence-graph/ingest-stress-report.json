@@ -1,0 +1,37 @@
+{
+  "evaluatedAt": "2026-06-01T23:32:38.689Z",
+  "passed": 5,
+  "total": 5,
+  "cases": [
+    {
+      "id": "reject_invalid_rows",
+      "description": "Row validation rejects bad title, price, and search URLs",
+      "passed": true,
+      "detail": "valid=true"
+    },
+    {
+      "id": "detect_duplicates",
+      "description": "Duplicate retailer+URL detected in batch",
+      "passed": true,
+      "detail": "duplicate detected"
+    },
+    {
+      "id": "parse_partial_feed",
+      "description": "Partial feed yields only valid rows",
+      "passed": true,
+      "detail": "1 row(s) parsed"
+    },
+    {
+      "id": "extreme_price_graph",
+      "description": "Extreme price graph builds without crash",
+      "passed": true,
+      "detail": "build ok"
+    },
+    {
+      "id": "catalog_baseline",
+      "description": "Intelligence graphs available for stress baseline",
+      "passed": true,
+      "detail": "2 graph(s)"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-06-02T02:26:15.787Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=Fresh%20Express%20Romaine%20Hearts",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "proxyEndpoint": "http://***:***@dc.decodo.com:10001",
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 384
+  },
+  "headers": {
+    "cache-control": "max-age=900",
+    "connection": "close",
+    "content-length": "384",
+    "content-type": "text/html",
+    "date": "Tue, 02 Jun 2026 02:26:15 GMT",
+    "expires": "Tue, 02 Jun 2026 02:41:15 GMT",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780367175643_399274504_2963866246_15_25993_16_145_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000;includeSubDomains"
+  },
+  "htmlBytes": 384,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

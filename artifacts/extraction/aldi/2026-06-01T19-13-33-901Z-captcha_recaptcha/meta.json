@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-06-01T19:13:33.901Z",
+  "retailerId": "aldi",
+  "url": "https://www.aldi.us/products/?search=Timberland%20Leather%20Ankle%20Boots",
+  "status": 200,
+  "method": "lightweight",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "captcha",
+    "reason": "captcha:recaptcha",
+    "vendor": "recaptcha",
+    "confidence": 0.9,
+    "indicators": [
+      "html:recaptcha"
+    ],
+    "status": 200,
+    "bytes": 587597
+  },
+  "headers": {
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "cache-control": "no-store",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-security-policy": "frame-ancestors 'self' https://aldi.us https://*.aldi.us https://dashboard.instacart.com https://*.dashboard.instacart.com",
+    "content-type": "text/html; charset=utf-8",
+    "cross-origin-opener-policy": "same-origin-allow-popups",
+    "date": "Mon, 01 Jun 2026 19:13:35 GMT",
+    "server": "nginx",
+    "set-cookie": "ahoy_visitor",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "transfer-encoding": "chunked",
+    "via": "1.1 b2d81f0349dd7259d5dfb1b35b379c6c.cloudfront.net (CloudFront)",
+    "x-amz-cf-id": "-ag1-kPQL-U0EtR5ME9CH06TRPRO5YsbBYYchnMG8egOtbcBxZAPBA==",
+    "x-amz-cf-pop": "MIA3-P3",
+    "x-cache": "Miss from cloudfront"
+  },
+  "htmlBytes": 587597,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

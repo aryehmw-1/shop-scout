@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-06-01T19:27:32.619Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=Fresh%20Express%20Romaine%20Hearts",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "http_403:akamai",
+    "vendor": "akamai",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied",
+      "header:hdr-akamai-cookie"
+    ],
+    "status": 403,
+    "bytes": 522
+  },
+  "headers": {
+    "cache-control": "max-age=900",
+    "connection": "close",
+    "content-type": "text/html",
+    "date": "Mon, 01 Jun 2026 19:27:34 GMT",
+    "expires": "Mon, 01 Jun 2026 19:42:34 GMT",
+    "link": "<https://mobilecontent.costco.com>;rel=\"preconnect\",<https://transcend-cdn.com>;rel=\"preconnect\",<https://bfasset.costco-static.com>;rel=\"preconnect\",<https://cdn.intake-lr.com>;rel=\"preconnect\",<https://static.queue-it.net>;rel=\"preconnect\",<https://assets.queue-it.net>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=93, ak_p; desc=\"1780342054470_399426603_2196687598_9281_32282_12_10_-\";dur=1",
+    "set-cookie": "bm_sz",
+    "strict-transport-security": "max-age=31536000;includeSubDomains",
+    "x-akamai-transformed": "0 - 0 -"
+  },
+  "htmlBytes": 522,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

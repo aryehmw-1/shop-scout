@@ -1,0 +1,46 @@
+{
+  "timestamp": "2026-06-04T15:52:24.048Z",
+  "retailerId": "skechers",
+  "url": "https://www.skechers.com/search/?q=B00CAXQV3K%20Men's%20Hanes%20Men%26%2339%3Bs%20Tank%20Undershirt",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "suspicious",
+    "reason": "suspicious:js_challenge:cloudflare",
+    "vendor": "cloudflare",
+    "confidence": 0.5,
+    "indicators": [
+      "header:hdr-cf-server"
+    ],
+    "status": 200,
+    "bytes": 376547
+  },
+  "headers": {
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "cf-cache-status": "DYNAMIC",
+    "cf-ray": "a0681aba5e503015-MIA",
+    "connection": "keep-alive",
+    "content-encoding": "br",
+    "content-security-policy": "frame-ancestors 'self'",
+    "content-type": "text/html;charset=UTF-8",
+    "date": "Thu, 04 Jun 2026 15:52:24 GMT",
+    "expires": "Thu, 01 Dec 1994 16:00:00 GMT",
+    "link": "<https://assets.skechers.com>; rel=preconnect, <https://services.sdiapi.com>; rel=preconnect, <https://cdn.cquotient.com>; rel=preconnect, <https://cdnjs.cloudflare.com>; rel=preconnect, <https://client.px-cloud.net>; rel=preconnect",
+    "pragma": "no-cache",
+    "server": "cloudflare",
+    "server-timing": "cfCacheStatus;desc=\"DYNAMIC\", cfOrigin;dur=539,cfEdge;dur=36, cfCacheStatus;desc=\"DYNAMIC\", cfEdge;dur=11,cfOrigin;dur=0,cfWorker;dur=589",
+    "set-cookie": "dwsid",
+    "transfer-encoding": "chunked",
+    "vary": "accept-encoding",
+    "x-content-type-options": "nosniff",
+    "x-dw-request-base-id": "UMQxFjefIWoBAAB_"
+  },
+  "htmlBytes": 376547,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

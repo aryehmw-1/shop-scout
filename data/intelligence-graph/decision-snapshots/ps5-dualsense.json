@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.512Z",
+      "canonicalId": "ps5-dualsense",
+      "winnerOfferId": "ps5-dualsense-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 69.79,
+      "compositeScore": 0.924,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06934257901053459
+    }
+  ]
+}

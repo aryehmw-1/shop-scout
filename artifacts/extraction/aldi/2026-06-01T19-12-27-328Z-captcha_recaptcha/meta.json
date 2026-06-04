@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-06-01T19:12:27.328Z",
+  "retailerId": "aldi",
+  "url": "https://www.aldi.us/products/?search=Large%20Grade%20A%20Eggs",
+  "status": 200,
+  "method": "lightweight",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "captcha",
+    "reason": "captcha:recaptcha",
+    "vendor": "recaptcha",
+    "confidence": 0.9,
+    "indicators": [
+      "html:recaptcha"
+    ],
+    "status": 200,
+    "bytes": 587596
+  },
+  "headers": {
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "cache-control": "no-store",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-security-policy": "frame-ancestors 'self' https://aldi.us https://*.aldi.us https://dashboard.instacart.com https://*.dashboard.instacart.com",
+    "content-type": "text/html; charset=utf-8",
+    "cross-origin-opener-policy": "same-origin-allow-popups",
+    "date": "Mon, 01 Jun 2026 19:12:28 GMT",
+    "server": "nginx",
+    "set-cookie": "ahoy_visitor",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "transfer-encoding": "chunked",
+    "via": "1.1 e759cef9ef04dc6632a71818dfac3a76.cloudfront.net (CloudFront)",
+    "x-amz-cf-id": "M50stxw6UuWRxVliOK5BHXQxgeOOGqJNKlgj4FLU-DTFlVR7eFANVA==",
+    "x-amz-cf-pop": "MIA3-P3",
+    "x-cache": "Miss from cloudfront"
+  },
+  "htmlBytes": 587596,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

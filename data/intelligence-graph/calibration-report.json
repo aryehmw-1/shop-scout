@@ -1,0 +1,66 @@
+{
+  "evaluatedAt": "2026-06-01T23:32:38.680Z",
+  "offerCount": 4,
+  "buckets": [
+    {
+      "label": "0–35%",
+      "min": 0,
+      "max": 0.35,
+      "count": 0,
+      "meanPredicted": 0,
+      "meanActualProxy": 0,
+      "miscalibration": 0
+    },
+    {
+      "label": "35–52%",
+      "min": 0.35,
+      "max": 0.52,
+      "count": 0,
+      "meanPredicted": 0,
+      "meanActualProxy": 0,
+      "miscalibration": 0
+    },
+    {
+      "label": "52–72%",
+      "min": 0.52,
+      "max": 0.72,
+      "count": 1,
+      "meanPredicted": 0.687,
+      "meanActualProxy": 0.825,
+      "miscalibration": 0.1379999999999999
+    },
+    {
+      "label": "72–100%",
+      "min": 0.72,
+      "max": 1,
+      "count": 3,
+      "meanPredicted": 0.8079999999999999,
+      "meanActualProxy": 0.9547619047619048,
+      "miscalibration": 0.14676190476190487
+    }
+  ],
+  "calibrationScore": 0.858,
+  "identityDisagreements": [
+    {
+      "canonicalId": "gtin-012345678905",
+      "title": "Keurig K-Elite Single Serve Coffee Maker",
+      "overall": 0.654,
+      "identifierAgreement": 0.4,
+      "titleConsensus": 0.786,
+      "message": "Identity score is moderate/high but identifiers do not agree — surface uncertainty in UX."
+    },
+    {
+      "canonicalId": "gtin-019876543210",
+      "title": "Nike Dri-FIT Men's Training T-Shirt",
+      "overall": 0.638,
+      "identifierAgreement": 0.4,
+      "titleConsensus": 0.722,
+      "message": "Identity score is moderate/high but identifiers do not agree — surface uncertainty in UX."
+    }
+  ],
+  "offerAnomalies": [],
+  "falsePositiveSignals": [],
+  "notes": [
+    "2 identity disagreement diagnostic(s) — ensure uncertainty banners fire."
+  ]
+}

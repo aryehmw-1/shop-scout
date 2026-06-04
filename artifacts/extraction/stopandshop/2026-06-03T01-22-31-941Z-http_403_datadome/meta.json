@@ -1,0 +1,50 @@
+{
+  "timestamp": "2026-06-03T01:22:31.941Z",
+  "retailerId": "stopandshop",
+  "url": "https://www.stopandshop.com/product-search?q=cheerios%20Honey%20Nut%20Cereal",
+  "status": 403,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "captcha",
+    "reason": "http_403:datadome",
+    "vendor": "datadome",
+    "confidence": 0.95,
+    "indicators": [
+      "html:datadome",
+      "html:cloudflare-challenge",
+      "header:hdr-datadome",
+      "header:hdr-datadome-cid",
+      "header:hdr-cf-server"
+    ],
+    "status": 403,
+    "bytes": 1694
+  },
+  "headers": {
+    "accept-ch": "Sec-CH-UA,Sec-CH-UA-Mobile,Sec-CH-UA-Platform,Sec-CH-UA-Arch,Sec-CH-UA-Full-Version-List,Sec-CH-UA-Model,Sec-CH-Device-Memory",
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "*",
+    "access-control-expose-headers": "x-dd-b, x-set-cookie",
+    "cache-control": "max-age=0, private, no-cache, no-store, must-revalidate",
+    "cf-ray": "a05ae32579e0ade8-MIA",
+    "charset": "utf-8",
+    "connection": "keep-alive",
+    "content-encoding": "br",
+    "content-type": "text/html;charset=utf-8",
+    "date": "Wed, 03 Jun 2026 01:22:31 GMT",
+    "pragma": "no-cache",
+    "server": "cloudflare",
+    "set-cookie": "__cf_bm",
+    "transfer-encoding": "chunked",
+    "vary": "accept-encoding",
+    "x-datadome": "protected",
+    "x-datadome-cid": "AHrlqAAAAAMAuBLA3n1AzIsArtNjiA==",
+    "x-dd-b": "2"
+  },
+  "htmlBytes": 1694,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-06-02T02:38:34.363Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=25550%20Cheerios%20Whole%20Grain%20Oats%20Gluten%20Free%20Breakfast%20Cereal%208%20900%20Oz",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "proxyEndpoint": "http://***:***@dc.decodo.com:10001",
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 384
+  },
+  "headers": {
+    "cache-control": "max-age=900",
+    "connection": "close",
+    "content-length": "384",
+    "content-type": "text/html",
+    "date": "Tue, 02 Jun 2026 02:38:34 GMT",
+    "expires": "Tue, 02 Jun 2026 02:53:34 GMT",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780367914218_399274511_2935511678_27_149918_31_27_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000;includeSubDomains"
+  },
+  "htmlBytes": 384,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

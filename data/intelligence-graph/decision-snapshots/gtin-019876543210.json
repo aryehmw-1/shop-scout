@@ -1,0 +1,181 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-01T23:32:38.684Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T23:32:38.680Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T21:30:01.856Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T21:30:01.852Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T21:29:13.179Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T21:29:13.174Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T21:20:48.836Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T21:20:48.832Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T21:11:36.809Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T21:11:36.806Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T20:59:39.197Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T20:59:39.193Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T20:43:47.835Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T20:43:47.832Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.885,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T20:42:39.622Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.865,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    },
+    {
+      "at": "2026-06-01T20:42:39.619Z",
+      "canonicalId": "gtin-019876543210",
+      "winnerOfferId": "offer-66cdcaff7728005a525d6136",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 29.99,
+      "compositeScore": 0.865,
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "priceSpreadRatio": 0.06281250000000005
+    }
+  ]
+}

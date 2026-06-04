@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.167Z",
+      "canonicalId": "lululemon-align-leggings",
+      "winnerOfferId": "lululemon-align-leggings-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 93.04,
+      "compositeScore": 0.945,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.07826431543491175
+    },
+    {
+      "at": "2026-06-02T02:21:12.326Z",
+      "canonicalId": "lululemon-align-leggings",
+      "winnerOfferId": "lululemon-align-leggings-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 93.04,
+      "compositeScore": 0.925,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.07826431543491175
+    },
+    {
+      "at": "2026-06-02T02:21:12.137Z",
+      "canonicalId": "lululemon-align-leggings",
+      "winnerOfferId": "lululemon-align-leggings-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 93.04,
+      "compositeScore": 0.925,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.07826431543491175
+    }
+  ]
+}

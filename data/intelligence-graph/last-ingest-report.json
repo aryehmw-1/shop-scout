@@ -1,0 +1,121 @@
+{
+  "run_id": "e8f49309d159",
+  "source": "impact_feed",
+  "started_at": "2026-06-01T20:17:10.046Z",
+  "completed_at": "2026-06-01T20:17:10.050Z",
+  "rows_read": 4,
+  "offers_upserted": 4,
+  "canonicals_created": 2,
+  "canonicals_updated": 2,
+  "rows_rejected": 0,
+  "orphans": 0,
+  "match_stats": {
+    "by_gtin": 2,
+    "by_asin": 0,
+    "by_title": 0,
+    "new_canonical": 2
+  },
+  "rejection_reasons": {},
+  "events": [
+    {
+      "type": "ingest_started",
+      "at": "2026-06-01T20:17:10.046Z",
+      "source": "impact_feed",
+      "payload": {
+        "dry_run": false,
+        "file": "data/fixtures/impact-sample.tsv"
+      }
+    },
+    {
+      "type": "canonical_created",
+      "at": "2026-06-01T20:17:10.048Z",
+      "source": "impact_feed",
+      "payload": {
+        "canonical_id": "gtin-012345678905",
+        "title": "Keurig K-Elite Single Serve Coffee Maker"
+      }
+    },
+    {
+      "type": "offer_upserted",
+      "at": "2026-06-01T20:17:10.048Z",
+      "source": "impact_feed",
+      "payload": {
+        "offer_id": "offer-406633369ba69197b9746cb0",
+        "retailer": "walmart",
+        "price": 149.99
+      }
+    },
+    {
+      "type": "canonical_merged",
+      "at": "2026-06-01T20:17:10.048Z",
+      "source": "impact_feed",
+      "payload": {
+        "canonical_id": "gtin-012345678905",
+        "match_method": "gtin"
+      }
+    },
+    {
+      "type": "offer_upserted",
+      "at": "2026-06-01T20:17:10.048Z",
+      "source": "impact_feed",
+      "payload": {
+        "offer_id": "offer-3db34bd30073d38a7277a3b9",
+        "retailer": "target",
+        "price": 159.99
+      }
+    },
+    {
+      "type": "canonical_created",
+      "at": "2026-06-01T20:17:10.049Z",
+      "source": "impact_feed",
+      "payload": {
+        "canonical_id": "gtin-019876543210",
+        "title": "Nike Dri-FIT Men's Training T-Shirt"
+      }
+    },
+    {
+      "type": "offer_upserted",
+      "at": "2026-06-01T20:17:10.049Z",
+      "source": "impact_feed",
+      "payload": {
+        "offer_id": "offer-66cdcaff7728005a525d6136",
+        "retailer": "walmart",
+        "price": 29.99
+      }
+    },
+    {
+      "type": "canonical_merged",
+      "at": "2026-06-01T20:17:10.049Z",
+      "source": "impact_feed",
+      "payload": {
+        "canonical_id": "gtin-019876543210",
+        "match_method": "gtin"
+      }
+    },
+    {
+      "type": "offer_upserted",
+      "at": "2026-06-01T20:17:10.049Z",
+      "source": "impact_feed",
+      "payload": {
+        "offer_id": "offer-4e790908495b154f6affbcc5",
+        "retailer": "target",
+        "price": 32
+      }
+    },
+    {
+      "type": "ingest_completed",
+      "at": "2026-06-01T20:17:10.050Z",
+      "source": "impact_feed",
+      "payload": {
+        "touched": 2,
+        "orphan_rate": 0,
+        "match_stats": {
+          "by_gtin": 2,
+          "by_asin": 0,
+          "by_title": 0,
+          "new_canonical": 2
+        }
+      }
+    }
+  ]
+}

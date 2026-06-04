@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "at": "2026-06-01T23:32:38.689Z",
+      "calibrationScore": 0.858,
+      "goldenPassRate": 1,
+      "meanIdentityConfidence": 0.646,
+      "falsePositiveCount": 0,
+      "graphCount": 2
+    },
+    {
+      "at": "2026-06-01T21:30:01.862Z",
+      "calibrationScore": 0.858,
+      "goldenPassRate": 1,
+      "meanIdentityConfidence": 0.646,
+      "falsePositiveCount": 0,
+      "graphCount": 2
+    },
+    {
+      "at": "2026-06-01T21:29:13.184Z",
+      "calibrationScore": 0.858,
+      "goldenPassRate": 1,
+      "meanIdentityConfidence": 0.646,
+      "falsePositiveCount": 0,
+      "graphCount": 2
+    },
+    {
+      "at": "2026-06-01T21:20:48.841Z",
+      "calibrationScore": 0.858,
+      "goldenPassRate": 1,
+      "meanIdentityConfidence": 0.646,
+      "falsePositiveCount": 0,
+      "graphCount": 2
+    },
+    {
+      "at": "2026-06-01T21:11:36.813Z",
+      "calibrationScore": 0.858,
+      "goldenPassRate": 1,
+      "meanIdentityConfidence": 0.646,
+      "falsePositiveCount": 0,
+      "graphCount": 2
+    },
+    {
+      "at": "2026-06-01T20:59:39.199Z",
+      "calibrationScore": 0.858,
+      "goldenPassRate": 1,
+      "meanIdentityConfidence": 0.646,
+      "falsePositiveCount": 0,
+      "graphCount": 2
+    },
+    {
+      "at": "2026-06-01T20:43:47.835Z",
+      "calibrationScore": 0.858,
+      "goldenPassRate": 1,
+      "meanIdentityConfidence": 0.646,
+      "falsePositiveCount": 0,
+      "graphCount": 2
+    },
+    {
+      "at": "2026-06-01T20:42:39.622Z",
+      "calibrationScore": 0.858,
+      "goldenPassRate": 0.9,
+      "meanIdentityConfidence": 0.646,
+      "falsePositiveCount": 0,
+      "graphCount": 2
+    },
+    {
+      "at": "2026-06-01T20:32:47.695Z",
+      "calibrationScore": 0.858,
+      "goldenPassRate": 1,
+      "meanIdentityConfidence": 0.646,
+      "falsePositiveCount": 0,
+      "graphCount": 2
+    }
+  ]
+}

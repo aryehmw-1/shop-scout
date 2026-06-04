@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-06-02T19:54:59.363Z",
+  "retailerId": "ebay",
+  "url": "https://www.ebay.com/sch/i.html?_nkw=paper%20towels",
+  "status": 403,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [],
+    "status": 403,
+    "bytes": 1983
+  },
+  "headers": {
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "connection": "keep-alive, Transfer-Encoding",
+    "content-type": "text/html",
+    "date": "Tue, 02 Jun 2026 19:54:59 GMT",
+    "expires": "0",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "set-cookie": "bm_so",
+    "transfer-encoding": "chunked",
+    "x-akamai-transformed": "0 - 0 -",
+    "x-cdn": "Akamai"
+  },
+  "htmlBytes": 1983,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

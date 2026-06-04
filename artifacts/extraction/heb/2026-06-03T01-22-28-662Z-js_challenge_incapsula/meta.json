@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-06-03T01:22:28.662Z",
+  "retailerId": "heb",
+  "url": "https://www.heb.com/search?q=cheerios%20Honey%20Nut%20Cereal",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:incapsula",
+    "vendor": "incapsula",
+    "confidence": 0.85,
+    "indicators": [
+      "html:incapsula",
+      "header:hdr-incap-cookie"
+    ],
+    "status": 200,
+    "bytes": 929
+  },
+  "headers": {
+    "cache-control": "no-cache, no-store",
+    "connection": "close",
+    "content-length": "929",
+    "content-type": "text/html",
+    "set-cookie": "incap_ses_168_2302070",
+    "strict-transport-security": "max-age=31536000",
+    "x-iinfo": "7-105672297-0 0NNN RT(1780449748598 77) q(0 -1 -1 -1) r(0 -1) B12(4,316,0) U5"
+  },
+  "htmlBytes": 929,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

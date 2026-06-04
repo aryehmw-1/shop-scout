@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-06-02T19:50:34.445Z",
+  "retailerId": "carters",
+  "url": "https://www.carters.com/search?q=REESE%20S%20PUFFS%20Chocolatey%20Peanut%20Butter%20Cereal%20Kid%20Breakfast%20Cereal%2011%205",
+  "status": 403,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "captcha",
+    "reason": "http_403:perimeterx",
+    "vendor": "perimeterx",
+    "confidence": 0.95,
+    "indicators": [
+      "html:perimeterx-px-captcha",
+      "html:cloudflare-challenge",
+      "html:press-and-hold",
+      "html:access-denied",
+      "header:hdr-cf-server"
+    ],
+    "status": 403,
+    "bytes": 7404
+  },
+  "headers": {
+    "cf-ray": "a058fce0fffee00f-MIA",
+    "connection": "keep-alive",
+    "content-encoding": "br",
+    "content-type": "text/html",
+    "date": "Tue, 02 Jun 2026 19:50:34 GMT",
+    "referrer-policy": "strict-origin",
+    "server": "cloudflare",
+    "server-timing": "cfEdge;dur=11,cfOrigin;dur=0,cfWorker;dur=57",
+    "set-cookie": "_cfuvid",
+    "strict-transport-security": "max-age=2592000",
+    "transfer-encoding": "chunked",
+    "vary": "accept-encoding"
+  },
+  "htmlBytes": 7404,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

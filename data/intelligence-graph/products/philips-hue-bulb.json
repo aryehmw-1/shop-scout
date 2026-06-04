@@ -1,0 +1,220 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.130Z",
+  "canonical": {
+    "canonical_id": "philips-hue-bulb",
+    "version": 1,
+    "title": "Philips Hue White and Color Ambiance Bulb",
+    "title_normalized": "Philips Hue White and Color Ambiance Bulb",
+    "brand": "Philips",
+    "brand_canonical": "philips",
+    "category": "Home",
+    "canonical_image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B098RKWHHZ"
+    },
+    "keywords": [
+      "smart bulb",
+      "hue",
+      "philips",
+      "home",
+      "white",
+      "and",
+      "color",
+      "ambiance"
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "philips-hue-bulb-costco",
+      "canonical_id": "philips-hue-bulb",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Philips Hue White and Color Ambiance Bulb",
+      "product_url": "https://www.costco.com/philips-hue-white-and-color-ambiance-bulb.product.866601673.html",
+      "affiliate_url": "https://www.costco.com/philips-hue-white-and-color-ambiance-bulb.product.866601673.html",
+      "price": 45.58,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "philips-hue-bulb-walmart",
+      "canonical_id": "philips-hue-bulb",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Philips Hue White and Color Ambiance Bulb",
+      "product_url": "https://www.walmart.com/ip/philips-hue-white-and-color-ambiance-bulb/920936702",
+      "affiliate_url": "https://www.walmart.com/ip/philips-hue-white-and-color-ambiance-bulb/920936702",
+      "price": 47.52,
+      "currency": "USD",
+      "was_price": 51.32,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "philips-hue-bulb-amazon",
+      "canonical_id": "philips-hue-bulb",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Philips Hue White and Color Ambiance Bulb",
+      "product_url": "https://www.amazon.com/dp/B098RKWHHZ",
+      "affiliate_url": "https://www.amazon.com/dp/B098RKWHHZ",
+      "price": 48.49,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "philips-hue-bulb-target",
+      "canonical_id": "philips-hue-bulb",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Philips Hue White and Color Ambiance Bulb",
+      "product_url": "https://www.target.com/p/philips-hue-white-and-color-ambiance-bulb/-/A-90189611",
+      "affiliate_url": "https://www.target.com/p/philips-hue-white-and-color-ambiance-bulb/-/A-90189611",
+      "price": 48.5,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "philips-hue-bulb-amazon-meta",
+      "canonical_id": "philips-hue-bulb",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B098RKWHHZ",
+        "image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

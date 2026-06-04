@@ -1,0 +1,221 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.130Z",
+  "canonical": {
+    "canonical_id": "hydro-flask-32",
+    "version": 1,
+    "title": "Hydro Flask Wide Mouth 32 oz",
+    "title_normalized": "Hydro Flask Wide Mouth 32 oz",
+    "brand": "Hydro Flask",
+    "brand_canonical": "hydro flask",
+    "category": "Sports",
+    "canonical_image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B098RKWHHZ"
+    },
+    "keywords": [
+      "water bottle",
+      "hydro flask",
+      "sports",
+      "hydro",
+      "flask",
+      "wide",
+      "mouth",
+      "32",
+      "oz"
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "hydro-flask-32-costco",
+      "canonical_id": "hydro-flask-32",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Hydro Flask Wide Mouth 32 oz",
+      "product_url": "https://www.costco.com/hydro-flask-wide-mouth-32-oz.product.384327105.html",
+      "affiliate_url": "https://www.costco.com/hydro-flask-wide-mouth-32-oz.product.384327105.html",
+      "price": 43.1,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "hydro-flask-32-amazon",
+      "canonical_id": "hydro-flask-32",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Hydro Flask Wide Mouth 32 oz",
+      "product_url": "https://www.amazon.com/dp/B098RKWHHZ",
+      "affiliate_url": "https://www.amazon.com/dp/B098RKWHHZ",
+      "price": 43.6,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "hydro-flask-32-walmart",
+      "canonical_id": "hydro-flask-32",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Hydro Flask Wide Mouth 32 oz",
+      "product_url": "https://www.walmart.com/ip/hydro-flask-wide-mouth-32-oz/335156390",
+      "affiliate_url": "https://www.walmart.com/ip/hydro-flask-wide-mouth-32-oz/335156390",
+      "price": 44.04,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "hydro-flask-32-target",
+      "canonical_id": "hydro-flask-32",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Hydro Flask Wide Mouth 32 oz",
+      "product_url": "https://www.target.com/p/hydro-flask-wide-mouth-32-oz/-/A-23026161",
+      "affiliate_url": "https://www.target.com/p/hydro-flask-wide-mouth-32-oz/-/A-23026161",
+      "price": 44.06,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "hydro-flask-32-amazon-meta",
+      "canonical_id": "hydro-flask-32",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B098RKWHHZ",
+        "image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

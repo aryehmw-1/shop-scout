@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.790Z",
+      "canonicalId": "dyson-v15",
+      "winnerOfferId": "dyson-v15-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 689.98,
+      "compositeScore": 0.92,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.09686117437629257
+    }
+  ]
+}

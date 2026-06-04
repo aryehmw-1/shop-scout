@@ -1,0 +1,221 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.132Z",
+  "canonical": {
+    "canonical_id": "fitbit-charge-6",
+    "version": 1,
+    "title": "Fitbit Charge 6 Fitness Tracker",
+    "title_normalized": "Fitbit Charge 6 Fitness Tracker",
+    "brand": "Fitbit",
+    "brand_canonical": "fitbit",
+    "category": "Electronics",
+    "canonical_image": "https://m.media-amazon.com/images/I/71Y2H2+SL8L._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B0CC62JGQM"
+    },
+    "keywords": [
+      "fitbit",
+      "fitness tracker",
+      "electronics",
+      "built-in",
+      "gps,",
+      "heart",
+      "rate",
+      "zones,",
+      "7-day"
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "fitbit-charge-6-costco",
+      "canonical_id": "fitbit-charge-6",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Fitbit Charge 6 Fitness Tracker",
+      "product_url": "https://www.costco.com/fitbit-charge-6-fitness-tracker.product.611854759.html",
+      "affiliate_url": "https://www.costco.com/fitbit-charge-6-fitness-tracker.product.611854759.html",
+      "price": 147.35,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "fitbit-charge-6-walmart",
+      "canonical_id": "fitbit-charge-6",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Fitbit Charge 6 Fitness Tracker",
+      "product_url": "https://www.walmart.com/ip/fitbit-charge-6-fitness-tracker/776002092",
+      "affiliate_url": "https://www.walmart.com/ip/fitbit-charge-6-fitness-tracker/776002092",
+      "price": 158.25,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "fitbit-charge-6-amazon",
+      "canonical_id": "fitbit-charge-6",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Fitbit Charge 6 Fitness Tracker",
+      "product_url": "https://www.amazon.com/dp/B0CC62JGQM",
+      "affiliate_url": "https://www.amazon.com/dp/B0CC62JGQM",
+      "price": 159.95,
+      "currency": "USD",
+      "was_price": 175.95,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "fitbit-charge-6-target",
+      "canonical_id": "fitbit-charge-6",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Fitbit Charge 6 Fitness Tracker",
+      "product_url": "https://www.target.com/p/fitbit-charge-6-fitness-tracker/-/A-70390850",
+      "affiliate_url": "https://www.target.com/p/fitbit-charge-6-fitness-tracker/-/A-70390850",
+      "price": 161.52,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "fitbit-charge-6-amazon-meta",
+      "canonical_id": "fitbit-charge-6",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B0CC62JGQM",
+        "image": "https://m.media-amazon.com/images/I/71Y2H2+SL8L._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

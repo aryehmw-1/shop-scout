@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.538Z",
+      "canonicalId": "cerave-moisturizing-cream",
+      "winnerOfferId": "cerave-moisturizing-cream-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 16.45,
+      "compositeScore": 0.931,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000000000000004
+    }
+  ]
+}

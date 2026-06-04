@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-06-04T15:52:20.361Z",
+  "retailerId": "marshalls",
+  "url": "https://www.marshalls.com/us/store/shop/?Ntt=B00CAXQV3K%20Men's%20Hanes%20Men%26%2339%3Bs%20Tank%20Undershirt",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:akamai",
+    "vendor": "akamai",
+    "confidence": 0.8,
+    "indicators": [
+      "html:akamai-bm"
+    ],
+    "status": 200,
+    "bytes": 40769
+  },
+  "headers": {
+    "akamai-grn": "0.1af9ce17.1780588340.41b5beb",
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-length": "17184",
+    "content-type": "text/html",
+    "date": "Thu, 04 Jun 2026 15:52:20 GMT",
+    "expires": "0",
+    "link": "<https://static.marshalls.com>;rel=\"preconnect\",<https://www.google.com>;rel=\"preconnect\",<https://www.gstatic.com>;rel=\"preconnect\",<https://nexus.ensighten.com>;rel=\"preconnect\",<https://cdn.cookielaw.org>;rel=\"preconnect\",<https://www.googletagmanager.com>;rel=\"preconnect\",<https://resources.digital-cloud-west.medallia.com>;rel=\"preconnect\",<https://connect.facebook.net>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=8, ak_p; desc=\"1780588340307_399440154_68901867_1268_24739_8_0_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000 ; includeSubDomains ; preload",
+    "vary": "Accept-Encoding",
+    "x-akamai-transformed": "9l - 0 pmb=mRUM,2",
+    "x-frame-options": "SAMEORIGIN"
+  },
+  "htmlBytes": 40769,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

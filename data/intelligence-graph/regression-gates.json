@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "gates": [
+    {
+      "id": "calibration_floor",
+      "description": "Confidence calibration score meets minimum",
+      "passed": true,
+      "detail": "Score 0.858 (min 0.7)"
+    },
+    {
+      "id": "no_false_positive_surge",
+      "description": "False positive signals below threshold",
+      "passed": true,
+      "detail": "0 signal(s)"
+    },
+    {
+      "id": "golden_pass_rate",
+      "description": "Golden query suite pass rate",
+      "passed": true,
+      "detail": "100% (min 85%)"
+    },
+    {
+      "id": "hallucination_grounding",
+      "description": "Recommendations cite only validated retailers",
+      "passed": true,
+      "detail": "All matched cases grounded"
+    },
+    {
+      "id": "decision_present",
+      "description": "Matched queries produce purchase decisions",
+      "passed": true,
+      "detail": "6/6 matched with decision checks"
+    },
+    {
+      "id": "recommendation_quality",
+      "description": "Heuristic recommendation quality score",
+      "passed": true,
+      "detail": "Score 0.9 (min 0.65) · satisfaction proxy 0.9"
+    },
+    {
+      "id": "ingest_stress",
+      "description": "Ingest validation stress suite",
+      "passed": true,
+      "detail": "5/5 (100%)"
+    },
+    {
+      "id": "adversarial_suite",
+      "description": "Adversarial synthetic edge-case suite pass rate",
+      "passed": true,
+      "detail": "7/7 (100%, min 100%)"
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.261Z",
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerOfferId": "apple-airpods-pro-2-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 241.08,
+      "compositeScore": 0.951,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.031729456181219286
+    },
+    {
+      "at": "2026-06-02T19:30:36.667Z",
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerOfferId": "apple-airpods-pro-2-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 241.08,
+      "compositeScore": 0.951,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.031729456181219286
+    },
+    {
+      "at": "2026-06-02T19:30:36.178Z",
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerOfferId": "apple-airpods-pro-2-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 241.08,
+      "compositeScore": 0.951,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.031729456181219286
+    },
+    {
+      "at": "2026-06-02T19:30:36.140Z",
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerOfferId": "apple-airpods-pro-2-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 241.08,
+      "compositeScore": 0.951,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.031729456181219286
+    },
+    {
+      "at": "2026-06-02T19:30:36.125Z",
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerOfferId": "apple-airpods-pro-2-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 241.08,
+      "compositeScore": 0.951,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.031729456181219286
+    },
+    {
+      "at": "2026-06-02T13:15:33.326Z",
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerOfferId": "apple-airpods-pro-2-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 241.08,
+      "compositeScore": 0.951,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.031729456181219286
+    },
+    {
+      "at": "2026-06-02T13:14:46.385Z",
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerOfferId": "apple-airpods-pro-2-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 241.08,
+      "compositeScore": 0.951,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.031729456181219286
+    },
+    {
+      "at": "2026-06-02T01:25:45.349Z",
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerOfferId": "apple-airpods-pro-2-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 241.08,
+      "compositeScore": 0.951,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.031729456181219286
+    },
+    {
+      "at": "2026-06-02T01:19:47.402Z",
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerOfferId": "apple-airpods-pro-2-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 241.08,
+      "compositeScore": 0.951,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.031729456181219286
+    },
+    {
+      "at": "2026-06-02T01:19:19.450Z",
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerOfferId": "apple-airpods-pro-2-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 241.08,
+      "compositeScore": 0.951,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.031729456181219286
+    },
+    {
+      "at": "2026-06-02T01:19:09.561Z",
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerOfferId": "apple-airpods-pro-2-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 241.08,
+      "compositeScore": 0.931,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.031729456181219286
+    },
+    {
+      "at": "2026-06-02T01:14:46.796Z",
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerOfferId": "apple-airpods-pro-2-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 241.08,
+      "compositeScore": 0.931,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.031729456181219286
+    }
+  ]
+}

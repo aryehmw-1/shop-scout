@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-06-02T19:50:29.687Z",
+  "retailerId": "marshalls",
+  "url": "https://www.marshalls.com/us/store/shop/?Ntt=REESE%20S%20PUFFS%20Chocolatey%20Peanut%20Butter%20Cereal%20Kid%20Breakfast%20Cereal%2011%205",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:akamai",
+    "vendor": "akamai",
+    "confidence": 0.8,
+    "indicators": [
+      "html:akamai-bm"
+    ],
+    "status": 200,
+    "bytes": 40767
+  },
+  "headers": {
+    "akamai-grn": "0.04fc3117.1780429829.34f5a3e",
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-length": "17181",
+    "content-type": "text/html",
+    "date": "Tue, 02 Jun 2026 19:50:29 GMT",
+    "expires": "0",
+    "link": "<https://static.marshalls.com>;rel=\"preconnect\",<https://www.google.com>;rel=\"preconnect\",<https://www.gstatic.com>;rel=\"preconnect\",<https://nexus.ensighten.com>;rel=\"preconnect\",<https://cdn.cookielaw.org>;rel=\"preconnect\",<https://www.googletagmanager.com>;rel=\"preconnect\",<https://resources.digital-cloud-west.medallia.com>;rel=\"preconnect\",<https://connect.facebook.net>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=199, ak_p; desc=\"1780429829383_389151748_55532094_19865_29542_9_22_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000 ; includeSubDomains ; preload",
+    "vary": "Accept-Encoding",
+    "x-akamai-transformed": "9l - 0 pmb=mRUM,2",
+    "x-frame-options": "SAMEORIGIN"
+  },
+  "htmlBytes": 40767,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

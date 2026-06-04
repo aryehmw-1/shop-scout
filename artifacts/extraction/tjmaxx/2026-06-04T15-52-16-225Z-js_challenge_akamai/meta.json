@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-06-04T15:52:16.225Z",
+  "retailerId": "tjmaxx",
+  "url": "https://www.tjmaxx.com/us/store/shop/?Ntt=B00CAXQV3K%20Men's%20Hanes%20Men%26%2339%3Bs%20Tank%20Undershirt",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:akamai",
+    "vendor": "akamai",
+    "confidence": 0.8,
+    "indicators": [
+      "html:akamai-bm"
+    ],
+    "status": 200,
+    "bytes": 6666
+  },
+  "headers": {
+    "akamai-grn": "0.57fcda17.1780588336.4940b488",
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-length": "3379",
+    "content-type": "text/html",
+    "date": "Thu, 04 Jun 2026 15:52:16 GMT",
+    "expires": "0",
+    "mime-version": "1.0",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780588336144_400227415_1228977288_129_26589_13_0_-\";dur=1",
+    "set-cookie": "sec_cpt",
+    "vary": "Accept-Encoding",
+    "x-akamai-transformed": "9l - 0 pmb=mRUM,2",
+    "x-frame-options": "SAMEORIGIN",
+    "x-xss-protection": "1; mode=block"
+  },
+  "htmlBytes": 6666,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

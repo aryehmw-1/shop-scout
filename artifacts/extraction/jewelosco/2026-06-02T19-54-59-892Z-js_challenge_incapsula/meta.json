@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-06-02T19:54:59.892Z",
+  "retailerId": "jewelosco",
+  "url": "https://www.jewelosco.com/shop/search-results.html?q=paper%20towels",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:incapsula",
+    "vendor": "incapsula",
+    "confidence": 0.85,
+    "indicators": [
+      "html:incapsula",
+      "header:hdr-incap-cookie"
+    ],
+    "status": 200,
+    "bytes": 6035
+  },
+  "headers": {
+    "cache-control": "no-cache, no-store",
+    "connection": "close",
+    "content-length": "6035",
+    "content-type": "text/html; charset=UTF-8",
+    "set-cookie": "incap_ses_1430_1990338",
+    "x-iinfo": "7-73778531-0 NNNN RT(1780430099795 45) q(0 -1 -1 0) r(1 -1) B10(14,0,0) U24"
+  },
+  "htmlBytes": 6035,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

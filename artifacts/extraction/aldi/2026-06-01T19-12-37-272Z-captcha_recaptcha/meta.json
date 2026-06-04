@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-06-01T19:12:37.272Z",
+  "retailerId": "aldi",
+  "url": "https://www.aldi.us/products/?search=Greek%20Yogurt%20Plain",
+  "status": 200,
+  "method": "lightweight",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "captcha",
+    "reason": "captcha:recaptcha",
+    "vendor": "recaptcha",
+    "confidence": 0.9,
+    "indicators": [
+      "html:recaptcha"
+    ],
+    "status": 200,
+    "bytes": 587625
+  },
+  "headers": {
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "cache-control": "no-store",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-security-policy": "frame-ancestors 'self' https://aldi.us https://*.aldi.us https://dashboard.instacart.com https://*.dashboard.instacart.com",
+    "content-type": "text/html; charset=utf-8",
+    "cross-origin-opener-policy": "same-origin-allow-popups",
+    "date": "Mon, 01 Jun 2026 19:12:38 GMT",
+    "server": "nginx",
+    "set-cookie": "ahoy_visitor",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "transfer-encoding": "chunked",
+    "via": "1.1 e759cef9ef04dc6632a71818dfac3a76.cloudfront.net (CloudFront)",
+    "x-amz-cf-id": "OZmpG2vRi-kaH08k-zjoQuQ5q6k8hAjiPa7LWPFbYfOPeR-JYuSRMA==",
+    "x-amz-cf-pop": "MIA3-P3",
+    "x-cache": "Miss from cloudfront"
+  },
+  "htmlBytes": 587625,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.688Z",
+      "canonicalId": "skippy-peanut-butter",
+      "winnerOfferId": "skippy-peanut-butter-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 3.31,
+      "compositeScore": 0.93,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.05157593123209173
+    }
+  ]
+}

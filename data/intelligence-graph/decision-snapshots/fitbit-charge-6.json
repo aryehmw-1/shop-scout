@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.818Z",
+      "canonicalId": "fitbit-charge-6",
+      "winnerOfferId": "fitbit-charge-6-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 147.35,
+      "compositeScore": 0.923,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08772907379891044
+    }
+  ]
+}

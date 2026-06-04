@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.355Z",
+      "canonicalId": "barilla-pasta",
+      "winnerOfferId": "barilla-pasta-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 1.63,
+      "compositeScore": 0.921,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.12365591397849472
+    }
+  ]
+}

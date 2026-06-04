@@ -1,0 +1,46 @@
+{
+  "timestamp": "2026-06-03T03:11:59.076Z",
+  "retailerId": "kroger",
+  "url": "https://www.kroger.com/search?query=Tell%20me%20about%20what%20you%20do%20exactly%3F&searchType=default",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "proxyEndpoint": "http://***:***@dc.decodo.com:10001",
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "http_403:akamai",
+    "vendor": "akamai",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied",
+      "header:hdr-akamai-cookie"
+    ],
+    "status": 403,
+    "bytes": 524
+  },
+  "headers": {
+    "akamai-grn": "0.0772cc17.1780456318.fe0674d",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "connection": "close",
+    "content-type": "text/html",
+    "date": "Wed, 03 Jun 2026 03:11:59 GMT",
+    "expires": "Wed, 03 Jun 2026 03:11:59 GMT",
+    "link": "<https://www.kroger.com/cdn/b79518c0a8eb9a48d20f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin,<https://www.kroger.com/cdn/f3be6f7f945b6214f87f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin, <https://cdn.cookielaw.org>;rel=\"preconnect\",<https://assets.adobedtm.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=139, ak_p; desc=\"1780456318849_399274503_266364749_13903_20379_9_34_-\";dur=1",
+    "set-cookie": "bm_sz",
+    "strict-transport-security": "max-age=31536000 ; preload",
+    "x-akamai-transformed": "0 - 0 -",
+    "x-correlation-id": "akam_1780456318_8c25f911-e039-4c27-a38e-a49b11341030",
+    "x-frame-options": "SAMEORIGIN",
+    "x-kt-acr-lma-ct": "true"
+  },
+  "htmlBytes": 524,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

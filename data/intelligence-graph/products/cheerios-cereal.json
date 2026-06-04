@@ -1,0 +1,259 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.131Z",
+  "canonical": {
+    "canonical_id": "cheerios-cereal",
+    "version": 1,
+    "title": "Cheerios Original Cereal",
+    "title_normalized": "General Mills Cheerios Original Cereal",
+    "brand": "General Mills",
+    "brand_canonical": "general mills",
+    "category": "Grocery",
+    "canonical_image": "https://m.media-amazon.com/images/I/81KYNQ+KZJL._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B003GAMCT0"
+    },
+    "keywords": [
+      "cereal",
+      "cheerios",
+      "general mills",
+      "grocery",
+      "whole",
+      "grain",
+      "oats,",
+      "heart-healthy,",
+      "family-size",
+      "box."
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "cheerios-cereal-walmart",
+      "canonical_id": "cheerios-cereal",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Cheerios Original Cereal",
+      "product_url": "https://www.walmart.com/ip/cheerios-original-cereal/179784671",
+      "affiliate_url": "https://www.walmart.com/ip/cheerios-original-cereal/179784671",
+      "price": 4.74,
+      "currency": "USD",
+      "was_price": 5.21,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "cheerios-cereal-costco",
+      "canonical_id": "cheerios-cereal",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Cheerios Original Cereal",
+      "product_url": "https://www.costco.com/cheerios-original-cereal.product.393137706.html",
+      "affiliate_url": "https://www.costco.com/cheerios-original-cereal.product.393137706.html",
+      "price": 4.74,
+      "currency": "USD",
+      "was_price": 5.21,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "cheerios-cereal-target",
+      "canonical_id": "cheerios-cereal",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Cheerios Original Cereal",
+      "product_url": "https://www.target.com/p/cheerios-original-cereal/-/A-90910234",
+      "affiliate_url": "https://www.target.com/p/cheerios-original-cereal/-/A-90910234",
+      "price": 4.79,
+      "currency": "USD",
+      "was_price": 5.27,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "cheerios-cereal-amazon",
+      "canonical_id": "cheerios-cereal",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Cheerios Original Cereal",
+      "product_url": "https://www.amazon.com/dp/B003GAMCT0",
+      "affiliate_url": "https://www.amazon.com/dp/B003GAMCT0",
+      "price": 4.94,
+      "currency": "USD",
+      "was_price": 5.43,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "cheerios-cereal-kroger",
+      "canonical_id": "cheerios-cereal",
+      "retailer": "kroger",
+      "retailer_name": "Kroger",
+      "store_title": "Cheerios Original Cereal",
+      "product_url": "https://www.kroger.com/p/cheerios-original-cereal/345769233",
+      "affiliate_url": "https://www.kroger.com/p/cheerios-original-cereal/345769233",
+      "price": 5.24,
+      "currency": "USD",
+      "was_price": 5.76,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:kroger",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "cheerios-cereal-amazon-meta",
+      "canonical_id": "cheerios-cereal",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B003GAMCT0",
+        "image": "https://m.media-amazon.com/images/I/81KYNQ+KZJL._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

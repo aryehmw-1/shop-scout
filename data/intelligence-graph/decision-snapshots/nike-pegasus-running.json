@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T20:44:14.762Z",
+      "canonicalId": "nike-pegasus-running",
+      "winnerOfferId": "nike-pegasus-running-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 124.64,
+      "compositeScore": 0.949,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06003016591251881
+    },
+    {
+      "at": "2026-06-03T17:52:07.486Z",
+      "canonicalId": "nike-pegasus-running",
+      "winnerOfferId": "nike-pegasus-running-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 124.64,
+      "compositeScore": 0.949,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06003016591251881
+    },
+    {
+      "at": "2026-06-03T15:00:52.979Z",
+      "canonicalId": "nike-pegasus-running",
+      "winnerOfferId": "nike-pegasus-running-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 124.64,
+      "compositeScore": 0.929,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06003016591251881
+    },
+    {
+      "at": "2026-06-03T01:12:35.214Z",
+      "canonicalId": "nike-pegasus-running",
+      "winnerOfferId": "nike-pegasus-running-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 124.64,
+      "compositeScore": 0.929,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06003016591251881
+    }
+  ]
+}

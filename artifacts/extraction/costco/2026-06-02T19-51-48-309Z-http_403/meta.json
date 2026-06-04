@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-06-02T19:51:48.309Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=reeces%20puffs%20cereal%20Honey%20Nut%20Cereal",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 386
+  },
+  "headers": {
+    "cache-control": "max-age=900",
+    "connection": "close",
+    "content-length": "386",
+    "content-type": "text/html",
+    "date": "Tue, 02 Jun 2026 19:51:48 GMT",
+    "expires": "Tue, 02 Jun 2026 20:06:48 GMT",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780429908170_399274515_824039545_19_28960_10_125_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000;includeSubDomains"
+  },
+  "htmlBytes": 386,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

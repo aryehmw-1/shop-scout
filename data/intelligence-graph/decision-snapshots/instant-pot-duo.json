@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.935Z",
+      "canonicalId": "instant-pot-duo",
+      "winnerOfferId": "instant-pot-duo-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 81.15,
+      "compositeScore": 0.944,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08809978649286425
+    },
+    {
+      "at": "2026-06-02T01:25:45.368Z",
+      "canonicalId": "instant-pot-duo",
+      "winnerOfferId": "instant-pot-duo-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 81.15,
+      "compositeScore": 0.924,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08809978649286425
+    },
+    {
+      "at": "2026-06-02T01:19:11.159Z",
+      "canonicalId": "instant-pot-duo",
+      "winnerOfferId": "instant-pot-duo-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 81.15,
+      "compositeScore": 0.924,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08809978649286425
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-06-01T19:12:51.483Z",
+  "retailerId": "aldi",
+  "url": "https://www.aldi.us/products/?search=Adidas%20Ultraboost%20Running%20Shoes",
+  "status": 200,
+  "method": "lightweight",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "captcha",
+    "reason": "captcha:recaptcha",
+    "vendor": "recaptcha",
+    "confidence": 0.9,
+    "indicators": [
+      "html:recaptcha"
+    ],
+    "status": 200,
+    "bytes": 587637
+  },
+  "headers": {
+    "alt-svc": "h3=\":443\"; ma=86400",
+    "cache-control": "no-store",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-security-policy": "frame-ancestors 'self' https://aldi.us https://*.aldi.us https://dashboard.instacart.com https://*.dashboard.instacart.com",
+    "content-type": "text/html; charset=utf-8",
+    "cross-origin-opener-policy": "same-origin-allow-popups",
+    "date": "Mon, 01 Jun 2026 19:12:52 GMT",
+    "server": "nginx",
+    "set-cookie": "ahoy_visitor",
+    "strict-transport-security": "max-age=31536000; includeSubDomains; preload",
+    "transfer-encoding": "chunked",
+    "via": "1.1 9bbdfc2323989883f386114cc53fdbd0.cloudfront.net (CloudFront)",
+    "x-amz-cf-id": "mr_FvTVCF1XZF-S16rhtQYwAly_dYJlDPbhER8pUxsqPma9hyd5bTA==",
+    "x-amz-cf-pop": "MIA3-P3",
+    "x-cache": "Miss from cloudfront"
+  },
+  "htmlBytes": 587637,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

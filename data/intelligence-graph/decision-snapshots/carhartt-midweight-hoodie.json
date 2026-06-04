@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.505Z",
+      "canonicalId": "carhartt-midweight-hoodie",
+      "winnerOfferId": "carhartt-midweight-hoodie-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 54.7,
+      "compositeScore": 0.924,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.09706173654671502
+    }
+  ]
+}

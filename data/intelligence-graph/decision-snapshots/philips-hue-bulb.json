@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.481Z",
+      "canonicalId": "philips-hue-bulb",
+      "winnerOfferId": "philips-hue-bulb-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 45.58,
+      "compositeScore": 0.925,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.060206185567010344
+    }
+  ]
+}

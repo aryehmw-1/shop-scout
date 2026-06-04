@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.027Z",
+      "canonicalId": "keurig-k-mini",
+      "winnerOfferId": "keurig-k-mini-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 75.19,
+      "compositeScore": 0.928,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08738924626775098
+    },
+    {
+      "at": "2026-06-02T01:25:49.101Z",
+      "canonicalId": "keurig-k-mini",
+      "winnerOfferId": "keurig-k-mini-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 75.19,
+      "compositeScore": 0.928,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08738924626775098
+    }
+  ]
+}

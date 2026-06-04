@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-06-02T19:54:59.107Z",
+  "retailerId": "kroger",
+  "url": "https://www.kroger.com/search?query=paper%20towels&searchType=default",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "http_403:akamai",
+    "vendor": "akamai",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied",
+      "header:hdr-akamai-cookie"
+    ],
+    "status": 403,
+    "bytes": 537
+  },
+  "headers": {
+    "akamai-grn": "0.0a72cc17.1780430098.46da776c",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "connection": "close",
+    "content-type": "text/html",
+    "date": "Tue, 02 Jun 2026 19:54:59 GMT",
+    "expires": "Tue, 02 Jun 2026 19:54:59 GMT",
+    "link": "<https://www.kroger.com/cdn/b79518c0a8eb9a48d20f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin,<https://www.kroger.com/cdn/f3be6f7f945b6214f87f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin, <https://cdn.cookielaw.org>;rel=\"preconnect\",<https://assets.adobedtm.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=192, ak_p; desc=\"1780430098541_399274506_1188722540_19208_24745_15_129_-\";dur=1",
+    "set-cookie": "bm_sz",
+    "strict-transport-security": "max-age=31536000 ; preload",
+    "x-akamai-transformed": "0 - 0 -",
+    "x-correlation-id": "akam_1780430098_2cff1d1a-39e3-43a4-be6b-777a1c5e0408",
+    "x-frame-options": "SAMEORIGIN",
+    "x-kt-acr-lma-ct": "true"
+  },
+  "htmlBytes": 537,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

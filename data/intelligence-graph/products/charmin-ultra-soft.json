@@ -1,0 +1,257 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.131Z",
+  "canonical": {
+    "canonical_id": "charmin-ultra-soft",
+    "version": 1,
+    "title": "Charmin Ultra Soft Toilet Paper",
+    "title_normalized": "Charmin Ultra Soft Toilet Paper",
+    "brand": "Charmin",
+    "brand_canonical": "charmin",
+    "category": "Grocery",
+    "canonical_image": "https://m.media-amazon.com/images/I/71aFt4+OTOL._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B00FLYWNYQ"
+    },
+    "keywords": [
+      "toilet paper",
+      "charmin",
+      "grocery",
+      "ultra",
+      "soft",
+      "toilet",
+      "paper",
+      "—"
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "charmin-ultra-soft-walmart",
+      "canonical_id": "charmin-ultra-soft",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Charmin Ultra Soft Toilet Paper",
+      "product_url": "https://www.walmart.com/ip/charmin-ultra-soft-toilet-paper/261181642",
+      "affiliate_url": "https://www.walmart.com/ip/charmin-ultra-soft-toilet-paper/261181642",
+      "price": 21.85,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "charmin-ultra-soft-costco",
+      "canonical_id": "charmin-ultra-soft",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Charmin Ultra Soft Toilet Paper",
+      "product_url": "https://www.costco.com/charmin-ultra-soft-toilet-paper.product.516097845.html",
+      "affiliate_url": "https://www.costco.com/charmin-ultra-soft-toilet-paper.product.516097845.html",
+      "price": 22.26,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "charmin-ultra-soft-target",
+      "canonical_id": "charmin-ultra-soft",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Charmin Ultra Soft Toilet Paper",
+      "product_url": "https://www.target.com/p/charmin-ultra-soft-toilet-paper/-/A-62335893",
+      "affiliate_url": "https://www.target.com/p/charmin-ultra-soft-toilet-paper/-/A-62335893",
+      "price": 22.3,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "charmin-ultra-soft-amazon",
+      "canonical_id": "charmin-ultra-soft",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Charmin Ultra Soft Toilet Paper",
+      "product_url": "https://www.amazon.com/dp/B00FLYWNYQ",
+      "affiliate_url": "https://www.amazon.com/dp/B00FLYWNYQ",
+      "price": 22.53,
+      "currency": "USD",
+      "was_price": 24.33,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "charmin-ultra-soft-kroger",
+      "canonical_id": "charmin-ultra-soft",
+      "retailer": "kroger",
+      "retailer_name": "Kroger",
+      "store_title": "Charmin Ultra Soft Toilet Paper",
+      "product_url": "https://www.kroger.com/p/charmin-ultra-soft-toilet-paper/460454194",
+      "affiliate_url": "https://www.kroger.com/p/charmin-ultra-soft-toilet-paper/460454194",
+      "price": 22.97,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:kroger",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "charmin-ultra-soft-amazon-meta",
+      "canonical_id": "charmin-ultra-soft",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B00FLYWNYQ",
+        "image": "https://m.media-amazon.com/images/I/71aFt4+OTOL._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

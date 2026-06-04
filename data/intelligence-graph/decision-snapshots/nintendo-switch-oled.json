@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.269Z",
+      "canonicalId": "nintendo-switch-oled",
+      "winnerOfferId": "nintendo-switch-oled-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 325.7,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000173165170718
+    },
+    {
+      "at": "2026-06-02T01:25:45.492Z",
+      "canonicalId": "nintendo-switch-oled",
+      "winnerOfferId": "nintendo-switch-oled-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 325.7,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000173165170718
+    },
+    {
+      "at": "2026-06-02T01:19:28.289Z",
+      "canonicalId": "nintendo-switch-oled",
+      "winnerOfferId": "nintendo-switch-oled-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 325.7,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000173165170718
+    },
+    {
+      "at": "2026-06-02T01:19:26.471Z",
+      "canonicalId": "nintendo-switch-oled",
+      "winnerOfferId": "nintendo-switch-oled-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 325.7,
+      "compositeScore": 0.927,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000173165170718
+    },
+    {
+      "at": "2026-06-02T01:19:12.915Z",
+      "canonicalId": "nintendo-switch-oled",
+      "winnerOfferId": "nintendo-switch-oled-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 325.7,
+      "compositeScore": 0.927,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000173165170718
+    }
+  ]
+}

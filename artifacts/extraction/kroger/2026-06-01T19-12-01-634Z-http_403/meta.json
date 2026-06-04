@@ -1,0 +1,43 @@
+{
+  "timestamp": "2026-06-01T19:12:01.634Z",
+  "retailerId": "kroger",
+  "url": "https://www.kroger.com/search?query=Carter's%20Cotton%20Onesie%205-Pack&searchType=default",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 377
+  },
+  "headers": {
+    "akamai-grn": "0.0a72cc17.1780341123.34d34f56",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "connection": "close",
+    "content-length": "377",
+    "content-type": "text/html",
+    "date": "Mon, 01 Jun 2026 19:12:03 GMT",
+    "expires": "Mon, 01 Jun 2026 19:12:03 GMT",
+    "link": "<https://www.kroger.com/cdn/b79518c0a8eb9a48d20f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin,<https://www.kroger.com/cdn/f3be6f7f945b6214f87f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin, <https://cdn.cookielaw.org>;rel=\"preconnect\",<https://assets.adobedtm.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780341123621_399274506_886263638_19_20732_16_9_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000 ; preload",
+    "x-correlation-id": "akam_1780341123_0aaaf24f-b7e3-48d3-92a4-29769905c056",
+    "x-frame-options": "SAMEORIGIN",
+    "x-kt-acr-lma-ct": "true"
+  },
+  "htmlBytes": 377,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

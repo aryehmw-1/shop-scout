@@ -1,0 +1,146 @@
+{
+  "version": 1,
+  "updatedAt": "2026-06-01T23:32:38.692Z",
+  "entries": [
+    {
+      "key": "retailer_perf:walmart",
+      "layer": "factual",
+      "value": {
+        "retailer": "walmart",
+        "timesWon": 1,
+        "timesOffered": 2,
+        "winRate": 0.5,
+        "avgWinningPrice": 89.99,
+        "avgCompositeWhenWon": 0.85,
+        "disagreementRate": 0
+      },
+      "weight": 1,
+      "createdAt": "2026-06-01T23:32:38.691Z",
+      "expiresAt": "2026-08-30T23:32:38.691Z",
+      "source": "longitudinal"
+    },
+    {
+      "key": "retailer_perf:target",
+      "layer": "factual",
+      "value": {
+        "retailer": "target",
+        "timesWon": 0,
+        "timesOffered": 2,
+        "winRate": 0,
+        "avgWinningPrice": 96,
+        "avgCompositeWhenWon": 0.706,
+        "disagreementRate": 0
+      },
+      "weight": 1,
+      "createdAt": "2026-06-01T23:32:38.691Z",
+      "expiresAt": "2026-08-30T23:32:38.691Z",
+      "source": "longitudinal"
+    },
+    {
+      "key": "survival:gtin-012345678905",
+      "layer": "recommendation_history",
+      "value": {
+        "canonicalId": "gtin-012345678905",
+        "title": "Keurig K-Elite Single Serve Coffee Maker",
+        "currentWinner": "walmart",
+        "winnerSurvivalSnapshots": 17,
+        "totalSnapshots": 30,
+        "survivalRate": 0.5666666666666667,
+        "avgCompositeScore": 0.825,
+        "confidenceOutcomeProxy": 0.654
+      },
+      "weight": 1,
+      "createdAt": "2026-06-01T23:32:38.691Z",
+      "expiresAt": "2027-06-01T23:32:38.691Z",
+      "source": "longitudinal"
+    },
+    {
+      "key": "survival:gtin-019876543210",
+      "layer": "recommendation_history",
+      "value": {
+        "canonicalId": "gtin-019876543210",
+        "title": "Nike Dri-FIT Men's Training T-Shirt",
+        "currentWinner": "walmart",
+        "winnerSurvivalSnapshots": 16,
+        "totalSnapshots": 16,
+        "survivalRate": 1,
+        "avgCompositeScore": 0.883,
+        "confidenceOutcomeProxy": 0.638
+      },
+      "weight": 1,
+      "createdAt": "2026-06-01T23:32:38.691Z",
+      "expiresAt": "2027-06-01T23:32:38.690Z",
+      "source": "longitudinal"
+    },
+    {
+      "key": "retailer_trust:target",
+      "layer": "trust",
+      "value": {
+        "retailer": "target",
+        "trustScore": 0.767,
+        "shippingReliability": 0.95,
+        "pricingVolatility": 0.8,
+        "inventoryConsistency": 1,
+        "staleOfferRate": 0,
+        "disagreementFrequency": 0,
+        "summary": "target: generally reliable for validated offers"
+      },
+      "weight": 1,
+      "createdAt": "2026-06-01T23:32:38.692Z",
+      "expiresAt": "2026-07-31T23:32:38.692Z",
+      "source": "lifecycle"
+    },
+    {
+      "key": "retailer_trust:walmart",
+      "layer": "trust",
+      "value": {
+        "retailer": "walmart",
+        "trustScore": 0.817,
+        "shippingReliability": 0.95,
+        "pricingVolatility": 0.8,
+        "inventoryConsistency": 1,
+        "staleOfferRate": 0,
+        "disagreementFrequency": 0,
+        "summary": "walmart: generally reliable for validated offers"
+      },
+      "weight": 1,
+      "createdAt": "2026-06-01T23:32:38.692Z",
+      "expiresAt": "2026-07-31T23:32:38.692Z",
+      "source": "lifecycle"
+    },
+    {
+      "key": "lifecycle:gtin-019876543210",
+      "layer": "evaluation",
+      "value": {
+        "canonicalId": "gtin-019876543210",
+        "title": "Nike Dri-FIT Men's Training T-Shirt",
+        "currentWinnerRetailer": "walmart",
+        "recommendationAgeHours": 0,
+        "winnerReplacementCount": 0,
+        "estimatedHalfLifeHours": 48,
+        "regime": "stable"
+      },
+      "weight": 1,
+      "createdAt": "2026-06-01T23:32:38.692Z",
+      "expiresAt": "2026-11-28T23:32:38.692Z",
+      "source": "lifecycle"
+    },
+    {
+      "key": "lifecycle:gtin-012345678905",
+      "layer": "evaluation",
+      "value": {
+        "canonicalId": "gtin-012345678905",
+        "title": "Keurig K-Elite Single Serve Coffee Maker",
+        "currentWinnerRetailer": "walmart",
+        "recommendationAgeHours": 0,
+        "winnerReplacementCount": 14,
+        "estimatedHalfLifeHours": 25,
+        "regime": "shifting"
+      },
+      "weight": 1,
+      "createdAt": "2026-06-01T23:32:38.692Z",
+      "expiresAt": "2026-11-28T23:32:38.691Z",
+      "source": "lifecycle"
+    }
+  ]
+}

@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.132Z",
+  "canonical": {
+    "canonical_id": "oral-b-electric-toothbrush",
+    "version": 1,
+    "title": "Oral-B Pro 1000 Electric Toothbrush",
+    "title_normalized": "Oral-B Pro 1000 Electric Toothbrush",
+    "brand": "Oral-B",
+    "brand_canonical": "oral-b",
+    "category": "Beauty",
+    "canonical_image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B098RKWHHZ"
+    },
+    "keywords": [
+      "toothbrush",
+      "oral-b",
+      "beauty",
+      "pro",
+      "1000",
+      "electric",
+      "—"
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "oral-b-electric-toothbrush-costco",
+      "canonical_id": "oral-b-electric-toothbrush",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Oral-B Pro 1000 Electric Toothbrush",
+      "product_url": "https://www.costco.com/oral-b-pro-1000-electric-toothbrush.product.169981081.html",
+      "affiliate_url": "https://www.costco.com/oral-b-pro-1000-electric-toothbrush.product.169981081.html",
+      "price": 46.05,
+      "currency": "USD",
+      "was_price": 51.58,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "oral-b-electric-toothbrush-amazon",
+      "canonical_id": "oral-b-electric-toothbrush",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Oral-B Pro 1000 Electric Toothbrush",
+      "product_url": "https://www.amazon.com/dp/B098RKWHHZ",
+      "affiliate_url": "https://www.amazon.com/dp/B098RKWHHZ",
+      "price": 48.99,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "oral-b-electric-toothbrush-walmart",
+      "canonical_id": "oral-b-electric-toothbrush",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Oral-B Pro 1000 Electric Toothbrush",
+      "product_url": "https://www.walmart.com/ip/oral-b-pro-1000-electric-toothbrush/757347598",
+      "affiliate_url": "https://www.walmart.com/ip/oral-b-pro-1000-electric-toothbrush/757347598",
+      "price": 49.46,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "oral-b-electric-toothbrush-target",
+      "canonical_id": "oral-b-electric-toothbrush",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Oral-B Pro 1000 Electric Toothbrush",
+      "product_url": "https://www.target.com/p/oral-b-pro-1000-electric-toothbrush/-/A-96990083",
+      "affiliate_url": "https://www.target.com/p/oral-b-pro-1000-electric-toothbrush/-/A-96990083",
+      "price": 49.99,
+      "currency": "USD",
+      "was_price": 55.99,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "oral-b-electric-toothbrush-amazon-meta",
+      "canonical_id": "oral-b-electric-toothbrush",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B098RKWHHZ",
+        "image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

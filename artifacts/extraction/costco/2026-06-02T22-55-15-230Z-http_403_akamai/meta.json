@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-06-02T22:55:15.230Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=I%20specifically%20asked%20for%20peach%20kedem%20sparkling%20grape%20juice%2C%20not%20just%20gra",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "http_403:akamai",
+    "vendor": "akamai",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied",
+      "header:hdr-akamai-cookie"
+    ],
+    "status": 403,
+    "bytes": 540
+  },
+  "headers": {
+    "cache-control": "max-age=900",
+    "connection": "close",
+    "content-type": "text/html",
+    "date": "Tue, 02 Jun 2026 22:55:15 GMT",
+    "expires": "Tue, 02 Jun 2026 23:10:15 GMT",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=144, ak_p; desc=\"1780440915044_399426603_2725121026_14358_35512_10_60_-\";dur=1",
+    "set-cookie": "bm_sz",
+    "strict-transport-security": "max-age=31536000;includeSubDomains",
+    "x-akamai-transformed": "0 - 0 -"
+  },
+  "htmlBytes": 540,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

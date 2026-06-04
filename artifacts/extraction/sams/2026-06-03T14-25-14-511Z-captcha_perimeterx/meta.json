@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-06-03T14:25:14.511Z",
+  "retailerId": "sams",
+  "url": "https://www.samsclub.com/sams/search?searchTerm=cheerios%20Honey%20Nut%20Cereal",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "captcha",
+    "reason": "captcha:perimeterx",
+    "vendor": "perimeterx",
+    "confidence": 0.95,
+    "indicators": [
+      "html:perimeterx-px-captcha"
+    ],
+    "status": 200,
+    "bytes": 16455
+  },
+  "headers": {
+    "accept-ranges": "bytes",
+    "akamai-grn": "0.26c4ce17.1780496714.1c78aec1",
+    "cache-control": "max-age=1200",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-length": "4163",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Wed, 03 Jun 2026 14:25:14 GMT",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780496714467_399426598_477671105_36_14533_10_9_-\";dur=1",
+    "set-cookie": "bm_mi",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "vary": "Accept-Encoding",
+    "x-akamai-transformed": "0 - 0 -",
+    "x-content-type-options": "nosniff",
+    "x-edgeconnect-midmile-rtt": "2",
+    "x-edgeconnect-origin-mex-latency": "175",
+    "x-frame-options": "SAMEORIGIN",
+    "x-xss-protection": "1; mode=block"
+  },
+  "htmlBytes": 16455,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.142Z",
+      "canonicalId": "logitech-mx-master-3s",
+      "winnerOfferId": "logitech-mx-master-3s-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 94.92,
+      "compositeScore": 0.929,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.03152739516375883
+    }
+  ]
+}

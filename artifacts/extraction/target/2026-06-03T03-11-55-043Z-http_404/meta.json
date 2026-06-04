@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-06-03T03:11:55.043Z",
+  "retailerId": "target",
+  "url": "https://www.target.com/s?searchTerm=Tell%20me%20about%20what%20you%20do%20exactly%3F",
+  "status": 404,
+  "method": "lightweight",
+  "proxyUsed": false,
+  "proxyEndpoint": "http://***:***@dc.decodo.com:10001",
+  "attempt": 3,
+  "classification": {
+    "ok": false,
+    "category": "http_error",
+    "reason": "http_404",
+    "confidence": 0.8,
+    "indicators": [],
+    "status": 404,
+    "bytes": 133276
+  },
+  "headers": {
+    "accept-ranges": "bytes",
+    "cache-control": "private, no-cache",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-security-policy": "frame-ancestors 'self' https://*.target.com;",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Wed, 03 Jun 2026 03:11:54 GMT",
+    "etag": "W/\"951ibsr0242utm\"",
+    "referrer-policy": "no-referrer-when-downgrade",
+    "set-cookie": "_pxhd",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "SAMEORIGIN"
+  },
+  "htmlBytes": 133276,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

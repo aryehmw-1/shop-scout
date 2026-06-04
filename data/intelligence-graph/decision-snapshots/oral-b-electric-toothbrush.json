@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.323Z",
+      "canonicalId": "oral-b-electric-toothbrush",
+      "winnerOfferId": "oral-b-electric-toothbrush-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 46.05,
+      "compositeScore": 0.924,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.07881576315263061
+    }
+  ]
+}

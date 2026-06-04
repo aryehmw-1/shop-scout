@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "updatedAt": "2026-06-03T22:10:35.415Z",
+  "retailers": {
+    "ebay": {
+      "clicks": 6,
+      "saves": 0,
+      "ignores": 0,
+      "reversals": 0,
+      "repeatSelections": 0
+    },
+    "amazon": {
+      "clicks": 1,
+      "saves": 0,
+      "ignores": 0,
+      "reversals": 0,
+      "repeatSelections": 0
+    }
+  },
+  "canonicals": {
+    "cereal-honey": {
+      "clicks": 2,
+      "saves": 0,
+      "ignores": 0
+    },
+    "coffee-ground": {
+      "clicks": 1,
+      "saves": 0,
+      "ignores": 0
+    },
+    "syn-bamba": {
+      "clicks": 1,
+      "saves": 0,
+      "ignores": 0
+    },
+    "romaine-hearts-3": {
+      "clicks": 1,
+      "saves": 0,
+      "ignores": 0
+    },
+    "oj-juice": {
+      "clicks": 1,
+      "saves": 0,
+      "ignores": 0
+    },
+    "paper-towels": {
+      "clicks": 1,
+      "saves": 0,
+      "ignores": 0
+    }
+  }
+}

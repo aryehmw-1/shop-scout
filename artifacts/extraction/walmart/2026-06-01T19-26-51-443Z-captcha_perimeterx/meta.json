@@ -1,0 +1,47 @@
+{
+  "timestamp": "2026-06-01T19:26:51.443Z",
+  "retailerId": "walmart",
+  "url": "https://www.walmart.com/search?q=Under%20Armour%20HOVR%20Phantom%20Running%20Shoes",
+  "status": 200,
+  "method": "lightweight",
+  "proxyUsed": false,
+  "attempt": 3,
+  "classification": {
+    "ok": false,
+    "category": "captcha",
+    "reason": "captcha:perimeterx",
+    "vendor": "perimeterx",
+    "confidence": 0.95,
+    "indicators": [
+      "html:perimeterx-px-captcha",
+      "html:robot-or-human"
+    ],
+    "status": 200,
+    "bytes": 15567
+  },
+  "headers": {
+    "accept-ch": "Sec-CH-DPR, DPR, Sec-CH-Device-Memory, Device-Memory, Downlink",
+    "accept-ranges": "bytes",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "cache-status": "Hit",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-length": "3369",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Mon, 01 Jun 2026 19:26:53 GMT",
+    "expires": "Mon, 01 Jun 2026 19:26:53 GMT",
+    "origin-cc": "",
+    "origin-ex": "",
+    "permissions-policy": "ch-dpr=(self \"https://i5.walmartimages.com\"), ch-device-memory=(self \"https://i5.walmartimages.com\")",
+    "pragma": "no-cache",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780342013438_399426611_2101624814_1104_13730_13_0_-\";dur=1",
+    "set-cookie": "bm_mi",
+    "strict-transport-security": "max-age=31536000",
+    "vary": "Accept-Encoding",
+    "x-akamai-transformed": "0 - 0 -"
+  },
+  "htmlBytes": 15567,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

@@ -191,6 +191,22 @@ function isOpinionAdviceQuestion(text: string): boolean {
   );
 }
 
+/**
+ * Long, multi-sentence prose / instructions (e.g. a pasted paragraph of design
+ * requirements with bullet lists). These are never a product query — a real
+ * search is short — so they must not hit the inventory-miss search path.
+ */
+function isLongInstructionProse(text: string): boolean {
+  const t = text.trim();
+  const words = t.split(/\s+/).filter(Boolean).length;
+  const lineBullets = t.match(/(^|\n)\s*([*•\-]|\d+\.)\s+\S/g)?.length ?? 0;
+  const inlineBullets = t.match(/(?:^|\s)([*•])\s+\S/g)?.length ?? 0;
+  const bulletCount = Math.max(lineBullets, inlineBullets);
+  if (words > 45 || t.length > 320) return true;
+  if (bulletCount >= 2 && words > 20) return true;
+  return false;
+}
+
 function isConversationalOnly(text: string, session?: SessionState): boolean {
   const t = text.trim();
   if (session && shouldMergeWithPreviousSearch(t, session)) return false;
@@ -302,6 +318,29 @@ export async function resolveChatTurn(
 
   if (!isValidZip(zip)) {
     zip = "";
+  }
+
+  // Long instruction-style prose (pasted requirements, multi-bullet paragraphs)
+  // is never a product query — answer conversationally instead of searching.
+  if (isLongInstructionProse(text)) {
+    return withConversationDebug(
+      {
+        action: "conversational",
+        session: {
+          phase: phase === "ready" ? "ready" : "idle",
+          intent: { zipCode: zip, ...intent },
+          asked,
+          sourceUrl,
+          sourceProductTitle,
+          compareMode: false,
+        },
+        compareMode: false,
+        zipCode: zip,
+        query: intent.query,
+        chips: [...DEFAULT_CHAT_CHIPS],
+      },
+      { message: text, priorSession: session, merged: false },
+    );
   }
 
   // Opinion / fit / sizing questions are answered conversationally — even when

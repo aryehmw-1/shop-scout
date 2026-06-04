@@ -1,0 +1,222 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.127Z",
+  "canonical": {
+    "canonical_id": "ipad-10th-gen",
+    "version": 1,
+    "title": "Apple iPad 10.9 inch Wi-Fi 64GB",
+    "title_normalized": "Apple iPad 10.9 inch Wi-Fi 64GB",
+    "brand": "Apple",
+    "brand_canonical": "apple",
+    "category": "Electronics",
+    "canonical_image": "https://m.media-amazon.com/images/I/61NGXPOLKXL._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B0BJLF2BRM"
+    },
+    "keywords": [
+      "ipad",
+      "tablet",
+      "apple",
+      "electronics",
+      "10.9-inch",
+      "liquid",
+      "retina",
+      "display,",
+      "a14",
+      "bionic"
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "ipad-10th-gen-target",
+      "canonical_id": "ipad-10th-gen",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Apple iPad 10.9 inch Wi-Fi 64GB",
+      "product_url": "https://www.target.com/p/apple-ipad-10-9-inch-wi-fi-64gb/-/A-88006066",
+      "affiliate_url": "https://www.target.com/p/apple-ipad-10-9-inch-wi-fi-64gb/-/A-88006066",
+      "price": 335.14,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "ipad-10th-gen-costco",
+      "canonical_id": "ipad-10th-gen",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Apple iPad 10.9 inch Wi-Fi 64GB",
+      "product_url": "https://www.costco.com/apple-ipad-10-9-inch-wi-fi-64gb.product.283401878.html",
+      "affiliate_url": "https://www.costco.com/apple-ipad-10-9-inch-wi-fi-64gb.product.283401878.html",
+      "price": 337.9,
+      "currency": "USD",
+      "was_price": 391.96,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "ipad-10th-gen-amazon",
+      "canonical_id": "ipad-10th-gen",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Apple iPad 10.9 inch Wi-Fi 64GB",
+      "product_url": "https://www.amazon.com/dp/B0BJLF2BRM",
+      "affiliate_url": "https://www.amazon.com/dp/B0BJLF2BRM",
+      "price": 338.53,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "ipad-10th-gen-walmart",
+      "canonical_id": "ipad-10th-gen",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Apple iPad 10.9 inch Wi-Fi 64GB",
+      "product_url": "https://www.walmart.com/ip/apple-ipad-10-9-inch-wi-fi-64gb/321756075",
+      "affiliate_url": "https://www.walmart.com/ip/apple-ipad-10-9-inch-wi-fi-64gb/321756075",
+      "price": 348.69,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "ipad-10th-gen-amazon-meta",
+      "canonical_id": "ipad-10th-gen",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B0BJLF2BRM",
+        "image": "https://m.media-amazon.com/images/I/61NGXPOLKXL._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

@@ -1,0 +1,220 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.127Z",
+  "canonical": {
+    "canonical_id": "bose-soundlink-flex",
+    "version": 1,
+    "title": "Bose SoundLink Flex Bluetooth Speaker",
+    "title_normalized": "Bose SoundLink Flex Bluetooth Speaker",
+    "brand": "Bose",
+    "brand_canonical": "bose",
+    "category": "Electronics",
+    "canonical_image": "https://m.media-amazon.com/images/I/71V+Tj+JdGL._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B09Q3K9W3F"
+    },
+    "keywords": [
+      "speaker",
+      "bluetooth",
+      "bose",
+      "electronics",
+      "portable",
+      "waterproof",
+      "with",
+      "positioniq"
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "bose-soundlink-flex-walmart",
+      "canonical_id": "bose-soundlink-flex",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Bose SoundLink Flex Bluetooth Speaker",
+      "product_url": "https://www.walmart.com/ip/bose-soundlink-flex-bluetooth-speaker/751753421",
+      "affiliate_url": "https://www.walmart.com/ip/bose-soundlink-flex-bluetooth-speaker/751753421",
+      "price": 141.64,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "bose-soundlink-flex-costco",
+      "canonical_id": "bose-soundlink-flex",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Bose SoundLink Flex Bluetooth Speaker",
+      "product_url": "https://www.costco.com/bose-soundlink-flex-bluetooth-speaker.product.359508000.html",
+      "affiliate_url": "https://www.costco.com/bose-soundlink-flex-bluetooth-speaker.product.359508000.html",
+      "price": 142.86,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "out_of_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "bose-soundlink-flex-target",
+      "canonical_id": "bose-soundlink-flex",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Bose SoundLink Flex Bluetooth Speaker",
+      "product_url": "https://www.target.com/p/bose-soundlink-flex-bluetooth-speaker/-/A-54469105",
+      "affiliate_url": "https://www.target.com/p/bose-soundlink-flex-bluetooth-speaker/-/A-54469105",
+      "price": 150.46,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "bose-soundlink-flex-amazon",
+      "canonical_id": "bose-soundlink-flex",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Bose SoundLink Flex Bluetooth Speaker",
+      "product_url": "https://www.amazon.com/dp/B09Q3K9W3F",
+      "affiliate_url": "https://www.amazon.com/dp/B09Q3K9W3F",
+      "price": 150.49,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "bose-soundlink-flex-amazon-meta",
+      "canonical_id": "bose-soundlink-flex",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B09Q3K9W3F",
+        "image": "https://m.media-amazon.com/images/I/71V+Tj+JdGL._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

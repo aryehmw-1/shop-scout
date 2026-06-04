@@ -1,0 +1,49 @@
+{
+  "evaluatedAt": "2026-06-01T23:32:38.688Z",
+  "total": 7,
+  "passed": 7,
+  "cases": [
+    {
+      "id": "near_duplicate_title",
+      "description": "Whitespace-padded title does not crash explanation",
+      "passed": true,
+      "detail": "Recommended: Walmart"
+    },
+    {
+      "id": "extreme_pricing",
+      "description": "Extreme price spread surfaces uncertainty or market signals",
+      "passed": true,
+      "detail": "2 uncertainty, 1 market signals"
+    },
+    {
+      "id": "sparse_evidence",
+      "description": "Minimal query still produces bounded explanation",
+      "passed": true,
+      "detail": "evidence=0 identity=0.654"
+    },
+    {
+      "id": "manipulated_title",
+      "description": "Spammy title still yields structured output",
+      "passed": true,
+      "detail": "FREE iPhone 15 Pro Max 100% OFF"
+    },
+    {
+      "id": "single_validated_offer",
+      "description": "Single-offer graph still produces decision or clear uncertainty",
+      "passed": true,
+      "detail": "has decision"
+    },
+    {
+      "id": "conflicting_titles",
+      "description": "Conflicting retailer titles do not crash explanation pipeline",
+      "passed": true,
+      "detail": "identity=0.478"
+    },
+    {
+      "id": "retailer_grounding",
+      "description": "Offer insights only cite retailers present in graph",
+      "passed": true,
+      "detail": "2 retailers cited"
+    }
+  ]
+}

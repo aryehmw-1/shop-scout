@@ -1,0 +1,291 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.628Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T19:24:45.980Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T19:23:13.964Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T19:23:11.379Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T19:23:08.349Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T19:23:06.234Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T19:23:04.886Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T19:14:51.310Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T19:14:44.986Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T19:14:40.209Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T19:14:36.183Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T19:14:30.431Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T13:40:35.901Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T13:37:16.332Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T13:15:36.793Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T13:14:38.923Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T13:08:45.404Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T13:06:58.294Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T02:39:22.811Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T02:39:22.749Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T02:35:28.244Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T02:35:28.183Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T01:59:09.843Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T01:20:42.607Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T01:08:37.776Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.928,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    },
+    {
+      "at": "2026-06-02T01:06:43.042Z",
+      "canonicalId": "chobani-greek-yogurt",
+      "winnerOfferId": "chobani-greek-yogurt-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 5.11,
+      "compositeScore": 0.928,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10507880910683007
+    }
+  ]
+}

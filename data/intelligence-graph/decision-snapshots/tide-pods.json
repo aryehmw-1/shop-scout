@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.786Z",
+      "canonicalId": "tide-pods",
+      "winnerOfferId": "tide-pods-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 18.98,
+      "compositeScore": 0.928,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.04092976250631626
+    },
+    {
+      "at": "2026-06-02T13:43:54.509Z",
+      "canonicalId": "tide-pods",
+      "winnerOfferId": "tide-pods-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 18.98,
+      "compositeScore": 0.928,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.04092976250631626
+    }
+  ]
+}

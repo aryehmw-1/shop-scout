@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-06-01T19:07:21.182Z",
+  "retailerId": "kroger",
+  "url": "https://www.kroger.com/search?query=Fresh%20Express%20Romaine%20Hearts&searchType=default",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "proxyEndpoint": "http://***:***@dc.decodo.com:10001",
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 379
+  },
+  "headers": {
+    "akamai-grn": "0.28c4ce17.1780340843.27083f74",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "connection": "close",
+    "content-length": "379",
+    "content-type": "text/html",
+    "date": "Mon, 01 Jun 2026 19:07:23 GMT",
+    "expires": "Mon, 01 Jun 2026 19:07:23 GMT",
+    "link": "<https://www.kroger.com/cdn/b79518c0a8eb9a48d20f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin,<https://www.kroger.com/cdn/f3be6f7f945b6214f87f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin, <https://cdn.cookielaw.org>;rel=\"preconnect\",<https://assets.adobedtm.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780340843161_399426600_654851956_18_18041_10_18_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000 ; preload",
+    "x-correlation-id": "akam_1780340843_43b02c0a-beb3-4c03-a483-bf4c8f860c81",
+    "x-frame-options": "SAMEORIGIN",
+    "x-kt-acr-lma-ct": "true"
+  },
+  "htmlBytes": 379,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

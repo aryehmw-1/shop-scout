@@ -1,0 +1,46 @@
+{
+  "timestamp": "2026-06-02T02:38:36.051Z",
+  "retailerId": "kroger",
+  "url": "https://www.kroger.com/search?query=25550%20Cheerios%20Whole%20Grain%20Oats%20Gluten%20Free%20Breakfast%20Cereal%208%20900%20Oz&searchType=default",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "proxyEndpoint": "http://***:***@dc.decodo.com:10001",
+  "attempt": 3,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "http_403:akamai",
+    "vendor": "akamai",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied",
+      "header:hdr-akamai-cookie"
+    ],
+    "status": 403,
+    "bytes": 537
+  },
+  "headers": {
+    "akamai-grn": "0.0472cc17.1780367916.313a9fdf",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "connection": "close",
+    "content-type": "text/html",
+    "date": "Tue, 02 Jun 2026 02:38:36 GMT",
+    "expires": "Tue, 02 Jun 2026 02:38:36 GMT",
+    "link": "<https://www.kroger.com/cdn/b79518c0a8eb9a48d20f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin,<https://www.kroger.com/cdn/f3be6f7f945b6214f87f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin, <https://cdn.cookielaw.org>;rel=\"preconnect\",<https://assets.adobedtm.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=14, ak_p; desc=\"1780367916021_399274500_825925599_1376_23341_12_16_-\";dur=1",
+    "set-cookie": "bm_sz",
+    "strict-transport-security": "max-age=31536000 ; preload",
+    "x-akamai-transformed": "0 - 0 -",
+    "x-correlation-id": "akam_1780367916_3b0ba9cb-0892-4513-a937-5c3737db275b",
+    "x-frame-options": "SAMEORIGIN",
+    "x-kt-acr-lma-ct": "true"
+  },
+  "htmlBytes": 537,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-06-01T19:27:13.093Z",
+  "retailerId": "kroger",
+  "url": "https://www.kroger.com/search?query=Soft%20Stuffed%20Pretzels&searchType=default",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "http_403:akamai",
+    "vendor": "akamai",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied",
+      "header:hdr-akamai-cookie"
+    ],
+    "status": 403,
+    "bytes": 527
+  },
+  "headers": {
+    "akamai-grn": "0.32c4ce17.1780342035.d5f1fbd7",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "connection": "close",
+    "content-type": "text/html",
+    "date": "Mon, 01 Jun 2026 19:27:15 GMT",
+    "expires": "Mon, 01 Jun 2026 19:27:15 GMT",
+    "link": "<https://www.kroger.com/cdn/b79518c0a8eb9a48d20f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin,<https://www.kroger.com/cdn/f3be6f7f945b6214f87f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin, <https://cdn.cookielaw.org>;rel=\"preconnect\",<https://assets.adobedtm.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=52, ak_p; desc=\"1780342035004_399426610_3589405655_5223_25359_10_16_-\";dur=1",
+    "set-cookie": "bm_sz",
+    "strict-transport-security": "max-age=31536000 ; preload",
+    "x-akamai-transformed": "0 - 0 -",
+    "x-correlation-id": "akam_1780342035_d3626b4e-333b-47a0-a9e9-d596da78d60b",
+    "x-frame-options": "SAMEORIGIN",
+    "x-kt-acr-lma-ct": "true"
+  },
+  "htmlBytes": 527,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

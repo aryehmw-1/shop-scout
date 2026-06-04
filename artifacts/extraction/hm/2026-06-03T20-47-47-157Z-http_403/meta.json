@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-06-03T20:47:47.157Z",
+  "retailerId": "hm",
+  "url": "https://www2.hm.com/en_us/search-results.html?q=how%20many%20stores%20can%20you%20check%3F",
+  "status": 403,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 411
+  },
+  "headers": {
+    "connection": "close",
+    "content-length": "411",
+    "content-type": "text/html",
+    "date": "Wed, 03 Jun 2026 20:47:47 GMT",
+    "expires": "Wed, 03 Jun 2026 20:47:47 GMT",
+    "link": "<https://turbocookie.hmgroup.com>;rel=\"preconnect\",<https://tags.tiqcdn.com>;rel=\"preconnect\", <https://fabric.hmgroup.com>;rel=\"preconnect\",<https://s1-cdn.hm.com>;rel=\"preconnect\",<https://fabulous.hmgroup.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780519667106_399426599_795982860_21_28172_10_19_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000; includeSubDomains",
+    "x-reference-error": "18.27c4ce17.1780519667.2f71bc0c"
+  },
+  "htmlBytes": 411,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

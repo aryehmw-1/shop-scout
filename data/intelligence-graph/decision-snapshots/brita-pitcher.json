@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.464Z",
+      "canonicalId": "brita-pitcher",
+      "winnerOfferId": "brita-pitcher-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 26.84,
+      "compositeScore": 0.932,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.040057224606580864
+    }
+  ]
+}

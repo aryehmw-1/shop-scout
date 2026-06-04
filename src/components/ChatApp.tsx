@@ -613,7 +613,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
           type="submit"
           disabled={loading}
           aria-label="Send"
-          className="absolute bottom-2 right-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40"
+          className="absolute right-2.5 top-1/2 flex h-9 w-9 shrink-0 -translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40"
         >
           <ArrowUp size={18} strokeWidth={2.5} />
         </button>

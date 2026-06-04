@@ -1,0 +1,223 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.127Z",
+  "canonical": {
+    "canonical_id": "kindle-paperwhite",
+    "version": 1,
+    "title": "Amazon Kindle Paperwhite E-Reader",
+    "title_normalized": "Amazon Kindle Paperwhite E",
+    "brand": "Amazon",
+    "brand_canonical": "amazon",
+    "category": "Electronics",
+    "canonical_image": "https://m.media-amazon.com/images/I/71j+1H6qY9L._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B0CFPJNBVT"
+    },
+    "keywords": [
+      "kindle",
+      "ebook",
+      "reader",
+      "amazon",
+      "electronics",
+      "6.8-inch",
+      "glare-free",
+      "display,",
+      "adjustable",
+      "warm",
+      "light,"
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "kindle-paperwhite-costco",
+      "canonical_id": "kindle-paperwhite",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Amazon Kindle Paperwhite E-Reader",
+      "product_url": "https://www.costco.com/amazon-kindle-paperwhite-e-reader.product.706862452.html",
+      "affiliate_url": "https://www.costco.com/amazon-kindle-paperwhite-e-reader.product.706862452.html",
+      "price": 134.58,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "kindle-paperwhite-walmart",
+      "canonical_id": "kindle-paperwhite",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Amazon Kindle Paperwhite E-Reader",
+      "product_url": "https://www.walmart.com/ip/amazon-kindle-paperwhite-e-reader/598720817",
+      "affiliate_url": "https://www.walmart.com/ip/amazon-kindle-paperwhite-e-reader/598720817",
+      "price": 137.53,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "kindle-paperwhite-target",
+      "canonical_id": "kindle-paperwhite",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Amazon Kindle Paperwhite E-Reader",
+      "product_url": "https://www.target.com/p/amazon-kindle-paperwhite-e-reader/-/A-69317238",
+      "affiliate_url": "https://www.target.com/p/amazon-kindle-paperwhite-e-reader/-/A-69317238",
+      "price": 138.99,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "kindle-paperwhite-amazon",
+      "canonical_id": "kindle-paperwhite",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Amazon Kindle Paperwhite E-Reader",
+      "product_url": "https://www.amazon.com/dp/B0CFPJNBVT",
+      "affiliate_url": "https://www.amazon.com/dp/B0CFPJNBVT",
+      "price": 140.39,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "kindle-paperwhite-amazon-meta",
+      "canonical_id": "kindle-paperwhite",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B0CFPJNBVT",
+        "image": "https://m.media-amazon.com/images/I/71j+1H6qY9L._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

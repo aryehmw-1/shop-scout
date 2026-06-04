@@ -1,0 +1,44 @@
+{
+  "timestamp": "2026-06-04T01:06:34.505Z",
+  "retailerId": "kroger",
+  "url": "https://www.kroger.com/search?query=Compare%20iPhone%2017%20prices%20across%20all%20websites&searchType=default",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "proxyEndpoint": "http://***:***@dc.decodo.com:10001",
+  "attempt": 3,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 377
+  },
+  "headers": {
+    "akamai-grn": "0.28c4ce17.1780535194.495ea06",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "connection": "close",
+    "content-length": "377",
+    "content-type": "text/html",
+    "date": "Thu, 04 Jun 2026 01:06:34 GMT",
+    "expires": "Thu, 04 Jun 2026 01:06:34 GMT",
+    "link": "<https://www.kroger.com/cdn/b79518c0a8eb9a48d20f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin,<https://www.kroger.com/cdn/f3be6f7f945b6214f87f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin, <https://cdn.cookielaw.org>;rel=\"preconnect\",<https://assets.adobedtm.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780535194450_399426600_76933638_12_14116_9_14_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000 ; preload",
+    "x-correlation-id": "akam_1780535194_0a47de1d-4d68-4e08-9649-49320b8ad05d",
+    "x-frame-options": "SAMEORIGIN",
+    "x-kt-acr-lma-ct": "true"
+  },
+  "htmlBytes": 377,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

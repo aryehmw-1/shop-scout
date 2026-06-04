@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.192Z",
+      "canonicalId": "neutrogena-sunscreen",
+      "winnerOfferId": "neutrogena-sunscreen-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 12.33,
+      "compositeScore": 0.927,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06943396226415094
+    }
+  ]
+}

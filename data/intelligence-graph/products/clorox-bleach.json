@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.131Z",
+  "canonical": {
+    "canonical_id": "clorox-bleach",
+    "version": 1,
+    "title": "Clorox Disinfecting Bleach",
+    "title_normalized": "Clorox Disinfecting Bleach",
+    "brand": "Clorox",
+    "brand_canonical": "clorox",
+    "category": "Home",
+    "canonical_image": "https://m.media-amazon.com/images/I/71vFKBpKakL._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B07S85TPLG"
+    },
+    "keywords": [
+      "bleach",
+      "clorox",
+      "cleaner",
+      "home",
+      "disinfecting",
+      "—",
+      "home."
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "clorox-bleach-costco",
+      "canonical_id": "clorox-bleach",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Clorox Disinfecting Bleach",
+      "product_url": "https://www.costco.com/clorox-disinfecting-bleach.product.521516484.html",
+      "affiliate_url": "https://www.costco.com/clorox-disinfecting-bleach.product.521516484.html",
+      "price": 5.52,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "clorox-bleach-walmart",
+      "canonical_id": "clorox-bleach",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Clorox Disinfecting Bleach",
+      "product_url": "https://www.walmart.com/ip/clorox-disinfecting-bleach/367050241",
+      "affiliate_url": "https://www.walmart.com/ip/clorox-disinfecting-bleach/367050241",
+      "price": 5.75,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "clorox-bleach-target",
+      "canonical_id": "clorox-bleach",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Clorox Disinfecting Bleach",
+      "product_url": "https://www.target.com/p/clorox-disinfecting-bleach/-/A-85797966",
+      "affiliate_url": "https://www.target.com/p/clorox-disinfecting-bleach/-/A-85797966",
+      "price": 6.11,
+      "currency": "USD",
+      "was_price": 6.97,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "clorox-bleach-amazon",
+      "canonical_id": "clorox-bleach",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Clorox Disinfecting Bleach",
+      "product_url": "https://www.amazon.com/dp/B07S85TPLG",
+      "affiliate_url": "https://www.amazon.com/dp/B07S85TPLG",
+      "price": 6.17,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "clorox-bleach-amazon-meta",
+      "canonical_id": "clorox-bleach",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B07S85TPLG",
+        "image": "https://m.media-amazon.com/images/I/71vFKBpKakL._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

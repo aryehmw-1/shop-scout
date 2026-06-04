@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.846Z",
+      "canonicalId": "gillette-fusion-razor",
+      "winnerOfferId": "gillette-fusion-razor-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 23.49,
+      "compositeScore": 0.928,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.07846214201647705
+    }
+  ]
+}

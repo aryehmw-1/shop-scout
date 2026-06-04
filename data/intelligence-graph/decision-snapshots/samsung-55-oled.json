@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.657Z",
+      "canonicalId": "samsung-55-oled",
+      "winnerOfferId": "samsung-55-oled-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 1245.48,
+      "compositeScore": 0.949,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000090567404791
+    },
+    {
+      "at": "2026-06-02T01:18:05.723Z",
+      "canonicalId": "samsung-55-oled",
+      "winnerOfferId": "samsung-55-oled-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 1245.48,
+      "compositeScore": 0.949,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000090567404791
+    },
+    {
+      "at": "2026-06-02T01:18:05.575Z",
+      "canonicalId": "samsung-55-oled",
+      "winnerOfferId": "samsung-55-oled-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 1245.48,
+      "compositeScore": 0.949,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000090567404791
+    },
+    {
+      "at": "2026-06-02T01:18:02.978Z",
+      "canonicalId": "samsung-55-oled",
+      "winnerOfferId": "samsung-55-oled-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 1245.48,
+      "compositeScore": 0.949,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000090567404791
+    },
+    {
+      "at": "2026-06-02T01:18:02.723Z",
+      "canonicalId": "samsung-55-oled",
+      "winnerOfferId": "samsung-55-oled-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 1245.48,
+      "compositeScore": 0.949,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000090567404791
+    },
+    {
+      "at": "2026-06-02T01:17:58.439Z",
+      "canonicalId": "samsung-55-oled",
+      "winnerOfferId": "samsung-55-oled-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 1245.48,
+      "compositeScore": 0.929,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000090567404791
+    },
+    {
+      "at": "2026-06-02T01:17:58.364Z",
+      "canonicalId": "samsung-55-oled",
+      "winnerOfferId": "samsung-55-oled-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 1245.48,
+      "compositeScore": 0.929,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06000090567404791
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.565Z",
+      "canonicalId": "charmin-ultra-soft",
+      "winnerOfferId": "charmin-ultra-soft-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 21.85,
+      "compositeScore": 0.932,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.048759251197213645
+    }
+  ]
+}

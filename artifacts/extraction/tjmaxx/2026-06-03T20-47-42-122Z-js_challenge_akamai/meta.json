@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-06-03T20:47:42.122Z",
+  "retailerId": "tjmaxx",
+  "url": "https://www.tjmaxx.com/us/store/shop/?Ntt=how%20many%20stores%20can%20you%20check%3F",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:akamai",
+    "vendor": "akamai",
+    "confidence": 0.8,
+    "indicators": [
+      "html:akamai-bm"
+    ],
+    "status": 200,
+    "bytes": 6570
+  },
+  "headers": {
+    "akamai-grn": "0.8c7a3217.1780519662.7eaccfa",
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-length": "3342",
+    "content-type": "text/html",
+    "date": "Wed, 03 Jun 2026 20:47:42 GMT",
+    "expires": "0",
+    "mime-version": "1.0",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780519662073_389184140_132828410_164_25886_10_0_-\";dur=1",
+    "set-cookie": "sec_cpt",
+    "vary": "Accept-Encoding",
+    "x-akamai-transformed": "9l - 0 pmb=mRUM,2",
+    "x-frame-options": "SAMEORIGIN",
+    "x-xss-protection": "1; mode=block"
+  },
+  "htmlBytes": 6570,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

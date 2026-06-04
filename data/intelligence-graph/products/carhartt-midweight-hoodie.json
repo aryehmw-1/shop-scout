@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.133Z",
+  "canonical": {
+    "canonical_id": "carhartt-midweight-hoodie",
+    "version": 1,
+    "title": "Carhartt Midweight Hooded Sweatshirt",
+    "title_normalized": "Carhartt Midweight Hooded Sweatshirt",
+    "brand": "Carhartt",
+    "brand_canonical": "carhartt",
+    "category": "Clothing",
+    "canonical_image": "https://m.media-amazon.com/images/I/71j+1H6qY9L._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B0CFPJNBVT"
+    },
+    "keywords": [
+      "hoodie",
+      "carhartt",
+      "clothing",
+      "midweight",
+      "hooded",
+      "sweatshirt",
+      "—"
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "carhartt-midweight-hoodie-costco",
+      "canonical_id": "carhartt-midweight-hoodie",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Carhartt Midweight Hooded Sweatshirt",
+      "product_url": "https://www.costco.com/carhartt-midweight-hooded-sweatshirt.product.654220962.html",
+      "affiliate_url": "https://www.costco.com/carhartt-midweight-hooded-sweatshirt.product.654220962.html",
+      "price": 54.7,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "carhartt-midweight-hoodie-amazon",
+      "canonical_id": "carhartt-midweight-hoodie",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Carhartt Midweight Hooded Sweatshirt",
+      "product_url": "https://www.amazon.com/dp/B0CFPJNBVT",
+      "affiliate_url": "https://www.amazon.com/dp/B0CFPJNBVT",
+      "price": 58.19,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "carhartt-midweight-hoodie-walmart",
+      "canonical_id": "carhartt-midweight-hoodie",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Carhartt Midweight Hooded Sweatshirt",
+      "product_url": "https://www.walmart.com/ip/carhartt-midweight-hooded-sweatshirt/197358183",
+      "affiliate_url": "https://www.walmart.com/ip/carhartt-midweight-hooded-sweatshirt/197358183",
+      "price": 58.77,
+      "currency": "USD",
+      "was_price": 65.82,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "carhartt-midweight-hoodie-target",
+      "canonical_id": "carhartt-midweight-hoodie",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Carhartt Midweight Hooded Sweatshirt",
+      "product_url": "https://www.target.com/p/carhartt-midweight-hooded-sweatshirt/-/A-33362163",
+      "affiliate_url": "https://www.target.com/p/carhartt-midweight-hooded-sweatshirt/-/A-33362163",
+      "price": 60.58,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "carhartt-midweight-hoodie-amazon-meta",
+      "canonical_id": "carhartt-midweight-hoodie",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B0CFPJNBVT",
+        "image": "https://m.media-amazon.com/images/I/71j+1H6qY9L._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

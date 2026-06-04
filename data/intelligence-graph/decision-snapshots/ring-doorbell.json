@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.602Z",
+      "canonicalId": "ring-doorbell",
+      "winnerOfferId": "ring-doorbell-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 91.17,
+      "compositeScore": 0.924,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.1060888322384547
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.357Z",
+      "canonicalId": "organic-eggs-dozen",
+      "winnerOfferId": "organic-eggs-dozen-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 6.57,
+      "compositeScore": 0.927,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.08749999999999998
+    }
+  ]
+}

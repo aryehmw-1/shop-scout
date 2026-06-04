@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.541Z",
+      "canonicalId": "purina-pro-plan-dog",
+      "winnerOfferId": "purina-pro-plan-dog-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 52.21,
+      "compositeScore": 0.927,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.07821327683615818
+    }
+  ]
+}

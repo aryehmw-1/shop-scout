@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.874Z",
+      "canonicalId": "hp-63-ink",
+      "winnerOfferId": "hp-63-ink-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 21.18,
+      "compositeScore": 0.924,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.09680170575692962
+    }
+  ]
+}

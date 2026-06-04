@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.110Z",
+      "canonicalId": "lego-classic-box",
+      "winnerOfferId": "lego-classic-box-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 38.79,
+      "compositeScore": 0.903,
+      "identityConfidence": 0.82,
+      "validatedOfferCount": 3,
+      "priceSpreadRatio": 0.03961376578360984
+    }
+  ]
+}

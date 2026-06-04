@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-06-01T19:11:55.584Z",
+  "retailerId": "kroger",
+  "url": "https://www.kroger.com/search?query=Whole%20Milk&searchType=default",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "http_403:akamai",
+    "vendor": "akamai",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied",
+      "header:hdr-akamai-cookie"
+    ],
+    "status": 403,
+    "bytes": 525
+  },
+  "headers": {
+    "akamai-grn": "0.0b72cc17.1780341117.2a8b1fea",
+    "cache-control": "max-age=0, no-cache, no-store",
+    "connection": "close",
+    "content-type": "text/html",
+    "date": "Mon, 01 Jun 2026 19:11:57 GMT",
+    "expires": "Mon, 01 Jun 2026 19:11:57 GMT",
+    "link": "<https://www.kroger.com/cdn/b79518c0a8eb9a48d20f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin,<https://www.kroger.com/cdn/f3be6f7f945b6214f87f.woff2>;rel=\"preload\";as=\"font\";type=\"font/woff2\";crossorigin, <https://cdn.cookielaw.org>;rel=\"preconnect\",<https://assets.adobedtm.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=56, ak_p; desc=\"1780341117441_399274507_713760746_5602_26756_10_21_-\";dur=1",
+    "set-cookie": "bm_sz",
+    "strict-transport-security": "max-age=31536000 ; preload",
+    "x-akamai-transformed": "0 - 0 -",
+    "x-correlation-id": "akam_1780341117_5a587dbc-e5c5-4c6d-86a9-4f8f45307e71",
+    "x-frame-options": "SAMEORIGIN",
+    "x-kt-acr-lma-ct": "true"
+  },
+  "htmlBytes": 525,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

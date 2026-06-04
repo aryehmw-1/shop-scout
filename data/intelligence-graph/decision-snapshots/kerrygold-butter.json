@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.990Z",
+      "canonicalId": "kerrygold-butter",
+      "winnerOfferId": "kerrygold-butter-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 4.74,
+      "compositeScore": 0.928,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.059523809523809486
+    }
+  ]
+}

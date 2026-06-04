@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.389Z",
+      "canonicalId": "bose-soundlink-flex",
+      "winnerOfferId": "bose-soundlink-flex-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 141.64,
+      "compositeScore": 0.946,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.05880789421224016
+    },
+    {
+      "at": "2026-06-02T02:20:09.499Z",
+      "canonicalId": "bose-soundlink-flex",
+      "winnerOfferId": "bose-soundlink-flex-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 141.64,
+      "compositeScore": 0.946,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.05880789421224016
+    },
+    {
+      "at": "2026-06-02T02:18:11.829Z",
+      "canonicalId": "bose-soundlink-flex",
+      "winnerOfferId": "bose-soundlink-flex-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 141.64,
+      "compositeScore": 0.946,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.05880789421224016
+    },
+    {
+      "at": "2026-06-02T02:18:11.733Z",
+      "canonicalId": "bose-soundlink-flex",
+      "winnerOfferId": "bose-soundlink-flex-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 141.64,
+      "compositeScore": 0.946,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.05880789421224016
+    },
+    {
+      "at": "2026-06-02T02:18:11.324Z",
+      "canonicalId": "bose-soundlink-flex",
+      "winnerOfferId": "bose-soundlink-flex-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 141.64,
+      "compositeScore": 0.946,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.05880789421224016
+    },
+    {
+      "at": "2026-06-02T02:18:10.301Z",
+      "canonicalId": "bose-soundlink-flex",
+      "winnerOfferId": "bose-soundlink-flex-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 141.64,
+      "compositeScore": 0.926,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.05880789421224016
+    },
+    {
+      "at": "2026-06-02T02:18:10.134Z",
+      "canonicalId": "bose-soundlink-flex",
+      "winnerOfferId": "bose-soundlink-flex-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 141.64,
+      "compositeScore": 0.926,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.05880789421224016
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.445Z",
+      "canonicalId": "pampers-swaddlers",
+      "winnerOfferId": "pampers-swaddlers-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 26.98,
+      "compositeScore": 0.921,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.09645010046885462
+    }
+  ]
+}

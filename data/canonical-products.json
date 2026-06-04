@@ -1,0 +1,3453 @@
+{
+  "version": 1,
+  "updatedAt": "2026-06-02T01:07:59.121Z",
+  "products": [
+    {
+      "canonical_id": "sony-wh1000xm5",
+      "canonical_title": "Sony WH-1000XM5 Wireless Headphones",
+      "canonical_image": "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SL1500_.jpg",
+      "canonical_category": "Electronics",
+      "brand": "Sony",
+      "normalized_keywords": [
+        "headphones",
+        "sony",
+        "noise cancelling",
+        "wireless",
+        "electronics",
+        "industry-leading",
+        "noise",
+        "canceling",
+        "with",
+        "auto",
+        "nc"
+      ],
+      "amazon_asin": "B09XS7JWHH",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 327.43,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/sony-wh-1000xm5-wireless-headphones/667978550",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Sony WH-1000XM5 Wireless Headphones"
+        },
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 330.39,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/sony-wh-1000xm5-wireless-headphones.product.936813009.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Sony WH-1000XM5 Wireless Headphones",
+          "list_price": 370.04
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 344.52,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/sony-wh-1000xm5-wireless-headphones/-/A-92150563",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Sony WH-1000XM5 Wireless Headphones"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 358.44,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B09XS7JWHH",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Sony WH-1000XM5 Wireless Headphones"
+        }
+      ]
+    },
+    {
+      "canonical_id": "apple-airpods-pro-2",
+      "canonical_title": "Apple AirPods Pro (2nd generation)",
+      "canonical_image": "https://m.media-amazon.com/images/I/61fD85FMQtL._AC_SL1500_.jpg",
+      "canonical_category": "Electronics",
+      "brand": "Apple",
+      "normalized_keywords": [
+        "airpods",
+        "earbuds",
+        "apple",
+        "electronics",
+        "active",
+        "noise",
+        "cancellation,",
+        "adaptive",
+        "audio,",
+        "and"
+      ],
+      "amazon_asin": "B0CHWRXH8B",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 241.08,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/apple-airpods-pro-2nd-generation.product.619982081.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Apple AirPods Pro (2nd generation)",
+          "list_price": 270.01
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 243.95,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/apple-airpods-pro-2nd-generation/180707302",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Apple AirPods Pro (2nd generation)"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 246.51,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B0CHWRXH8B",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Apple AirPods Pro (2nd generation)"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 248.98,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/apple-airpods-pro-2nd-generation/-/A-89419895",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Apple AirPods Pro (2nd generation)"
+        }
+      ]
+    },
+    {
+      "canonical_id": "samsung-55-oled",
+      "canonical_title": "Samsung 55 inch OLED 4K Smart TV",
+      "canonical_image": "https://m.media-amazon.com/images/I/81p+5K+ZJTL._AC_SL1500_.jpg",
+      "canonical_category": "Electronics",
+      "brand": "Samsung",
+      "normalized_keywords": [
+        "oled",
+        "tv",
+        "samsung",
+        "4k",
+        "electronics",
+        "smart",
+        "with",
+        "neural"
+      ],
+      "amazon_asin": "B0CXL1WFXH",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 1245.48,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/samsung-55-inch-oled-4k-smart-tv.product.288013715.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Samsung 55 inch OLED 4K Smart TV"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 1272.63,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/samsung-55-inch-oled-4k-smart-tv/724996024",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Samsung 55 inch OLED 4K Smart TV"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 1286.01,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/samsung-55-inch-oled-4k-smart-tv/-/A-90726279",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Samsung 55 inch OLED 4K Smart TV"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 1324.98,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B0CXL1WFXH",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Samsung 55 inch OLED 4K Smart TV",
+          "list_price": 1483.98
+        }
+      ]
+    },
+    {
+      "canonical_id": "ipad-10th-gen",
+      "canonical_title": "Apple iPad 10.9 inch Wi-Fi 64GB",
+      "canonical_image": "https://m.media-amazon.com/images/I/61NGXPOLKXL._AC_SL1500_.jpg",
+      "canonical_category": "Electronics",
+      "brand": "Apple",
+      "normalized_keywords": [
+        "ipad",
+        "tablet",
+        "apple",
+        "electronics",
+        "10.9-inch",
+        "liquid",
+        "retina",
+        "display,",
+        "a14",
+        "bionic"
+      ],
+      "amazon_asin": "B0BJLF2BRM",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 335.14,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/apple-ipad-10-9-inch-wi-fi-64gb/-/A-88006066",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Apple iPad 10.9 inch Wi-Fi 64GB"
+        },
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 337.9,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/apple-ipad-10-9-inch-wi-fi-64gb.product.283401878.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Apple iPad 10.9 inch Wi-Fi 64GB",
+          "list_price": 391.96
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 338.53,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B0BJLF2BRM",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Apple iPad 10.9 inch Wi-Fi 64GB"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 348.69,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/apple-ipad-10-9-inch-wi-fi-64gb/321756075",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Apple iPad 10.9 inch Wi-Fi 64GB"
+        }
+      ]
+    },
+    {
+      "canonical_id": "kindle-paperwhite",
+      "canonical_title": "Amazon Kindle Paperwhite E-Reader",
+      "canonical_image": "https://m.media-amazon.com/images/I/71j+1H6qY9L._AC_SL1500_.jpg",
+      "canonical_category": "Electronics",
+      "brand": "Amazon",
+      "normalized_keywords": [
+        "kindle",
+        "ebook",
+        "reader",
+        "amazon",
+        "electronics",
+        "6.8-inch",
+        "glare-free",
+        "display,",
+        "adjustable",
+        "warm",
+        "light,"
+      ],
+      "amazon_asin": "B0CFPJNBVT",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 134.58,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/amazon-kindle-paperwhite-e-reader.product.706862452.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Amazon Kindle Paperwhite E-Reader"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 137.53,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/amazon-kindle-paperwhite-e-reader/598720817",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Amazon Kindle Paperwhite E-Reader"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 138.99,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/amazon-kindle-paperwhite-e-reader/-/A-69317238",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Amazon Kindle Paperwhite E-Reader"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 140.39,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B0CFPJNBVT",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Amazon Kindle Paperwhite E-Reader"
+        }
+      ]
+    },
+    {
+      "canonical_id": "bose-soundlink-flex",
+      "canonical_title": "Bose SoundLink Flex Bluetooth Speaker",
+      "canonical_image": "https://m.media-amazon.com/images/I/71V+Tj+JdGL._AC_SL1500_.jpg",
+      "canonical_category": "Electronics",
+      "brand": "Bose",
+      "normalized_keywords": [
+        "speaker",
+        "bluetooth",
+        "bose",
+        "electronics",
+        "portable",
+        "waterproof",
+        "with",
+        "positioniq"
+      ],
+      "amazon_asin": "B09Q3K9W3F",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 141.64,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/bose-soundlink-flex-bluetooth-speaker/751753421",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Bose SoundLink Flex Bluetooth Speaker"
+        },
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 142.86,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/bose-soundlink-flex-bluetooth-speaker.product.359508000.html",
+          "availability": "out_of_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Bose SoundLink Flex Bluetooth Speaker"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 150.46,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/bose-soundlink-flex-bluetooth-speaker/-/A-54469105",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Bose SoundLink Flex Bluetooth Speaker"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 150.49,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B09Q3K9W3F",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Bose SoundLink Flex Bluetooth Speaker"
+        }
+      ]
+    },
+    {
+      "canonical_id": "logitech-mx-master-3s",
+      "canonical_title": "Logitech MX Master 3S Wireless Mouse",
+      "canonical_image": "https://m.media-amazon.com/images/I/61ni3t2+Y3L._AC_SL1500_.jpg",
+      "canonical_category": "Electronics",
+      "brand": "Logitech",
+      "normalized_keywords": [
+        "mouse",
+        "logitech",
+        "wireless",
+        "electronics",
+        "quiet",
+        "clicks,",
+        "8k",
+        "dpi",
+        "sensor,",
+        "magspeed"
+      ],
+      "amazon_asin": "B09HM94VDS",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 94.92,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/logitech-mx-master-3s-wireless-mouse.product.414119520.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Logitech MX Master 3S Wireless Mouse"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 97.02,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B09HM94VDS",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Logitech MX Master 3S Wireless Mouse"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 97.95,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/logitech-mx-master-3s-wireless-mouse/677391373",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Logitech MX Master 3S Wireless Mouse"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 98.01,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/logitech-mx-master-3s-wireless-mouse/-/A-44554437",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Logitech MX Master 3S Wireless Mouse"
+        }
+      ]
+    },
+    {
+      "canonical_id": "dyson-v15",
+      "canonical_title": "Dyson V15 Detect Cordless Vacuum",
+      "canonical_image": "https://m.media-amazon.com/images/I/71dHNGtVqBL._AC_SL1500_.jpg",
+      "canonical_category": "Home",
+      "brand": "Dyson",
+      "normalized_keywords": [
+        "vacuum",
+        "dyson",
+        "cordless",
+        "home",
+        "laser",
+        "dust",
+        "detection,",
+        "hepa",
+        "filtration,",
+        "up"
+      ],
+      "amazon_asin": "B089T4KQJ4",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 689.98,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/dyson-v15-detect-cordless-vacuum.product.169059129.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Dyson V15 Detect Cordless Vacuum"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 704.73,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/dyson-v15-detect-cordless-vacuum/202486574",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Dyson V15 Detect Cordless Vacuum"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 763.76,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/dyson-v15-detect-cordless-vacuum/-/A-96908205",
+          "availability": "out_of_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Dyson V15 Detect Cordless Vacuum"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 763.98,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B089T4KQJ4",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Dyson V15 Detect Cordless Vacuum"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ninja-air-fryer",
+      "canonical_title": "Ninja Air Fryer Max XL",
+      "canonical_image": "https://m.media-amazon.com/images/I/71vFKBpKakL._AC_SL1500_.jpg",
+      "canonical_category": "Kitchen",
+      "brand": "Ninja",
+      "normalized_keywords": [
+        "air fryer",
+        "ninja",
+        "kitchen",
+        "max",
+        "xl",
+        "5.5-quart",
+        "capacity,",
+        "crisp"
+      ],
+      "amazon_asin": "B07S85TPLG",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 124.9,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/ninja-air-fryer-max-xl.product.984399381.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Ninja Air Fryer Max XL"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 125.13,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/ninja-air-fryer-max-xl/392257066",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Ninja Air Fryer Max XL"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 130.29,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B07S85TPLG",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Ninja Air Fryer Max XL"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 131.54,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/ninja-air-fryer-max-xl/-/A-78329567",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Ninja Air Fryer Max XL"
+        }
+      ]
+    },
+    {
+      "canonical_id": "instant-pot-duo",
+      "canonical_title": "Instant Pot Duo 7-in-1 Electric Pressure Cooker",
+      "canonical_image": "https://m.media-amazon.com/images/I/71aFt4+OTOL._AC_SL1500_.jpg",
+      "canonical_category": "Kitchen",
+      "brand": "Instant Pot",
+      "normalized_keywords": [
+        "instant pot",
+        "pressure cooker",
+        "kitchen",
+        "7-in-1",
+        "pressure",
+        "cooker,",
+        "slow",
+        "rice"
+      ],
+      "amazon_asin": "B00FLYWNYQ",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 81.15,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/instant-pot-duo-7-in-1-electric-pressure-cooker.product.402258719.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Instant Pot Duo 7-in-1 Electric Pressure Cooker"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 86.33,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B00FLYWNYQ",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Instant Pot Duo 7-in-1 Electric Pressure Cooker"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 87.19,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/instant-pot-duo-7-in-1-electric-pressure-cooker/824955924",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Instant Pot Duo 7-in-1 Electric Pressure Cooker"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 88.99,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/instant-pot-duo-7-in-1-electric-pressure-cooker/-/A-41692408",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Instant Pot Duo 7-in-1 Electric Pressure Cooker",
+          "list_price": 101.45
+        }
+      ]
+    },
+    {
+      "canonical_id": "organic-whole-milk",
+      "canonical_title": "Organic Whole Milk",
+      "canonical_image": "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "Horizon",
+      "normalized_keywords": [
+        "milk",
+        "organic",
+        "dairy",
+        "horizon",
+        "grocery",
+        "whole",
+        "—",
+        "grocery."
+      ],
+      "amazon_asin": "B09XS7JWHH",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 5.21,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/organic-whole-milk.product.279915680.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Organic Whole Milk"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 5.49,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B09XS7JWHH",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Organic Whole Milk",
+          "list_price": 6.37
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 5.49,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/organic-whole-milk/887249229",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Organic Whole Milk"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 5.49,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/organic-whole-milk/-/A-26006603",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Organic Whole Milk"
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 5.82,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/organic-whole-milk/901576495",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Organic Whole Milk"
+        }
+      ]
+    },
+    {
+      "canonical_id": "organic-eggs-dozen",
+      "canonical_title": "Organic Large Brown Eggs",
+      "canonical_image": "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "Vital Farms",
+      "normalized_keywords": [
+        "eggs",
+        "organic",
+        "vital farms",
+        "grocery",
+        "large",
+        "brown",
+        "—",
+        "vital"
+      ],
+      "amazon_asin": "B09XS7JWHH",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 6.57,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/organic-large-brown-eggs.product.676262136.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Organic Large Brown Eggs"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 6.71,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/organic-large-brown-eggs/-/A-28884673",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Organic Large Brown Eggs",
+          "list_price": 7.65
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 6.92,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/organic-large-brown-eggs/297883893",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Organic Large Brown Eggs"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 7.06,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B09XS7JWHH",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Organic Large Brown Eggs",
+          "list_price": 8.05
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 7.2,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/organic-large-brown-eggs/874619463",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Organic Large Brown Eggs"
+        }
+      ]
+    },
+    {
+      "canonical_id": "bounty-paper-towels",
+      "canonical_title": "Bounty Select-A-Size Paper Towels",
+      "canonical_image": "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "Bounty",
+      "normalized_keywords": [
+        "paper towels",
+        "bounty",
+        "grocery",
+        "select-a-size",
+        "paper",
+        "towels",
+        "—"
+      ],
+      "amazon_asin": "B09XS7JWHH",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 23.73,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/bounty-select-a-size-paper-towels.product.883863072.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Bounty Select-A-Size Paper Towels"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 23.76,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/bounty-select-a-size-paper-towels/262922957",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Bounty Select-A-Size Paper Towels"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 24.25,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/bounty-select-a-size-paper-towels/-/A-16904613",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Bounty Select-A-Size Paper Towels"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 24.99,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B09XS7JWHH",
+          "availability": "out_of_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Bounty Select-A-Size Paper Towels"
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 26.51,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/bounty-select-a-size-paper-towels/605523887",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Bounty Select-A-Size Paper Towels"
+        }
+      ]
+    },
+    {
+      "canonical_id": "tide-pods",
+      "canonical_title": "Tide PODS Laundry Detergent",
+      "canonical_image": "https://m.media-amazon.com/images/I/81KYNQ+KZJL._AC_SL1500_.jpg",
+      "canonical_category": "Home",
+      "brand": "Tide",
+      "normalized_keywords": [
+        "laundry",
+        "detergent",
+        "tide pods",
+        "tide",
+        "home",
+        "3-in-1",
+        "pacs",
+        "with",
+        "stain"
+      ],
+      "amazon_asin": "B00OLA4O50",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 18.98,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/tide-pods-laundry-detergent.product.214424764.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Tide PODS Laundry Detergent"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 19.59,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B00OLA4O50",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Tide PODS Laundry Detergent"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 19.78,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/tide-pods-laundry-detergent/859518409",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Tide PODS Laundry Detergent",
+          "list_price": 21.36
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 19.79,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/tide-pods-laundry-detergent/-/A-24440349",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Tide PODS Laundry Detergent"
+        }
+      ]
+    },
+    {
+      "canonical_id": "starbucks-ground-coffee",
+      "canonical_title": "Starbucks Pike Place Roast Ground Coffee",
+      "canonical_image": "https://m.media-amazon.com/images/I/71vFKBpKakL._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "Starbucks",
+      "normalized_keywords": [
+        "coffee",
+        "ground",
+        "starbucks",
+        "grocery",
+        "pike",
+        "place",
+        "roast"
+      ],
+      "amazon_asin": "B07S85TPLG",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 9.11,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/starbucks-pike-place-roast-ground-coffee.product.583327820.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Starbucks Pike Place Roast Ground Coffee"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 9.59,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/starbucks-pike-place-roast-ground-coffee/666628441",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Starbucks Pike Place Roast Ground Coffee",
+          "list_price": 10.93
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 9.79,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B07S85TPLG",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Starbucks Pike Place Roast Ground Coffee"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 9.89,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/starbucks-pike-place-roast-ground-coffee/-/A-29266914",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Starbucks Pike Place Roast Ground Coffee"
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 10.29,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/starbucks-pike-place-roast-ground-coffee/163944779",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Starbucks Pike Place Roast Ground Coffee"
+        }
+      ]
+    },
+    {
+      "canonical_id": "barilla-pasta",
+      "canonical_title": "Barilla Spaghetti Pasta",
+      "canonical_image": "https://m.media-amazon.com/images/I/71U2+5Y5HHL._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "Barilla",
+      "normalized_keywords": [
+        "pasta",
+        "spaghetti",
+        "barilla",
+        "grocery",
+        "—",
+        "grocery."
+      ],
+      "amazon_asin": "B00TTD9BRC",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 1.63,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/barilla-spaghetti-pasta.product.760167470.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Barilla Spaghetti Pasta"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 1.77,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/barilla-spaghetti-pasta/477636179",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Barilla Spaghetti Pasta",
+          "list_price": 2.05
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 1.79,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B00TTD9BRC",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Barilla Spaghetti Pasta",
+          "list_price": 2.08
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 1.79,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/barilla-spaghetti-pasta/-/A-36184299",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Barilla Spaghetti Pasta"
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 1.86,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/barilla-spaghetti-pasta/935518261",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Barilla Spaghetti Pasta"
+        }
+      ]
+    },
+    {
+      "canonical_id": "chobani-greek-yogurt",
+      "canonical_title": "Chobani Greek Yogurt Plain",
+      "canonical_image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "Chobani",
+      "normalized_keywords": [
+        "yogurt",
+        "greek",
+        "chobani",
+        "grocery",
+        "plain",
+        "—"
+      ],
+      "amazon_asin": "B098RKWHHZ",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 5.11,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/chobani-greek-yogurt-plain.product.600248865.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Chobani Greek Yogurt Plain"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 5.17,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/chobani-greek-yogurt-plain/397351814",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Chobani Greek Yogurt Plain"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 5.33,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/chobani-greek-yogurt-plain/-/A-44039675",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Chobani Greek Yogurt Plain"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 5.44,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B098RKWHHZ",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Chobani Greek Yogurt Plain"
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 5.71,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/chobani-greek-yogurt-plain/691979294",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Chobani Greek Yogurt Plain"
+        }
+      ]
+    },
+    {
+      "canonical_id": "kerrygold-butter",
+      "canonical_title": "Kerrygold Pure Irish Butter",
+      "canonical_image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "Kerrygold",
+      "normalized_keywords": [
+        "butter",
+        "kerrygold",
+        "grocery",
+        "pure",
+        "irish",
+        "—"
+      ],
+      "amazon_asin": "B098RKWHHZ",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 4.74,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/kerrygold-pure-irish-butter.product.586079073.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Kerrygold Pure Irish Butter",
+          "list_price": 5.5
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 4.84,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B098RKWHHZ",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Kerrygold Pure Irish Butter",
+          "list_price": 5.61
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 4.94,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/kerrygold-pure-irish-butter/633530310",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Kerrygold Pure Irish Butter"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 4.94,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/kerrygold-pure-irish-butter/-/A-70252340",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Kerrygold Pure Irish Butter",
+          "list_price": 5.73
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 5.04,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/kerrygold-pure-irish-butter/523409246",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Kerrygold Pure Irish Butter"
+        }
+      ]
+    },
+    {
+      "canonical_id": "cerave-moisturizing-cream",
+      "canonical_title": "CeraVe Moisturizing Cream",
+      "canonical_image": "https://m.media-amazon.com/images/I/71U2+5Y5HHL._AC_SL1500_.jpg",
+      "canonical_category": "Beauty",
+      "brand": "CeraVe",
+      "normalized_keywords": [
+        "moisturizer",
+        "skincare",
+        "cerave",
+        "beauty",
+        "hyaluronic",
+        "acid",
+        "and",
+        "ceramides",
+        "for",
+        "dry"
+      ],
+      "amazon_asin": "B00TTD9BRC",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 16.45,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/cerave-moisturizing-cream.product.930972885.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "CeraVe Moisturizing Cream"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 16.48,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/cerave-moisturizing-cream/-/A-88437260",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "CeraVe Moisturizing Cream"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 16.81,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/cerave-moisturizing-cream/305676266",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "CeraVe Moisturizing Cream"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 17.5,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B00TTD9BRC",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "CeraVe Moisturizing Cream"
+        }
+      ]
+    },
+    {
+      "canonical_id": "olaplex-no3",
+      "canonical_title": "Olaplex No. 3 Hair Perfector",
+      "canonical_image": "https://m.media-amazon.com/images/I/61fD85FMQtL._AC_SL1500_.jpg",
+      "canonical_category": "Beauty",
+      "brand": "Olaplex",
+      "normalized_keywords": [
+        "hair",
+        "olaplex",
+        "treatment",
+        "beauty",
+        "no.",
+        "3",
+        "perfector",
+        "—"
+      ],
+      "amazon_asin": "B0CHWRXH8B",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 28.48,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/olaplex-no-3-hair-perfector.product.833815291.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Olaplex No. 3 Hair Perfector"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 29.68,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/olaplex-no-3-hair-perfector/939774064",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Olaplex No. 3 Hair Perfector"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 30.29,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/olaplex-no-3-hair-perfector/-/A-55370232",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Olaplex No. 3 Hair Perfector"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 30.3,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B0CHWRXH8B",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Olaplex No. 3 Hair Perfector"
+        }
+      ]
+    },
+    {
+      "canonical_id": "neutrogena-sunscreen",
+      "canonical_title": "Neutrogena Ultra Sheer Sunscreen SPF 70",
+      "canonical_image": "https://m.media-amazon.com/images/I/71vFKBpKakL._AC_SL1500_.jpg",
+      "canonical_category": "Beauty",
+      "brand": "Neutrogena",
+      "normalized_keywords": [
+        "sunscreen",
+        "spf",
+        "neutrogena",
+        "beauty",
+        "ultra",
+        "sheer",
+        "70"
+      ],
+      "amazon_asin": "B07S85TPLG",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 12.33,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/neutrogena-ultra-sheer-sunscreen-spf-70.product.499555956.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Neutrogena Ultra Sheer Sunscreen SPF 70"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 12.86,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B07S85TPLG",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Neutrogena Ultra Sheer Sunscreen SPF 70",
+          "list_price": 14.15
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 12.98,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/neutrogena-ultra-sheer-sunscreen-spf-70/581328689",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Neutrogena Ultra Sheer Sunscreen SPF 70"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 13.25,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/neutrogena-ultra-sheer-sunscreen-spf-70/-/A-48586588",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Neutrogena Ultra Sheer Sunscreen SPF 70"
+        }
+      ]
+    },
+    {
+      "canonical_id": "dove-body-wash",
+      "canonical_title": "Dove Deep Moisture Body Wash",
+      "canonical_image": "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SL1500_.jpg",
+      "canonical_category": "Beauty",
+      "brand": "Dove",
+      "normalized_keywords": [
+        "body wash",
+        "dove",
+        "beauty",
+        "deep",
+        "moisture",
+        "body",
+        "wash",
+        "—"
+      ],
+      "amazon_asin": "B09XS7JWHH",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 6.57,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/dove-deep-moisture-body-wash.product.882681544.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Dove Deep Moisture Body Wash"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 6.71,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/dove-deep-moisture-body-wash/361589765",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Dove Deep Moisture Body Wash"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 7.06,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/dove-deep-moisture-body-wash/-/A-75839762",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Dove Deep Moisture Body Wash"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 7.2,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B09XS7JWHH",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Dove Deep Moisture Body Wash"
+        }
+      ]
+    },
+    {
+      "canonical_id": "nike-pegasus-running",
+      "canonical_title": "Nike Air Zoom Pegasus Running Shoes",
+      "canonical_image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+      "canonical_category": "Sports",
+      "brand": "Nike",
+      "normalized_keywords": [
+        "running shoes",
+        "nike",
+        "pegasus",
+        "sports",
+        "air",
+        "zoom",
+        "running",
+        "shoes"
+      ],
+      "amazon_asin": "B098RKWHHZ",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 124.64,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/nike-air-zoom-pegasus-running-shoes.product.276440353.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Nike Air Zoom Pegasus Running Shoes"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 124.84,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/nike-air-zoom-pegasus-running-shoes/-/A-11658823",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Nike Air Zoom Pegasus Running Shoes"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 128.62,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/nike-air-zoom-pegasus-running-shoes/223760518",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Nike Air Zoom Pegasus Running Shoes",
+          "list_price": 141.48
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 132.6,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B098RKWHHZ",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Nike Air Zoom Pegasus Running Shoes"
+        }
+      ]
+    },
+    {
+      "canonical_id": "yeti-rambler-30",
+      "canonical_title": "YETI Rambler 30 oz Tumbler",
+      "canonical_image": "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SL1500_.jpg",
+      "canonical_category": "Sports",
+      "brand": "YETI",
+      "normalized_keywords": [
+        "tumbler",
+        "yeti",
+        "water bottle",
+        "sports",
+        "rambler",
+        "30",
+        "oz",
+        "—"
+      ],
+      "amazon_asin": "B09XS7JWHH",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 34.65,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/yeti-rambler-30-oz-tumbler.product.358241736.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "YETI Rambler 30 oz Tumbler"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 36.86,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B09XS7JWHH",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "YETI Rambler 30 oz Tumbler"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 37.6,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/yeti-rambler-30-oz-tumbler/488491781",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "YETI Rambler 30 oz Tumbler"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 38.75,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/yeti-rambler-30-oz-tumbler/-/A-23395781",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "YETI Rambler 30 oz Tumbler",
+          "list_price": 43.4
+        }
+      ]
+    },
+    {
+      "canonical_id": "hydro-flask-32",
+      "canonical_title": "Hydro Flask Wide Mouth 32 oz",
+      "canonical_image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+      "canonical_category": "Sports",
+      "brand": "Hydro Flask",
+      "normalized_keywords": [
+        "water bottle",
+        "hydro flask",
+        "sports",
+        "hydro",
+        "flask",
+        "wide",
+        "mouth",
+        "32",
+        "oz"
+      ],
+      "amazon_asin": "B098RKWHHZ",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 43.1,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/hydro-flask-wide-mouth-32-oz.product.384327105.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Hydro Flask Wide Mouth 32 oz"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 43.6,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B098RKWHHZ",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Hydro Flask Wide Mouth 32 oz"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 44.04,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/hydro-flask-wide-mouth-32-oz/335156390",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Hydro Flask Wide Mouth 32 oz"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 44.06,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/hydro-flask-wide-mouth-32-oz/-/A-23026161",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Hydro Flask Wide Mouth 32 oz"
+        }
+      ]
+    },
+    {
+      "canonical_id": "lululemon-align-leggings",
+      "canonical_title": "Lululemon Align High-Rise Leggings",
+      "canonical_image": "https://m.media-amazon.com/images/I/71aFt4+OTOL._AC_SL1500_.jpg",
+      "canonical_category": "Clothing",
+      "brand": "Lululemon",
+      "normalized_keywords": [
+        "leggings",
+        "lululemon",
+        "yoga",
+        "clothing",
+        "align",
+        "high-rise",
+        "—"
+      ],
+      "amazon_asin": "B00FLYWNYQ",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 93.04,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/lululemon-align-high-rise-leggings.product.463303941.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Lululemon Align High-Rise Leggings"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 96.01,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/lululemon-align-high-rise-leggings/222242522",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Lululemon Align High-Rise Leggings"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 98.96,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/lululemon-align-high-rise-leggings/-/A-31808346",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Lululemon Align High-Rise Leggings",
+          "list_price": 106.88
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 100.94,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B00FLYWNYQ",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Lululemon Align High-Rise Leggings"
+        }
+      ]
+    },
+    {
+      "canonical_id": "brita-pitcher",
+      "canonical_title": "Brita Everyday Water Filter Pitcher",
+      "canonical_image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+      "canonical_category": "Home",
+      "brand": "Brita",
+      "normalized_keywords": [
+        "water filter",
+        "brita",
+        "home",
+        "everyday",
+        "water",
+        "filter",
+        "pitcher",
+        "—"
+      ],
+      "amazon_asin": "B098RKWHHZ",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 26.84,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/brita-everyday-water-filter-pitcher.product.557954681.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Brita Everyday Water Filter Pitcher",
+          "list_price": 30.6
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 27.15,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B098RKWHHZ",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Brita Everyday Water Filter Pitcher"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 27.16,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/brita-everyday-water-filter-pitcher/-/A-29386266",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Brita Everyday Water Filter Pitcher"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 27.96,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/brita-everyday-water-filter-pitcher/942662254",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Brita Everyday Water Filter Pitcher",
+          "list_price": 31.87
+        }
+      ]
+    },
+    {
+      "canonical_id": "keurig-k-mini",
+      "canonical_title": "Keurig K-Mini Single Serve Coffee Maker",
+      "canonical_image": "https://m.media-amazon.com/images/I/71K+8Q+KZJL._AC_SL1500_.jpg",
+      "canonical_category": "Kitchen",
+      "brand": "Keurig",
+      "normalized_keywords": [
+        "keurig",
+        "coffee maker",
+        "kitchen",
+        "single-serve",
+        "brewer,",
+        "less",
+        "than",
+        "5",
+        "inches"
+      ],
+      "amazon_asin": "B07W6JRW33",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 75.19,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/keurig-k-mini-single-serve-coffee-maker.product.308664022.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Keurig K-Mini Single Serve Coffee Maker"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 75.26,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/keurig-k-mini-single-serve-coffee-maker/447128043",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Keurig K-Mini Single Serve Coffee Maker",
+          "list_price": 82.79
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 78.4,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/keurig-k-mini-single-serve-coffee-maker/-/A-40970476",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Keurig K-Mini Single Serve Coffee Maker",
+          "list_price": 86.24
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 82.39,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B07W6JRW33",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Keurig K-Mini Single Serve Coffee Maker"
+        }
+      ]
+    },
+    {
+      "canonical_id": "roomba-j7",
+      "canonical_title": "iRobot Roomba j7 Robot Vacuum",
+      "canonical_image": "https://m.media-amazon.com/images/I/61j+9K9qY9L._AC_SL1500_.jpg",
+      "canonical_category": "Home",
+      "brand": "iRobot",
+      "normalized_keywords": [
+        "roomba",
+        "robot vacuum",
+        "irobot",
+        "home",
+        "precisionvision",
+        "navigation",
+        "avoids",
+        "cords",
+        "and",
+        "pet"
+      ],
+      "amazon_asin": "B09ZTL26NM",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 563.6,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/irobot-roomba-j7-robot-vacuum/522936092",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "iRobot Roomba j7 Robot Vacuum"
+        },
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 568.69,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/irobot-roomba-j7-robot-vacuum.product.453230231.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "iRobot Roomba j7 Robot Vacuum"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 598.94,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/irobot-roomba-j7-robot-vacuum/-/A-12233508",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "iRobot Roomba j7 Robot Vacuum"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 604.99,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B09ZTL26NM",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "iRobot Roomba j7 Robot Vacuum"
+        }
+      ]
+    },
+    {
+      "canonical_id": "philips-hue-bulb",
+      "canonical_title": "Philips Hue White and Color Ambiance Bulb",
+      "canonical_image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+      "canonical_category": "Home",
+      "brand": "Philips",
+      "normalized_keywords": [
+        "smart bulb",
+        "hue",
+        "philips",
+        "home",
+        "white",
+        "and",
+        "color",
+        "ambiance"
+      ],
+      "amazon_asin": "B098RKWHHZ",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 45.58,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/philips-hue-white-and-color-ambiance-bulb.product.866601673.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Philips Hue White and Color Ambiance Bulb"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 47.52,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/philips-hue-white-and-color-ambiance-bulb/920936702",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Philips Hue White and Color Ambiance Bulb",
+          "list_price": 51.32
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 48.49,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B098RKWHHZ",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Philips Hue White and Color Ambiance Bulb"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 48.5,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/philips-hue-white-and-color-ambiance-bulb/-/A-90189611",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Philips Hue White and Color Ambiance Bulb"
+        }
+      ]
+    },
+    {
+      "canonical_id": "hp-63-ink",
+      "canonical_title": "HP 63 Black Ink Cartridge",
+      "canonical_image": "https://m.media-amazon.com/images/I/71j+1H6qY9L._AC_SL1500_.jpg",
+      "canonical_category": "Office",
+      "brand": "HP",
+      "normalized_keywords": [
+        "ink",
+        "printer",
+        "hp",
+        "office",
+        "63",
+        "black",
+        "cartridge",
+        "—"
+      ],
+      "amazon_asin": "B0CFPJNBVT",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 21.18,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/hp-63-black-ink-cartridge.product.246879090.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "HP 63 Black Ink Cartridge",
+          "list_price": 23.3
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 22.75,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/hp-63-black-ink-cartridge/460769783",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "HP 63 Black Ink Cartridge",
+          "list_price": 25.03
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 22.76,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/hp-63-black-ink-cartridge/-/A-33479780",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "HP 63 Black Ink Cartridge",
+          "list_price": 25.04
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 23.45,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B0CFPJNBVT",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "HP 63 Black Ink Cartridge"
+        }
+      ]
+    },
+    {
+      "canonical_id": "pampers-swaddlers",
+      "canonical_title": "Pampers Swaddlers Diapers Size 1",
+      "canonical_image": "https://m.media-amazon.com/images/I/81KYNQ+KZJL._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "Pampers",
+      "normalized_keywords": [
+        "diapers",
+        "pampers",
+        "grocery",
+        "swaddlers",
+        "size",
+        "1",
+        "—"
+      ],
+      "amazon_asin": "B003GAMCT0",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 26.98,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/pampers-swaddlers-diapers-size-1.product.445945375.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Pampers Swaddlers Diapers Size 1"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 28.68,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/pampers-swaddlers-diapers-size-1/677534996",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Pampers Swaddlers Diapers Size 1"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 29.56,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/pampers-swaddlers-diapers-size-1/-/A-25557803",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Pampers Swaddlers Diapers Size 1",
+          "list_price": 33.11
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 29.57,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B003GAMCT0",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Pampers Swaddlers Diapers Size 1"
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 29.86,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/pampers-swaddlers-diapers-size-1/492845372",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Pampers Swaddlers Diapers Size 1"
+        }
+      ]
+    },
+    {
+      "canonical_id": "purina-pro-plan-dog",
+      "canonical_title": "Purina Pro Plan Adult Dog Food",
+      "canonical_image": "https://m.media-amazon.com/images/I/81KYNQ+KZJL._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "Purina",
+      "normalized_keywords": [
+        "dog food",
+        "purina",
+        "grocery",
+        "high-protein",
+        "adult",
+        "dry",
+        "dog",
+        "food",
+        "with"
+      ],
+      "amazon_asin": "B0018CIP6K",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 52.21,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/purina-pro-plan-adult-dog-food.product.405810509.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Purina Pro Plan Adult Dog Food"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 54.94,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/purina-pro-plan-adult-dog-food/824827282",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Purina Pro Plan Adult Dog Food"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 54.99,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B0018CIP6K",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Purina Pro Plan Adult Dog Food"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 56.07,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/purina-pro-plan-adult-dog-food/-/A-77315121",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Purina Pro Plan Adult Dog Food"
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 56.64,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/purina-pro-plan-adult-dog-food/303823850",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Purina Pro Plan Adult Dog Food"
+        }
+      ]
+    },
+    {
+      "canonical_id": "cheerios-cereal",
+      "canonical_title": "Cheerios Original Cereal",
+      "canonical_image": "https://m.media-amazon.com/images/I/81KYNQ+KZJL._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "General Mills",
+      "normalized_keywords": [
+        "cereal",
+        "cheerios",
+        "general mills",
+        "grocery",
+        "whole",
+        "grain",
+        "oats,",
+        "heart-healthy,",
+        "family-size",
+        "box."
+      ],
+      "amazon_asin": "B003GAMCT0",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 4.74,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/cheerios-original-cereal/179784671",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Cheerios Original Cereal",
+          "list_price": 5.21
+        },
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 4.74,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/cheerios-original-cereal.product.393137706.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Cheerios Original Cereal",
+          "list_price": 5.21
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 4.79,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/cheerios-original-cereal/-/A-90910234",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Cheerios Original Cereal",
+          "list_price": 5.27
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 4.94,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B003GAMCT0",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Cheerios Original Cereal",
+          "list_price": 5.43
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 5.24,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/cheerios-original-cereal/345769233",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Cheerios Original Cereal",
+          "list_price": 5.76
+        }
+      ]
+    },
+    {
+      "canonical_id": "skippy-peanut-butter",
+      "canonical_title": "Skippy Creamy Peanut Butter",
+      "canonical_image": "https://m.media-amazon.com/images/I/71j+1H6qY9L._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "Skippy",
+      "normalized_keywords": [
+        "peanut butter",
+        "skippy",
+        "grocery",
+        "creamy",
+        "peanut",
+        "butter",
+        "—"
+      ],
+      "amazon_asin": "B0CFPJNBVT",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 3.31,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/skippy-creamy-peanut-butter.product.289373506.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Skippy Creamy Peanut Butter"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 3.35,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/skippy-creamy-peanut-butter/-/A-12644355",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Skippy Creamy Peanut Butter"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 3.39,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/skippy-creamy-peanut-butter/776926855",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Skippy Creamy Peanut Butter"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 3.49,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B0CFPJNBVT",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Skippy Creamy Peanut Butter"
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 3.49,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/skippy-creamy-peanut-butter/613200105",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Skippy Creamy Peanut Butter"
+        }
+      ]
+    },
+    {
+      "canonical_id": "la-croix-sparkling",
+      "canonical_title": "LaCroix Sparkling Water Variety Pack",
+      "canonical_image": "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "LaCroix",
+      "normalized_keywords": [
+        "sparkling water",
+        "lacroix",
+        "grocery",
+        "sparkling",
+        "water",
+        "variety",
+        "pack",
+        "—"
+      ],
+      "amazon_asin": "B09XS7JWHH",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 14.88,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/lacroix-sparkling-water-variety-pack.product.314922952.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "LaCroix Sparkling Water Variety Pack"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 15.04,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/lacroix-sparkling-water-variety-pack/989197829",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "LaCroix Sparkling Water Variety Pack"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 15.51,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/lacroix-sparkling-water-variety-pack/-/A-39567173",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "LaCroix Sparkling Water Variety Pack"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 16.31,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B09XS7JWHH",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "LaCroix Sparkling Water Variety Pack"
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 16.47,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/lacroix-sparkling-water-variety-pack/655222743",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "LaCroix Sparkling Water Variety Pack",
+          "list_price": 18.45
+        }
+      ]
+    },
+    {
+      "canonical_id": "clorox-bleach",
+      "canonical_title": "Clorox Disinfecting Bleach",
+      "canonical_image": "https://m.media-amazon.com/images/I/71vFKBpKakL._AC_SL1500_.jpg",
+      "canonical_category": "Home",
+      "brand": "Clorox",
+      "normalized_keywords": [
+        "bleach",
+        "clorox",
+        "cleaner",
+        "home",
+        "disinfecting",
+        "—",
+        "home."
+      ],
+      "amazon_asin": "B07S85TPLG",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 5.52,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/clorox-disinfecting-bleach.product.521516484.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Clorox Disinfecting Bleach"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 5.75,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/clorox-disinfecting-bleach/367050241",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Clorox Disinfecting Bleach"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 6.11,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/clorox-disinfecting-bleach/-/A-85797966",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Clorox Disinfecting Bleach",
+          "list_price": 6.97
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 6.17,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B07S85TPLG",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Clorox Disinfecting Bleach"
+        }
+      ]
+    },
+    {
+      "canonical_id": "charmin-ultra-soft",
+      "canonical_title": "Charmin Ultra Soft Toilet Paper",
+      "canonical_image": "https://m.media-amazon.com/images/I/71aFt4+OTOL._AC_SL1500_.jpg",
+      "canonical_category": "Grocery",
+      "brand": "Charmin",
+      "normalized_keywords": [
+        "toilet paper",
+        "charmin",
+        "grocery",
+        "ultra",
+        "soft",
+        "toilet",
+        "paper",
+        "—"
+      ],
+      "amazon_asin": "B00FLYWNYQ",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 21.85,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/charmin-ultra-soft-toilet-paper/261181642",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Charmin Ultra Soft Toilet Paper"
+        },
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 22.26,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/charmin-ultra-soft-toilet-paper.product.516097845.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Charmin Ultra Soft Toilet Paper"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 22.3,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/charmin-ultra-soft-toilet-paper/-/A-62335893",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Charmin Ultra Soft Toilet Paper"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 22.53,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B00FLYWNYQ",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Charmin Ultra Soft Toilet Paper",
+          "list_price": 24.33
+        },
+        {
+          "retailer": "kroger",
+          "retailer_name": "Kroger",
+          "price": 22.97,
+          "currency": "USD",
+          "product_url": "https://www.kroger.com/p/charmin-ultra-soft-toilet-paper/460454194",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Charmin Ultra Soft Toilet Paper"
+        }
+      ]
+    },
+    {
+      "canonical_id": "crest-toothpaste",
+      "canonical_title": "Crest Pro-Health Toothpaste",
+      "canonical_image": "https://m.media-amazon.com/images/I/71U2+5Y5HHL._AC_SL1500_.jpg",
+      "canonical_category": "Beauty",
+      "brand": "Crest",
+      "normalized_keywords": [
+        "toothpaste",
+        "crest",
+        "beauty",
+        "pro-health",
+        "—",
+        "beauty."
+      ],
+      "amazon_asin": "B00TTD9BRC",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 4.74,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/crest-pro-health-toothpaste/761317291",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Crest Pro-Health Toothpaste"
+        },
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 4.78,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/crest-pro-health-toothpaste.product.347017622.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Crest Pro-Health Toothpaste"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 5.09,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/crest-pro-health-toothpaste/-/A-94367641",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Crest Pro-Health Toothpaste"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 5.14,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B00TTD9BRC",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Crest Pro-Health Toothpaste"
+        }
+      ]
+    },
+    {
+      "canonical_id": "gillette-fusion-razor",
+      "canonical_title": "Gillette Fusion5 Razor Refills",
+      "canonical_image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+      "canonical_category": "Beauty",
+      "brand": "Gillette",
+      "normalized_keywords": [
+        "razor",
+        "gillette",
+        "beauty",
+        "fusion5",
+        "refills",
+        "—"
+      ],
+      "amazon_asin": "B098RKWHHZ",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 23.49,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/gillette-fusion5-razor-refills.product.219595329.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Gillette Fusion5 Razor Refills"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 24,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/gillette-fusion5-razor-refills/-/A-76049713",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Gillette Fusion5 Razor Refills"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 24.48,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/gillette-fusion5-razor-refills/641936934",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Gillette Fusion5 Razor Refills",
+          "list_price": 27.42
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 25.49,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B098RKWHHZ",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Gillette Fusion5 Razor Refills"
+        }
+      ]
+    },
+    {
+      "canonical_id": "oral-b-electric-toothbrush",
+      "canonical_title": "Oral-B Pro 1000 Electric Toothbrush",
+      "canonical_image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+      "canonical_category": "Beauty",
+      "brand": "Oral-B",
+      "normalized_keywords": [
+        "toothbrush",
+        "oral-b",
+        "beauty",
+        "pro",
+        "1000",
+        "electric",
+        "—"
+      ],
+      "amazon_asin": "B098RKWHHZ",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 46.05,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/oral-b-pro-1000-electric-toothbrush.product.169981081.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Oral-B Pro 1000 Electric Toothbrush",
+          "list_price": 51.58
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 48.99,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B098RKWHHZ",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Oral-B Pro 1000 Electric Toothbrush"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 49.46,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/oral-b-pro-1000-electric-toothbrush/757347598",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Oral-B Pro 1000 Electric Toothbrush"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 49.99,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/oral-b-pro-1000-electric-toothbrush/-/A-96990083",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Oral-B Pro 1000 Electric Toothbrush",
+          "list_price": 55.99
+        }
+      ]
+    },
+    {
+      "canonical_id": "fitbit-charge-6",
+      "canonical_title": "Fitbit Charge 6 Fitness Tracker",
+      "canonical_image": "https://m.media-amazon.com/images/I/71Y2H2+SL8L._AC_SL1500_.jpg",
+      "canonical_category": "Electronics",
+      "brand": "Fitbit",
+      "normalized_keywords": [
+        "fitbit",
+        "fitness tracker",
+        "electronics",
+        "built-in",
+        "gps,",
+        "heart",
+        "rate",
+        "zones,",
+        "7-day"
+      ],
+      "amazon_asin": "B0CC62JGQM",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 147.35,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/fitbit-charge-6-fitness-tracker.product.611854759.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Fitbit Charge 6 Fitness Tracker"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 158.25,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/fitbit-charge-6-fitness-tracker/776002092",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Fitbit Charge 6 Fitness Tracker"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 159.95,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B0CC62JGQM",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Fitbit Charge 6 Fitness Tracker",
+          "list_price": 175.95
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 161.52,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/fitbit-charge-6-fitness-tracker/-/A-70390850",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Fitbit Charge 6 Fitness Tracker"
+        }
+      ]
+    },
+    {
+      "canonical_id": "ring-doorbell",
+      "canonical_title": "Ring Video Doorbell",
+      "canonical_image": "https://m.media-amazon.com/images/I/61QJdhG2wPL._AC_SL1500_.jpg",
+      "canonical_category": "Electronics",
+      "brand": "Ring",
+      "normalized_keywords": [
+        "doorbell",
+        "ring",
+        "smart home",
+        "electronics",
+        "1080p",
+        "hd",
+        "video,",
+        "motion",
+        "detection,",
+        "two-way"
+      ],
+      "amazon_asin": "B08N2Q81P3",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 91.17,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/ring-video-doorbell.product.306068501.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Ring Video Doorbell",
+          "list_price": 98.46
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 96.02,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/ring-video-doorbell/-/A-10496479",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Ring Video Doorbell"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 97.96,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/ring-video-doorbell/429545258",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Ring Video Doorbell",
+          "list_price": 105.8
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 101.99,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B08N2Q81P3",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Ring Video Doorbell",
+          "list_price": 110.15
+        }
+      ]
+    },
+    {
+      "canonical_id": "lego-classic-box",
+      "canonical_title": "LEGO Classic Creative Brick Box",
+      "canonical_image": "https://m.media-amazon.com/images/I/81KYNQ+KZJL._AC_SL1500_.jpg",
+      "canonical_category": "Toys",
+      "brand": "LEGO",
+      "normalized_keywords": [
+        "lego",
+        "toys",
+        "classic",
+        "creative",
+        "brick",
+        "box",
+        "—"
+      ],
+      "amazon_asin": "B003GAMCT0",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 38.79,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/lego-classic-creative-brick-box/655861340",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "LEGO Classic Creative Brick Box"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 39.59,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/lego-classic-creative-brick-box/-/A-99529514",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "LEGO Classic Creative Brick Box"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 40.39,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B003GAMCT0",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "LEGO Classic Creative Brick Box",
+          "list_price": 44.43
+        }
+      ]
+    },
+    {
+      "canonical_id": "nintendo-switch-oled",
+      "canonical_title": "Nintendo Switch OLED Model",
+      "canonical_image": "https://m.media-amazon.com/images/I/61-PblYntsL._AC_SL1500_.jpg",
+      "canonical_category": "Electronics",
+      "brand": "Nintendo",
+      "normalized_keywords": [
+        "nintendo switch",
+        "gaming",
+        "nintendo",
+        "electronics",
+        "7-inch",
+        "oled",
+        "screen,",
+        "64gb",
+        "internal",
+        "storage,"
+      ],
+      "amazon_asin": "B098RKWHHZ",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 325.7,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/nintendo-switch-oled-model.product.540173700.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Nintendo Switch OLED Model"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 342.89,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/nintendo-switch-oled-model/950840001",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Nintendo Switch OLED Model",
+          "list_price": 397.75
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 342.99,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B098RKWHHZ",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Nintendo Switch OLED Model"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 346.49,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/nintendo-switch-oled-model/-/A-46591252",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Nintendo Switch OLED Model",
+          "list_price": 401.93
+        }
+      ]
+    },
+    {
+      "canonical_id": "ps5-dualsense",
+      "canonical_title": "PlayStation 5 DualSense Wireless Controller",
+      "canonical_image": "https://m.media-amazon.com/images/I/61O0Ar+O0iL._AC_SL1500_.jpg",
+      "canonical_category": "Electronics",
+      "brand": "Sony",
+      "normalized_keywords": [
+        "ps5",
+        "controller",
+        "playstation",
+        "sony",
+        "electronics",
+        "haptic",
+        "feedback,",
+        "adaptive",
+        "triggers,",
+        "built-in",
+        "microphone"
+      ],
+      "amazon_asin": "B08GLJR2T2",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 69.79,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/playstation-5-dualsense-wireless-controller.product.668767606.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "PlayStation 5 DualSense Wireless Controller"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 72.76,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/playstation-5-dualsense-wireless-controller/-/A-76970518",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "PlayStation 5 DualSense Wireless Controller"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 74.92,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/playstation-5-dualsense-wireless-controller/668288011",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "PlayStation 5 DualSense Wireless Controller",
+          "list_price": 80.91
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 74.99,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B08GLJR2T2",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "PlayStation 5 DualSense Wireless Controller"
+        }
+      ]
+    },
+    {
+      "canonical_id": "crocs-classic-clog",
+      "canonical_title": "Crocs Classic Clog",
+      "canonical_image": "https://m.media-amazon.com/images/I/71vFKBpKakL._AC_SL1500_.jpg",
+      "canonical_category": "Clothing",
+      "brand": "Crocs",
+      "normalized_keywords": [
+        "crocs",
+        "clogs",
+        "shoes",
+        "clothing",
+        "classic",
+        "clog",
+        "—",
+        "clothing."
+      ],
+      "amazon_asin": "B07S85TPLG",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 47.04,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/crocs-classic-clog/306548281",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Crocs Classic Clog"
+        },
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 47.93,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/crocs-classic-clog.product.228414124.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Crocs Classic Clog",
+          "list_price": 54.64
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 48.49,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B07S85TPLG",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Crocs Classic Clog",
+          "list_price": 55.28
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 49.99,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/crocs-classic-clog/-/A-41329797",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Crocs Classic Clog"
+        }
+      ]
+    },
+    {
+      "canonical_id": "carhartt-midweight-hoodie",
+      "canonical_title": "Carhartt Midweight Hooded Sweatshirt",
+      "canonical_image": "https://m.media-amazon.com/images/I/71j+1H6qY9L._AC_SL1500_.jpg",
+      "canonical_category": "Clothing",
+      "brand": "Carhartt",
+      "normalized_keywords": [
+        "hoodie",
+        "carhartt",
+        "clothing",
+        "midweight",
+        "hooded",
+        "sweatshirt",
+        "—"
+      ],
+      "amazon_asin": "B0CFPJNBVT",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 54.7,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/carhartt-midweight-hooded-sweatshirt.product.654220962.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Carhartt Midweight Hooded Sweatshirt"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 58.19,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B0CFPJNBVT",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Carhartt Midweight Hooded Sweatshirt"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 58.77,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/carhartt-midweight-hooded-sweatshirt/197358183",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Carhartt Midweight Hooded Sweatshirt",
+          "list_price": 65.82
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 60.58,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/carhartt-midweight-hooded-sweatshirt/-/A-33362163",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Carhartt Midweight Hooded Sweatshirt"
+        }
+      ]
+    },
+    {
+      "canonical_id": "oxo-good-grips-can-opener",
+      "canonical_title": "OXO Good Grips Can Opener",
+      "canonical_image": "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SL1500_.jpg",
+      "canonical_category": "Kitchen",
+      "brand": "OXO",
+      "normalized_keywords": [
+        "can opener",
+        "oxo",
+        "kitchen",
+        "good",
+        "grips",
+        "can",
+        "opener",
+        "—"
+      ],
+      "amazon_asin": "B09XS7JWHH",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 15.04,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/oxo-good-grips-can-opener/514258189",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "OXO Good Grips Can Opener"
+        },
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 15.48,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/oxo-good-grips-can-opener.product.787844704.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "OXO Good Grips Can Opener"
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 15.83,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B09XS7JWHH",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "OXO Good Grips Can Opener"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 15.99,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/oxo-good-grips-can-opener/-/A-81926955",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "OXO Good Grips Can Opener",
+          "list_price": 17.91
+        }
+      ]
+    },
+    {
+      "canonical_id": "pyrex-storage-set",
+      "canonical_title": "Pyrex Simply Store Glass Food Storage Set",
+      "canonical_image": "https://m.media-amazon.com/images/I/71vFKBpKakL._AC_SL1500_.jpg",
+      "canonical_category": "Kitchen",
+      "brand": "Pyrex",
+      "normalized_keywords": [
+        "food storage",
+        "pyrex",
+        "glass",
+        "kitchen",
+        "simply",
+        "store",
+        "food",
+        "storage"
+      ],
+      "amazon_asin": "B07S85TPLG",
+      "updated_at": "2026-06-02T01:07:59.121Z",
+      "offers": [
+        {
+          "retailer": "costco",
+          "retailer_name": "Costco",
+          "price": 23.49,
+          "currency": "USD",
+          "product_url": "https://www.costco.com/pyrex-simply-store-glass-food-storage-set.product.609229860.html",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Pyrex Simply Store Glass Food Storage Set"
+        },
+        {
+          "retailer": "walmart",
+          "retailer_name": "Walmart",
+          "price": 23.76,
+          "currency": "USD",
+          "product_url": "https://www.walmart.com/ip/pyrex-simply-store-glass-food-storage-set/571782625",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Pyrex Simply Store Glass Food Storage Set"
+        },
+        {
+          "retailer": "target",
+          "retailer_name": "Target",
+          "price": 25.23,
+          "currency": "USD",
+          "product_url": "https://www.target.com/p/pyrex-simply-store-glass-food-storage-set/-/A-69898046",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Pyrex Simply Store Glass Food Storage Set",
+          "list_price": 29.27
+        },
+        {
+          "retailer": "amazon",
+          "retailer_name": "Amazon",
+          "price": 25.49,
+          "currency": "USD",
+          "product_url": "https://www.amazon.com/dp/B07S85TPLG",
+          "availability": "in_stock",
+          "confidence_score": 0.92,
+          "link_type": "pdp",
+          "store_title": "Pyrex Simply Store Glass Food Storage Set",
+          "list_price": 29.57
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.055Z",
+      "canonicalId": "kindle-paperwhite",
+      "winnerOfferId": "kindle-paperwhite-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 134.58,
+      "compositeScore": 0.929,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.04138471401096926
+    }
+  ]
+}

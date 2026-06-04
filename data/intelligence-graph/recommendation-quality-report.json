@@ -1,0 +1,38 @@
+{
+  "evaluatedAt": "2026-06-01T23:32:38.688Z",
+  "graphCount": 2,
+  "overallScore": 0.9,
+  "dimensions": [
+    {
+      "id": "recommendation_usefulness",
+      "label": "Recommendation usefulness",
+      "score": 1,
+      "detail": "100% with decision + trust summary"
+    },
+    {
+      "id": "explanation_usefulness",
+      "label": "Explanation usefulness",
+      "score": 1,
+      "detail": "100% with rationale + evidence"
+    },
+    {
+      "id": "counterfactual_usefulness",
+      "label": "Counterfactual usefulness",
+      "score": 1,
+      "detail": "100% expose at least one scenario"
+    },
+    {
+      "id": "recommendation_stability",
+      "label": "Recommendation stability",
+      "score": 0.5,
+      "detail": "50% stable or insufficient history"
+    },
+    {
+      "id": "trust_summary_comprehension",
+      "label": "Trust summary comprehension",
+      "score": 1,
+      "detail": "100% concise, valid summaries"
+    }
+  ],
+  "satisfactionProxy": 0.9
+}

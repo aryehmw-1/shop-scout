@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.629Z",
+      "canonicalId": "roomba-j7",
+      "winnerOfferId": "roomba-j7-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 563.6,
+      "compositeScore": 0.926,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.06841435395626372
+    }
+  ]
+}

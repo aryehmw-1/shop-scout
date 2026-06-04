@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T20:55:51.408Z",
+      "canonicalId": "starbucks-ground-coffee",
+      "winnerOfferId": "starbucks-ground-coffee-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 9.11,
+      "compositeScore": 0.944,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.11467444120505343
+    },
+    {
+      "at": "2026-06-03T20:55:27.095Z",
+      "canonicalId": "starbucks-ground-coffee",
+      "winnerOfferId": "starbucks-ground-coffee-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 9.11,
+      "compositeScore": 0.944,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.11467444120505343
+    },
+    {
+      "at": "2026-06-03T20:55:12.225Z",
+      "canonicalId": "starbucks-ground-coffee",
+      "winnerOfferId": "starbucks-ground-coffee-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 9.11,
+      "compositeScore": 0.944,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.11467444120505343
+    },
+    {
+      "at": "2026-06-03T20:55:11.299Z",
+      "canonicalId": "starbucks-ground-coffee",
+      "winnerOfferId": "starbucks-ground-coffee-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 9.11,
+      "compositeScore": 0.944,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.11467444120505343
+    },
+    {
+      "at": "2026-06-03T20:55:08.234Z",
+      "canonicalId": "starbucks-ground-coffee",
+      "winnerOfferId": "starbucks-ground-coffee-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 9.11,
+      "compositeScore": 0.944,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.11467444120505343
+    },
+    {
+      "at": "2026-06-03T20:55:06.668Z",
+      "canonicalId": "starbucks-ground-coffee",
+      "winnerOfferId": "starbucks-ground-coffee-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 9.11,
+      "compositeScore": 0.944,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.11467444120505343
+    },
+    {
+      "at": "2026-06-03T01:12:35.756Z",
+      "canonicalId": "starbucks-ground-coffee",
+      "winnerOfferId": "starbucks-ground-coffee-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 9.11,
+      "compositeScore": 0.924,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.11467444120505343
+    },
+    {
+      "at": "2026-06-02T01:59:09.941Z",
+      "canonicalId": "starbucks-ground-coffee",
+      "winnerOfferId": "starbucks-ground-coffee-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 9.11,
+      "compositeScore": 0.924,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.11467444120505343
+    }
+  ]
+}

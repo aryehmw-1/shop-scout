@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "updatedAt": "2026-06-01T23:32:38.692Z",
+  "totalEstimatedUsd": 0,
+  "recommendationCalls": 0,
+  "escalationOutcomes": {
+    "escalated": 0,
+    "helped": 0,
+    "wasted": 0
+  },
+  "recent": []
+}

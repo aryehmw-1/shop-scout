@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.296Z",
+      "canonicalId": "olaplex-no3",
+      "winnerOfferId": "olaplex-no3-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 28.48,
+      "compositeScore": 0.925,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.060066006600660075
+    }
+  ]
+}

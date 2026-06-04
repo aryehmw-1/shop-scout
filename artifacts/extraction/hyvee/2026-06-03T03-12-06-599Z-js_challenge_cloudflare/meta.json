@@ -1,0 +1,41 @@
+{
+  "timestamp": "2026-06-03T03:12:06.599Z",
+  "retailerId": "hyvee",
+  "url": "https://www.hy-vee.com/aisles-online/search?search=Tell%20me%20about%20what%20you%20do%20exactly%3F",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:cloudflare",
+    "vendor": "cloudflare",
+    "confidence": 0.85,
+    "indicators": [
+      "html:cloudflare-challenge",
+      "header:hdr-cf-server"
+    ],
+    "status": 200,
+    "bytes": 83044
+  },
+  "headers": {
+    "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+    "cf-cache-status": "DYNAMIC",
+    "cf-ray": "a05b83a64df1cf39-MIA",
+    "connection": "keep-alive",
+    "content-encoding": "gzip",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Wed, 03 Jun 2026 03:12:06 GMT",
+    "server": "cloudflare",
+    "set-cookie": "__cf_bm",
+    "transfer-encoding": "chunked",
+    "vary": "Accept-Encoding",
+    "x-envoy-upstream-service-time": "268",
+    "x-powered-by": "Next.js"
+  },
+  "htmlBytes": 83044,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

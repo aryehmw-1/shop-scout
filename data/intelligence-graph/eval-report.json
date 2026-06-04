@@ -1,0 +1,45 @@
+{
+  "evaluatedAt": "2026-06-01T23:32:38.680Z",
+  "graphCount": 2,
+  "publishedCount": 2,
+  "aggregates": {
+    "meanIdentityConfidence": 0.646,
+    "meanValidatedOffers": 2,
+    "meanEvidenceCount": 2,
+    "meanPriceSpread": 0.06265820324707796,
+    "meanExplanationScore": 0.975,
+    "meanOfferValidationRate": 1,
+    "graphsWithMultiRetailer": 2,
+    "graphsWithHighIdentity": 1,
+    "graphsWithWarnings": 0
+  },
+  "graphs": [
+    {
+      "canonicalId": "gtin-012345678905",
+      "title": "Keurig K-Elite Single Serve Coffee Maker",
+      "identityConfidence": 0.654,
+      "validatedOfferCount": 2,
+      "rejectedOfferCount": 0,
+      "evidenceCount": 2,
+      "priceSpreadRatio": 0.06250390649415588,
+      "hasConsensus": true,
+      "explanationUsefulness": 1,
+      "offerValidationRate": 1,
+      "titleConsensusAvg": 0.7857142857142857
+    },
+    {
+      "canonicalId": "gtin-019876543210",
+      "title": "Nike Dri-FIT Men's Training T-Shirt",
+      "identityConfidence": 0.638,
+      "validatedOfferCount": 2,
+      "rejectedOfferCount": 0,
+      "evidenceCount": 2,
+      "priceSpreadRatio": 0.06281250000000005,
+      "hasConsensus": true,
+      "explanationUsefulness": 0.95,
+      "offerValidationRate": 1,
+      "titleConsensusAvg": 0.6666666666666667
+    }
+  ],
+  "calibrationNotes": []
+}

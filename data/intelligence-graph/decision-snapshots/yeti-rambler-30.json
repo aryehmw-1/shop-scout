@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:35.816Z",
+      "canonicalId": "yeti-rambler-30",
+      "winnerOfferId": "yeti-rambler-30-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 34.65,
+      "compositeScore": 0.923,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.10580645161290327
+    }
+  ]
+}

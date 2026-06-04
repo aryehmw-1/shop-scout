@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-06-02T02:38:42.092Z",
+  "retailerId": "heb",
+  "url": "https://www.heb.com/search?q=25550%20Cheerios%20Whole%20Grain%20Oats%20Gluten%20Free%20Breakfast%20Cereal%208%20900%20Oz",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:incapsula",
+    "vendor": "incapsula",
+    "confidence": 0.85,
+    "indicators": [
+      "html:incapsula",
+      "header:hdr-incap-cookie"
+    ],
+    "status": 200,
+    "bytes": 212
+  },
+  "headers": {
+    "cache-control": "no-cache, no-store",
+    "connection": "close",
+    "content-length": "212",
+    "content-type": "text/html",
+    "set-cookie": "incap_ses_1370_2302070",
+    "strict-transport-security": "max-age=31536000",
+    "x-iinfo": "6-82178105-0 0NNN RT(1780367921988 60) q(0 -1 -1 1) r(0 -1) B10(4,314,0) U5"
+  },
+  "htmlBytes": 212,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

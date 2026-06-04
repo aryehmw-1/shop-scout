@@ -1,0 +1,313 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T20:44:32.182Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-03T20:44:28.326Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-03T01:12:35.722Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T13:15:33.364Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T13:14:45.082Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T02:18:06.054Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T02:18:05.882Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T02:02:27.812Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T02:02:27.713Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T02:02:27.042Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T02:02:26.265Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T02:02:24.846Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T02:02:24.579Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T02:02:24.429Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:28:23.939Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:28:23.688Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:20:38.134Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:20:32.431Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:20:32.328Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:20:32.069Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:20:30.443Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:20:30.329Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:14:40.651Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:14:40.526Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:14:40.284Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:14:39.138Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.947,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:14:17.236Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.927,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    },
+    {
+      "at": "2026-06-02T01:14:17.099Z",
+      "canonicalId": "sony-wh1000xm5",
+      "winnerOfferId": "sony-wh1000xm5-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 327.43,
+      "compositeScore": 0.927,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.08651378194397945
+    }
+  ]
+}

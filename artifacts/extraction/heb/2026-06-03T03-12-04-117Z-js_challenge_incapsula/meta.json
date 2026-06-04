@@ -1,0 +1,35 @@
+{
+  "timestamp": "2026-06-03T03:12:04.117Z",
+  "retailerId": "heb",
+  "url": "https://www.heb.com/search?q=Tell%20me%20about%20what%20you%20do%20exactly%3F",
+  "status": 200,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 2,
+  "classification": {
+    "ok": false,
+    "category": "js_challenge",
+    "reason": "js_challenge:incapsula",
+    "vendor": "incapsula",
+    "confidence": 0.85,
+    "indicators": [
+      "html:incapsula",
+      "header:hdr-incap-cookie"
+    ],
+    "status": 200,
+    "bytes": 924
+  },
+  "headers": {
+    "cache-control": "no-cache, no-store",
+    "connection": "close",
+    "content-length": "924",
+    "content-type": "text/html",
+    "set-cookie": "incap_ses_1370_2302070",
+    "strict-transport-security": "max-age=31536000",
+    "x-iinfo": "10-101373607-0 0NNN RT(1780456324099 22) q(0 -1 -1 -1) r(0 -1) B12(4,316,0) U5"
+  },
+  "htmlBytes": 924,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

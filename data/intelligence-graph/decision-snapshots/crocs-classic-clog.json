@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "at": "2026-06-03T01:12:34.725Z",
+      "canonicalId": "crocs-classic-clog",
+      "winnerOfferId": "crocs-classic-clog-walmart",
+      "winnerRetailer": "walmart",
+      "winnerPrice": 47.04,
+      "compositeScore": 0.93,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.05901180236047215
+    }
+  ]
+}

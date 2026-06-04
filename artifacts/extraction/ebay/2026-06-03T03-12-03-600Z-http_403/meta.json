@@ -1,0 +1,36 @@
+{
+  "timestamp": "2026-06-03T03:12:03.600Z",
+  "retailerId": "ebay",
+  "url": "https://www.ebay.com/sch/i.html?_nkw=Tell%20me%20about%20what%20you%20do%20exactly%3F",
+  "status": 403,
+  "method": "direct",
+  "proxyUsed": false,
+  "attempt": 1,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [],
+    "status": 403,
+    "bytes": 1994
+  },
+  "headers": {
+    "cache-control": "no-cache, no-store, must-revalidate",
+    "connection": "keep-alive, Transfer-Encoding",
+    "content-type": "text/html",
+    "date": "Wed, 03 Jun 2026 03:12:03 GMT",
+    "expires": "0",
+    "mime-version": "1.0",
+    "pragma": "no-cache",
+    "server": "AkamaiGHost",
+    "set-cookie": "bm_so",
+    "transfer-encoding": "chunked",
+    "x-akamai-transformed": "0 - 0 -",
+    "x-cdn": "Akamai"
+  },
+  "htmlBytes": 1994,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

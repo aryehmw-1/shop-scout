@@ -1,0 +1,222 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.132Z",
+  "canonical": {
+    "canonical_id": "ring-doorbell",
+    "version": 1,
+    "title": "Ring Video Doorbell",
+    "title_normalized": "Ring Video Doorbell",
+    "brand": "Ring",
+    "brand_canonical": "ring",
+    "category": "Electronics",
+    "canonical_image": "https://m.media-amazon.com/images/I/61QJdhG2wPL._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B08N2Q81P3"
+    },
+    "keywords": [
+      "doorbell",
+      "ring",
+      "smart home",
+      "electronics",
+      "1080p",
+      "hd",
+      "video,",
+      "motion",
+      "detection,",
+      "two-way"
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "ring-doorbell-costco",
+      "canonical_id": "ring-doorbell",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Ring Video Doorbell",
+      "product_url": "https://www.costco.com/ring-video-doorbell.product.306068501.html",
+      "affiliate_url": "https://www.costco.com/ring-video-doorbell.product.306068501.html",
+      "price": 91.17,
+      "currency": "USD",
+      "was_price": 98.46,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "ring-doorbell-target",
+      "canonical_id": "ring-doorbell",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Ring Video Doorbell",
+      "product_url": "https://www.target.com/p/ring-video-doorbell/-/A-10496479",
+      "affiliate_url": "https://www.target.com/p/ring-video-doorbell/-/A-10496479",
+      "price": 96.02,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "ring-doorbell-walmart",
+      "canonical_id": "ring-doorbell",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Ring Video Doorbell",
+      "product_url": "https://www.walmart.com/ip/ring-video-doorbell/429545258",
+      "affiliate_url": "https://www.walmart.com/ip/ring-video-doorbell/429545258",
+      "price": 97.96,
+      "currency": "USD",
+      "was_price": 105.8,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "ring-doorbell-amazon",
+      "canonical_id": "ring-doorbell",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Ring Video Doorbell",
+      "product_url": "https://www.amazon.com/dp/B08N2Q81P3",
+      "affiliate_url": "https://www.amazon.com/dp/B08N2Q81P3",
+      "price": 101.99,
+      "currency": "USD",
+      "was_price": 110.15,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "ring-doorbell-amazon-meta",
+      "canonical_id": "ring-doorbell",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B08N2Q81P3",
+        "image": "https://m.media-amazon.com/images/I/61QJdhG2wPL._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

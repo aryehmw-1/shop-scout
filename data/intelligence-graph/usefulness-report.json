@@ -1,0 +1,23 @@
+{
+  "evaluatedAt": "2026-06-01T23:32:38.689Z",
+  "engagement": {
+    "recommendationsShown": 0,
+    "trustDetailsOpens": 0,
+    "analystModeOpens": 0,
+    "trustExpansionRate": 0,
+    "analystEngagementRate": 0
+  },
+  "outcomes": {
+    "offerClicks": 0,
+    "offerSaves": 0,
+    "ignores": 0,
+    "reversals": 0,
+    "acceptanceProxy": 0,
+    "reversalRate": 0
+  },
+  "retailers": [],
+  "queryCategories": {},
+  "insights": [
+    "Insufficient traffic for strong conclusions — continue collecting privacy-safe analytics."
+  ]
+}

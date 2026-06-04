@@ -1,0 +1,255 @@
+{
+  "version": 1,
+  "updated_at": "2026-06-02T01:07:59.129Z",
+  "canonical": {
+    "canonical_id": "barilla-pasta",
+    "version": 1,
+    "title": "Barilla Spaghetti Pasta",
+    "title_normalized": "Barilla Spaghetti Pasta",
+    "brand": "Barilla",
+    "brand_canonical": "barilla",
+    "category": "Grocery",
+    "canonical_image": "https://m.media-amazon.com/images/I/71U2+5Y5HHL._AC_SL1500_.jpg",
+    "canonical_image_source": "amazon",
+    "attributes": {},
+    "identifiers": {
+      "asin": "B00TTD9BRC"
+    },
+    "keywords": [
+      "pasta",
+      "spaghetti",
+      "barilla",
+      "grocery",
+      "—",
+      "grocery."
+    ],
+    "created_at": "2026-06-02T01:07:59.121Z",
+    "updated_at": "2026-06-02T01:07:59.121Z"
+  },
+  "identity_confidence": {
+    "overall": 0.89,
+    "identifier_agreement": 0.85,
+    "title_consensus": 1,
+    "brand_consistency": 0.8,
+    "attribute_consistency": 0.65,
+    "multi_source_agreement": 0.9,
+    "reasons": [
+      {
+        "code": "id.asin",
+        "message": "Amazon ASIN anchor present",
+        "weight": 0.25
+      },
+      {
+        "code": "price.consensus",
+        "message": "Prices cluster across retailers",
+        "weight": 0.15
+      }
+    ]
+  },
+  "offers": [
+    {
+      "offer_id": "barilla-pasta-costco",
+      "canonical_id": "barilla-pasta",
+      "retailer": "costco",
+      "retailer_name": "Costco",
+      "store_title": "Barilla Spaghetti Pasta",
+      "product_url": "https://www.costco.com/barilla-spaghetti-pasta.product.760167470.html",
+      "affiliate_url": "https://www.costco.com/barilla-spaghetti-pasta.product.760167470.html",
+      "price": 1.63,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:costco",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "barilla-pasta-walmart",
+      "canonical_id": "barilla-pasta",
+      "retailer": "walmart",
+      "retailer_name": "Walmart",
+      "store_title": "Barilla Spaghetti Pasta",
+      "product_url": "https://www.walmart.com/ip/barilla-spaghetti-pasta/477636179",
+      "affiliate_url": "https://www.walmart.com/ip/barilla-spaghetti-pasta/477636179",
+      "price": 1.77,
+      "currency": "USD",
+      "was_price": 2.05,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "walmart_affiliate_api",
+        "source_id": "canonical-build:walmart",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.898,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.9,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "barilla-pasta-amazon",
+      "canonical_id": "barilla-pasta",
+      "retailer": "amazon",
+      "retailer_name": "Amazon",
+      "store_title": "Barilla Spaghetti Pasta",
+      "product_url": "https://www.amazon.com/dp/B00TTD9BRC",
+      "affiliate_url": "https://www.amazon.com/dp/B00TTD9BRC",
+      "price": 1.79,
+      "currency": "USD",
+      "was_price": 2.08,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "canonical-build:amazon",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.88
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.901,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.92,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "barilla-pasta-target",
+      "canonical_id": "barilla-pasta",
+      "retailer": "target",
+      "retailer_name": "Target",
+      "store_title": "Barilla Spaghetti Pasta",
+      "product_url": "https://www.target.com/p/barilla-spaghetti-pasta/-/A-36184299",
+      "affiliate_url": "https://www.target.com/p/barilla-spaghetti-pasta/-/A-36184299",
+      "price": 1.79,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:target",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "offer_id": "barilla-pasta-kroger",
+      "canonical_id": "barilla-pasta",
+      "retailer": "kroger",
+      "retailer_name": "Kroger",
+      "store_title": "Barilla Spaghetti Pasta",
+      "product_url": "https://www.kroger.com/p/barilla-spaghetti-pasta/935518261",
+      "affiliate_url": "https://www.kroger.com/p/barilla-spaghetti-pasta/935518261",
+      "price": 1.86,
+      "currency": "USD",
+      "was_price": null,
+      "availability": "in_stock",
+      "link_type": "pdp",
+      "provenance": {
+        "source_type": "impact_feed",
+        "source_id": "canonical-build:kroger",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.82
+      },
+      "validation_status": "validated",
+      "freshness_tier": "fresh",
+      "confidence": {
+        "overall": 0.895,
+        "identity": 0.85,
+        "price": 0.85,
+        "link": 0.92,
+        "freshness": 1,
+        "source": 0.88,
+        "reasons": [
+          {
+            "code": "title.strong",
+            "message": "Strong title match",
+            "weight": 0.2
+          }
+        ]
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "barilla-pasta-amazon-meta",
+      "canonical_id": "barilla-pasta",
+      "evidence_type": "amazon_metadata",
+      "provenance": {
+        "source_type": "amazon_paapi",
+        "source_id": "amazon-enrichment-cache",
+        "fetched_at": "2026-06-02T01:07:59.121Z",
+        "source_reliability": 0.92
+      },
+      "payload": {
+        "asin": "B00TTD9BRC",
+        "image": "https://m.media-amazon.com/images/I/71U2+5Y5HHL._AC_SL1500_.jpg"
+      },
+      "weight": 0.9,
+      "created_at": "2026-06-02T01:07:59.121Z"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-06-03T14:25:08.540Z",
+  "retailerId": "costco",
+  "url": "https://www.costco.com/CatalogSearch?dept=All&keyword=cheerios%20Honey%20Nut%20Cereal",
+  "status": 403,
+  "method": "playwright",
+  "proxyUsed": false,
+  "proxyEndpoint": "http://***:***@dc.decodo.com:10001",
+  "attempt": 3,
+  "classification": {
+    "ok": false,
+    "category": "access_denied",
+    "reason": "http_403",
+    "confidence": 0.95,
+    "indicators": [
+      "html:access-denied"
+    ],
+    "status": 403,
+    "bytes": 386
+  },
+  "headers": {
+    "cache-control": "max-age=900",
+    "connection": "close",
+    "content-length": "386",
+    "content-type": "text/html",
+    "date": "Wed, 03 Jun 2026 14:25:08 GMT",
+    "expires": "Wed, 03 Jun 2026 14:40:08 GMT",
+    "link": "<https://transcend-cdn.com>;rel=\"preconnect\",<https://mobilecontent.costco.com>;rel=\"preconnect\"",
+    "mime-version": "1.0",
+    "server": "AkamaiGHost",
+    "server-timing": "cdn-cache; desc=HIT, edge; dur=1, ak_p; desc=\"1780496708480_399426604_2055222974_18_31944_10_25_-\";dur=1",
+    "set-cookie": "bm_so",
+    "strict-transport-security": "max-age=31536000;includeSubDomains"
+  },
+  "htmlBytes": 386,
+  "screenshotSaved": false,
+  "harSaved": false,
+  "renderedDomSaved": false
+}

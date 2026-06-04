@@ -1,0 +1,23 @@
+{
+  "startedAt": "2026-06-01T19:26:37.308Z",
+  "completedAt": "2026-06-01T19:28:19.960Z",
+  "totalProducts": 0,
+  "byRetailer": {
+    "amazon": 0
+  },
+  "errors": [
+    "adapter:tasks=360,ok=0,fail=360"
+  ],
+  "skippedRetailers": [],
+  "preValidationCount": 0,
+  "postValidationCount": 0,
+  "rejectedValidation": 0,
+  "retailerScores": [
+    {
+      "retailer": "amazon",
+      "collected": 0,
+      "published": 0,
+      "compatibilityScore": 0
+    }
+  ]
+}
