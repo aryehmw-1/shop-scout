@@ -110,10 +110,10 @@ export function TypewriterInput({ onSearch }: Props) {
         {showAnimation && (
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 flex items-center px-5 text-xl"
+            className="pointer-events-none absolute inset-0 flex items-center pl-3 pr-3 text-lg"
           >
-            <span className="text-stone-700">{displayed}</span>
-            <span className="animate-blink ml-px inline-block h-7 w-[2px] bg-stone-400" />
+            <span className="truncate text-stone-400">{displayed}</span>
+            <span className="ml-0.5 inline-block h-6 w-[2px] shrink-0 animate-blink bg-orange-400" />
           </div>
         )}
 
@@ -128,7 +128,7 @@ export function TypewriterInput({ onSearch }: Props) {
           onFocus={handleFocus}
           onBlur={handleBlur}
           placeholder={showPlaceholder ? "Ask for a product or paste a link…" : ""}
-          className={`w-full bg-transparent py-14 pl-5 pr-3 text-xl outline-none placeholder:text-stone-400 ${
+          className={`w-full bg-transparent py-8 pl-3 pr-3 text-lg outline-none placeholder:text-stone-400 ${
             showAnimation ? "text-transparent caret-transparent" : "text-stone-900"
           }`}
         />

@@ -564,7 +564,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
     <form
       action="/chat"
       method="get"
-      className="mx-auto flex w-full max-w-2xl gap-2"
+      className="mx-auto w-full max-w-2xl"
       onSubmit={(e) => {
         e.preventDefault();
         const data = new FormData(e.currentTarget);
@@ -572,7 +572,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
         sendMessage(typed);
       }}
     >
-      <div className="relative flex-1">
+      <div className="relative">
         <SearchSuggest
           value={input}
           onSelect={(q) => {
@@ -584,7 +584,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
         <textarea
           ref={inputRef}
           name="q"
-          rows={3}
+          rows={1}
           aria-label="Search products"
           value={input}
           onChange={(e) => {
@@ -605,19 +605,19 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
               ? "Paste a product page URL"
               : "Ask for a product or paste a link"
           }
-          className="w-full resize-none overflow-y-auto rounded-2xl border border-ink-200 bg-ink-50/80 py-6 px-5 text-base text-ink-800 placeholder:text-ink-400 focus:border-sage-400 focus:outline-none focus:ring-2 focus:ring-sage-200/80"
+          className="w-full resize-none overflow-y-auto rounded-2xl border border-ink-200 bg-ink-50/80 py-3.5 pl-4 pr-14 text-[15px] text-ink-800 placeholder:text-ink-400 focus:border-sage-400 focus:outline-none focus:ring-2 focus:ring-sage-200/80"
           style={{ maxHeight: "14rem" }}
           disabled={loading}
         />
+        <button
+          type="submit"
+          disabled={loading}
+          aria-label="Send"
+          className="absolute bottom-2 right-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40"
+        >
+          <ArrowUp size={18} strokeWidth={2.5} />
+        </button>
       </div>
-      <button
-        type="submit"
-        disabled={loading}
-        aria-label="Send"
-        className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40"
-      >
-        <ArrowUp size={24} strokeWidth={2.5} />
-      </button>
     </form>
   );
 
@@ -641,7 +641,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
       )}
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        <header className="flex shrink-0 items-center justify-between gap-2 border-b border-orange-100/80 bg-cream-50/95 px-4 py-3 backdrop-blur-xl lg:px-8">
+        <header className="flex shrink-0 items-center justify-between gap-2 bg-cream-50/95 px-4 py-3 backdrop-blur-xl lg:px-8">
           <div className="flex items-center gap-2">
             <button
               type="button"

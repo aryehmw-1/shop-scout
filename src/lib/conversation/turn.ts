@@ -166,6 +166,31 @@ function isAdvisoryQuestion(text: string): boolean {
   );
 }
 
+/**
+ * Opinion / fit / sizing questions — "should I get medium or large?",
+ * "do you think this is worth it?", "is this too big?". These ask for the
+ * assistant's judgment, NOT a price comparison, even when a product link is
+ * pasted alongside. We must NOT treat these as a 0-result inventory search.
+ */
+function isOpinionAdviceQuestion(text: string): boolean {
+  const t = text.trim().toLowerCase();
+  // If they're clearly asking us to find/compare prices, this is a search.
+  if (/\b(compare|cheaper|cheapest|lowest price|best price|where (can|to) (i )?buy|find me|better deal|price check)\b/.test(t)) {
+    return false;
+  }
+  return (
+    /\bdo you think\b/.test(t) ||
+    /\bshould i\b.{0,40}\b(get|buy|order|pick|choose|go|size|keep|return)\b/.test(t) ||
+    /\b(same|smaller|bigger|larger|a smaller|a bigger) (size|one)\b/.test(t) ||
+    /\bsize (up|down)\b/.test(t) ||
+    /\btoo (big|small|large|tight|loose|short|long)\b/.test(t) ||
+    /\bwhat size\b/.test(t) ||
+    /\bwhich (size|one|colou?r) (should|would|do)\b/.test(t) ||
+    /\bis (it|this) worth it\b/.test(t) ||
+    /\bwould you (recommend|get|buy|keep|return)\b/.test(t)
+  );
+}
+
 function isConversationalOnly(text: string, session?: SessionState): boolean {
   const t = text.trim();
   if (session && shouldMergeWithPreviousSearch(t, session)) return false;
@@ -277,6 +302,31 @@ export async function resolveChatTurn(
 
   if (!isValidZip(zip)) {
     zip = "";
+  }
+
+  // Opinion / fit / sizing questions are answered conversationally — even when
+  // a product link is pasted alongside — instead of running a 0-result search.
+  if (isOpinionAdviceQuestion(text)) {
+    const linkedTitle = extractUrl(text) ? sourceProductTitle : undefined;
+    return withConversationDebug(
+      {
+        action: "conversational",
+        session: {
+          phase: phase === "ready" ? "ready" : "idle",
+          intent: { zipCode: zip, ...intent },
+          asked,
+          sourceUrl,
+          sourceProductTitle,
+          compareMode: false,
+        },
+        compareMode: false,
+        zipCode: zip,
+        query: intent.query,
+        referenceProductTitle: linkedTitle,
+        chips: ["Compare prices", "Search something else", "Paste an Amazon link"],
+      },
+      { message: text, priorSession: session, merged: false },
+    );
   }
 
   const url = extractUrl(text);

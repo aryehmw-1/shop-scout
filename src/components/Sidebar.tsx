@@ -6,7 +6,8 @@ import { Heart, LogIn, LogOut, Package, Search, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { APP_NAME } from "@/lib/constants";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 const mainNav = [
   { href: "/", label: "Compare", icon: Search },
@@ -16,26 +17,50 @@ const mainNav = [
 
 const STORAGE_KEY = "homivion-sidebar-expanded";
 
-function Tooltip({ label }: { label: string }) {
-  const [pos, setPos] = React.useState<{ top: number; left: number } | null>(null);
+/**
+ * Wraps a collapsed-sidebar nav item and shows a label tooltip on hover.
+ * Renders the tooltip into document.body via a portal so it can never be
+ * clipped by the sidebar's overflow:hidden, and uses the native `title`
+ * attribute as a guaranteed fallback.
+ */
+function NavItem({
+  label,
+  show,
+  className,
+  children,
+}: {
+  label: string;
+  show: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
   return (
-    <span
-      onMouseEnter={(e) => {
-        const rect = (e.currentTarget.parentElement as HTMLElement).getBoundingClientRect();
-        setPos({ top: rect.top + rect.height / 2, left: rect.right + 12 });
+    <div
+      ref={ref}
+      title={show ? label : undefined}
+      className={`relative ${className ?? ""}`}
+      onMouseEnter={() => {
+        if (!show) return;
+        const rect = ref.current?.getBoundingClientRect();
+        if (rect) setPos({ top: rect.top + rect.height / 2, left: rect.right + 12 });
       }}
       onMouseLeave={() => setPos(null)}
-      className="absolute inset-0 z-50"
     >
-      {pos && (
-        <span
-          style={{ top: pos.top, left: pos.left, transform: "translateY(-50%)" }}
-          className="pointer-events-none fixed z-[9999] whitespace-nowrap rounded-lg bg-stone-900 px-2.5 py-1.5 text-xs font-semibold text-white shadow-lg"
-        >
-          {label}
-        </span>
-      )}
-    </span>
+      {children}
+      {show && pos &&
+        createPortal(
+          <span
+            style={{ top: pos.top, left: pos.left, transform: "translateY(-50%)" }}
+            className="pointer-events-none fixed z-[9999] whitespace-nowrap rounded-lg bg-stone-900 px-2.5 py-1.5 text-xs font-semibold text-white shadow-lg"
+          >
+            {label}
+          </span>,
+          document.body,
+        )}
+    </div>
   );
 }
 
@@ -64,7 +89,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`sticky top-0 hidden h-screen max-h-[100dvh] shrink-0 flex-col self-start border-r border-stone-200 bg-white/90 backdrop-blur-xl transition-[width] duration-200 ease-in-out lg:flex ${
+      className={`sticky top-0 hidden h-screen max-h-[100dvh] shrink-0 flex-col self-start border-r border-orange-100/50 bg-white/90 backdrop-blur-xl transition-[width] duration-200 ease-in-out lg:flex ${
         expanded ? "w-60" : "w-16"
       }`}
     >
@@ -102,7 +127,7 @@ export function Sidebar() {
                 : pathname.startsWith(href);
 
             return (
-              <div key={href} className="group relative">
+              <NavItem key={href} label={label} show={!expanded}>
                 <Link
                   href={href}
                   scroll={false}
@@ -117,8 +142,7 @@ export function Sidebar() {
                   <Icon size={18} strokeWidth={2} aria-hidden />
                   {expanded && label}
                 </Link>
-                {!expanded && <Tooltip label={label} />}
-              </div>
+              </NavItem>
             );
           })}
         </nav>
@@ -139,7 +163,7 @@ export function Sidebar() {
         <div className={`mt-auto space-y-3 pt-6 ${expanded ? "px-3" : "flex flex-col items-center px-2"}`}>
 
           {/* Settings */}
-          <div className="group relative w-full">
+          <NavItem label="Settings" show={!expanded} className="w-full">
             <Link
               href="/settings"
               scroll={false}
@@ -154,8 +178,7 @@ export function Sidebar() {
               <Settings size={18} aria-hidden />
               {expanded && "Settings"}
             </Link>
-            {!expanded && <Tooltip label="Settings" />}
-          </div>
+          </NavItem>
 
           {/* User card / sign in */}
           {expanded ? (
@@ -182,7 +205,7 @@ export function Sidebar() {
               )}
             </div>
           ) : (
-            <div className="group relative">
+            <NavItem label={user ? "Sign out" : "Sign in"} show={!expanded}>
               <button
                 type="button"
                 onClick={async () => {
@@ -193,8 +216,7 @@ export function Sidebar() {
               >
                 {user ? <LogOut size={18} aria-hidden /> : <LogIn size={18} aria-hidden />}
               </button>
-              <Tooltip label={user ? "Sign out" : "Sign in"} />
-            </div>
+            </NavItem>
           )}
         </div>
       </div>

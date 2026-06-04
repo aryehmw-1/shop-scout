@@ -150,7 +150,20 @@ export function ProductResults({
   }, []);
 
   if (!online.length && !estimatedOnline.length && !showLowConfidence) {
-    const q = searchQuery ?? results.matchedProduct?.title ?? "";
+    // Prefer the clean, server-resolved product name over the raw user message
+    // (which may be a long sentence or contain a pasted URL).
+    const cleanedSearch = (() => {
+      if (!searchQuery) return "";
+      const stripped = searchQuery.replace(/https?:\/\/\S+/gi, "").trim();
+      // If it still reads like a sentence, don't dump it as the product name.
+      if (stripped.length > 60 || stripped.split(/\s+/).length > 9) return "";
+      return stripped;
+    })();
+    const q =
+      results.resolvedQuery?.trim() ||
+      results.matchedProduct?.title ||
+      cleanedSearch ||
+      "";
     const catalogCount = CATALOG.length;
     return (
       <div className="mt-4 space-y-4">

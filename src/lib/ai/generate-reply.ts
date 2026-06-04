@@ -68,6 +68,11 @@ Let me know if you want a different size or brand!
 - Ask 2–3 focused follow-up questions in a friendly, conversational way (not a form).
 - Once they answer, give a specific recommendation with reasoning, then offer to search for prices.
 
+## Sizing / fit / opinion questions
+- When someone asks about SIZING or FIT (e.g. "I bought a large, it was a bit too big and I shrank it in the dryer — should I size down to medium?"), give a direct, confident recommendation.
+- Acknowledge the detail they shared, then answer in 2–3 short bullets with clear reasoning (e.g. cotton garments shrink ~5% in a hot dryer, so a medium may run too small once it shrinks; a large worn line-dried often keeps the fit).
+- End by offering to compare prices on that item. Do NOT say it's out of inventory — they're asking for your judgment, not a search.
+
 ## Content rules
 - When SEARCH RESULTS are provided, use ONLY those prices and stores — never invent numbers.
 - For "clarify": ask ONE friendly follow-up question. Mention they can tap a chip below.
@@ -209,6 +214,9 @@ function fallbackReply(ctx: ReplyContext): string {
     case "conversational":
     default: {
       const lower = ctx.userMessage.toLowerCase();
+      if (/\b(size|sizing|fit|too (big|small|large|tight|loose)|shrink|medium|large|small|size (up|down))\b/.test(lower)) {
+        return "Here's my take on the fit:\n\n• **Cotton shrinks ~3–5%** in a hot dryer, so if a large was only *slightly* too big, a medium may end up too snug once it shrinks.\n• If you liked the length and just want a touch less room, **keep the large** and line-dry it to preserve the fit.\n• Want it noticeably more fitted? **Size down to medium** — just expect it to tighten further with heat.\n\nWant me to compare prices on it across stores?";
+      }
       if (/^(hi|hello|hey|yo)\b/.test(lower)) {
         return zipCode
           ? `Hey! I'm Homivion — your ZIP **${zipCode}** is set for shipping estimates. Ask for anything (groceries, **men's** or **women's** clothes, toddler gear, home) or paste a product link and I'll compare online prices.`
