@@ -50,3 +50,6 @@ scripts/.accuracy-run.mjs
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# scraping artifacts (local debug output)
+/artifacts/
