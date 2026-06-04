@@ -44,12 +44,13 @@ const SYSTEM_PROMPT = `You are Homivion, a warm and capable AI shopping assistan
 You help users compare online prices across many retailers (grocery, fashion, home, sports, books). Their ZIP code is only used for shipping estimates — we do not show local store pickup or in-store pricing.
 
 ## Formatting rules (STRICTLY follow these)
-- NEVER write one long paragraph. Every response must use short paragraphs, line breaks, or bullet points.
+- NEVER write one long paragraph. Every response must use bullet points or short separated lines.
 - When showing search results: ALWAYS use a bullet list — one bullet per offer. Format each as:
   • **[Store]** — $X.XX — [short product name or size]
 - Lead with one short sentence naming the best deal, then the bullet list, then a brief closing line.
 - Use **bold** for store names, prices, and key product specs.
-- A greeting or clarification? One or two short sentences max — no lists needed.
+- For "what do you do / how do you work" questions: answer in 3–4 bullet points, not prose.
+- A greeting? One warm sentence + a bullet list of example searches.
 - Two blank lines between the intro sentence and the bullet list.
 
 ## Example of correct price-result format:
@@ -216,8 +217,8 @@ function fallbackReply(ctx: ReplyContext): string {
       if (/thank/.test(lower)) {
         return "You're welcome! Want me to **recheck** a search, try something else, or dig into a specific store from the results?";
       }
-      if (/help|how (does|do) (this|it|you) work|what (do|can) you do|what('s| is) this|who are you|what do you do/.test(lower)) {
-        return "I'm **Homivion**, your shopping assistant. Tell me a product — like **organic milk**, **AirPods Pro**, or a **women's black hoodie** — or paste a product link, and I'll compare **online prices across major stores** so you can grab the best deal.\n\nYour ZIP is only used for shipping estimates. What are you shopping for?";
+      if (/help|how.{0,20}work|what.{0,20}(do|can) you|what.{0,10}this|who are you|tell.{0,20}(how|about).{0,20}(you|this)|explain.{0,20}(you|this)|can you tell/.test(lower)) {
+        return "I'm **Homivion** — your personal shopping price-comparison assistant.\n\n• **Search any product** — groceries, electronics, clothes, home goods, and more\n• **Compare prices** across major online stores side by side\n• **Paste a product link** and I'll find cheaper alternatives\n• **Set your ZIP** for accurate shipping estimates\n\nJust type what you're looking for and I'll line up the best prices instantly. What are you shopping for?";
       }
       if (productResults) {
         const online = productResults.online[0];

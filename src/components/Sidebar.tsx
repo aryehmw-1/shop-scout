@@ -53,7 +53,7 @@ export function Sidebar() {
         expanded ? "w-60" : "w-16"
       }`}
     >
-      <div className="flex h-full min-h-0 flex-col overflow-hidden py-5">
+      <div className="flex h-full min-h-0 flex-col overflow-x-visible overflow-y-auto py-5">
 
         {/* Logo / toggle */}
         <div className={`flex items-center ${expanded ? "px-5" : "justify-center px-0"}`}>
@@ -102,7 +102,7 @@ export function Sidebar() {
                   <Icon size={18} strokeWidth={2} aria-hidden />
                   {expanded && label}
                 </Link>
-                <Tooltip label={label} />
+                {!expanded && <Tooltip label={label} />}
               </div>
             );
           })}
@@ -139,7 +139,7 @@ export function Sidebar() {
               <Settings size={18} aria-hidden />
               {expanded && "Settings"}
             </Link>
-            <Tooltip label="Settings" />
+            {!expanded && <Tooltip label="Settings" />}
           </div>
 
           {/* User card / sign in */}

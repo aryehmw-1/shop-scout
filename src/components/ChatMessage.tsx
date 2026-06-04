@@ -38,7 +38,7 @@ export function ChatMessageBubble({
       {!isUser && <BrandHomeMark size="xs" />}
 
       <div
-        className={`flex flex-col ${isUser ? "max-w-[min(100%,28rem)] items-end" : "w-full max-w-full items-start"}`}
+        className={`flex flex-col ${isUser ? "max-w-[min(100%,67%)] items-end" : "w-full max-w-full items-start"}`}
       >
         <div
           className={

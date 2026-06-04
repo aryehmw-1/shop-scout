@@ -130,11 +130,16 @@ function isMetaQuestion(text: string): boolean {
     /\bwhat (do|can) (you|this|homivion|it)\b.{0,20}\b(do|help|find|search|offer)/.test(t) ||
     /\bwhat('s| is| are)\b.{0,20}\b(this|you|homivion|your (purpose|job|name|deal))/.test(t) ||
     /\bwho are you\b/.test(t) ||
-    /\bhow (do|does) (you|this|it|homivion)\b.{0,20}\bwork/.test(t) ||
+    /\bhow (do(es)?|you|this|it|homivion).{0,30}\bwork\b/.test(t) ||
+    /\btell me (how|about|more about).{0,30}(you|homivion|this|it)\b/.test(t) ||
+    /\bexplain (how|what).{0,30}(you|homivion|this|it)\b/.test(t) ||
     /\bwhat can you do\b/.test(t) ||
     /\bwhat do you do\b/.test(t) ||
     /\bare you (an? )?(ai|bot|robot|human|real|person)\b/.test(t) ||
-    /\bwhat (kind|type) of (site|app|tool|service|thing) (is|are) (this|you)\b/.test(t)
+    /\bwhat (kind|type) of (site|app|tool|service|thing) (is|are) (this|you)\b/.test(t) ||
+    /\bcan you (tell|explain|describe|help me understand).{0,30}(how|what) (you|this|it|homivion)\b/.test(t) ||
+    /\bwhat('s| is) homivion\b/.test(t) ||
+    /\babout (you|homivion|this app|this site|this tool)\b/.test(t)
   );
 }
 
