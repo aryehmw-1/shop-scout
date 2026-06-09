@@ -26,7 +26,7 @@ import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { trackEvent } from "@/lib/analytics/track-client";
 import { mergeEnrichedSearchResults } from "@/lib/search/merge-enriched-results";
 import { useRouter } from "next/navigation";
-import { ArrowUp, MapPin, RotateCcw, ShoppingCart, CheckCircle2 } from "lucide-react";
+import { ArrowUp, MapPin, RotateCcw, ShoppingCart, ShoppingBasket, Headphones, Wheat } from "lucide-react";
 import { TypewriterInput } from "@/components/TypewriterInput";
 
 const SHOPPING_LOADING_STEPS = [
@@ -687,36 +687,36 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
         {/* ── EMPTY STATE ── */}
         {isEmpty ? (
           showHero ? (
-            /* Hero layout — home page feel, no component swap */
-            <div className="flex min-h-0 flex-1 flex-col items-center justify-start overflow-y-auto px-4 pb-16 pt-12 text-center sm:pt-16 lg:px-8">
-              <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-3 py-1 text-sm font-semibold text-stone-600 shadow-sm">
-                <CheckCircle2 size={15} className="text-emerald-500" aria-hidden />
-                Verified prices. Real deals. Trusted results.
-              </p>
+            /* Hero layout — centered home page, fully responsive */
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-4 py-10 text-center sm:px-6 lg:px-8">
+              <div className="w-full max-w-2xl">
+                <h1 className="font-display text-3xl font-semibold leading-tight tracking-tight text-stone-950 sm:text-4xl lg:text-[2.75rem]">
+                  How can I help you shop?
+                </h1>
 
-              <h1 className="font-display text-4xl font-bold leading-tight tracking-normal text-stone-950 sm:text-5xl lg:text-6xl">
-                Ask Homivion what to buy.
-              </h1>
+                {/* Search pill — submits directly into this ChatApp */}
+                <div className="mt-7 sm:mt-8">
+                  <TypewriterInput onSearch={(q) => { if (q) sendMessage(q); }} />
+                </div>
 
-              <p className="mt-4 max-w-xl text-base leading-7 text-stone-600 sm:text-lg">
-                Type what you need or paste a product link — we compare prices and put the best deal first.
-              </p>
-
-              {/* Typewriter bar — submits directly into this ChatApp */}
-              <TypewriterInput onSearch={(q) => { if (q) sendMessage(q); }} />
-
-              {/* Quick-tap chips */}
-              <div className="mt-4 flex flex-wrap justify-center gap-2">
-                {["whole milk gallon", "Honey Nut Cheerios", "Beats Studio Pro", "vanilla ice cream"].map((ex) => (
-                  <button
-                    key={ex}
-                    type="button"
-                    onClick={() => sendMessage(ex)}
-                    className="rounded-full border border-stone-200 bg-white px-3 py-1.5 text-sm font-semibold text-stone-600 transition hover:border-orange-300 hover:text-stone-950"
-                  >
-                    {ex}
-                  </button>
-                ))}
+                {/* Quick-action chips */}
+                <div className="mt-5 flex flex-wrap justify-center gap-2 sm:gap-3">
+                  {[
+                    { label: "Whole milk", icon: ShoppingBasket, q: "whole milk gallon" },
+                    { label: "Headphones", icon: Headphones, q: "Beats Studio Pro" },
+                    { label: "Cereal deals", icon: Wheat, q: "Honey Nut Cheerios best price" },
+                  ].map(({ label, icon: Icon, q }) => (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => sendMessage(q)}
+                      className="inline-flex items-center gap-2 rounded-full border border-orange-200/80 bg-white px-4 py-2 text-sm font-medium text-stone-700 shadow-sm transition hover:border-orange-300 hover:bg-orange-50 hover:text-stone-950"
+                    >
+                      <Icon size={17} className="text-orange-500" aria-hidden />
+                      {label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           ) : (

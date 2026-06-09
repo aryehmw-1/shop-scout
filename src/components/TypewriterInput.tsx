@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Search, ShoppingCart } from "lucide-react";
+import { Plus, ShoppingCart } from "lucide-react";
 
 const EXAMPLES = [
   "Compare iPhone 17 prices across all websites",
@@ -114,21 +114,30 @@ export function TypewriterInput({ onSearch }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mt-8 flex w-full max-w-3xl items-end rounded-3xl border border-stone-200 bg-white shadow-[0_16px_60px_rgba(41,37,36,0.10)] focus-within:border-orange-300"
+      className="mx-auto flex w-full max-w-2xl items-end gap-1.5 rounded-3xl border border-orange-200/80 bg-white px-2 py-2 shadow-[0_12px_40px_rgba(234,88,12,0.10)] transition focus-within:border-orange-300 focus-within:shadow-[0_14px_48px_rgba(234,88,12,0.16)] sm:gap-2 sm:px-2.5"
     >
       <label htmlFor="home-search" className="sr-only">
         Product to compare
       </label>
-      <Search size={22} className="mb-7 ml-6 shrink-0 text-stone-400" aria-hidden />
+
+      {/* Left "+" — focuses the input, mirrors the clean composer look */}
+      <button
+        type="button"
+        aria-label="Start typing"
+        onClick={() => inputRef.current?.focus()}
+        className="mb-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-stone-400 transition hover:bg-orange-50 hover:text-orange-500"
+      >
+        <Plus size={22} strokeWidth={2.2} aria-hidden />
+      </button>
 
       <div className="relative min-w-0 flex-1">
         {showAnimation && (
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0 flex items-center pl-3 pr-3 text-lg"
+            className="pointer-events-none absolute inset-0 flex items-center pr-2 text-base sm:text-lg"
           >
             <span className="truncate text-stone-400">{displayed}</span>
-            <span className="ml-0.5 inline-block h-6 w-[2px] shrink-0 animate-blink bg-orange-400" />
+            <span className="ml-0.5 inline-block h-5 w-[2px] shrink-0 animate-blink bg-orange-400 sm:h-6" />
           </div>
         )}
 
@@ -143,21 +152,21 @@ export function TypewriterInput({ onSearch }: Props) {
           onFocus={handleFocus}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
-          placeholder={showPlaceholder ? "Ask for a product or paste a link…" : ""}
-          style={{ maxHeight: "16rem" }}
-          className={`w-full resize-none overflow-y-auto bg-transparent py-8 pl-3 pr-3 text-lg leading-snug outline-none placeholder:text-stone-400 ${
+          placeholder={showPlaceholder ? "Ask Homivion or paste a link…" : ""}
+          style={{ maxHeight: "14rem" }}
+          className={`w-full resize-none overflow-y-auto bg-transparent py-2.5 pr-2 text-base leading-relaxed outline-none placeholder:text-stone-400 sm:text-lg ${
             showAnimation ? "text-transparent caret-transparent" : "text-stone-900"
           }`}
         />
       </div>
 
-      {/* Submit button — inside the box on the right */}
+      {/* Submit button — keeps the Homivion shopping cart */}
       <button
         type="submit"
         aria-label="Search"
-        className="mb-4 mr-3 flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600"
+        className="mb-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600 sm:h-11 sm:w-11"
       >
-        <ShoppingCart size={24} strokeWidth={2} aria-hidden />
+        <ShoppingCart size={20} strokeWidth={2} aria-hidden />
       </button>
     </form>
   );
