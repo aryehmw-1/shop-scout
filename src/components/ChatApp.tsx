@@ -643,7 +643,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
           type="submit"
           disabled={loading}
           aria-label="Send"
-          className="absolute bottom-2 right-2.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40"
+          className="absolute bottom-3.5 right-2.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40"
         >
           <SearchSendIcon size={18} />
         </button>
@@ -721,7 +721,9 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
             <div className="flex min-h-0 flex-1 flex-col items-center justify-start overflow-y-auto px-4 pb-10 pt-[18vh] text-center sm:px-6 sm:pt-[20vh] lg:px-8">
               <div className="w-full max-w-3xl">
                 <h1 className="font-display text-3xl font-semibold leading-tight tracking-tight text-stone-950 sm:text-4xl lg:text-[2.75rem]">
-                  How can I help you shop?
+                  {user?.name
+                    ? `How can I help you shop, ${firstName(user.name)}?`
+                    : "How can I help you shop?"}
                 </h1>
 
                 {/* Search pill — submits directly into this ChatApp */}
