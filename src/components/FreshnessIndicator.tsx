@@ -44,24 +44,32 @@ interface CatalogFreshnessBannerProps {
   totalCount: number;
 }
 
+/**
+ * A quiet, trust-building freshness note shown BELOW the results (not above) so
+ * products appear immediately. The copy is conversational and reassuring rather
+ * than alarming: we confirm these prices were verified recently and invite the
+ * user to double-check at the retailer — without burying the deals.
+ */
 export function CatalogFreshnessBanner({
-  message,
   staleCount,
   totalCount,
 }: CatalogFreshnessBannerProps) {
+  const allStale = staleCount >= totalCount && totalCount > 0;
+  const headline = allStale
+    ? "These prices were last confirmed a few days ago"
+    : "A few of these prices were confirmed a few days ago";
+
   return (
     <div
-      className="flex items-start gap-2 rounded-xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-sm text-amber-950"
+      className="flex items-start gap-2 rounded-xl border border-stone-200 bg-stone-50/80 px-3.5 py-2.5 text-stone-600"
       role="status"
     >
-      <AlertTriangle size={18} className="mt-0.5 shrink-0 text-amber-600" aria-hidden />
-      <div>
-        <p className="font-semibold">Prices may be outdated</p>
-        <p className="mt-0.5 text-xs leading-relaxed">{message}</p>
-        <p className="mt-1 text-[10px] text-amber-800/80">
-          {staleCount} of {totalCount} offers in stale/expired tier · last refresh may be overdue
-        </p>
-      </div>
+      <Clock size={15} className="mt-0.5 shrink-0 text-stone-400" aria-hidden />
+      <p className="text-xs leading-relaxed">
+        <span className="font-medium text-stone-700">{headline}</span> — not re-verified
+        today, so it&rsquo;s worth a quick check at the retailer before you buy. We only show
+        prices we&rsquo;ve actually confirmed, never guesses.
+      </p>
     </div>
   );
 }

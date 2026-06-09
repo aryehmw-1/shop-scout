@@ -4,6 +4,7 @@ import { buildFullSearchQuery } from "../shopping/intent-merge";
 import { extractIntentFromMessage } from "./extract-intent";
 import { generateAIText, isClaudeConfigured, isGeminiConfigured } from "./index";
 import { summarizeSearchResults } from "./summarize-results";
+import { matchLooksIrrelevant } from "../search/relevance";
 import type { ShoppingIntent } from "../types";
 
 export type ChatAction =
@@ -138,8 +139,22 @@ function buildUserContext(ctx: ReplyContext): string {
 
   if (ctx.productResults) {
     const total = ctx.productResults.online.length;
-    if (total === 0) {
-      parts.push("SEARCH RESULTS: none matched — suggest trying another name or a product link.");
+    // Mirror the results card's relevance guard: when the catalog scorer returns
+    // products that share no meaningful token with the query (e.g. eggs for
+    // "Beats Studio Pro"), the card hides them and shows a request form — so the
+    // summary line must NOT claim we found a confident match. The exact-compare
+    // and link flows are trusted and skip this check.
+    const trustedExactFlow = Boolean(ctx.referenceProductTitle);
+    const irrelevant =
+      total > 0 &&
+      !trustedExactFlow &&
+      matchLooksIrrelevant(query, ctx.productResults.online);
+    if (total === 0 || irrelevant) {
+      parts.push(
+        "SEARCH RESULTS: no confident match — we could NOT find this product in our catalog. " +
+          "Do NOT list any prices or stores. Warmly tell the user we couldn't find a confident " +
+          "match for their search, and invite them to request it (a request form is shown below).",
+      );
     } else {
       parts.push("SEARCH RESULTS (use only this data):\n" + summarizeSearchResults(ctx.productResults));
     }
@@ -190,9 +205,13 @@ function fallbackReply(ctx: ReplyContext): string {
       const zipNote = productResults.needsZipForShipping
         ? "\n\nAdd your **ZIP** anytime for regional shipping and tax estimates."
         : "";
-      if (total === 0) {
+      const trustedExactFlow = Boolean(ctx.referenceProductTitle);
+      const noConfidentMatch =
+        total === 0 ||
+        (!trustedExactFlow && matchLooksIrrelevant(query, productResults.online));
+      if (noConfidentMatch) {
         const catalogCount = 66;
-        return `Sorry, we don't have ${q} in our inventory right now. We currently carry **${catalogCount} products** across grocery, pantry, household, and more. Type below to let us know what you'd like us to add — we're always expanding!`;
+        return `I couldn't find a confident match for ${q} right now. We currently carry **${catalogCount} products** across grocery, pantry, household, and more. Type below to let us know what you'd like us to add — we're always expanding!`;
       }
       const online = productResults.online[0];
       const bestPrice = online?.deliveredTotal ?? online?.landedCost ?? online?.price;

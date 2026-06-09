@@ -26,9 +26,10 @@ import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { trackEvent } from "@/lib/analytics/track-client";
 import { mergeEnrichedSearchResults } from "@/lib/search/merge-enriched-results";
 import { useRouter } from "next/navigation";
-import { MapPin, RotateCcw, ShoppingBasket, Headphones, Wheat } from "lucide-react";
+import { MapPin, RotateCcw, ShoppingBasket, Headphones, Wheat, Plus, Loader2 } from "lucide-react";
 import { SearchSendIcon } from "@/components/icons/SearchSendIcon";
 import { TypewriterInput } from "@/components/TypewriterInput";
+import { identifyProductImage } from "@/lib/vision/identify-client";
 
 const SHOPPING_LOADING_STEPS = [
   "Checking database for saved prices...",
@@ -130,6 +131,8 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
   const linkHintApplied = useRef(false);
   const chatInitialized = useRef(false);
   const [enrichingId, setEnrichingId] = useState<string | null>(null);
+  const [scanningPhoto, setScanningPhoto] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (input === "" && inputRef.current) {
@@ -590,6 +593,24 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
   const hasUserMessages = messages.some((m) => m.role === "user");
   const isEmpty = !hasUserMessages && !loading;
 
+  async function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-selecting the same file
+    if (!file || loading || scanningPhoto) return;
+    setScanningPhoto(true);
+    try {
+      const { query, error } = await identifyProductImage(file);
+      if (query) {
+        setInput(query);
+        sendMessage(query);
+      } else {
+        setInput(error ?? "Couldn't read that photo. Try a clearer shot.");
+      }
+    } finally {
+      setScanningPhoto(false);
+    }
+  }
+
   const inputForm = (
     <form
       action="/chat"
@@ -611,6 +632,28 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
           }}
           disabled={loading}
         />
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={handlePhoto}
+        />
+        <button
+          type="button"
+          aria-label="Add a product photo"
+          title="Add a product photo"
+          onClick={() => fileRef.current?.click()}
+          disabled={loading || scanningPhoto}
+          className="absolute bottom-3.5 left-2.5 z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-stone-400 transition hover:bg-orange-50 hover:text-orange-500 disabled:opacity-50"
+        >
+          {scanningPhoto ? (
+            <Loader2 size={20} strokeWidth={2.2} className="animate-spin text-orange-500" aria-hidden />
+          ) : (
+            <Plus size={20} strokeWidth={2.2} aria-hidden />
+          )}
+        </button>
         <textarea
           ref={inputRef}
           name="q"
@@ -631,11 +674,13 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
             }
           }}
           placeholder={
-            linkPasteMode
-              ? "Paste a product page URL"
-              : "Ask for a product or paste a link"
+            scanningPhoto
+              ? "Reading your photo…"
+              : linkPasteMode
+                ? "Paste a product page URL"
+                : "Ask for a product or paste a link"
           }
-          className="w-full resize-none overflow-y-auto rounded-2xl border border-orange-200/70 bg-white/70 py-3.5 pl-4 pr-14 text-[15px] text-ink-800 placeholder:text-ink-400 focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200/50"
+          className="w-full resize-none overflow-y-auto rounded-2xl border border-orange-200/70 bg-white/70 py-3.5 pl-12 pr-14 text-[15px] text-ink-800 placeholder:text-ink-400 focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200/50"
           style={{ maxHeight: "14rem" }}
           disabled={loading}
         />
