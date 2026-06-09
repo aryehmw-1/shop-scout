@@ -143,6 +143,46 @@ function isMetaQuestion(text: string): boolean {
   );
 }
 
+/**
+ * Detects general / non-shopping questions — personal ("how old am I?"),
+ * world-knowledge ("what's the capital of France?"), chit-chat ("how are
+ * you?"), or any question that carries no shopping or price intent. These must
+ * be answered conversationally, never run as a 0-result product search.
+ *
+ * A real product query is almost always a noun phrase ("whole milk gallon",
+ * "Beats Studio Pro"), not a question — so a question with no shopping signal
+ * is treated as general. Anything mentioning price/buy/store/etc. or a known
+ * shopping category is explicitly excluded so genuine product questions
+ * ("where can I buy cheap milk?") still search.
+ */
+function isGeneralKnowledgeQuestion(text: string): boolean {
+  const t = text.trim().toLowerCase();
+  const isQuestion =
+    /\?\s*$/.test(t) ||
+    /^(who|what|whats|what's|why|when|where|how|is|are|am|do|does|can|could|would|should|will|did|have|has)\b/.test(t);
+  if (!isQuestion) return false;
+  // Shopping / price / availability intent → this IS a product question.
+  if (
+    /\b(price|prices|pricing|cost|costs|cheap|cheaper|cheapest|buy|sell|sells|selling|carry|stock|in stock|deal|deals|compare|comparison|find me|where (can|to|do)|ship|shipping|order|store|stores|retailer|brand|under \$?\d|less than \$?\d|on sale)\b/.test(
+      t,
+    )
+  ) {
+    return false;
+  }
+  if (looksLikeShoppingQuery(t)) {
+    // Still let obvious personal/world-knowledge questions through even though
+    // they're 2+ words (looksLikeShoppingQuery counts any 2+ words as shopping).
+    if (
+      !/\b(old am i|my age|my name|name is|time is it|day is it|what day|date today|weather|who (are|won|is|was)|tell me a joke|joke|meaning of|capital of|how are you|what'?s up|how's it going|favorite|your name|do you (know|like|think|feel)|are you (ok|real|human|sentient)|2\s*[+x*]\s*2|\d+\s*[+\-x*/]\s*\d+)\b/.test(
+        t,
+      )
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
 function isProductSearchMessage(text: string): boolean {
   const t = text.trim();
   if (t.length < 2 || isValidZip(t) || GREETING.test(t)) return false;
@@ -150,6 +190,7 @@ function isProductSearchMessage(text: string): boolean {
   if (isRecheckMessage(t) || isFollowUpAboutResults(t)) return false;
   if (/^(help|how does this work|\?)$/i.test(t)) return false;
   if (isMetaQuestion(t)) return false;
+  if (isGeneralKnowledgeQuestion(t)) return false;
   if (looksLikeShoppingQuery(t)) return true;
   return t.length >= 3;
 }
@@ -210,6 +251,7 @@ function isLongInstructionProse(text: string): boolean {
 function isConversationalOnly(text: string, session?: SessionState): boolean {
   const t = text.trim();
   if (session && shouldMergeWithPreviousSearch(t, session)) return false;
+  if (isGeneralKnowledgeQuestion(t)) return true;
   if (looksLikeShoppingQuery(t)) return false;
   if (GREETING.test(t)) return true;
   if (/^thanks|thank you|thx$/i.test(t)) return true;
