@@ -41,7 +41,7 @@ export function TypewriterInput({ onSearch }: Props) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="mx-auto flex w-full max-w-3xl items-center gap-1.5 rounded-full border border-orange-200/80 bg-white px-2 py-1 shadow-[0_12px_40px_rgba(234,88,12,0.10)] transition focus-within:border-orange-300 focus-within:shadow-[0_14px_48px_rgba(234,88,12,0.16)] sm:gap-2 sm:px-2.5"
+      className="mx-auto flex w-full max-w-3xl items-end gap-1.5 rounded-[28px] border border-orange-200/80 bg-white px-2 py-1.5 shadow-[0_12px_40px_rgba(234,88,12,0.10)] transition focus-within:border-orange-300 focus-within:shadow-[0_14px_48px_rgba(234,88,12,0.16)] sm:gap-2 sm:px-2.5"
     >
       <label htmlFor="home-search" className="sr-only">
         Product to compare
