@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Plus, ShoppingCart } from "lucide-react";
+import { Plus } from "lucide-react";
+import { SearchSendIcon } from "@/components/icons/SearchSendIcon";
 
 interface Props {
   onSearch: (query: string) => void;
@@ -76,7 +77,7 @@ export function TypewriterInput({ onSearch }: Props) {
         aria-label="Search"
         className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600 sm:h-10 sm:w-10"
       >
-        <ShoppingCart size={18} strokeWidth={2} aria-hidden />
+        <SearchSendIcon size={18} />
       </button>
     </form>
   );

@@ -22,19 +22,20 @@ export function SearchSendIcon({ size = 20, className }: SearchSendIconProps) {
       className={className}
       aria-hidden="true"
     >
-      {/* Magnifying glass lens — slightly more prominent */}
-      <circle cx="10" cy="10" r="7" strokeWidth="2" />
-      {/* Handle */}
-      <path d="M15.1 15.1 L20.5 20.5" strokeWidth="2" strokeLinecap="round" />
+      {/* Magnifying glass lens — slightly more prominent. Centered so the
+          whole glyph sits balanced inside a circular button. */}
+      <circle cx="11" cy="11" r="6.5" strokeWidth="2" />
+      {/* Handle reaching toward the corner */}
+      <path d="M15.7 15.7 L20 20" strokeWidth="2" strokeLinecap="round" />
       {/* Northeast arrow inside the lens */}
       <path
-        d="M7.6 12.4 L12.4 7.6"
+        d="M8.8 13.2 L13.2 8.8"
         strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M9.3 7.6 H12.4 V10.7"
+        d="M10.4 8.8 H13.2 V11.6"
         strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
