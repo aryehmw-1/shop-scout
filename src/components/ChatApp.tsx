@@ -38,9 +38,32 @@ const SHOPPING_LOADING_STEPS = [
 ];
 
 const CHAT_LOADING_STEPS = [
-  "Reading your question...",
-  "Working on a reply...",
+  "Thinking about your question...",
+  "Putting together a clear answer...",
 ];
+
+/**
+ * Advice / opinion / sizing questions are NOT product searches — even when a
+ * product link is pasted alongside ("looking into this product: <url> ... do
+ * you think I should size down?"). Detect them so the loading state says
+ * "Thinking about your question..." instead of "Searching live offers...",
+ * keeping the UI in sync with the conversational answer the server returns.
+ */
+function looksLikeAdviceRequest(text: string) {
+  const t = text.toLowerCase();
+  if (/\b(compare|cheapest|lowest price|best price|where (can|to) (i )?buy|price check|find me)\b/.test(t)) {
+    return false;
+  }
+  return (
+    /\bdo you think\b/.test(t) ||
+    /\bwhat do you (recommend|think|suggest)\b/.test(t) ||
+    /\bshould i\b.{0,40}\b(get|buy|order|pick|choose|go|size|keep|return)\b/.test(t) ||
+    /\b(size up|size down|too (big|small|large|tight|loose)|what size|which size)\b/.test(t) ||
+    /\bis (it|this) worth it\b/.test(t) ||
+    /\bwould you (recommend|get|buy|keep|return)\b/.test(t) ||
+    /\bhelp me (pick|choose|decide)\b/.test(t)
+  );
+}
 
 function looksLikeShoppingRequest(text: string) {
   const lower = text.toLowerCase();
@@ -380,7 +403,13 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
 
       setMessages((prev) => [...prev, userMsg]);
       setInput("");
-      setLoadingMode(looksLikeShoppingRequest(trimmed) ? "shopping" : "chat");
+      setLoadingMode(
+        looksLikeAdviceRequest(trimmed)
+          ? "chat"
+          : looksLikeShoppingRequest(trimmed)
+            ? "shopping"
+            : "chat",
+      );
       setLoading(true);
       const searchStarted = Date.now();
 

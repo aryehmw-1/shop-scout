@@ -1,10 +1,43 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import type { ChatMessage as ChatMessageType, ProductOffer } from "@/lib/types";
 import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { FormattedText } from "./FormattedText";
 import { ProductResults } from "./ProductResults";
 import { QuickChips } from "./QuickChips";
+
+/**
+ * Reveals an assistant message gradually, as if it's being written in real
+ * time. Only animates the freshly-arrived latest reply (recent timestamp) —
+ * historical messages and user messages render instantly. Re-parses the
+ * growing substring each tick so Markdown blocks form as they stream in.
+ */
+function AssistantText({ text, animate }: { text: string; animate: boolean }) {
+  const doneRef = useRef(!animate);
+  const [shown, setShown] = useState(animate ? "" : text);
+
+  useEffect(() => {
+    if (doneRef.current) {
+      setShown(text);
+      return;
+    }
+    let i = 0;
+    const step = Math.max(2, Math.round(text.length / 160));
+    const id = setInterval(() => {
+      i = Math.min(text.length, i + step);
+      setShown(text.slice(0, i));
+      if (i >= text.length) {
+        clearInterval(id);
+        doneRef.current = true;
+      }
+    }, 16);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text]);
+
+  return <FormattedText text={shown} />;
+}
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -47,7 +80,14 @@ export function ChatMessageBubble({
               : "text-[15px] leading-relaxed text-stone-800"
           }
         >
-          <FormattedText text={message.content} />
+          {isUser ? (
+            <FormattedText text={message.content} />
+          ) : (
+            <AssistantText
+              text={message.content}
+              animate={Boolean(isLatest) && Date.now() - (message.timestamp ?? 0) < 4000}
+            />
+          )}
         </div>
 
         {message.productResults && (

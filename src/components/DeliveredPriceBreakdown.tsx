@@ -34,43 +34,45 @@ export function DeliveredPriceBreakdown({ offer, compact }: DeliveredPriceBreakd
   }
 
   return (
-    <div className="rounded-lg border border-stone-100 bg-stone-50/80 px-2.5 py-2 text-[11px] text-stone-600">
-      <p className="mb-1 font-semibold text-stone-700">Delivered total</p>
-      <dl className="space-y-0.5">
+    <div className="rounded-lg border border-stone-100 bg-stone-50/80 px-2.5 py-2 text-xs text-stone-700">
+      <p className="mb-1 font-semibold text-stone-700">Estimated delivered</p>
+      <dl className="space-y-1">
         <div className="flex justify-between gap-2">
           <dt>Item</dt>
-          <dd className="font-medium text-stone-800">{formatPrice(offer.price)}</dd>
+          <dd className="font-medium text-stone-900">{formatPrice(offer.price)}</dd>
         </div>
         {shipping != null && (
           <div className="flex justify-between gap-2">
             <dt>Shipping</dt>
-            <dd>{shipping === 0 ? "Free" : formatPrice(shipping)}</dd>
+            <dd className={shipping === 0 ? "font-medium text-emerald-700" : "text-stone-800"}>
+              {shipping === 0 ? "Free" : formatPrice(shipping)}
+            </dd>
           </div>
         )}
         {tax != null && (
           <div className="flex justify-between gap-2">
             <dt>Tax (est.)</dt>
-            <dd>{formatPrice(tax)}</dd>
+            <dd className="text-stone-800">{formatPrice(tax)}</dd>
           </div>
         )}
-        <div className="flex justify-between gap-2 border-t border-stone-200/80 pt-1 font-semibold text-stone-800">
-          <dt>Delivered</dt>
+        <div className="flex justify-between gap-2 border-t border-stone-200/80 pt-1 font-semibold text-stone-900">
+          <dt>Est. delivered</dt>
           <dd>{formatPrice(total)}</dd>
         </div>
       </dl>
       {offer.freeShippingEligible && offer.freeShippingThreshold && (
-        <p className="mt-1 text-[10px] text-emerald-700">
+        <p className="mt-1 text-[11px] font-medium text-emerald-700">
           Free shipping over {formatPrice(offer.freeShippingThreshold)}
         </p>
       )}
       {offer.memberPricingApplied && (
-        <p className="mt-0.5 text-[10px] text-violet-700">Member pricing applied</p>
+        <p className="mt-0.5 text-[11px] font-medium text-violet-700">Member pricing applied</p>
       )}
       {offer.pickupEligible && (
-        <p className="mt-0.5 text-[10px] text-stone-500">Pickup may be available</p>
+        <p className="mt-0.5 text-[11px] text-stone-500">Pickup may be available</p>
       )}
       {(confidenceLabel || offer.deliveredPriceNote) && (
-        <p className="mt-1 text-[10px] text-stone-400">
+        <p className="mt-1 text-[11px] text-stone-400">
           {confidenceLabel}
           {confidenceLabel && offer.deliveredPriceNote ? " · " : ""}
           {offer.deliveredPriceNote}

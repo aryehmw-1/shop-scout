@@ -1,3 +1,23 @@
+/**
+ * Normalize loosely-formatted model output into clean block Markdown so the
+ * renderer can split it. LLMs often emit a list inline ("Here's why: –
+ * **Consistent Fit:** ... – **Shrinkage:** ...") or drop a "> " blockquote
+ * mid-sentence, which collapses into one wall of text. We promote those inline
+ * markers onto their own lines.
+ */
+export function normalizeMarkdown(text: string): string {
+  let t = text.replace(/\r\n/g, "\n");
+  // A "> " highlight that appears mid-line → its own blockquote block.
+  t = t.replace(/([^\n])\s+>\s+/g, "$1\n\n> ");
+  // Inline bold-led list items: " – **Label:**" / " - **" / " — **" → bullet.
+  t = t.replace(/\s+[–—-]\s+(?=\*\*)/g, "\n- ");
+  // Inline "•" bullets → newline bullets.
+  t = t.replace(/\s*•\s+/g, "\n- ");
+  // Collapse 3+ newlines.
+  t = t.replace(/\n{3,}/g, "\n\n");
+  return t.trim();
+}
+
 /** Turn **bold** segments into React-friendly parts */
 export function parseBoldText(text: string): Array<{ bold: boolean; text: string }> {
   const parts: Array<{ bold: boolean; text: string }> = [];

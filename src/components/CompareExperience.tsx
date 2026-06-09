@@ -56,6 +56,56 @@ function comparePriceMain(offer: ProductOffer, display: { main: string }): strin
   return display.main;
 }
 
+/**
+ * Shipping shown as a first-class, readable line — never tiny gray text. Surfaces
+ * the most trust-building fact (free with membership / free over threshold /
+ * unknown) right where the eye lands, so a $6.99 estimate never looks hidden.
+ */
+function ShippingLabel({ offer }: { offer: ProductOffer }) {
+  const shipping = offer.estimatedShipping ?? offer.deliveryFee;
+
+  if (offer.memberPricingApplied && shipping === 0) {
+    return <span className="text-violet-700">Free with membership</span>;
+  }
+  if (shipping === 0) {
+    return <span className="text-emerald-700">Free shipping</span>;
+  }
+  if (offer.freeShippingEligible && offer.freeShippingThreshold) {
+    return (
+      <>
+        + {shipping != null ? formatPrice(shipping) : "—"} shipping ·{" "}
+        <span className="text-emerald-700">
+          free over {formatPrice(offer.freeShippingThreshold)}
+        </span>
+      </>
+    );
+  }
+  if (shipping == null) {
+    return <span className="text-stone-500">Shipping unknown</span>;
+  }
+  return <>+ {formatPrice(shipping)} shipping</>;
+}
+
+/**
+ * Confidence tag for the estimated delivered total — degrades gracefully so a
+ * low-confidence guess is never presented as a hard fact.
+ */
+function DeliveredConfidenceLabel({ offer }: { offer: ProductOffer }) {
+  const shipping = offer.estimatedShipping ?? offer.deliveryFee;
+  const confidence = offer.deliveredPriceConfidence;
+  let label: string | null = null;
+  if (shipping == null) {
+    label = "Shipping unknown — total may vary";
+  } else if (confidence != null) {
+    label =
+      confidence >= 0.75 ? "Strong estimate"
+      : confidence >= 0.55 ? "Estimated"
+      : "Rough estimate — add ZIP";
+  }
+  if (!label) return null;
+  return <p className="mt-1 text-[11px] text-stone-400">{label}</p>;
+}
+
 function ProductIdentityHeader({
   matched,
   bestOffer,
@@ -167,19 +217,26 @@ function BestOfferAnswer({
           </div>
           <p className="mt-2 text-sm leading-relaxed text-sage-900/85">{reason}</p>
         </div>
-        <div className="flex shrink-0 items-center gap-3 sm:text-right">
-          <div>
+        <div className="flex shrink-0 items-start gap-3 sm:text-right">
+          <div className="sm:text-right">
+            {/* Anchor: the retailer's advertised item price — matches click-through */}
             <p className="text-3xl font-black leading-none text-stone-950">
-              {mainPrice}
+              {comparePriceMain(offer, priceDisplay)}
             </p>
-            <p className="mt-1 text-xs font-semibold text-sage-800">
-              {hasDeliveredPrice ? "Delivered total" : priceDisplay.sub}
+            <p className="mt-1 text-xs font-semibold text-sage-800">Item price</p>
+
+            {/* Shipping — first-class, readable, not gray micro-text */}
+            <p className="mt-2 text-sm font-medium text-stone-700">
+              <ShippingLabel offer={offer} />
             </p>
-            {shipping != null && (
-              <p className="mt-1 text-[11px] font-medium text-stone-500">
-                Item {formatPrice(offer.price)} · shipping {shipping === 0 ? "free" : formatPrice(shipping)}
+
+            {/* Estimated delivered — secondary, clearly derived & an estimate */}
+            {hasDeliveredPrice && (
+              <p className="mt-1 text-sm font-semibold text-stone-900">
+                Est. delivered ≈ {mainPrice}
               </p>
             )}
+            <DeliveredConfidenceLabel offer={offer} />
           </div>
           <OutboundLink
             offer={offer}
@@ -279,21 +336,28 @@ function RetailerOfferRow({
       </div>
 
       <div>
+        {/* Anchor: advertised item price */}
         <p className="text-2xl font-black leading-tight text-stone-950">
-          {mainPrice}
+          {comparePriceMain(offer, priceDisplay)}
         </p>
         {offer.wasPrice && offer.wasPrice > offer.price && (
           <p className="text-xs text-stone-400 line-through">
             Was {formatPrice(offer.wasPrice)}
           </p>
         )}
-        <p className="mt-1 text-xs text-stone-500">
-          {hasDeliveredPrice ?
-            `Item ${formatPrice(offer.price)} · shipping ${
-              shipping === 0 ? "free" : shipping != null ? formatPrice(shipping) : "unknown"
-            }`
-          : priceDisplay.sub}
+        {/* Shipping — readable, equal weight */}
+        <p className="mt-1 text-sm font-medium text-stone-700">
+          <ShippingLabel offer={offer} />
         </p>
+        {/* Estimated delivered — secondary */}
+        {hasDeliveredPrice ? (
+          <p className="mt-0.5 text-sm font-semibold text-stone-900">
+            Est. delivered ≈ {mainPrice}
+          </p>
+        ) : (
+          <p className="mt-0.5 text-xs text-stone-500">{priceDisplay.sub}</p>
+        )}
+        <DeliveredConfidenceLabel offer={offer} />
       </div>
 
       <div className="space-y-2">

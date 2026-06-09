@@ -1,4 +1,4 @@
-import { parseBoldText } from "@/lib/utils/format";
+import { normalizeMarkdown, parseBoldText } from "@/lib/utils/format";
 
 /** Render inline **bold** segments within a single line of text. */
 function Inline({ text }: { text: string }) {
@@ -86,7 +86,7 @@ function parseBlocks(text: string): Block[] {
 }
 
 export function FormattedText({ text }: { text: string }) {
-  const blocks = parseBlocks(text);
+  const blocks = parseBlocks(normalizeMarkdown(text));
 
   return (
     <div className="space-y-3">
