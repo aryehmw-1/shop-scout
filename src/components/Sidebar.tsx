@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Heart, LogIn, LogOut, Package, Search, Settings } from "lucide-react";
+import { Heart, LogIn, LogOut, Package, PanelLeftClose, PanelLeftOpen, Search, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { APP_NAME } from "@/lib/constants";
@@ -97,21 +97,45 @@ export function Sidebar() {
 
         {/* Logo / toggle */}
         <div className={`flex items-center ${expanded ? "px-5" : "justify-center px-0"}`}>
-          {/* Logo mark — always just toggles sidebar */}
-          <button
-            type="button"
-            onClick={toggle}
-            className="flex shrink-0 items-center justify-center rounded-xl p-1 transition hover:bg-stone-100"
-            aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
-          >
-            <BrandHomeMark size="md" />
-          </button>
-
-          {/* Name — only shown when expanded, navigates to compare page */}
-          {expanded && (
-            <Link href="/" className="min-w-0 flex-1 truncate font-display text-lg font-bold tracking-tight text-ink-900 hover:text-orange-700 transition ml-1.5">
-              {APP_NAME}
-            </Link>
+          {expanded ? (
+            <>
+              {/* Open state: the logo becomes the Homivion wordmark → compare page */}
+              <Link
+                href="/"
+                className="min-w-0 flex-1 truncate font-display text-lg font-bold tracking-tight text-ink-900 transition hover:text-orange-700"
+              >
+                {APP_NAME}
+              </Link>
+              {/* Small collapse control so the sidebar can still be closed */}
+              <button
+                type="button"
+                onClick={toggle}
+                aria-label="Collapse sidebar"
+                title="Collapse sidebar"
+                className="ml-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-stone-400 transition hover:bg-stone-100 hover:text-stone-700"
+              >
+                <PanelLeftClose size={18} strokeWidth={2} aria-hidden />
+              </button>
+            </>
+          ) : (
+            /* Collapsed: brand mark opens the sidebar. On hover it swaps to an
+               "open sidebar" glyph with an "Open Sidebar" tooltip beside it. */
+            <NavItem label="Open Sidebar" show>
+              <button
+                type="button"
+                onClick={toggle}
+                aria-label="Open sidebar"
+                className="group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl p-1 transition hover:bg-stone-100"
+              >
+                <BrandHomeMark size="md" className="group-hover:hidden" />
+                <PanelLeftOpen
+                  size={22}
+                  strokeWidth={2}
+                  aria-hidden
+                  className="hidden text-orange-600 group-hover:block"
+                />
+              </button>
+            </NavItem>
           )}
         </div>
 
