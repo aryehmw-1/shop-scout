@@ -26,7 +26,8 @@ import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { trackEvent } from "@/lib/analytics/track-client";
 import { mergeEnrichedSearchResults } from "@/lib/search/merge-enriched-results";
 import { useRouter } from "next/navigation";
-import { ArrowUp, MapPin, RotateCcw, ShoppingCart, ShoppingBasket, Headphones, Wheat } from "lucide-react";
+import { MapPin, RotateCcw, ShoppingBasket, Headphones, Wheat } from "lucide-react";
+import { SearchSendIcon } from "@/components/icons/SearchSendIcon";
 import { TypewriterInput } from "@/components/TypewriterInput";
 
 const SHOPPING_LOADING_STEPS = [
@@ -615,7 +616,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
           aria-label="Send"
           className="absolute right-2.5 top-1/2 flex h-9 w-9 shrink-0 -translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-amber-500 text-white shadow-md shadow-orange-400/30 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40"
         >
-          <ArrowUp size={18} strokeWidth={2.5} />
+          <SearchSendIcon size={18} />
         </button>
       </div>
     </form>
