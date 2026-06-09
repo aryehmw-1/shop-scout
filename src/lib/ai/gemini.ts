@@ -23,6 +23,66 @@ export function isGeminiConfigured(): boolean {
   return Boolean(process.env.GEMINI_API_KEY?.trim());
 }
 
+/**
+ * Identify the consumer product shown in an image and return a concise shopping
+ * search query (brand + product + size/variant). Returns null when no clear
+ * product is recognizable. Uses Gemini's multimodal vision on the flash model.
+ */
+export async function identifyProductFromImage(
+  base64: string,
+  mimeType: string,
+  options: GenerateTextOptions = {},
+): Promise<string | null> {
+  const model = getGeminiModel(options.model);
+  const system =
+    "You identify retail products from photos for a shopping price-comparison app. " +
+    "Look at the image and output ONLY a short shopping search query a user would " +
+    "type to find that exact product — include brand, product name, and size/variant " +
+    "if visible (e.g. \"Beats Studio Pro headphones\" or \"Bounty paper towels 12 rolls\"). " +
+    "No quotes, no punctuation at the ends, no extra words. " +
+    "If the image shows no identifiable retail product, output exactly NO_PRODUCT.";
+
+  const { value } = await withRetry(
+    "gemini",
+    async () =>
+      withTimeout(
+        async () => {
+          const ai = new GoogleGenAI({ apiKey: getGeminiApiKey() });
+          const response = await ai.models.generateContent({
+            model,
+            contents: [
+              {
+                role: "user",
+                parts: [
+                  { inlineData: { mimeType, data: base64 } },
+                  { text: "What product is this? Give the shopping search query." },
+                ],
+              },
+            ],
+            config: {
+              systemInstruction: system,
+              temperature: 0.1,
+              maxOutputTokens: 80,
+              // gemini-2.5-flash "thinking" would otherwise eat the small output
+              // budget and truncate the query — disable it for this terse task.
+              thinkingConfig: { thinkingBudget: 0 },
+            },
+          });
+          return response.text?.trim() ?? "";
+        },
+        options.timeoutMs ?? 20_000,
+        "gemini",
+      ),
+    options,
+  );
+
+  const cleaned = value.replace(/^["'\s]+|["'.\s]+$/g, "").trim();
+  if (!cleaned || /^no[_\s]?product$/i.test(cleaned)) return null;
+  // Guard against the model returning a refusal sentence instead of a query.
+  if (cleaned.split(/\s+/).length > 12) return null;
+  return cleaned;
+}
+
 export async function generateGeminiText(
   prompt: string,
   options: GenerateTextOptions = {},
