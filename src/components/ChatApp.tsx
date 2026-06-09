@@ -680,7 +680,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
                 ? "Paste a product page URL"
                 : "Ask for a product or paste a link"
           }
-          className="w-full resize-none overflow-y-auto rounded-2xl border border-orange-200/70 bg-white/70 py-3.5 pl-12 pr-14 text-[15px] text-ink-800 placeholder:text-ink-400 focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200/50"
+          className="w-full resize-none overflow-y-auto rounded-2xl border border-orange-200/70 bg-white py-3.5 pl-12 pr-14 text-[15px] text-ink-800 shadow-[0_8px_30px_rgba(234,88,12,0.12)] placeholder:text-ink-400 focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200/50"
           style={{ maxHeight: "14rem" }}
           disabled={loading}
         />
@@ -822,9 +822,9 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
             </div>
           )
         ) : (
-          /* ── ACTIVE CHAT: messages + bottom bar ── */
-          <>
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6 lg:px-8">
+          /* ── ACTIVE CHAT: messages + floating bottom bar ── */
+          <div className="relative flex min-h-0 flex-1 flex-col">
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-6 pb-40 lg:px-8">
               <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-1 sm:px-2">
                 {messages.filter((m) => m.id !== "welcome").map((msg) => (
                   <ChatMessageBubble
@@ -860,15 +860,15 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
               </div>
             </div>
 
-            <div className="shrink-0 px-4 pb-4 pt-2 lg:px-8">
-              <div className="mx-auto max-w-6xl px-1 sm:px-2">
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-orange-50 from-50% via-orange-50/90 to-transparent px-4 pb-4 pt-12 lg:px-8">
+              <div className="pointer-events-auto mx-auto max-w-6xl px-1 sm:px-2">
                 {inputForm}
                 <p className="mt-2 text-center text-[11px] text-stone-400">
                   ZIP is used for shipping estimates only. Affiliate disclosure applies.
                 </p>
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
     </>

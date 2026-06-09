@@ -9,8 +9,10 @@ export function normalizeMarkdown(text: string): string {
   let t = text.replace(/\r\n/g, "\n");
   // A "> " highlight that appears mid-line → its own blockquote block.
   t = t.replace(/([^\n])\s+>\s+/g, "$1\n\n> ");
-  // Inline bold-led list items: " – **Label:**" / " - **" / " — **" → bullet.
-  t = t.replace(/\s+[–—-]\s+(?=\*\*)/g, "\n- ");
+  // Inline bold-led list items: " – **Label:**" → bullet. We ONLY split when the
+  // bold segment is a label ending in a colon (the real inline-list pattern), so
+  // price rows like "**Amazon** — **$4.04** — Whole Milk" stay on ONE bullet.
+  t = t.replace(/\s+[–—-]\s+(?=\*\*[^*\n]+:\*\*)/g, "\n- ");
   // Inline "•" bullets → newline bullets.
   t = t.replace(/\s*•\s+/g, "\n- ");
   // Collapse 3+ newlines.
