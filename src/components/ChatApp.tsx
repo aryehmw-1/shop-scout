@@ -689,8 +689,8 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
         {isEmpty ? (
           showHero ? (
             /* Hero layout — centered home page, fully responsive */
-            <div className="flex min-h-0 flex-1 flex-col items-center justify-center overflow-y-auto px-4 py-10 text-center sm:px-6 lg:px-8">
-              <div className="w-full max-w-2xl">
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-start overflow-y-auto px-4 pb-10 pt-[18vh] text-center sm:px-6 sm:pt-[20vh] lg:px-8">
+              <div className="w-full max-w-3xl">
                 <h1 className="font-display text-3xl font-semibold leading-tight tracking-tight text-stone-950 sm:text-4xl lg:text-[2.75rem]">
                   How can I help you shop?
                 </h1>
