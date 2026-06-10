@@ -758,10 +758,12 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
             <RotateCcw size={16} />
             <span className="hidden sm:inline">New chat</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setShowLocation(true)}
-            className="flex items-center gap-2 rounded-xl border border-sage-200 bg-sage-50 px-3 py-1.5 text-sm font-medium text-sage-800 transition hover:bg-sage-100"
+          {/* ZIP pill — pinned top-right (ml-auto) so it never sits next to the
+              mobile menu button. Tapping anywhere on the pill focuses the input,
+              so the same gesture works on the label or the digits. The input uses
+              a 16px font so iOS Safari doesn't zoom in when it's focused. */}
+          <label
+            className="ml-auto flex cursor-text items-center gap-2 rounded-xl border border-sage-200 bg-sage-50 px-3 py-1.5 text-sm font-medium text-sage-800 transition hover:bg-sage-100"
             title="ZIP for shipping estimates"
           >
             <MapPin size={16} />
@@ -780,12 +782,12 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
                   });
                 }
               }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-14 bg-transparent text-center font-bold text-stone-900 focus:outline-none"
+              placeholder="-----"
+              className="w-[4.5rem] bg-transparent text-center text-base font-bold text-stone-900 placeholder:text-stone-300 focus:outline-none"
               maxLength={5}
               aria-label="ZIP code for shipping"
             />
-          </button>
+          </label>
         </header>
 
         {/* ── EMPTY STATE ── */}

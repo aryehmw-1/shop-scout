@@ -5,7 +5,7 @@ import { ProductImage } from "./ProductImage";
 import { OutboundLink } from "./OutboundLink";
 import { FreshnessIndicator } from "./FreshnessIndicator";
 import { formatPrice } from "@/lib/utils/format";
-import { ChevronRight } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 interface MobileOfferListProps {
   offers: ProductOffer[];
@@ -70,7 +70,10 @@ export function MobileOfferList({ offers, onShopClick, searchQuery }: MobileOffe
                     ≈ {formatPrice(delivered)} delivered
                   </span>
                 )}
-                <ChevronRight size={16} className="mt-1 text-stone-300" aria-hidden />
+                <span className="mt-1.5 inline-flex items-center gap-1 rounded-lg bg-sage-600 px-2.5 py-1 text-xs font-semibold text-white">
+                  View
+                  <ExternalLink size={12} aria-hidden />
+                </span>
               </div>
             </OutboundLink>
           </li>
