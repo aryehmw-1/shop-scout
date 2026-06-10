@@ -811,7 +811,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
                   {[
                     { label: "Whole milk gallon", icon: ShoppingBasket, q: "whole milk gallon" },
                     { label: "Beats Studio Pro", icon: Headphones, q: "Beats Studio Pro" },
-                    { label: "Honey Nut Cheerios", icon: Wheat, q: "Honey Nut Cheerios best price" },
+                    { label: "Honey Nut Cheerios", icon: Wheat, q: "Honey Nut Cheerios" },
                   ].map(({ label, icon: Icon, q }) => (
                     <button
                       key={label}

@@ -114,8 +114,14 @@ function isRecheckMessage(text: string): boolean {
 }
 
 function isFollowUpAboutResults(text: string): boolean {
+  const t = text.trim();
+  // Only a SHORT, bare phrase refers to the current results ("which is cheaper?",
+  // "best price?", "what do you recommend"). A longer noun phrase that merely
+  // contains one of these words is a NEW product search — e.g. "Honey Nut
+  // Cheerios best price" must search, not be answered as a follow-up.
+  if (t.split(/\s+/).length > 4) return false;
   return /which (one|store|deal)|cheaper|better deal|best (deal|price|option)|compare these|what do you recommend|worth it|should i buy/i.test(
-    text,
+    t,
   );
 }
 

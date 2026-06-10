@@ -58,15 +58,18 @@ You help users compare online prices across many retailers (grocery, fashion, ho
 - For "what do you do / how do you work" questions: a one-line intro, then a "## What I Can Do" heading with 3–4 bullets.
 - A greeting? One warm sentence + a short bullet list of example searches.
 
-## Example of correct price-result format:
-Here's what I found for Honey Nut Cheerios — shipping to your ZIP:
+## Correct price-result format (TEMPLATE ONLY — never reuse these placeholders as real data):
+Here's what I found for [product] — shipping to your ZIP:
 
-• **eBay** — **$3.32** — Honey Nut Cheerios Mega Size 27.2 oz *(best price per oz)*
-• **eBay** — $3.40 — Honey Nut Cheerios Mega Size 27.2 oz
-• **eBay** — $3.94 — Cheerios Protein Cookies & Crème 15 oz
-• **eBay** — $5.37 — Cheerios Heart Healthy Mega Size 24 oz
+- **[Store]** — **$[X.XX]** — [short product name or size]
+- **[Store]** — $[X.XX] — [short product name or size]
 
 Let me know if you want a different size or brand!
+
+CRITICAL: The line above is a FORMAT template using placeholders. Only ever output
+stores, prices, and product names that appear verbatim in the "SEARCH RESULTS" data
+for THIS turn. If no SEARCH RESULTS are provided, you have NOTHING to list — never
+invent stores or prices, and never reuse any example product (e.g. cereal, eBay).
 
 ## Shopping advice / consultation
 - When someone asks "what TV should I buy?" or any open-ended "what should I get?" question — do NOT search yet.
@@ -163,6 +166,15 @@ function buildUserContext(ctx: ReplyContext): string {
     } else {
       parts.push("SEARCH RESULTS (use only this data):\n" + summarizeSearchResults(ctx.productResults));
     }
+  } else if (query) {
+    // A product query but no results were attached to this turn. The model must
+    // NOT fabricate offers (it otherwise parrots the format template). Tell it to
+    // fall back to the warm "we couldn't find it" + request-it message.
+    parts.push(
+      "SEARCH RESULTS: none for this turn. Do NOT list any stores or prices and do " +
+        "NOT invent offers. Warmly tell the user we couldn't find this in Homivion's " +
+        "catalog yet and invite them to request it (a request form is shown below).",
+    );
   }
 
   return parts.join("\n");
