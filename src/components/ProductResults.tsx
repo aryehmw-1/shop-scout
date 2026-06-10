@@ -21,7 +21,7 @@ import {
 import { ConversationDebugPanel } from "./ConversationDebugPanel";
 import { buildRetrievalTrustDiagnostic } from "@/lib/search/retrieval-trust-message";
 import { ProductRequestForm } from "./ProductRequestForm";
-import { MobileOfferList } from "./MobileOfferList";
+import { MobileOfferList, MobileVerifiedNote } from "./MobileOfferList";
 import { DesktopOfferListB } from "./OfferListB";
 import { VerifiedCompareHeader } from "./search/VerifiedCompareHeader";
 import { CatalogFreshnessBanner } from "./FreshnessIndicator";
@@ -467,13 +467,17 @@ export function ProductResults({
       )}
 
       {online.length > 0 && (
-        <section className="flex min-w-0 flex-col rounded-2xl border-2 border-sage-400/70 bg-sage-50/30 p-4 sm:p-5">
-          <VerifiedCompareHeader
-            categoryId={categoryId}
-            offerCount={online.length}
-            zipCode={zipCode}
-          />
-          <div className="mb-4 flex items-start justify-between gap-3">
+        <section className="flex min-w-0 flex-col rounded-2xl border-2 border-sage-400/70 bg-sage-50/30 p-3 sm:p-5">
+          {/* Desktop keeps the roomy verified-pricing card; phones get the
+              compact V-2 tap-to-expand note (below) so products lead. */}
+          <div className="hidden lg:block">
+            <VerifiedCompareHeader
+              categoryId={categoryId}
+              offerCount={online.length}
+              zipCode={zipCode}
+            />
+          </div>
+          <div className="mb-4 hidden items-start justify-between gap-3 lg:flex">
             <div className="flex min-w-0 gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
                 <Truck size={22} className="text-sage-700" />
@@ -514,6 +518,10 @@ export function ProductResults({
             )}
           </div>
           <div className="lg:hidden">
+            <MobileVerifiedNote
+              zipCode={zipCode}
+              estimated={Boolean(display.closestMatchFallback)}
+            />
             <MobileOfferList
               offers={online}
               onShopClick={onShopClick}

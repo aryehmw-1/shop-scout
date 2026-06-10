@@ -6,7 +6,37 @@ import { OutboundLink } from "./OutboundLink";
 import { FreshnessIndicator } from "./FreshnessIndicator";
 import { offerShipping } from "./OfferListB";
 import { formatPrice } from "@/lib/utils/format";
-import { Crown, ExternalLink, TrendingDown } from "lucide-react";
+import { Crown, ExternalLink, ShieldCheck, TrendingDown } from "lucide-react";
+
+/**
+ * Compact, phone-only "verified pricing" note (format V-2). Shows a single
+ * trust line so products/prices lead the screen; the pack-size fairness
+ * explanation is tucked behind a tappable disclosure ("Why trust this ›").
+ * Replaces the full-height VerifiedCompareHeader on phones.
+ */
+export function MobileVerifiedNote({
+  zipCode,
+  estimated,
+}: {
+  zipCode?: string;
+  estimated?: boolean;
+}) {
+  return (
+    <details className="group mb-3 rounded-lg bg-white/70 ring-1 ring-sage-200">
+      <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-[11px] font-semibold text-sage-800">
+        <ShieldCheck size={14} className="shrink-0 text-sage-600" aria-hidden />
+        {estimated ? "Estimated prices" : "Verified live prices"}
+        {zipCode ? ` · ships to ${zipCode}` : ""}
+        <span className="ml-auto text-sage-500 group-open:hidden">Why trust this ›</span>
+      </summary>
+      <p className="px-3 pb-2.5 text-[11px] leading-snug text-stone-500">
+        {estimated
+          ? "These are modeled catalog prices — confirm the exact pack size on the retailer before buying."
+          : "We compare pack sizes fairly so you're not misled by multipacks or variety boxes."}
+      </p>
+    </details>
+  );
+}
 
 interface MobileOfferListProps {
   offers: ProductOffer[];
