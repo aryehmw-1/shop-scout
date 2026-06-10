@@ -40,6 +40,7 @@ export async function processMessage(
 
   return {
     reply,
+    resolvedQuery: turn.query ?? turn.session.intent.query,
     chips: turn.chips,
     productResults: turn.productResults,
     commerceInsight: turn.commerceInsight ?? turn.productResults?.intelligenceInsight,

@@ -496,6 +496,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
           id: uid(),
           role: "assistant",
           content: data.reply,
+          resolvedQuery: data.resolvedQuery,
           productResults: data.productResults,
           commerceInsight:
             data.commerceInsight ?? data.productResults?.intelligenceInsight,
@@ -853,9 +854,14 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
                     enriching={msg.id === enrichingId}
                     searchQuery={
                       msg.role === "user" ? msg.content
-                      : messages[messages.indexOf(msg) - 1]?.role === "user" ?
-                        messages[messages.indexOf(msg) - 1]?.content
-                      : undefined
+                      : // Assistant turn: use the server-resolved/merged product
+                        // query (e.g. "whole milk half gallon") for the results
+                        // card and request form — never the raw conversational
+                        // message ("sure, do you have half a gallon?").
+                        msg.resolvedQuery ??
+                        (messages[messages.indexOf(msg) - 1]?.role === "user"
+                          ? messages[messages.indexOf(msg) - 1]?.content
+                          : undefined)
                     }
                   />
                 ))}

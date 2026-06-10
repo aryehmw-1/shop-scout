@@ -513,6 +513,8 @@ export interface ChatMessage {
   id: string;
   role: "user" | "assistant";
   content: string;
+  /** Server-resolved/merged product query for this turn (assistant messages). */
+  resolvedQuery?: string;
   products?: ProductOffer[];
   productResults?: ProductSearchResults;
   commerceInsight?: IntelligenceInsight;
@@ -637,6 +639,8 @@ export interface ConversationDebugSnapshot {
 
 export interface ChatResponse {
   reply: string;
+  /** Server-resolved/merged search query — the clean product name, never the raw user sentence. */
+  resolvedQuery?: string;
   chips?: string[];
   productResults?: ProductSearchResults;
   commerceInsight?: IntelligenceInsight;

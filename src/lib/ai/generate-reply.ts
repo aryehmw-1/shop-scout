@@ -104,7 +104,12 @@ async function callShopScoutAI(
     const result = await generateAIText(prompt, {
       system,
       temperature: 0.55,
-      maxOutputTokens: 700,
+      maxOutputTokens: 900,
+      // Disable gemini-2.5-flash's hidden "thinking" pass. These replies follow
+      // a strict, well-specified Markdown format and don't need chain-of-thought
+      // — and when thinking is left on it silently consumes the output budget,
+      // truncating the visible reply mid-sentence ("…It seems I only found the").
+      thinkingBudget: 0,
       retries: 1,
       timeoutMs: 12_000,
     });

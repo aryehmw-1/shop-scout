@@ -102,6 +102,12 @@ export async function generateGeminiText(
               systemInstruction: options.system,
               temperature: options.temperature ?? 0.4,
               maxOutputTokens: options.maxOutputTokens ?? 700,
+              // When a caller pins the thinking budget (e.g. 0 for terse,
+              // well-structured replies), pass it through so the model's hidden
+              // reasoning can't eat the output budget and truncate the answer.
+              ...(options.thinkingBudget !== undefined
+                ? { thinkingConfig: { thinkingBudget: options.thinkingBudget } }
+                : {}),
             },
           });
 

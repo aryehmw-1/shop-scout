@@ -9,6 +9,13 @@ export interface GenerateTextOptions {
   maxOutputTokens?: number;
   timeoutMs?: number;
   retries?: number;
+  /**
+   * Gemini-only: token budget for the model's hidden "thinking" pass. Set to 0
+   * to disable thinking entirely. Leaving it undefined keeps the model default,
+   * which on gemini-2.5-flash silently consumes the output budget and can
+   * truncate the visible answer mid-sentence on terse, well-structured tasks.
+   */
+  thinkingBudget?: number;
 }
 
 export interface AIUsage {
