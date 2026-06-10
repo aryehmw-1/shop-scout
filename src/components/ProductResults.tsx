@@ -263,7 +263,7 @@ export function ProductResults({
             </p>
           ) : (
             <div className="space-y-2 text-sm text-stone-600 leading-relaxed">
-              <p className="font-semibold text-stone-900">
+              <p className="text-base font-semibold text-stone-900">
                 {q ? (
                   <>
                     I couldn&apos;t find{" "}
@@ -275,16 +275,9 @@ export function ProductResults({
                 )}
               </p>
               <p>
-                We&apos;re continuously expanding our product database and may not have
-                every item available today.
-              </p>
-              <p>
-                If you tell us the exact product you&apos;re looking for, we&apos;ll do our
-                best to add it quickly and notify you when it&apos;s available.
-              </p>
-              <p>
-                Please include the brand, size, model number, or any identifying details
-                so we can find the correct item.
+                We&apos;re always expanding our catalog and may not have every item just
+                yet. Tell us what you&apos;re looking for below and we&apos;ll do our best
+                to add it quickly — then email you the moment it&apos;s available.
               </p>
             </div>
           )}
@@ -473,18 +466,7 @@ export function ProductResults({
         </div>
       )}
 
-      {compareMode && online.length > 0 && (
-        <CompareExperience
-          results={{ ...display, online }}
-          savedIds={savedIds}
-          onSave={onSave}
-          onShopClick={onShopClick}
-          searchQuery={searchQuery}
-          layoutMode="grid"
-        />
-      )}
-
-      {online.length > 0 && !compareMode && (
+      {online.length > 0 && (
         <section className="flex min-w-0 flex-col rounded-2xl border-2 border-sage-400/70 bg-sage-50/30 p-4 sm:p-5">
           <VerifiedCompareHeader
             categoryId={categoryId}
@@ -521,7 +503,7 @@ export function ProductResults({
           {/* Desktop uses the roomy Option B list (unless comparing or in the
               explicit table view); phones get the compact Option B list. */}
           <div className="hidden lg:block">
-            {compareMode || view === "table" ? (
+            {view === "table" ? (
               renderOffers(online)
             ) : (
               <DesktopOfferListB

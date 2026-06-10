@@ -744,7 +744,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
         {/* Mobile: a single top lane on the orange background. pl-16 reserves room
             for the fixed sidebar (menu) button so it shares this row with the ZIP;
             on lg there's no floating button so we revert to normal padding. */}
-        <header className="flex h-14 shrink-0 items-center justify-between gap-2 pl-16 pr-4 lg:h-auto lg:px-8 lg:py-3">
+        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center justify-between gap-2 bg-orange-50 pl-16 pr-4 lg:h-auto lg:px-8 lg:py-3">
           {/* Desktop keeps New chat in the header; mobile uses the sidebar drawer. */}
           <button
             type="button"
@@ -793,7 +793,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
           (
             /* Hero layout — always the home page (incl. after a chat reset):
                "How can I help you shop?" + the three quick-action products. */
-            <div className="flex min-h-0 flex-1 flex-col items-center justify-start overflow-y-auto px-4 pb-10 pt-[18vh] text-center sm:px-6 sm:pt-[20vh] lg:px-8">
+            <div className="flex min-h-0 flex-1 flex-col items-center justify-start overflow-y-auto overscroll-contain px-4 pb-10 pt-[18vh] text-center sm:px-6 sm:pt-[20vh] lg:px-8">
               <div className="w-full max-w-3xl">
                 <h1 className="font-display text-3xl font-semibold leading-tight tracking-tight text-stone-950 sm:text-4xl lg:text-[2.75rem]">
                   {user?.name
@@ -830,7 +830,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
         ) : (
           /* ── ACTIVE CHAT: messages + floating bottom bar ── */
           <div className="relative flex min-h-0 flex-1 flex-col">
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 pt-6 pb-40 lg:px-8">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-6 pb-40 lg:px-8">
               <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-1 sm:px-2">
                 {messages.filter((m) => m.id !== "welcome").map((msg) => (
                   <ChatMessageBubble
