@@ -26,7 +26,7 @@ import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { trackEvent } from "@/lib/analytics/track-client";
 import { mergeEnrichedSearchResults } from "@/lib/search/merge-enriched-results";
 import { useRouter } from "next/navigation";
-import { MapPin, ShoppingBasket, Headphones, Wheat, Plus, Loader2 } from "lucide-react";
+import { MapPin, ShoppingBasket, Headphones, Wheat, Plus, Loader2, RotateCcw } from "lucide-react";
 import { SearchSendIcon } from "@/components/icons/SearchSendIcon";
 import { TypewriterInput } from "@/components/TypewriterInput";
 import { identifyProductImage } from "@/lib/vision/identify-client";
@@ -740,10 +740,24 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
         />
       )}
 
+      {/* The orange canvas owns the full height on the chat screen (AppShell
+          skips its top reserve for scroll="none"), so the header is the top lane. */}
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-orange-50">
-        <header className="flex shrink-0 items-center justify-between gap-2 px-4 py-3 lg:px-8">
-          {/* New chat now lives in the sidebar/drawer; spacer keeps ZIP right-aligned */}
-          <div className="flex items-center gap-2" />
+        {/* Mobile: a single top lane on the orange background. pl-16 reserves room
+            for the fixed sidebar (menu) button so it shares this row with the ZIP;
+            on lg there's no floating button so we revert to normal padding. */}
+        <header className="flex h-14 shrink-0 items-center justify-between gap-2 pl-16 pr-4 lg:h-auto lg:px-8 lg:py-3">
+          {/* Desktop keeps New chat in the header; mobile uses the sidebar drawer. */}
+          <button
+            type="button"
+            onClick={resetChat}
+            disabled={loading}
+            className="hidden items-center gap-2 rounded-xl border border-orange-200/80 bg-white px-3 py-2 text-sm font-semibold text-ink-700 shadow-sm transition hover:border-orange-300 hover:bg-orange-50 disabled:opacity-40 lg:flex"
+            title="Clear chat and start over"
+          >
+            <RotateCcw size={16} />
+            <span className="hidden sm:inline">New chat</span>
+          </button>
           <button
             type="button"
             onClick={() => setShowLocation(true)}

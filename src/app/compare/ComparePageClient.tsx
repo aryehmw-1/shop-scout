@@ -274,7 +274,10 @@ export function ComparePageClient({
   }, []);
 
   const showEmpty = !results && !loading && !error;
-  const pageMaxWidth = results && !loading ? "max-w-5xl" : "max-w-3xl";
+  const hasResults = Boolean(results) && !loading;
+  // Wider canvas once results are in so the search bar gets more room. The
+  // Compare button stays the same compact size (shrink-0) at the bar's end.
+  const pageMaxWidth = hasResults ? "max-w-6xl" : "max-w-3xl";
   const pageTitle = results && !loading ? "Compare prices" : "What do you want to compare?";
   const pageDescription =
     results && !loading

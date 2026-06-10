@@ -63,7 +63,7 @@ export function MobileNav() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open menu"
-        className="fixed left-3 top-3 z-40 flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200/80 bg-white/80 text-stone-700 shadow-sm backdrop-blur-md transition hover:bg-white"
+        className="fixed left-3 top-2 z-40 flex h-10 w-10 items-center justify-center rounded-xl text-stone-700 transition hover:bg-orange-100/60"
       >
         <Menu size={20} strokeWidth={2.2} aria-hidden />
       </button>

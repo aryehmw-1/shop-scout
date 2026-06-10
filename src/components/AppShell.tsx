@@ -13,8 +13,8 @@ export function AppShell({
     <div className="app-mesh flex h-[100dvh] overflow-hidden">
       <Sidebar />
       <div
-        className={`flex min-h-0 min-w-0 flex-1 flex-col pt-14 lg:pt-0 ${
-          scroll === "page" ? "overflow-y-auto" : "overflow-hidden"
+        className={`flex min-h-0 min-w-0 flex-1 flex-col lg:pt-0 ${
+          scroll === "page" ? "overflow-y-auto pt-14" : "overflow-hidden"
         }`}
       >
         {children}

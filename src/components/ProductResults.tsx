@@ -21,6 +21,7 @@ import {
 import { ConversationDebugPanel } from "./ConversationDebugPanel";
 import { buildRetrievalTrustDiagnostic } from "@/lib/search/retrieval-trust-message";
 import { ProductRequestForm } from "./ProductRequestForm";
+import { MobileOfferList } from "./MobileOfferList";
 import { VerifiedCompareHeader } from "./search/VerifiedCompareHeader";
 import { CatalogFreshnessBanner } from "./FreshnessIndicator";
 import { inferQueryCategoryFamily } from "@/lib/inventory/category-coverage";
@@ -28,6 +29,52 @@ import { CATALOG } from "@/lib/retailers/catalog";
 import { matchLooksIrrelevant } from "@/lib/search/relevance";
 
 const VIEW_STORAGE_KEY = "shop-scout-results-view";
+
+/**
+ * Liquid-volume "size" classes for grocery items (milk, juice, etc.). The
+ * clothing size parser doesn't understand gallons/quarts, so when a user asks
+ * for a specific volume ("half a gallon") we detect it here. Ordered so the
+ * more specific "half gallon" is checked before the generic "gallon" (which is
+ * a substring of it).
+ */
+const VOLUME_CLASSES: { id: string; label: string; patterns: RegExp[] }[] = [
+  {
+    id: "half-gallon",
+    label: "half gallon",
+    patterns: [/half[\s-]*gallons?/i, /\bhalf a gallon\b/i, /\b1\/2\s*gal/i, /\b64\s*(?:fl\s*)?oz\b/i],
+  },
+  { id: "quart", label: "quart", patterns: [/\bquarts?\b/i, /\b32\s*(?:fl\s*)?oz\b/i] },
+  { id: "pint", label: "pint", patterns: [/\bpints?\b/i, /\b16\s*(?:fl\s*)?oz\b/i] },
+  {
+    id: "gallon",
+    label: "gallon",
+    patterns: [/\bgallons?\b/i, /\b1\s*gal\b/i, /\b128\s*(?:fl\s*)?oz\b/i],
+  },
+];
+
+function volumeClassOf(text: string | undefined | null): string | undefined {
+  if (!text) return undefined;
+  for (const cls of VOLUME_CLASSES) {
+    if (cls.patterns.some((re) => re.test(text))) return cls.id;
+  }
+  return undefined;
+}
+
+/**
+ * True when the query explicitly asks for a liquid volume (e.g. "half a
+ * gallon") but none of the offers are that volume — so we should NOT show the
+ * wrong-size product card. We surface the request form instead.
+ */
+function requestedVolumeMissing(
+  query: string | undefined,
+  offers: ProductOffer[],
+  matchedTitle?: string,
+): boolean {
+  const want = volumeClassOf(query);
+  if (!want) return false;
+  const haystacks = [matchedTitle, ...offers.map((o) => `${o.brand ?? ""} ${o.title ?? ""}`)];
+  return !haystacks.some((h) => volumeClassOf(h) === want);
+}
 
 function ResultsViewToggle({
   view,
@@ -121,6 +168,9 @@ export function ProductResults({
   const defaultView = "cards";
   const [view, setView] = useState<"cards" | "table">(defaultView);
   const [viewReady, setViewReady] = useState(false);
+  // User opted to see the available size even though it doesn't match the
+  // volume they asked for (e.g. show gallon milk after requesting half-gallon).
+  const [showMismatchAnyway, setShowMismatchAnyway] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -158,7 +208,21 @@ export function ProductResults({
     !trustedExactFlow &&
     matchLooksIrrelevant(searchQuery, [...online, ...estimatedOnline]);
 
-  if (irrelevantMatch || (!online.length && !estimatedOnline.length && !showLowConfidence)) {
+  // Variant guard: the user asked for a specific liquid volume (e.g. "half a
+  // gallon") but we only have a different size (e.g. 1 gal). Don't show the
+  // wrong-size card — offer the request form, with an opt-in to view what we do
+  // carry. `showMismatchAnyway` lets the user override and see the card.
+  const wantedVolume = volumeClassOf(searchQuery);
+  const volumeMissing =
+    !trustedExactFlow &&
+    !showMismatchAnyway &&
+    requestedVolumeMissing(searchQuery, [...online, ...estimatedOnline], results.matchedProduct?.title);
+
+  if (
+    irrelevantMatch ||
+    volumeMissing ||
+    (!online.length && !estimatedOnline.length && !showLowConfidence)
+  ) {
     // Prefer the clean, server-resolved product name over the raw user message
     // (which may be a long sentence or contain a pasted URL).
     const cleanedSearch = (() => {
@@ -168,20 +232,37 @@ export function ProductResults({
       if (stripped.length > 60 || stripped.split(/\s+/).length > 9) return "";
       return stripped;
     })();
-    // When the match was rejected as irrelevant, the resolved title is the WRONG
-    // product — fall back to what the user actually typed.
-    const q = irrelevantMatch
+    // When the match was rejected as irrelevant or is the wrong size, the
+    // resolved title is the WRONG product — fall back to what the user typed.
+    const q = irrelevantMatch || volumeMissing
       ? cleanedSearch || results.resolvedQuery?.trim() || ""
       : results.resolvedQuery?.trim() ||
         results.matchedProduct?.title ||
         cleanedSearch ||
         "";
     const catalogCount = CATALOG.length;
+    // For a volume mismatch we DO have the product in another size — name it so
+    // we can offer to show it instead of pretending we have nothing.
+    const availableVolumeLabel = volumeMissing
+      ? VOLUME_CLASSES.find(
+          (c) => c.id === volumeClassOf(`${online[0]?.brand ?? ""} ${online[0]?.title ?? ""}`),
+        )?.label
+      : undefined;
     return (
       <div className="mt-4 space-y-4">
         <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-5 py-5 space-y-4">
           <p className="text-sm text-stone-600 leading-relaxed">
-            {q ? (
+            {volumeMissing && q ? (
+              <>
+                We don&apos;t carry{" "}
+                <span className="font-semibold text-stone-800">{q}</span>{" "}
+                {wantedVolume ? "yet" : ""} — only{" "}
+                <span className="font-semibold text-stone-800">
+                  {availableVolumeLabel ?? "a different size"}
+                </span>
+                . Request the size you want below and we&apos;ll work on adding it.
+              </>
+            ) : q ? (
               <>
                 Sorry, we don&apos;t have{" "}
                 <span className="font-semibold text-stone-800">{q}</span>{" "}
@@ -198,6 +279,15 @@ export function ProductResults({
             )}
           </p>
           <ProductRequestForm searchQuery={q} />
+          {volumeMissing && online.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowMismatchAnyway(true)}
+              className="text-sm font-semibold text-orange-700 underline-offset-2 hover:underline"
+            >
+              Show the {availableVolumeLabel ?? "available size"} we do have instead
+            </button>
+          )}
         </div>
         {results.searchDebug && searchDebugEnabledClient() && (
           <SearchPipelineDebugPanel debug={results.searchDebug} />
@@ -309,7 +399,7 @@ export function ProductResults({
       )}
 
       {matched && !similarMode && !compareMode && (
-        <div className="flex gap-4 rounded-2xl border border-orange-200/80 bg-cream-50/90 p-4 sm:p-5">
+        <div className="hidden gap-4 rounded-2xl border border-orange-200/80 bg-cream-50/90 p-4 sm:p-5 lg:flex">
           <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-white shadow-sm sm:h-28 sm:w-28">
             <ProductImage
               src={matched.imageUrl}
@@ -407,10 +497,20 @@ export function ProductResults({
               </div>
             </div>
             {showViewToggle && (
-              <ResultsViewToggle view={view} onChange={setViewPersisted} />
+              <div className="hidden lg:block">
+                <ResultsViewToggle view={view} onChange={setViewPersisted} />
+              </div>
             )}
           </div>
-          {renderOffers(online)}
+          {/* Desktop keeps the rich cards / table; phones get a compact list. */}
+          <div className="hidden lg:block">{renderOffers(online)}</div>
+          <div className="lg:hidden">
+            <MobileOfferList
+              offers={online}
+              onShopClick={onShopClick}
+              searchQuery={searchQuery}
+            />
+          </div>
         </section>
       )}
 

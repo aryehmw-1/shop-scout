@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Heart, LogIn, LogOut, Package, PanelLeftClose, PanelLeftOpen, RotateCcw, Search, Settings } from "lucide-react";
+import { Heart, LogIn, LogOut, Package, PanelLeftClose, PanelLeftOpen, Search, Settings } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { APP_NAME } from "@/lib/constants";
@@ -144,23 +144,8 @@ export function Sidebar() {
           className={`mt-8 flex flex-col gap-1 ${expanded ? "px-3" : "items-center px-2"}`}
           aria-label="Main navigation"
         >
-          {/* New chat — resets the live comparison and routes to the compare page */}
-          <NavItem label="New chat" show={!expanded} className="w-full">
-            <button
-              type="button"
-              onClick={() => {
-                router.push("/chat");
-                window.dispatchEvent(new CustomEvent("homivion:new-chat"));
-              }}
-              className={`flex w-full items-center rounded-xl border border-orange-200/80 bg-white px-3 py-2.5 text-sm font-semibold text-ink-700 shadow-sm transition hover:border-orange-300 hover:bg-orange-50 ${
-                expanded ? "gap-3" : "justify-center"
-              }`}
-            >
-              <RotateCcw size={18} strokeWidth={2} aria-hidden />
-              {expanded && "New chat"}
-            </button>
-          </NavItem>
-
+          {/* New chat lives in the chat header on desktop; the mobile drawer
+              keeps its own New chat button. */}
           {mainNav.map(({ href, label, icon: Icon }) => {
             const active =
               href === "/"

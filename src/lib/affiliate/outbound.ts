@@ -6,7 +6,7 @@ import { decodeBase64Url, encodeBase64Url } from "../encoding/base64url";
 export interface OutboundClickContext {
   catalogId?: string;
   searchQuery?: string;
-  source?: "card" | "compare" | "hero" | "table";
+  source?: "card" | "compare" | "hero" | "table" | "mobile_list";
 }
 
 /** Build commission-safe redirect URL through /api/outbound (logs click before redirect). */
