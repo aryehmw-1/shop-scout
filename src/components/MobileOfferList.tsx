@@ -4,8 +4,9 @@ import type { ProductOffer } from "@/lib/types";
 import { ProductImage } from "./ProductImage";
 import { OutboundLink } from "./OutboundLink";
 import { FreshnessIndicator } from "./FreshnessIndicator";
+import { offerShipping } from "./OfferListB";
 import { formatPrice } from "@/lib/utils/format";
-import { ExternalLink } from "lucide-react";
+import { Crown, ExternalLink, TrendingDown } from "lucide-react";
 
 interface MobileOfferListProps {
   offers: ProductOffer[];
@@ -14,71 +15,99 @@ interface MobileOfferListProps {
 }
 
 /**
- * Compact, phone-friendly results list. Instead of a grid of big photo cards
- * (too heavy on a small screen), each offer is a single tappable row: a small
- * product photo on the left, then the store, product name, when it was last
- * verified, and the price on the right. Used only below `lg`; desktop keeps the
- * full card/compare layout.
+ * Compact, phone-friendly "Option B" results list. Each offer is a single
+ * tappable card: a product photo (with a "Best" ribbon on the leader), the
+ * store + verified badge, product name, the price with a savings pill, an
+ * honest shipping line, and a "View" pill. Used only below `lg`; desktop uses
+ * the roomier `DesktopOfferListB`.
  */
 export function MobileOfferList({ offers, onShopClick, searchQuery }: MobileOfferListProps) {
   if (!offers.length) return null;
+  const highest = Math.max(
+    ...offers.map((o) => o.deliveredTotal ?? o.landedCost ?? o.price),
+  );
 
   return (
-    <ul className="flex flex-col divide-y divide-stone-100 overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
+    <div className="space-y-2">
       {offers.map((offer, i) => {
+        const best = i === 0;
         const delivered = offer.deliveredTotal ?? offer.landedCost ?? offer.price;
-        const showDelivered = delivered > offer.price + 0.01;
+        const save = highest - delivered;
+        const ship = offerShipping(offer);
+        const pctBelow = offer.percentBelowMarket
+          ? Math.round(offer.percentBelowMarket)
+          : 0;
         return (
-          <li key={offer.id}>
-            <OutboundLink
-              offer={offer}
-              context={{ source: "mobile_list", searchQuery }}
-              onNavigate={onShopClick}
-              className="flex items-center gap-3 px-3 py-3 transition active:bg-stone-50"
-            >
-              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-stone-50 ring-1 ring-stone-100">
-                <ProductImage
-                  src={offer.imageUrl}
-                  alt={offer.title}
-                  className="h-full w-full object-cover"
-                />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="truncate text-sm font-bold text-stone-900">
-                    {offer.retailerName}
-                  </span>
-                  {i === 0 && (
-                    <span className="shrink-0 rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-                      Best
-                    </span>
-                  )}
-                </div>
-                <p className="mt-0.5 line-clamp-1 text-xs text-stone-500">{offer.title}</p>
-                <div className="mt-1">
-                  <FreshnessIndicator offer={offer} compact />
-                </div>
-              </div>
-
-              <div className="flex shrink-0 flex-col items-end pl-1">
-                <span className="text-base font-extrabold leading-none text-stone-900">
-                  {formatPrice(offer.price)}
+          <OutboundLink
+            key={offer.id}
+            offer={offer}
+            context={{ source: "mobile_list", searchQuery }}
+            onNavigate={onShopClick}
+            className={`relative flex gap-2.5 rounded-xl border bg-white p-2 shadow-sm transition active:bg-stone-50 ${
+              best ? "border-orange-300 ring-1 ring-orange-200/70" : "border-stone-200"
+            }`}
+          >
+            <div className="relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-lg bg-stone-50 ring-1 ring-stone-100">
+              <ProductImage
+                src={offer.imageUrl}
+                alt={offer.title}
+                className="h-full w-full object-cover"
+              />
+              {best && (
+                <span className="absolute left-0 top-0 inline-flex items-center gap-0.5 rounded-br-lg bg-gradient-to-r from-orange-500 to-amber-500 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+                  <Crown size={9} aria-hidden /> Best
                 </span>
-                {showDelivered && (
-                  <span className="mt-1 text-[11px] text-stone-400">
-                    ≈ {formatPrice(delivered)} delivered
-                  </span>
-                )}
-                <span className="mt-1.5 inline-flex items-center gap-1 rounded-lg bg-sage-600 px-2.5 py-1 text-xs font-semibold text-white">
+              )}
+            </div>
+
+            <div className="flex min-w-0 flex-1 flex-col">
+              <div className="flex items-center gap-1.5">
+                <span className="truncate rounded bg-stone-100 px-1.5 py-0.5 text-[11px] font-bold text-stone-700">
+                  {offer.retailerName}
+                </span>
+                <FreshnessIndicator offer={offer} compact />
+              </div>
+              <p className="mt-0.5 line-clamp-1 text-[12px] text-stone-500">{offer.title}</p>
+
+              <div className="mt-auto flex items-end justify-between gap-2 pt-1">
+                <div className="min-w-0">
+                  <div className="flex items-baseline gap-1.5">
+                    <span className="text-xl font-extrabold leading-none text-stone-900">
+                      {formatPrice(offer.price)}
+                    </span>
+                    {save > 0.01 && (
+                      <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
+                        <TrendingDown size={10} aria-hidden /> {formatPrice(save)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-0.5 flex items-center gap-1 text-[10px] text-stone-400">
+                    {ship.text && (
+                      <span className={ship.free ? "font-medium text-emerald-600" : "text-stone-500"}>
+                        {ship.text}
+                      </span>
+                    )}
+                    {ship.text && pctBelow > 0 && <span className="text-stone-300">·</span>}
+                    {pctBelow > 0 && (
+                      <span className="font-medium text-emerald-600">{pctBelow}% under</span>
+                    )}
+                  </div>
+                </div>
+                <span
+                  className={`inline-flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-bold text-white shadow-sm ${
+                    best
+                      ? "bg-gradient-to-r from-orange-500 to-amber-500"
+                      : "bg-stone-800"
+                  }`}
+                >
                   View
                   <ExternalLink size={12} aria-hidden />
                 </span>
               </div>
-            </OutboundLink>
-          </li>
+            </div>
+          </OutboundLink>
         );
       })}
-    </ul>
+    </div>
   );
 }

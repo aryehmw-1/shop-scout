@@ -22,6 +22,7 @@ import { ConversationDebugPanel } from "./ConversationDebugPanel";
 import { buildRetrievalTrustDiagnostic } from "@/lib/search/retrieval-trust-message";
 import { ProductRequestForm } from "./ProductRequestForm";
 import { MobileOfferList } from "./MobileOfferList";
+import { DesktopOfferListB } from "./OfferListB";
 import { VerifiedCompareHeader } from "./search/VerifiedCompareHeader";
 import { CatalogFreshnessBanner } from "./FreshnessIndicator";
 import { inferQueryCategoryFamily } from "@/lib/inventory/category-coverage";
@@ -517,8 +518,19 @@ export function ProductResults({
               </div>
             )}
           </div>
-          {/* Desktop keeps the rich cards / table; phones get a compact list. */}
-          <div className="hidden lg:block">{renderOffers(online)}</div>
+          {/* Desktop uses the roomy Option B list (unless comparing or in the
+              explicit table view); phones get the compact Option B list. */}
+          <div className="hidden lg:block">
+            {compareMode || view === "table" ? (
+              renderOffers(online)
+            ) : (
+              <DesktopOfferListB
+                offers={online}
+                onShopClick={onShopClick}
+                searchQuery={searchQuery}
+              />
+            )}
+          </div>
           <div className="lg:hidden">
             <MobileOfferList
               offers={online}
