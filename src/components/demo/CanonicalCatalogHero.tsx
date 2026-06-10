@@ -21,8 +21,7 @@ export function CanonicalCatalogHero({
           Compare the same product across stores
         </h1>
         <p className="mt-3 max-w-2xl text-lg text-ink-600">
-          {catalog.total} trusted products with Amazon-verified images and titles — priced at{" "}
-          {catalog.retailers.length} major retailers.
+          Trusted products with Amazon-verified images and titles — priced across major retailers.
         </p>
         <div className="mt-6 flex max-w-xl flex-col gap-2 sm:flex-row">
           <div className="relative min-w-0 flex-1">

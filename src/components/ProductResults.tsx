@@ -240,7 +240,6 @@ export function ProductResults({
         results.matchedProduct?.title ||
         cleanedSearch ||
         "";
-    const catalogCount = CATALOG.length;
     // For a volume mismatch we DO have the product in another size — name it so
     // we can offer to show it instead of pretending we have nothing.
     const availableVolumeLabel = volumeMissing
@@ -251,39 +250,55 @@ export function ProductResults({
     return (
       <div className="mt-4 space-y-4">
         <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-5 py-5 space-y-4">
-          <p className="text-sm text-stone-600 leading-relaxed">
-            {volumeMissing && q ? (
-              <>
-                We don&apos;t carry{" "}
-                <span className="font-semibold text-stone-800">{q}</span>{" "}
-                {wantedVolume ? "yet" : ""} — only{" "}
-                <span className="font-semibold text-stone-800">
-                  {availableVolumeLabel ?? "a different size"}
-                </span>
-                . Request the size you want below and we&apos;ll work on adding it.
-              </>
-            ) : q ? (
-              <>
-                Sorry, we don&apos;t have{" "}
-                <span className="font-semibold text-stone-800">{q}</span>{" "}
-                in our inventory right now. We currently carry{" "}
-                <span className="font-semibold text-stone-800">{catalogCount} products</span>{" "}
-                across grocery, pantry, household, and more.
-              </>
-            ) : (
-              <>
-                We didn&apos;t find a match. We currently carry{" "}
-                <span className="font-semibold text-stone-800">{catalogCount} products</span>{" "}
-                — try a different search or request a new product below.
-              </>
-            )}
-          </p>
+          {volumeMissing && q ? (
+            <p className="text-sm text-stone-600 leading-relaxed">
+              We don&apos;t carry{" "}
+              <span className="font-semibold text-stone-800">{q}</span>{" "}
+              {wantedVolume ? "yet" : ""} — only{" "}
+              <span className="font-semibold text-stone-800">
+                {availableVolumeLabel ?? "a different size"}
+              </span>
+              . Request the size you want below and we&apos;ll work on adding it.
+            </p>
+          ) : (
+            <div className="space-y-2 text-sm text-stone-600 leading-relaxed">
+              <p className="font-semibold text-stone-900">
+                {q ? (
+                  <>
+                    I couldn&apos;t find{" "}
+                    <span className="text-stone-900">{q}</span>{" "}
+                    in Homivion&apos;s catalog yet.
+                  </>
+                ) : (
+                  <>I couldn&apos;t find that product in Homivion&apos;s catalog yet.</>
+                )}
+              </p>
+              <p>
+                We&apos;re continuously expanding our product database and may not have
+                every item available today.
+              </p>
+              <p>
+                If you tell us the exact product you&apos;re looking for, we&apos;ll do our
+                best to add it quickly and notify you when it&apos;s available.
+              </p>
+              <p>
+                Please include the brand, size, model number, or any identifying details
+                so we can find the correct item.
+              </p>
+            </div>
+          )}
           <ProductRequestForm searchQuery={q} />
+          <a
+            href="/inventory"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-orange-700 underline-offset-2 hover:underline"
+          >
+            Browse available products
+          </a>
           {volumeMissing && online.length > 0 && (
             <button
               type="button"
               onClick={() => setShowMismatchAnyway(true)}
-              className="text-sm font-semibold text-orange-700 underline-offset-2 hover:underline"
+              className="block text-sm font-semibold text-orange-700 underline-offset-2 hover:underline"
             >
               Show the {availableVolumeLabel ?? "available size"} we do have instead
             </button>

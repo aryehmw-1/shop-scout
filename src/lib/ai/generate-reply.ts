@@ -83,7 +83,7 @@ Let me know if you want a different size or brand!
 - For "clarify": ask ONE friendly follow-up question. Mention they can tap a chip below.
 - For recheck/refresh: briefly say you're rechecking, then show the fresh results in bullet format.
 - For greetings or thanks: be warm and brief, suggest a next step.
-- If zero results: warmly say we don't carry that yet, mention how many products we stock, invite them to request it below.
+- If zero results: warmly say we couldn't find it in Homivion's catalog yet and that we're always expanding. Invite them to request it below with the brand, size, or model so we can add it. NEVER state how many products we stock or carry — do not mention any product count.
 - Amazon rows may show live prices; other stores use verified estimates.`;
 
 async function callShopScoutAI(
@@ -215,8 +215,7 @@ function fallbackReply(ctx: ReplyContext): string {
         total === 0 ||
         (!trustedExactFlow && matchLooksIrrelevant(query, productResults.online));
       if (noConfidentMatch) {
-        const catalogCount = 66;
-        return `I couldn't find a confident match for ${q} right now. We currently carry **${catalogCount} products** across grocery, pantry, household, and more. Type below to let us know what you'd like us to add — we're always expanding!`;
+        return `**I couldn't find ${q} in Homivion's catalog yet.** We're continuously expanding our product database, so it may not be available today. Tell us the exact product below — include the brand, size, or model number — and we'll do our best to add it quickly and notify you when it's available.`;
       }
       const online = productResults.online[0];
       const bestPrice = online?.deliveredTotal ?? online?.landedCost ?? online?.price;

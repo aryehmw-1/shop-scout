@@ -72,7 +72,7 @@ export default async function InventoryPage() {
                 Multi-store pricing
               </h2>
               <p className="mt-1 text-sm text-ink-600">
-                {legacy.total} products across {legacy.retailers.length} retailers.
+                Compare trusted products across {legacy.retailers.length} major retailers.
               </p>
               <div className="mt-6">
                 <DemoCatalogClient initial={legacy} />

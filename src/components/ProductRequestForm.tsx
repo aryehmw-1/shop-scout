@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { APP_NAME } from "@/lib/constants";
 
 const SPECIFIC_EXAMPLES = [
   "Quaker Oats Old Fashioned 18oz canister",
@@ -100,7 +101,7 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
           <p className="font-semibold text-emerald-900">Request received!</p>
           <p className="mt-0.5 text-sm text-emerald-800">
             We&apos;ll email you at <span className="font-medium">{email}</span> as soon as{" "}
-            <span className="font-medium">{product}</span> is available on Shop Scout.
+            <span className="font-medium">{product}</span> is available on {APP_NAME}.
           </p>
         </div>
       </div>
