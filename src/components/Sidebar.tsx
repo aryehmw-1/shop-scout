@@ -89,7 +89,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`sticky top-0 hidden h-screen max-h-[100dvh] shrink-0 flex-col self-start border-r border-orange-100/50 bg-white/90 backdrop-blur-xl transition-[width] duration-200 ease-in-out lg:flex ${
+      className={`sticky top-0 hidden h-screen max-h-[100dvh] shrink-0 flex-col self-start border-r border-stone-300/50 bg-transparent transition-[width] duration-200 ease-in-out lg:flex ${
         expanded ? "w-60" : "w-16"
       }`}
     >
@@ -159,8 +159,8 @@ export function Sidebar() {
                     expanded ? "gap-3" : "justify-center"
                   } ${
                     active
-                      ? "bg-orange-50 text-orange-700"
-                      : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
+                      ? "bg-orange-500 text-white shadow-sm shadow-orange-500/30"
+                      : "text-stone-600 hover:bg-white/70 hover:text-stone-950"
                   }`}
                 >
                   <Icon size={18} strokeWidth={2} aria-hidden />

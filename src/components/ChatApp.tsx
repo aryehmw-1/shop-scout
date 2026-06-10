@@ -32,16 +32,28 @@ import { TypewriterInput } from "@/components/TypewriterInput";
 import { identifyProductImage } from "@/lib/vision/identify-client";
 
 const SHOPPING_LOADING_STEPS = [
-  "Checking database for saved prices...",
+  "Checking the database for saved prices...",
   "Searching live offers across stores...",
-  "Matching product and comparing prices...",
-  "Ranking by best delivered price...",
+  "Comparing prices from every retailer...",
+  "Hunting down the best delivered price...",
 ];
 
 const CHAT_LOADING_STEPS = [
   "Thinking about your question...",
   "Putting together a clear answer...",
+  "Weighing the best options for you...",
+  "Gathering my thoughts on this...",
 ];
+
+/** Fisher–Yates shuffle — returns a new randomly-ordered copy. */
+function shuffled<T>(arr: readonly T[]): T[] {
+  const out = arr.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [out[i], out[j]] = [out[j], out[i]];
+  }
+  return out;
+}
 
 /**
  * Advice / opinion / sizing questions are NOT product searches — even when a
@@ -118,6 +130,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
   const [loading, setLoading] = useState(false);
   const [loadingStepIndex, setLoadingStepIndex] = useState(0);
   const [loadingMode, setLoadingMode] = useState<"chat" | "shopping">("chat");
+  const [loadingPhrases, setLoadingPhrases] = useState<string[]>(CHAT_LOADING_STEPS);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [showLocation, setShowLocation] = useState(false);
   const [locationReady, setLocationReady] = useState(false);
@@ -288,15 +301,18 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
   }, [messages, loading, scrollToBottom]);
 
   useEffect(() => {
-    const steps = loadingMode === "shopping" ? SHOPPING_LOADING_STEPS : CHAT_LOADING_STEPS;
     if (!loading) {
       setLoadingStepIndex(0);
       return;
     }
+    // Pick a fresh random order each time so the "thinking" lines feel varied.
+    const steps = shuffled(
+      loadingMode === "shopping" ? SHOPPING_LOADING_STEPS : CHAT_LOADING_STEPS,
+    );
+    setLoadingPhrases(steps);
+    setLoadingStepIndex(0);
     const timer = window.setInterval(() => {
-      setLoadingStepIndex((current) =>
-        Math.min(current + 1, steps.length - 1),
-      );
+      setLoadingStepIndex((current) => Math.min(current + 1, steps.length - 1));
     }, 1100);
     return () => window.clearInterval(timer);
   }, [loading, loadingMode]);
@@ -849,9 +865,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
                   <div className="flex gap-3 animate-fade-in">
                     <BrandHomeMark size="xs" pulse />
                     <p className="text-[15px] leading-relaxed text-stone-400">
-                      {(loadingMode === "shopping" ? SHOPPING_LOADING_STEPS : CHAT_LOADING_STEPS)[
-                        loadingStepIndex
-                      ]}
+                      {loadingPhrases[loadingStepIndex] ?? loadingPhrases[0]}
                       <span className="ml-0.5 inline-block w-[2px] animate-pulse bg-stone-300 align-middle">&nbsp;</span>
                     </p>
                   </div>
