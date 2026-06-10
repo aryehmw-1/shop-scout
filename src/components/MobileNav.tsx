@@ -8,6 +8,7 @@ import {
   LogOut,
   Menu,
   Package,
+  RotateCcw,
   Search,
   Settings,
   X,
@@ -98,6 +99,20 @@ export function MobileNav() {
         </div>
 
         <nav className="mt-2 flex flex-col gap-1 px-3">
+          {/* New chat — starts a fresh comparison, then routes to the compare page */}
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              router.push("/chat");
+              window.dispatchEvent(new CustomEvent("homivion:new-chat"));
+            }}
+            className="mb-1 flex items-center gap-3 rounded-xl border border-orange-200/80 bg-white px-3 py-3 text-[15px] font-semibold text-ink-700 shadow-sm transition hover:border-orange-300 hover:bg-orange-50"
+          >
+            <RotateCcw size={18} strokeWidth={2} aria-hidden />
+            New chat
+          </button>
+
           {nav.map(({ href, label, icon: Icon }) => {
             const active = isActive(href);
             return (

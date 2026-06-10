@@ -26,7 +26,7 @@ import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { trackEvent } from "@/lib/analytics/track-client";
 import { mergeEnrichedSearchResults } from "@/lib/search/merge-enriched-results";
 import { useRouter } from "next/navigation";
-import { MapPin, RotateCcw, ShoppingBasket, Headphones, Wheat, Plus, Loader2 } from "lucide-react";
+import { MapPin, ShoppingBasket, Headphones, Wheat, Plus, Loader2 } from "lucide-react";
 import { SearchSendIcon } from "@/components/icons/SearchSendIcon";
 import { TypewriterInput } from "@/components/TypewriterInput";
 import { identifyProductImage } from "@/lib/vision/identify-client";
@@ -208,6 +208,14 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
       buildWelcomeMessage(zipCode, linkPasteMode, user?.name),
     ]);
   }, [zipCode, linkPasteMode, user?.name, buildWelcomeMessage]);
+
+  // "New chat" now lives in the sidebar/drawer; it fires this global event so it
+  // can reset the live chat no matter which nav surface triggered it.
+  useEffect(() => {
+    const handler = () => resetChat();
+    window.addEventListener("homivion:new-chat", handler);
+    return () => window.removeEventListener("homivion:new-chat", handler);
+  }, [resetChat]);
 
   useEffect(() => {
     if (inputHint !== "link") return;
@@ -733,18 +741,8 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-orange-50">
         <header className="flex shrink-0 items-center justify-between gap-2 px-4 py-3 lg:px-8">
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={resetChat}
-              disabled={loading}
-              className="flex items-center gap-2 rounded-xl border border-orange-200/80 bg-white px-3 py-2 text-sm font-semibold text-ink-700 shadow-sm transition hover:border-orange-300 hover:bg-orange-50 disabled:opacity-40"
-              title="Clear chat and start over"
-            >
-              <RotateCcw size={16} />
-              <span className="hidden sm:inline">New chat</span>
-            </button>
-          </div>
+          {/* New chat now lives in the sidebar/drawer; spacer keeps ZIP right-aligned */}
+          <div className="flex items-center gap-2" />
           <button
             type="button"
             onClick={() => setShowLocation(true)}
