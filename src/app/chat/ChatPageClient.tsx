@@ -36,7 +36,6 @@ export function ChatPageClient() {
       <ChatApp
         initialMessage={initialMessage}
         inputHint={pasteLinkMode ? "link" : undefined}
-        showHero={!initialMessage && !pasteLinkMode}
       />
     </div>
   );

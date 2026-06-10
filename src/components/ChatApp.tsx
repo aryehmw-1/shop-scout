@@ -116,11 +116,9 @@ interface ChatAppProps {
   initialMessage?: string;
   initialZip?: string;
   inputHint?: "link";
-  /** Show hero headline + typewriter on the empty state (home page) */
-  showHero?: boolean;
 }
 
-export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: ChatAppProps) {
+export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps) {
   const router = useRouter();
   const { user, updateAddress, syncSavedOffers } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -792,8 +790,9 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
 
         {/* ── EMPTY STATE ── */}
         {isEmpty ? (
-          showHero ? (
-            /* Hero layout — centered home page, fully responsive */
+          (
+            /* Hero layout — always the home page (incl. after a chat reset):
+               "How can I help you shop?" + the three quick-action products. */
             <div className="flex min-h-0 flex-1 flex-col items-center justify-start overflow-y-auto px-4 pb-10 pt-[18vh] text-center sm:px-6 sm:pt-[20vh] lg:px-8">
               <div className="w-full max-w-3xl">
                 <h1 className="font-display text-3xl font-semibold leading-tight tracking-tight text-stone-950 sm:text-4xl lg:text-[2.75rem]">
@@ -822,30 +821,6 @@ export function ChatApp({ initialMessage, initialZip, inputHint, showHero }: Cha
                     >
                       <Icon size={17} className="text-orange-500" aria-hidden />
                       {label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            /* Standard welcome (non-home chat page) */
-            <div className="flex min-h-0 flex-1 flex-col items-center justify-center px-4 pb-16 pt-8 lg:px-8">
-              <div className="w-full max-w-2xl space-y-6 text-center">
-                {messages[0] && (
-                  <p className="text-xl font-semibold text-stone-800">
-                    {messages[0].content.replace(/\*\*/g, "")}
-                  </p>
-                )}
-                <div className="w-full">{inputForm}</div>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {["🥛 whole milk gallon", "🧻 paper towels", "🎧 Beats headphones", "🍦 vanilla ice cream"].map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => sendMessage(s.replace(/^\S+\s/, ""))}
-                      className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-600 shadow-sm transition hover:border-orange-300 hover:bg-orange-50"
-                    >
-                      {s}
                     </button>
                   ))}
                 </div>
