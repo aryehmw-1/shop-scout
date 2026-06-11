@@ -265,15 +265,38 @@ export function consumerVisibleQuoteCutoff(retailerId?: RetailerId): Date {
   return new Date(Date.now() - policy.hardExpireMs);
 }
 
+/**
+ * Publishability gate for a single retailer offer (PriceQuote).
+ * A quote is only consumer-visible when its verification status is "approved" —
+ * anything `rejected` or `needs_review` is hidden from public search results.
+ * Existing/legacy rows default to "approved", so this is a no-op for them.
+ */
+export const PUBLISHABLE_QUOTE_WHERE = {
+  validationStatus: "approved",
+} as const;
+
 export function consumerVisibleQuoteWhere(retailerId?: RetailerId) {
   const cutoff = consumerVisibleQuoteCutoff(retailerId);
   return {
+    // Verification gate (publishability) AND freshness window.
+    ...PUBLISHABLE_QUOTE_WHERE,
     OR: [
       { fetchedAt: { gte: cutoff } },
       { expiresAt: { gt: new Date() } },
     ],
   };
 }
+
+/**
+ * Publishability gate for the canonical Product. A product is only shown publicly
+ * when it is `published` AND its validationStatus is "approved" (never
+ * rejected / needs_review / raw / unverified). Legacy rows default to
+ * published:true / approved, so existing catalog stays visible.
+ */
+export const PUBLISHABLE_PRODUCT_WHERE = {
+  published: true,
+  validationStatus: "approved",
+} as const;
 
 export function isQuoteVisibleForDisplay(offer: ProductOffer): boolean {
   return classifyOfferFreshness(offer).isVisible;

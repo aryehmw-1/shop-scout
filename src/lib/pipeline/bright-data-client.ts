@@ -82,6 +82,28 @@ export class BrightDataClient {
     return { snapshotId, rows };
   }
 
+  /**
+   * Lightweight connectivity + auth check used by the admin "Test connection"
+   * action. Hits an authenticated, read-only endpoint (list datasets). Returns a
+   * structured result instead of throwing so the admin UI can render it cleanly.
+   * Every failure is logged with `[bright-data]` so it's grep-able in Vercel logs.
+   */
+  async ping(): Promise<{ ok: boolean; status?: number; detail: string }> {
+    try {
+      const res = await fetch(`${BASE_URL}/datasets/list`, { headers: this.headers() });
+      if (!res.ok) {
+        const detail = await safeText(res);
+        console.error(`[bright-data] ping failed (status ${res.status}): ${detail}`);
+        return { ok: false, status: res.status, detail };
+      }
+      return { ok: true, status: res.status, detail: "Authenticated successfully." };
+    } catch (err) {
+      const detail = err instanceof Error ? err.message : String(err);
+      console.error(`[bright-data] ping network error: ${detail}`);
+      return { ok: false, detail };
+    }
+  }
+
   private async trigger(datasetId: string, input: Record<string, unknown>[]): Promise<string> {
     const res = await fetch(
       `${BASE_URL}/trigger?dataset_id=${encodeURIComponent(datasetId)}&include_errors=true`,

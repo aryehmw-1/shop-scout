@@ -61,6 +61,7 @@
     "test:links": "node scripts/test-store-links.mjs",
     "test:compare": "node scripts/test-compare-inventory.mjs",
     "test:intent": "node scripts/test-intent-switch.mjs",
+    "test:gates": "tsx scripts/test-publishability-and-affiliate.ts",
     "postinstall": "prisma generate"
   },
   "prisma": {

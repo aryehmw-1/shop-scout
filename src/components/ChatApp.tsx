@@ -21,7 +21,6 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { ZIP_SET_CHAT_CHIPS } from "@/lib/inventory/demo-suggestions";
 import type { UserAddress } from "@/lib/types";
-import { SearchSuggest } from "./SearchSuggest";
 import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { trackEvent } from "@/lib/analytics/track-client";
 import { mergeEnrichedSearchResults } from "@/lib/search/merge-enriched-results";
@@ -833,14 +832,6 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
       }}
     >
       <div className="relative">
-        <SearchSuggest
-          value={input}
-          onSelect={(q) => {
-            setInput(q);
-            inputRef.current?.focus();
-          }}
-          disabled={loading}
-        />
         <input
           ref={fileRef}
           type="file"
@@ -868,6 +859,8 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
           name="q"
           rows={1}
           aria-label="Search products"
+          spellCheck
+          autoComplete="off"
           value={input}
           onChange={(e) => {
             setInput(e.target.value);

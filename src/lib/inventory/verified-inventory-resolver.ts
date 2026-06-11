@@ -240,7 +240,16 @@ export async function loadPersistedLiveQuotes(catalogId: string): Promise<LiveQu
     },
   });
 
-  if (!product?.priceQuotes.length) return [];
+  // Publishability gate: a product that is unpublished or not approved
+  // (rejected / needs_review / raw / unverified) surfaces NO public offers.
+  if (
+    !product ||
+    product.published === false ||
+    product.validationStatus !== "approved"
+  ) {
+    return [];
+  }
+  if (!product.priceQuotes.length) return [];
 
   const quotes: LiveQuote[] = [];
   const seenStandardRetailers = new Set<RetailerId>();
