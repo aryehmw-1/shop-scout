@@ -99,8 +99,8 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
         <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
           <CheckCircle2 size={24} />
         </div>
-        <p className="font-semibold text-emerald-900">You&apos;re on the list!</p>
-        <p className="mx-auto mt-1 max-w-xs text-sm text-emerald-800">
+        <p className="text-base font-semibold text-emerald-900 sm:text-xl">You&apos;re on the list!</p>
+        <p className="mx-auto mt-1 max-w-xs text-[13px] text-emerald-800 sm:max-w-sm sm:text-base">
           We&apos;ll ping <span className="font-medium">{email}</span> the moment{" "}
           <span className="font-medium">{product}</span> is live on {APP_NAME}.
         </p>
@@ -114,8 +114,8 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
       <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-orange-50 text-orange-600">
         <BellPlus size={23} />
       </div>
-      <p className="text-[15px] font-semibold text-stone-900">We&apos;ll hunt it down for you</p>
-      <p className="mx-auto mt-1 max-w-xs text-xs text-stone-400">
+      <p className="text-base font-semibold text-stone-900 sm:text-xl">We&apos;ll hunt it down for you</p>
+      <p className="mx-auto mt-1 max-w-xs text-[13px] text-stone-400 sm:max-w-sm sm:text-base">
         Confirm what you need and drop your email — we&apos;ll ping you the moment it&apos;s live.
       </p>
 
@@ -125,7 +125,7 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
           {!userActive && (
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-sm text-stone-400"
+              className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-[15px] text-stone-400 sm:text-lg"
             >
               <span className="truncate">{displayed}</span>
               <span className="animate-blink ml-px inline-block h-4 w-[1.5px] shrink-0 bg-stone-300" />
@@ -149,7 +149,7 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
               }
             }}
             required
-            className={`w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-center text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 ${
+            className={`w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-center text-[15px] outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 sm:py-3.5 sm:text-lg ${
               userActive ? "text-stone-900" : "text-transparent caret-transparent"
             }`}
           />
@@ -161,7 +161,7 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@email.com"
           required
-          className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-center text-sm text-stone-900 placeholder:text-stone-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100"
+          className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-center text-[15px] text-stone-900 placeholder:text-stone-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100 sm:py-3.5 sm:text-lg"
         />
       </div>
 
@@ -172,7 +172,7 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
       <button
         type="submit"
         disabled={status === "loading" || !product.trim() || !email.trim()}
-        className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-orange-400/25 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40"
+        className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 px-5 py-3 text-[15px] font-semibold text-white shadow-sm shadow-orange-400/25 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40 sm:py-3.5 sm:text-lg"
       >
         {status === "loading" ? (
           <><Loader2 size={15} className="animate-spin" /> Sending…</>
