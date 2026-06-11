@@ -52,6 +52,16 @@ model Product {
   clickFrequency         Int          @default(0)
   refreshPriority        Int          @default(50)
   embeddingJson          String?
+  // ── Verification pipeline (a Product is the canonical, publishable identity) ──
+  processingStatus       String       @default("PUBLISHED") // pipeline state
+  validationStatus       String       @default("approved")  // approved|needs_review|rejected
+  confidenceScore        Int          @default(100)         // 0–100
+  validationReasonsJson  String       @default("[]")
+  duplicateGroupId       String?
+  published              Boolean      @default(true)
+  lastVerifiedAt         DateTime?
+  lastPriceCheck         DateTime?
+  lastInventoryCheck     DateTime?
   createdAt              DateTime     @default(now())
   updatedAt              DateTime     @updatedAt
   aliases                ProductAlias[]
@@ -70,6 +80,9 @@ model Product {
   @@index([brand])
   @@index([brandCanonical])
   @@index([refreshPriority])
+  @@index([published])
+  @@index([validationStatus])
+  @@index([duplicateGroupId])
 }
 
 model Retailer {
@@ -239,6 +252,14 @@ model PriceQuote {
   affiliateUrl          String
   fetchedAt             DateTime @default(now())
   expiresAt             DateTime
+  // ── Verification pipeline (retailer-specific offer) ──
+  validationStatus      String   @default("approved") // approved|needs_review|rejected
+  confidenceScore       Int      @default(90)          // 0–100
+  validationReasonsJson String   @default("[]")
+  duplicateGroupId      String?
+  lastVerifiedAt        DateTime?
+  lastPriceCheck        DateTime?
+  lastInventoryCheck    DateTime?
 
   qaReview              InventoryQaReview?
 
@@ -434,6 +455,91 @@ model SystemConfig {
   key       String   @id
   valueJson String
   updatedAt DateTime @updatedAt
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bright Data + Product Verification Pipeline
+//   RAW → CHECKED → MATCHED → VERIFIED → PUBLISHED  (+ STALE / NEEDS_REVIEW / REJECTED)
+// Nothing scraped is shown to users until it reaches PUBLISHED. Status values are
+// stored as strings (matching house style) and constrained by TS unions in
+// src/lib/pipeline/types.ts.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// One row per retailer dataset. Adding a retailer = adding a row, never a new client.
+model RetailerSource {
+  id                  String   @id @default(cuid())
+  retailerName        String
+  retailerDomain      String
+  brightDataDatasetId String
+  inputType           String   @default("url") // url | keyword | category | upc | sku
+  active              Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([retailerDomain, brightDataDatasetId])
+  @@index([active])
+  @@index([retailerName])
+}
+
+/// Raw Bright Data results, stored exactly as received. Never published directly.
+model RawProductRecord {
+  id                    String   @id @default(cuid())
+  retailer              String
+  retailerDomain        String?
+  productUrl            String?
+  title                 String?
+  brand                 String?
+  imageUrl              String?
+  price                 Float?
+  availability          String?
+  upcGtin               String?
+  ean                   String?
+  gtin                  String?
+  modelNumber           String?
+  size                  String?
+  quantity              String?
+  unitCount             Int?
+  color                 String?
+  variant               String?
+  category              String?
+  scrapedAt             DateTime @default(now())
+  rawJson               String   @default("{}")
+  processingStatus      String   @default("RAW") // RAW|CHECKED|MATCHED|VERIFIED|PUBLISHED|STALE|NEEDS_REVIEW|REJECTED
+  validationStatus      String? // approved|needs_review|rejected
+  confidenceScore       Int? // 0–100
+  validationReasonsJson String   @default("[]")
+  duplicateGroupId      String?
+  matchedProductId      String? // canonical Product.id once MATCHED
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([processingStatus])
+  @@index([validationStatus])
+  @@index([retailer])
+  @@index([upcGtin])
+  @@index([duplicateGroupId])
+  @@index([matchedProductId])
+  @@index([scrapedAt])
+}
+
+/// Append-only audit trail of every validation / status transition.
+model ValidationLog {
+  id                 String   @id @default(cuid())
+  productId          String?
+  rawProductRecordId String?
+  oldStatus          String?
+  newStatus          String
+  score              Int?
+  reasonsJson        String   @default("[]")
+  aiUsed             Boolean  @default(false)
+  aiResultJson       String?
+  adminOverride      Boolean  @default(false)
+  adminUserId        String?
+  createdAt          DateTime @default(now())
+
+  @@index([productId, createdAt])
+  @@index([rawProductRecordId, createdAt])
+  @@index([newStatus, createdAt])
 }
 
 /// User-submitted product requests from the zero-results "suggest a product" form.
