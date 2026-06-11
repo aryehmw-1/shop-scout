@@ -415,7 +415,7 @@ export async function resolveChatTurn(
         action: "conversational",
         session: {
           phase: phase === "ready" ? "ready" : "idle",
-          intent: { zipCode: zip, ...intent },
+          intent: { ...intent, zipCode: zip },
           asked,
           sourceUrl,
           sourceProductTitle,
@@ -439,7 +439,7 @@ export async function resolveChatTurn(
         action: "conversational",
         session: {
           phase: phase === "ready" ? "ready" : "idle",
-          intent: { zipCode: zip, ...intent },
+          intent: { ...intent, zipCode: zip },
           asked,
           sourceUrl,
           sourceProductTitle,
@@ -668,7 +668,7 @@ export async function resolveChatTurn(
 
     return {
       action: "conversational",
-      session: { phase: phase === "ready" ? "ready" : "idle", intent: { zipCode: zip, ...intent }, asked, sourceUrl, sourceProductTitle, compareMode: false },
+      session: { phase: phase === "ready" ? "ready" : "idle", intent: { ...intent, zipCode: zip }, asked, sourceUrl, sourceProductTitle, compareMode: false },
       productResults,
       retrievalPayload,
       commerceInsight,

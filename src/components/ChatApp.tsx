@@ -138,6 +138,9 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const sessionRef = useRef(session);
   const messagesRef = useRef(messages);
+  // Always holds the freshest ZIP so a search can never send a stale value from
+  // a closure captured before the user finished typing/changing the ZIP.
+  const zipRef = useRef(initialZip ?? "");
   const initialSent = useRef(false);
   const linkHintApplied = useRef(false);
   const chatInitialized = useRef(false);
@@ -154,6 +157,10 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
   useEffect(() => {
     sessionRef.current = session;
   }, [session]);
+
+  useEffect(() => {
+    zipRef.current = zipCode;
+  }, [zipCode]);
 
   useEffect(() => {
     messagesRef.current = messages;
@@ -451,7 +458,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
             body: JSON.stringify({
             message: trimmed,
             session: sessionRef.current,
-            zipCode,
+            zipCode: zipRef.current || zipCode,
             learningProfile,
             progressive: true,
             history: [...messagesRef.current, userMsg].slice(-10).map((m) => ({
