@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { ShieldCheck } from "lucide-react";
 
 interface TrustModalProps {
@@ -15,6 +16,13 @@ interface TrustModalProps {
  * pricing note. Every claim here must stay literally true.
  */
 export function TrustModal({ onClose, estimated }: TrustModalProps) {
+  // Render into a portal so the overlay sits at the top of the DOM, above the
+  // chat input bar and everything else, regardless of where it's mounted in the
+  // tree. Without this, the modal's z-index is trapped in a nested stacking
+  // context and the user could still tap/type in the input bar behind it.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   // Lock background scroll while the overlay is open.
   useEffect(() => {
     const prev = document.body.style.overflow;
@@ -38,15 +46,29 @@ export function TrustModal({ onClose, estimated }: TrustModalProps) {
         "If we can't confirm a price, we simply don't show it.",
       ];
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     // Full-screen, transparent layer that still captures every tap, so the rest
     // of the site is unusable until the user taps "Got it". No dark scrim.
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    // touch-action:none stops the browser from treating taps on this layer as
+    // double-tap-to-zoom gestures while the modal is open.
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+      style={{ touchAction: "none" }}
+      onClick={(e) => {
+        // Absorb taps outside the card — nothing behind the modal is usable.
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+    >
       <div
         className="relative max-h-[90vh] w-full max-w-md overflow-y-auto animate-fade-in rounded-3xl border border-stone-200 bg-white p-7 shadow-2xl ring-1 ring-stone-900/5"
+        style={{ touchAction: "pan-y" }}
         role="dialog"
         aria-modal="true"
         aria-labelledby="trust-title"
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-sage-100 text-sage-700">
           <ShieldCheck size={28} />
@@ -74,6 +96,7 @@ export function TrustModal({ onClose, estimated }: TrustModalProps) {
           Got it
         </button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
