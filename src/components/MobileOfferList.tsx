@@ -26,16 +26,21 @@ export function MobileVerifiedNote({
   const [showTrust, setShowTrust] = useState(false);
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setShowTrust(true)}
-        className="mb-3 flex w-full items-center gap-2 rounded-lg bg-white/70 px-3 py-2 text-[11px] font-semibold text-sage-800 ring-1 ring-sage-200 transition active:bg-white"
-      >
+      <div className="mb-3 flex w-full items-center gap-2 rounded-lg bg-white/70 px-3 py-2 text-[11px] font-semibold text-sage-800 ring-1 ring-sage-200">
         <ShieldCheck size={14} className="shrink-0 text-sage-600" aria-hidden />
-        {estimated ? "Estimated prices" : "Verified live prices"}
-        {zipCode ? ` · ships to ${zipCode}` : ""}
-        <span className="ml-auto text-sage-500">Why trust this ›</span>
-      </button>
+        <span className="truncate">
+          {estimated ? "Estimated prices" : "Verified live prices"}
+          {zipCode ? ` · ships to ${zipCode}` : ""}
+        </span>
+        {/* Only this tappable text opens the trust modal — not the whole bar. */}
+        <button
+          type="button"
+          onClick={() => setShowTrust(true)}
+          className="ml-auto shrink-0 font-semibold text-sage-600 underline-offset-2 active:underline"
+        >
+          Why trust this ›
+        </button>
+      </div>
       {showTrust && (
         <TrustModal estimated={estimated} onClose={() => setShowTrust(false)} />
       )}
@@ -100,7 +105,7 @@ export function MobileOfferList({ offers, onShopClick, searchQuery }: MobileOffe
                 <span className="truncate rounded bg-stone-100 px-1.5 py-0.5 text-[11px] font-bold text-stone-700">
                   {offer.retailerName}
                 </span>
-                <FreshnessIndicator offer={offer} compact />
+                <FreshnessIndicator offer={offer} compact interactive />
               </div>
               <p className="mt-0.5 line-clamp-1 text-[12px] text-stone-500">{offer.title}</p>
 
