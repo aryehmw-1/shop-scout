@@ -348,7 +348,33 @@ function fallbackReply(ctx: ReplyContext): string {
   }
 }
 
+/**
+ * Greetings, thanks, and "how do you work / who are you" have great fixed
+ * answers — there's nothing for the model to reason about. Skipping the ~1–1.5s
+ * Gemini round-trip for these makes the most common quick replies feel instant.
+ * Returns the canned reply, or null when the turn genuinely needs the model
+ * (open questions, advice, anything tied to product results).
+ */
+function instantConversationalReply(ctx: ReplyContext): string | null {
+  if (ctx.action !== "conversational" || ctx.adviceMode || ctx.productResults) {
+    return null;
+  }
+  const t = ctx.userMessage.trim().toLowerCase();
+  const isGreeting = /^(hi|hello|hey|yo)\b/.test(t);
+  const isThanks = /^(thanks|thank you|thx|ty|much appreciated)\b/.test(t) || /\bthank you\b/.test(t);
+  const isMeta =
+    /^(help)\b/.test(t) ||
+    /\bhow (do|does) (you|this|homivion|it) work\b/.test(t) ||
+    /\bwho are you\b/.test(t) ||
+    /\bwhat (do|can) you (do|help)\b/.test(t);
+  if (isGreeting || isThanks || isMeta) return fallbackReply(ctx);
+  return null;
+}
+
 export async function generateAssistantReply(ctx: ReplyContext): Promise<string> {
+  const instant = instantConversationalReply(ctx);
+  if (instant) return instant;
+
   const historyMessages = (ctx.history ?? [])
     .slice(-8)
     .filter((m) => m.content.trim())
