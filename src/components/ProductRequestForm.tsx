@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
+import { BellPlus, CheckCircle2, Loader2 } from "lucide-react";
 import { APP_NAME } from "@/lib/constants";
 
 const SPECIFIC_EXAMPLES = [
@@ -95,37 +95,37 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
 
   if (status === "success") {
     return (
-      <div className="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4">
-        <CheckCircle2 size={20} className="mt-0.5 shrink-0 text-emerald-600" />
-        <div>
-          <p className="font-semibold text-emerald-900">Request received!</p>
-          <p className="mt-0.5 text-sm text-emerald-800">
-            We&apos;ll email you at <span className="font-medium">{email}</span> as soon as{" "}
-            <span className="font-medium">{product}</span> is available on {APP_NAME}.
-          </p>
+      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-6 text-center">
+        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+          <CheckCircle2 size={24} />
         </div>
+        <p className="font-semibold text-emerald-900">You&apos;re on the list!</p>
+        <p className="mx-auto mt-1 max-w-xs text-sm text-emerald-800">
+          We&apos;ll ping <span className="font-medium">{email}</span> the moment{" "}
+          <span className="font-medium">{product}</span> is live on {APP_NAME}.
+        </p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <div>
-        <p className="text-sm font-semibold text-stone-700">
-          Want us to add it? Tell us exactly what you need.
-        </p>
-        <p className="mt-0.5 text-xs text-stone-400">
-          Please be specific — include the brand, size, or model so we can find the right one.
-        </p>
+    <form onSubmit={handleSubmit} className="text-center">
+      {/* Icon + heading */}
+      <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-orange-50 text-orange-600">
+        <BellPlus size={23} />
       </div>
+      <p className="text-[15px] font-semibold text-stone-900">We&apos;ll hunt it down for you</p>
+      <p className="mx-auto mt-1 max-w-xs text-xs text-stone-400">
+        Confirm what you need and drop your email — we&apos;ll ping you the moment it&apos;s live.
+      </p>
 
-      <div className="space-y-2">
+      <div className="mt-4 space-y-2">
         {/* Product field with typewriter animation */}
         <div className="relative">
           {!userActive && (
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 flex items-center px-4 text-sm text-stone-400"
+              className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-sm text-stone-400"
             >
               <span className="truncate">{displayed}</span>
               <span className="animate-blink ml-px inline-block h-4 w-[1.5px] shrink-0 bg-stone-300" />
@@ -149,7 +149,7 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
               }
             }}
             required
-            className={`w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 ${
+            className={`w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-center text-sm outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 ${
               userActive ? "text-stone-900" : "text-transparent caret-transparent"
             }`}
           />
@@ -159,25 +159,25 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Your email — we'll notify you when it's added"
+          placeholder="you@email.com"
           required
-          className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 placeholder:text-stone-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100"
+          className="w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-center text-sm text-stone-900 placeholder:text-stone-400 focus:border-orange-400 focus:outline-none focus:ring-2 focus:ring-orange-100"
         />
       </div>
 
       {status === "error" && (
-        <p className="text-sm text-red-600">{errorMsg}</p>
+        <p className="mt-2 text-sm text-red-600">{errorMsg}</p>
       )}
 
       <button
         type="submit"
         disabled={status === "loading" || !product.trim() || !email.trim()}
-        className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-orange-400/25 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40"
+        className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-orange-400/25 transition hover:from-orange-600 hover:to-amber-600 disabled:opacity-40"
       >
         {status === "loading" ? (
           <><Loader2 size={15} className="animate-spin" /> Sending…</>
         ) : (
-          <>Request this product <ArrowRight size={15} /></>
+          <>Notify me when it&apos;s in</>
         )}
       </button>
     </form>
