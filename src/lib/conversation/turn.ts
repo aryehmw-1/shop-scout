@@ -386,8 +386,14 @@ async function searchWithIntelligenceFirst(
   retrievalPayload?: CommerceRetrievalPayload;
   commerceInsight?: IntelligenceInsight;
 }> {
+  // The search/catalog layers fall back to CATALOG_DEFAULT_ZIP ("78701") for
+  // internal pricing when the user hasn't set a ZIP. That default must never
+  // leak into the UI — otherwise the "ships to 78701" line shows a ZIP the user
+  // never entered. Stamp the user's REAL resolved ZIP (empty when unset) on the
+  // displayed results, so the UI shows their ZIP or the "add ZIP" prompt.
   const intel = tryIntelligenceSearch(fullIntent, zip);
   if (intel) {
+    intel.productResults.zipCode = zip;
     return {
       productResults: intel.productResults,
       retrievalPayload: intel.retrievalPayload,
@@ -398,6 +404,7 @@ async function searchWithIntelligenceFirst(
     userId,
     fastOnly: progressive,
   });
+  productResults.zipCode = zip;
   return { productResults };
 }
 
