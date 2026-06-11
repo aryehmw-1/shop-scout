@@ -598,7 +598,12 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
       // Buying-advice turns stream token-by-token so the answer starts
       // appearing immediately ("typing") instead of waiting ~10s for the whole
       // reply. Speed is the product, so advice goes through the streaming route.
-      if (looksLikeAdviceRequest(trimmed)) {
+      // We also stream the user's REPLY within an ongoing advice thread (the
+      // server marks the session `advicePending`) unless they're now clearly
+      // asking for a price lookup — mirroring the server's routing.
+      const inAdviceThread =
+        Boolean(sessionRef.current?.advicePending) && !looksLikeShoppingRequest(trimmed);
+      if (looksLikeAdviceRequest(trimmed) || inAdviceThread) {
         try {
           await streamAdviceReply({
             body: requestBody,

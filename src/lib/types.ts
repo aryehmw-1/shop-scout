@@ -590,6 +590,13 @@ export interface SessionState {
   asked: string[];
   /** Active follow-up (jeans vs joggers, etc.) */
   clarifying?: ClarificationState;
+  /**
+   * True while we're in a buying-advice conversation (the user asked for a
+   * recommendation and we may have asked what matters to them). Their next
+   * reply is an answer to that advice thread, NOT a new catalog search — so it
+   * must not trigger the "couldn't find … in our catalog" request form.
+   */
+  advicePending?: boolean;
 }
 
 export interface ChatHistoryEntry {

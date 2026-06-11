@@ -316,6 +316,29 @@ function isLongInstructionProse(text: string): boolean {
   return false;
 }
 
+/**
+ * In an advice conversation, the user explicitly asking us to look up / compare
+ * prices (or affirming an offer to do so) means we should LEAVE advice mode and
+ * run a real search. Everything else (their preferences, "just works", budget,
+ * features, etc.) stays in the advice thread.
+ */
+function wantsPriceLookupNow(text: string): boolean {
+  const t = text.trim().toLowerCase();
+  if (
+    /\b(compare|cheapest|lowest price|best price|price check|check (the )?prices?|see (the )?prices?|where (can|to) (i )?buy|find me|how much|on sale|add to cart|buy it|search for)\b/.test(
+      t,
+    )
+  ) {
+    return true;
+  }
+  // "yes/sure/ok, (compare|check|do it)" affirmatives to "want me to check prices?"
+  if (/^(yes|yep|yeah|sure|ok(ay)?|please|go ahead|do it|sounds good)\b/.test(t) &&
+      /\b(price|prices|compare|check|do it|please)\b/.test(t)) {
+    return true;
+  }
+  return false;
+}
+
 function isConversationalOnly(text: string, session?: SessionState): boolean {
   const t = text.trim();
   if (session && shouldMergeWithPreviousSearch(t, session)) return false;
@@ -458,6 +481,41 @@ export async function resolveChatTurn(
     );
   }
 
+  // Continuation of an ongoing advice conversation. After we give buying advice
+  // (and often ask "what matters most — budget, features, use?"), the user's
+  // reply is an ANSWER to that thread — even though it may mention a product
+  // word like "watch". Keep it in advice mode so we give a recommendation,
+  // instead of treating it as a fresh catalog search and surfacing the
+  // "couldn't find … in our catalog" request form. They leave advice mode only
+  // by explicitly asking us to look up / compare prices.
+  if (
+    session.advicePending &&
+    !extractUrl(text) &&
+    !isValidZip(text) &&
+    !wantsPriceLookupNow(text)
+  ) {
+    return withConversationDebug(
+      {
+        action: "conversational",
+        session: {
+          phase: phase === "ready" ? "ready" : "idle",
+          intent: { ...intent, zipCode: zip },
+          asked,
+          sourceUrl,
+          sourceProductTitle,
+          compareMode: false,
+          advicePending: true,
+        },
+        compareMode: false,
+        adviceMode: true,
+        zipCode: zip,
+        query: intent.query,
+        chips: ["Compare prices", "Search something else", "Paste an Amazon link"],
+      },
+      { message: text, priorSession: session, merged: false },
+    );
+  }
+
   // Opinion / fit / sizing questions are answered conversationally — even when
   // a product link is pasted alongside — instead of running a 0-result search.
   if (isOpinionAdviceQuestion(text)) {
@@ -472,6 +530,7 @@ export async function resolveChatTurn(
           sourceUrl,
           sourceProductTitle,
           compareMode: false,
+          advicePending: true,
         },
         compareMode: false,
         adviceMode: true,
@@ -694,14 +753,25 @@ export async function resolveChatTurn(
       commerceInsight = intel.commerceInsight;
     }
 
+    const adviceMode = !productResults && isAdviceOrComparisonQuestion(text);
     return {
       action: "conversational",
-      session: { phase: phase === "ready" ? "ready" : "idle", intent: { ...intent, zipCode: zip }, asked, sourceUrl, sourceProductTitle, compareMode: false },
+      session: {
+        phase: phase === "ready" ? "ready" : "idle",
+        intent: { ...intent, zipCode: zip },
+        asked,
+        sourceUrl,
+        sourceProductTitle,
+        compareMode: false,
+        // Keep the advice thread alive so the user's follow-up answer isn't
+        // mistaken for a new catalog search.
+        ...(adviceMode ? { advicePending: true } : {}),
+      },
       productResults,
       retrievalPayload,
       commerceInsight,
       compareMode: false,
-      adviceMode: !productResults && isAdviceOrComparisonQuestion(text),
+      adviceMode,
       zipCode: zip,
       query: intent.query,
       chips: zip
