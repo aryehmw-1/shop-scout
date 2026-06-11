@@ -55,8 +55,7 @@ export default async function InventoryPage() {
                 Multi-store pricing
               </h2>
               <p className="mt-1 text-sm text-ink-600">
-                {canonical.total} products with compare pricing across{" "}
-                {canonical.retailers.length} retailers.
+                Compare pricing across {canonical.retailers.length} retailers.
               </p>
               <div className="mt-6">
                 <CanonicalCatalogClient initial={canonical} />

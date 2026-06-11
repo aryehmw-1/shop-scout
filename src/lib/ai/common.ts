@@ -16,6 +16,12 @@ export interface GenerateTextOptions {
    * truncate the visible answer mid-sentence on terse, well-structured tasks.
    */
   thinkingBudget?: number;
+  /**
+   * Gemini-only: enable Google Search grounding so the model can answer from
+   * up-to-date web results (used for product advice/comparison questions where
+   * accuracy matters more than latency). Ignored by providers without grounding.
+   */
+  useWebSearch?: boolean;
 }
 
 export interface AIUsage {

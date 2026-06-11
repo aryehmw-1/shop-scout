@@ -36,6 +36,7 @@ export async function processMessage(
     referenceProductTitle: turn.referenceProductTitle,
     history,
     intent: turn.session.intent,
+    adviceMode: turn.adviceMode,
   });
 
   return {

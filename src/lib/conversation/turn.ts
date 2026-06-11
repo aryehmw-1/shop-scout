@@ -197,8 +197,42 @@ function isProductSearchMessage(text: string): boolean {
   if (/^(help|how does this work|\?)$/i.test(t)) return false;
   if (isMetaQuestion(t)) return false;
   if (isGeneralKnowledgeQuestion(t)) return false;
+  // Advice / "which should I buy" / "X or Y" / "X vs Y" questions are answered
+  // conversationally — they must NOT run a 0-result catalog search (which would
+  // wrongly surface the "request this product" form).
+  if (isAdviceOrComparisonQuestion(t)) return false;
   if (looksLikeShoppingQuery(t)) return true;
   return t.length >= 3;
+}
+
+/**
+ * True for questions that ask for a recommendation or a head-to-head comparison
+ * rather than a price lookup — e.g. "should I buy the Apple Watch 11 or SE?",
+ * "which is better, X or Y?", "AirPods vs AirPods Pro", "is the X worth it?".
+ * These deserve a real answer (from the assistant's knowledge / web search),
+ * not a catalog search. Explicit price/compare-price intent is excluded so
+ * genuine shopping queries still search.
+ */
+function isAdviceOrComparisonQuestion(text: string): boolean {
+  const t = text.trim().toLowerCase();
+  if (
+    /\b(cheapest|lowest price|best price|price check|compare prices|where (can|to) (i )?buy|find me|add to cart|on sale)\b/.test(
+      t,
+    )
+  ) {
+    return false;
+  }
+  if (isAdvisoryQuestion(t) || isOpinionAdviceQuestion(t)) return true;
+  if (/\b\w+\s+vs\.?\s+\w+/.test(t)) return true;
+  if (/\bwhich (is|one|are|would|should)\b.{0,40}\b(better|best|worth|right|recommend)/.test(t)) {
+    return true;
+  }
+  if (/\b(better|best)\b.{0,20}\b(option|choice|to (buy|get|pick))\b/.test(t)) return true;
+  // "X or Y?" style choices that read as a question asking us to pick.
+  if (/\bor\b/.test(t) && /\?\s*$/.test(t) && /\b(should|which|better|buy|get|worth)\b/.test(t)) {
+    return true;
+  }
+  return false;
 }
 
 function isAdvisoryQuestion(text: string): boolean {
@@ -258,6 +292,9 @@ function isConversationalOnly(text: string, session?: SessionState): boolean {
   const t = text.trim();
   if (session && shouldMergeWithPreviousSearch(t, session)) return false;
   if (isGeneralKnowledgeQuestion(t)) return true;
+  // Advice / comparison questions are conversational even though they mention
+  // product names (which would otherwise look like a shopping query).
+  if (isAdviceOrComparisonQuestion(t)) return true;
   if (looksLikeShoppingQuery(t)) return false;
   if (GREETING.test(t)) return true;
   if (/^thanks|thank you|thx$/i.test(t)) return true;
@@ -277,6 +314,8 @@ export interface ResolvedChatTurn {
   retrievalPayload?: CommerceRetrievalPayload;
   commerceInsight?: IntelligenceInsight;
   compareMode: boolean;
+  /** Advice / comparison turn — answer from knowledge / web search, no catalog form. */
+  adviceMode?: boolean;
   chips?: string[];
   zipCode: string;
   query?: string;
@@ -407,6 +446,7 @@ export async function resolveChatTurn(
           compareMode: false,
         },
         compareMode: false,
+        adviceMode: true,
         zipCode: zip,
         query: intent.query,
         referenceProductTitle: linkedTitle,
@@ -633,6 +673,7 @@ export async function resolveChatTurn(
       retrievalPayload,
       commerceInsight,
       compareMode: false,
+      adviceMode: !productResults && isAdviceOrComparisonQuestion(text),
       zipCode: zip,
       query: intent.query,
       chips: zip

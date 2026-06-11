@@ -50,9 +50,6 @@ export function VerifiedCompareHeader({
             Ships to {zipCode}
           </span>
         )}
-        <span className="rounded-full bg-stone-100 px-2 py-0.5">
-          {offerCount} offer{offerCount === 1 ? "" : "s"} shown
-        </span>
       </div>
     </div>
   );

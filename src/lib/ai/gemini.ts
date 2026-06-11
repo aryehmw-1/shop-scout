@@ -108,6 +108,9 @@ export async function generateGeminiText(
               ...(options.thinkingBudget !== undefined
                 ? { thinkingConfig: { thinkingBudget: options.thinkingBudget } }
                 : {}),
+              // Google Search grounding — lets the model answer product
+              // advice/comparison questions from current web results.
+              ...(options.useWebSearch ? { tools: [{ googleSearch: {} }] } : {}),
             },
           });
 

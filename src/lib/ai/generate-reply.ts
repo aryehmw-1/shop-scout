@@ -38,6 +38,8 @@ export interface ReplyContext {
   history?: ChatHistoryMessage[];
   intent?: Partial<ShoppingIntent>;
   clarifyQuestion?: string;
+  /** Advice / comparison turn — answer the question directly (web search on). */
+  adviceMode?: boolean;
 }
 
 const SYSTEM_PROMPT = `You are Homivion, a warm and capable AI shopping assistant.
@@ -53,23 +55,25 @@ You help users compare online prices across many retailers (grocery, fashion, ho
 - Separate blocks with a blank line so headings, paragraphs, and lists don't run together.
 - CRITICAL: put every bullet on its OWN line starting with "- ". NEVER write a list inline inside a sentence (do NOT write "Here's why: - A - B - C"). NEVER use en-dashes or hyphens as inline separators. A blockquote must be on its own line starting with "> ", never mid-sentence.
 - Keep each bullet to one short sentence. Aim for 3–6 bullets, not a wall of text.
-- When showing search results: lead with one short sentence naming the best deal, then a bullet list — one bullet per offer — formatted as:
-  - **[Store]** — **$X.XX** — [short product name or size]
+- When showing search results: the cards UNDER your reply already display every store, price, and a highlighted "Best" pick — so DO NOT restate the winner or re-list the offers in prose. Write ONE short, warm line that frames what you did, e.g. "I checked the live prices across the stores I track — here's what I found:" Then stop. (You may add a single optional follow-up sentence like "Want a different size or brand?") Never repeat the prices that are already on the cards.
 - For "what do you do / how do you work" questions: a one-line intro, then a "## What I Can Do" heading with 3–4 bullets.
 - A greeting? One warm sentence + a short bullet list of example searches.
 
-## Correct price-result format (TEMPLATE ONLY — never reuse these placeholders as real data):
-Here's what I found for [product] — shipping to your ZIP:
+## Correct price-result reply (the cards do the listing — your text does NOT):
+I checked the live prices across the stores I track for [product] — here's what I found:
 
-- **[Store]** — **$[X.XX]** — [short product name or size]
-- **[Store]** — $[X.XX] — [short product name or size]
+Then STOP (optionally one short follow-up like "Want a different size or brand?").
 
-Let me know if you want a different size or brand!
+CRITICAL: Never list stores or prices in your text — they already appear on the
+cards below your reply, and repeating them is redundant. Never invent stores or
+prices, and never reuse any example product (e.g. cereal, eBay). If no SEARCH
+RESULTS are provided, you have nothing to confirm.
 
-CRITICAL: The line above is a FORMAT template using placeholders. Only ever output
-stores, prices, and product names that appear verbatim in the "SEARCH RESULTS" data
-for THIS turn. If no SEARCH RESULTS are provided, you have NOTHING to list — never
-invent stores or prices, and never reuse any example product (e.g. cereal, eBay).
+## Product advice & comparison questions (e.g. "should I buy the Apple Watch 11 or SE?", "AirPods vs AirPods Pro", "is the X worth it?")
+- These ask for a recommendation, NOT a price lookup. Answer the question directly and confidently using your knowledge and any web-search results provided.
+- Compare the meaningful differences in a few bullets (key features, price tier, who each is best for), then give a clear bottom-line pick in a single blockquote.
+- Be honest and specific; never invent Homivion prices or claim something is "out of catalog."
+- End by offering to compare live prices once they've chosen.
 
 ## Shopping advice / consultation
 - When someone asks "what TV should I buy?" or any open-ended "what should I get?" question — do NOT search yet.
@@ -91,6 +95,7 @@ invent stores or prices, and never reuse any example product (e.g. cereal, eBay)
 
 async function callShopScoutAI(
   messages: { role: string; content: string }[],
+  opts: { useWebSearch?: boolean } = {},
 ): Promise<string | null> {
   if (!isAiEnabled()) return null;
 
@@ -107,14 +112,19 @@ async function callShopScoutAI(
     const result = await generateAIText(prompt, {
       system,
       temperature: 0.55,
-      maxOutputTokens: 900,
+      // Advice/comparison turns keep the model's "thinking" pass on (for
+      // grounded reasoning), which shares this budget — so give them extra room
+      // to avoid truncating the visible answer mid-sentence.
+      maxOutputTokens: opts.useWebSearch ? 2200 : 900,
       // Disable gemini-2.5-flash's hidden "thinking" pass. These replies follow
       // a strict, well-specified Markdown format and don't need chain-of-thought
       // — and when thinking is left on it silently consumes the output budget,
       // truncating the visible reply mid-sentence ("…It seems I only found the").
-      thinkingBudget: 0,
+      // EXCEPTION: advice/comparison turns use web-search grounding, which needs
+      // the model's reasoning pass left on to weigh sources.
+      ...(opts.useWebSearch ? { useWebSearch: true } : { thinkingBudget: 0 }),
       retries: 1,
-      timeoutMs: 12_000,
+      timeoutMs: opts.useWebSearch ? 18_000 : 12_000,
     });
     return result.text.trim() || null;
   } catch (error) {
@@ -143,6 +153,19 @@ function buildUserContext(ctx: ReplyContext): string {
   if (ctx.action === "clarify" && ctx.clarifyQuestion) {
     parts.push(`CLARIFY (ask user before searching): ${ctx.clarifyQuestion}`);
     parts.push("User must pick a product type from the chips — do not list prices yet.");
+  }
+
+  if (ctx.adviceMode && !ctx.productResults) {
+    parts.push(
+      "ADVICE MODE: The user is asking for a recommendation or product comparison, " +
+        "NOT a price lookup. Answer their question directly and helpfully using your " +
+        "knowledge and the web search results available to you. Be specific and " +
+        "honest — compare the key differences (features, value, who each is best " +
+        "for) and give a clear bottom-line recommendation. Do NOT say we couldn't " +
+        "find it, do NOT mention a catalog or a request form, and do NOT invent " +
+        "Homivion prices. End by offering to compare live prices once they pick one.",
+    );
+    return parts.join("\n");
   }
 
   if (ctx.productResults) {
@@ -238,21 +261,25 @@ function fallbackReply(ctx: ReplyContext): string {
           return `Compared to your link (~**$${ref.referencePrice.toFixed(2)}**), I found **${total} options** — best deal so far is **${online!.retailerName}** at **$${online!.price.toFixed(2)}**. Browse below for more.`;
         }
       }
+      void bestPrice;
       const refined =
         ctx.action === "refine"
-          ? `Got it — I updated your search${ctx.intent?.colors?.length ? ` (**${ctx.intent.colors.join(", ")}**)` : ""}${ctx.intent?.size ? ` in **${ctx.intent.size}**` : ""}${ctx.intent?.brand ? ` from **${ctx.intent.brand}**` : ""} and rechecked all stores.\n\n`
+          ? `Updated your search${ctx.intent?.colors?.length ? ` (**${ctx.intent.colors.join(", ")}**)` : ""}${ctx.intent?.size ? ` in **${ctx.intent.size}**` : ""}${ctx.intent?.brand ? ` from **${ctx.intent.brand}**` : ""} — `
           : "";
-      const summary = `Here's what I found for ${q} — **${productResults.online.length}** options${zipCode ? ` (shipping to **${zipCode}**)` : ""}.`;
-      return `${refined}${summary}\n\n${
-        online && bestPrice != null
-          ? `Best delivered value: **${online.retailerName}** · **$${bestPrice.toFixed(2)}**`
-          : ""
-      }\n\nTap **View deal** on any card to open that store with your search ready.${zipNote}`;
+      // The cards below already show each store, price, and the "Best" pick, so
+      // the reply stays a short trust line instead of restating the winner.
+      const lead = refined
+        ? `${refined}I re-checked every store I track for ${q}${zipCode ? ` (shipping to **${zipCode}**)` : ""}. Here's what came back:`
+        : `I checked the live prices across the stores I track for ${q}${zipCode ? ` (shipping to **${zipCode}**)` : ""}. Here's what I found:`;
+      return `${lead}${zipNote}`;
     }
 
     case "conversational":
     default: {
       const lower = ctx.userMessage.toLowerCase();
+      if (ctx.adviceMode) {
+        return "Happy to help you decide.\n\n- Tell me what matters most to you — **budget**, key **features**, or how you'll use it.\n- I can then point you to the better pick and **compare live prices** across stores.\n\nWhich way are you leaning, and what's your budget?";
+      }
       if (/\b(size|sizing|fit|too (big|small|large|tight|loose)|shrink|medium|large|small|size (up|down))\b/.test(lower)) {
         return "Here's my take on the fit:\n\n• **Cotton shrinks ~3–5%** in a hot dryer, so if a large was only *slightly* too big, a medium may end up too snug once it shrinks.\n• If you liked the length and just want a touch less room, **keep the large** and line-dry it to preserve the fit.\n• Want it noticeably more fitted? **Size down to medium** — just expect it to tighten further with heat.\n\nWant me to compare prices on it across stores?";
       }
@@ -300,7 +327,7 @@ export async function generateAssistantReply(ctx: ReplyContext): Promise<string>
     { role: "user", content: buildUserContext(ctx) },
   ];
 
-  const ai = await callShopScoutAI(messages);
+  const ai = await callShopScoutAI(messages, { useWebSearch: ctx.adviceMode });
   if (ai) return ai;
 
   return fallbackReply(ctx);

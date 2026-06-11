@@ -467,7 +467,7 @@ export function ProductResults({
       )}
 
       {online.length > 0 && (
-        <section className="flex min-w-0 flex-col rounded-2xl border-2 border-sage-400/70 bg-sage-50/30 p-3 sm:p-5">
+        <section className="flex min-w-0 flex-col rounded-2xl border-2 border-sage-400/70 bg-sage-50/30 p-2 sm:p-5">
           {/* Desktop keeps the roomy verified-pricing card; phones get the
               compact V-2 tap-to-expand note (below) so products lead. */}
           <div className="hidden lg:block">

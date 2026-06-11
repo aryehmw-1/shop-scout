@@ -91,7 +91,7 @@ export function ChatMessageBubble({
         </div>
 
         {message.productResults && (
-          <div className="mt-4 w-full min-w-0 max-w-full">
+          <div className="mt-4 min-w-0 w-[calc(100%+56px)] -ml-[52px] lg:w-full lg:ml-0 lg:max-w-full">
             <ProductResults
               results={message.productResults}
               savedIds={savedIds}
