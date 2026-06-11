@@ -404,6 +404,14 @@ export async function generateAssistantReply(ctx: ReplyContext): Promise<string>
 export async function* streamAssistantReply(
   ctx: ReplyContext,
 ): AsyncGenerator<string, void, unknown> {
+  // Deterministic small-talk (greeting/thanks/help) needs no model — emit the
+  // canned reply instantly even on the streaming path.
+  const instant = instantConversationalReply(ctx);
+  if (instant) {
+    yield instant;
+    return;
+  }
+
   // Streaming is Gemini-only here; if it's unavailable, emit a one-shot reply.
   if (!isGeminiConfigured()) {
     yield await generateAssistantReply(ctx);
@@ -424,8 +432,11 @@ export async function* streamAssistantReply(
     for await (const delta of generateGeminiTextStream(prompt, {
       system: SYSTEM_PROMPT,
       temperature: 0.55,
-      maxOutputTokens: 1100,
-      thinkingBudget: 512,
+      // Advice turns use grounded reasoning (web search + a capped thinking
+      // pass) and need more room; plain conversational questions don't — keep
+      // them tight and skip thinking so they start typing fast.
+      maxOutputTokens: ctx.adviceMode ? 1100 : 700,
+      thinkingBudget: ctx.adviceMode ? 512 : 0,
       useWebSearch: ctx.adviceMode,
     })) {
       emitted = true;

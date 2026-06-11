@@ -61,13 +61,17 @@ export async function POST(request: Request) {
       });
 
       try {
-        if (turn.adviceMode) {
+        // Token-stream advice AND plain conversational answers (general
+        // questions) — anything that's a pure text reply. Product/price
+        // searches carry results, not a streamed essay, so they're emitted as a
+        // single buffered delta to keep the results pipeline intact.
+        const tokenStream =
+          turn.adviceMode || (turn.action === "conversational" && !turn.productResults);
+        if (tokenStream) {
           for await (const delta of streamAssistantReply(ctx)) {
             send({ type: "delta", text: delta });
           }
         } else {
-          // Non-advice turns aren't token-streamed — generate once and emit it
-          // as a single delta so the client path stays identical.
           const reply = await generateAssistantReply(ctx);
           send({ type: "delta", text: reply });
         }

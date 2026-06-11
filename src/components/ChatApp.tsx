@@ -78,6 +78,24 @@ function looksLikeAdviceRequest(text: string) {
   );
 }
 
+/**
+ * A natural-language QUESTION that isn't a product/price lookup — e.g. "what's
+ * the best material for running socks?", "how does noise cancelling work?".
+ * These get a pure text answer, so we route them to the streaming endpoint to
+ * start typing immediately. Product/price searches and bare product names are
+ * excluded so they keep their reliable results pipeline.
+ */
+function looksLikeGeneralQuestion(text: string) {
+  const t = text.trim().toLowerCase();
+  if (looksLikeShoppingRequest(text)) return false;
+  if (/https?:\/\/|www\./.test(t)) return false;
+  const isQuestion =
+    /\?\s*$/.test(t) ||
+    /^(what|why|how|which|is|are|should|can|does|do|who|when|where|tell me|explain)\b/.test(t);
+  // Require a few words so bare nouns like "milk?" stay on the search path.
+  return isQuestion && t.split(/\s+/).filter(Boolean).length >= 3;
+}
+
 function looksLikeShoppingRequest(text: string) {
   const lower = text.toLowerCase();
   if (/https?:\/\/|www\./.test(lower)) return true;
@@ -603,7 +621,11 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
       // asking for a price lookup — mirroring the server's routing.
       const inAdviceThread =
         Boolean(sessionRef.current?.advicePending) && !looksLikeShoppingRequest(trimmed);
-      if (looksLikeAdviceRequest(trimmed) || inAdviceThread) {
+      if (
+        looksLikeAdviceRequest(trimmed) ||
+        inAdviceThread ||
+        looksLikeGeneralQuestion(trimmed)
+      ) {
         try {
           await streamAdviceReply({
             body: requestBody,
