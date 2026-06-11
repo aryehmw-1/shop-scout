@@ -213,7 +213,6 @@ export function ProductResults({
   // gallon") but we only have a different size (e.g. 1 gal). Don't show the
   // wrong-size card — offer the request form, with an opt-in to view what we do
   // carry. `showMismatchAnyway` lets the user override and see the card.
-  const wantedVolume = volumeClassOf(searchQuery);
   const volumeMissing =
     !trustedExactFlow &&
     !showMismatchAnyway &&
@@ -255,31 +254,24 @@ export function ProductResults({
             <p className="text-sm text-stone-600 leading-relaxed">
               We don&apos;t carry{" "}
               <span className="font-semibold text-stone-800">{q}</span>{" "}
-              {wantedVolume ? "yet" : ""} — only{" "}
+              in that size yet — only{" "}
               <span className="font-semibold text-stone-800">
                 {availableVolumeLabel ?? "a different size"}
               </span>
-              . Request the size you want below and we&apos;ll work on adding it.
+              {" "}is in our catalog right now.
             </p>
           ) : (
-            <div className="space-y-2 text-sm text-stone-600 leading-relaxed">
-              <p className="text-base font-semibold text-stone-900">
-                {q ? (
-                  <>
-                    I couldn&apos;t find{" "}
-                    <span className="text-stone-900">{q}</span>{" "}
-                    in Homivion&apos;s catalog yet.
-                  </>
-                ) : (
-                  <>I couldn&apos;t find that product in Homivion&apos;s catalog yet.</>
-                )}
-              </p>
-              <p>
-                We&apos;re always expanding our catalog and may not have every item just
-                yet. Tell us what you&apos;re looking for below and we&apos;ll do our best
-                to add it quickly — then email you the moment it&apos;s available.
-              </p>
-            </div>
+            <p className="text-base font-semibold text-stone-900 leading-relaxed">
+              {q ? (
+                <>
+                  I couldn&apos;t find{" "}
+                  <span className="text-stone-900">{q}</span>{" "}
+                  in Homivion&apos;s catalog yet.
+                </>
+              ) : (
+                <>I couldn&apos;t find that product in Homivion&apos;s catalog yet.</>
+              )}
+            </p>
           )}
           <ProductRequestForm searchQuery={q} />
           <a
