@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import type { ProductOffer } from "@/lib/types";
 import { classifyOfferFreshness } from "@/lib/pricing/quote-freshness-policy";
 import { Clock, AlertTriangle } from "lucide-react";
@@ -40,16 +40,6 @@ export function FreshnessIndicator({
   const label = offer.freshnessLabel ?? meta.shortLabel;
   const styles = TIER_STYLES[tier] ?? TIER_STYLES.stale_visible;
   const [open, setOpen] = useState(false);
-  const wrapRef = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const onDocClick = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("click", onDocClick);
-    return () => document.removeEventListener("click", onDocClick);
-  }, [open]);
 
   if (tier === "fresh" && compact) return null;
 
@@ -66,7 +56,7 @@ export function FreshnessIndicator({
   }
 
   return (
-    <span ref={wrapRef} className="relative inline-flex">
+    <span className="relative inline-flex">
       <button
         type="button"
         aria-label={`What does "${label}" mean?`}
@@ -83,13 +73,30 @@ export function FreshnessIndicator({
         {compact ? label : meta.displayLabel}
       </button>
       {open && (
-        <span
-          role="status"
-          className="absolute left-0 top-full z-40 mt-1.5 w-56 rounded-xl border border-stone-200 bg-white px-3 py-2 text-left text-[11px] font-normal leading-snug text-stone-600 shadow-lg"
-        >
-          <span className="mb-0.5 block font-semibold text-stone-800">{meta.displayLabel}</span>
-          {TIER_EXPLAINER[tier] ?? TIER_EXPLAINER.stale_visible}
-        </span>
+        <>
+          {/* Full-screen catcher: while the note is open, the FIRST tap anywhere
+              only dismisses it — it never falls through to the product link. */}
+          <span
+            className="fixed inset-0 z-30"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setOpen(false);
+            }}
+          />
+          <span
+            role="status"
+            className="absolute left-0 top-full z-40 mt-1.5 w-56 rounded-xl border border-stone-200 bg-white px-3 py-2 text-left text-[11px] font-normal leading-snug text-stone-600 shadow-lg"
+            onClick={(e) => {
+              // Tapping the note itself shouldn't navigate either.
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <span className="mb-0.5 block font-semibold text-stone-800">{meta.displayLabel}</span>
+            {TIER_EXPLAINER[tier] ?? TIER_EXPLAINER.stale_visible}
+          </span>
+        </>
       )}
     </span>
   );
