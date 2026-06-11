@@ -3,6 +3,7 @@ import type { IntelligenceInsight, ProductSearchResults } from "../types";
 import { buildFullSearchQuery } from "../shopping/intent-merge";
 import { extractIntentFromMessage } from "./extract-intent";
 import { generateAIText, isClaudeConfigured, isGeminiConfigured } from "./index";
+import { generateGeminiTextStream } from "./gemini";
 import { summarizeSearchResults } from "./summarize-results";
 import { matchLooksIrrelevant } from "../search/relevance";
 import type { ShoppingIntent } from "../types";
@@ -116,16 +117,20 @@ async function callShopScoutAI(
       // Advice/comparison turns keep the model's "thinking" pass on (for
       // grounded reasoning), which shares this budget — so give them extra room
       // to avoid truncating the visible answer mid-sentence.
-      maxOutputTokens: opts.useWebSearch ? 2200 : 900,
+      maxOutputTokens: opts.useWebSearch ? 1100 : 900,
       // Disable gemini-2.5-flash's hidden "thinking" pass. These replies follow
       // a strict, well-specified Markdown format and don't need chain-of-thought
       // — and when thinking is left on it silently consumes the output budget,
       // truncating the visible reply mid-sentence ("…It seems I only found the").
-      // EXCEPTION: advice/comparison turns use web-search grounding, which needs
-      // the model's reasoning pass left on to weigh sources.
-      ...(opts.useWebSearch ? { useWebSearch: true } : { thinkingBudget: 0 }),
+      // EXCEPTION: advice/comparison turns use web-search grounding, but we still
+      // CAP the reasoning pass (vs. leaving it unbounded/dynamic) so it can't
+      // balloon latency — the format is strict and ~250 words, so a small budget
+      // is plenty. This is the main lever that takes advice from ~12s toward ~6s.
+      ...(opts.useWebSearch
+        ? { useWebSearch: true, thinkingBudget: 512 }
+        : { thinkingBudget: 0 }),
       retries: 1,
-      timeoutMs: opts.useWebSearch ? 18_000 : 12_000,
+      timeoutMs: opts.useWebSearch ? 14_000 : 12_000,
     });
     return result.text.trim() || null;
   } catch (error) {
@@ -362,6 +367,52 @@ export async function generateAssistantReply(ctx: ReplyContext): Promise<string>
   if (ai) return ai;
 
   return fallbackReply(ctx);
+}
+
+/**
+ * Streaming version of {@link generateAssistantReply}, used for buying-advice
+ * turns so the UI can render the answer as it's generated instead of waiting
+ * for the full response. Yields text deltas. Falls back to a single yield of
+ * the non-AI reply when Gemini isn't configured or streaming fails.
+ */
+export async function* streamAssistantReply(
+  ctx: ReplyContext,
+): AsyncGenerator<string, void, unknown> {
+  // Streaming is Gemini-only here; if it's unavailable, emit a one-shot reply.
+  if (!isGeminiConfigured()) {
+    yield await generateAssistantReply(ctx);
+    return;
+  }
+
+  const historyMessages = (ctx.history ?? [])
+    .slice(-8)
+    .filter((m) => m.content.trim())
+    .map((m) => ({ role: m.role, content: m.content.slice(0, 1200) }));
+
+  const prompt = [...historyMessages, { role: "user", content: buildUserContext(ctx) }]
+    .map((m) => `${m.role === "assistant" ? "Assistant" : "User"}:\n${m.content}`)
+    .join("\n\n");
+
+  try {
+    let emitted = false;
+    for await (const delta of generateGeminiTextStream(prompt, {
+      system: SYSTEM_PROMPT,
+      temperature: 0.55,
+      maxOutputTokens: 1100,
+      thinkingBudget: 512,
+      useWebSearch: ctx.adviceMode,
+    })) {
+      emitted = true;
+      yield delta;
+    }
+    if (!emitted) yield fallbackReply(ctx);
+  } catch (error) {
+    console.error(
+      "[generate-reply] streaming failed",
+      error instanceof Error ? error.message : "unknown error",
+    );
+    yield fallbackReply(ctx);
+  }
 }
 
 export function isAiEnabled(): boolean {

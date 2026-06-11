@@ -1,6 +1,39 @@
-import { generateAssistantReply, type ChatHistoryMessage } from "../ai/generate-reply";
+import {
+  generateAssistantReply,
+  type ChatHistoryMessage,
+  type ReplyContext,
+} from "../ai/generate-reply";
 import type { ChatResponse, LearningProfile, SessionState } from "../types";
-import { resolveChatTurn } from "./turn";
+import { resolveChatTurn, type ResolvedChatTurn } from "./turn";
+
+/**
+ * Build the reply context for a resolved turn. Shared by the buffered
+ * {@link processMessage} path and the streaming advice endpoint so both feed the
+ * model the exact same context.
+ */
+export function buildReplyContext(
+  message: string,
+  turn: ResolvedChatTurn,
+  history?: ChatHistoryMessage[],
+): ReplyContext {
+  return {
+    userMessage: message.trim(),
+    action: turn.action,
+    clarifyQuestion: turn.clarifyQuestion,
+    zipCode: turn.zipCode,
+    query: turn.query ?? turn.session.intent.query,
+    gender: turn.session.intent.gender,
+    ageGroup: turn.session.intent.ageGroup,
+    nearStores: turn.nearStores,
+    productResults: turn.productResults,
+    retrievalPayload: turn.retrievalPayload,
+    commerceInsight: turn.commerceInsight ?? turn.productResults?.intelligenceInsight,
+    referenceProductTitle: turn.referenceProductTitle,
+    history,
+    intent: turn.session.intent,
+    adviceMode: turn.adviceMode,
+  };
+}
 
 export async function processMessage(
   message: string,
@@ -21,23 +54,9 @@ export async function processMessage(
     progressive,
   );
 
-  const reply = await generateAssistantReply({
-    userMessage: message.trim(),
-    action: turn.action,
-    clarifyQuestion: turn.clarifyQuestion,
-    zipCode: turn.zipCode,
-    query: turn.query ?? turn.session.intent.query,
-    gender: turn.session.intent.gender,
-    ageGroup: turn.session.intent.ageGroup,
-    nearStores: turn.nearStores,
-    productResults: turn.productResults,
-    retrievalPayload: turn.retrievalPayload,
-    commerceInsight: turn.commerceInsight ?? turn.productResults?.intelligenceInsight,
-    referenceProductTitle: turn.referenceProductTitle,
-    history,
-    intent: turn.session.intent,
-    adviceMode: turn.adviceMode,
-  });
+  const reply = await generateAssistantReply(
+    buildReplyContext(message, turn, history),
+  );
 
   return {
     reply,

@@ -305,6 +305,136 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
     [user, updateAddress],
   );
 
+  // Apply the per-turn session updates returned by the server (session state,
+  // learning profile, and ZIP sync). Shared by the buffered and streaming
+  // request paths so both stay in sync.
+  const applySessionSideEffects = useCallback(
+    (sess: SessionState | undefined) => {
+      if (!sess) return;
+      setSession(sess);
+      if (sess.intent?.query) {
+        setLearningProfile(
+          learnFromSearch({
+            query: sess.intent.query,
+            category: sess.intent.category,
+            gender: sess.intent.gender,
+            ageGroup: sess.intent.ageGroup,
+            zipCode: sess.intent.zipCode,
+          }),
+        );
+      }
+      if (sess.intent?.zipCode) {
+        const z = sess.intent.zipCode;
+        if (isValidZip(z) && z !== zipRef.current) {
+          setZipCode(z);
+          zipRef.current = z;
+        }
+        persistAddress({
+          ...(loadAddress() ?? { label: "Home" }),
+          zipCode: z,
+        });
+      }
+    },
+    [persistAddress],
+  );
+
+  // Stream a buying-advice reply, rendering it token-by-token. Inserts an empty
+  // assistant bubble and fills it as NDJSON frames arrive from the server.
+  const streamAdviceReply = useCallback(
+    async ({
+      body,
+      applySession,
+    }: {
+      body: string;
+      applySession: (sess: SessionState | undefined) => void;
+    }) => {
+      const res = await fetch("/api/chat/advice-stream", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body,
+      });
+      if (!res.ok || !res.body) throw new Error(`advice-stream ${res.status}`);
+
+      const assistantId = uid();
+      setMessages((prev) => [
+        ...prev,
+        { id: assistantId, role: "assistant", content: "", timestamp: Date.now() },
+      ]);
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let acc = "";
+
+      const handleFrame = (frame: Record<string, unknown>) => {
+        if (frame.type === "meta") {
+          applySession(frame.session as SessionState | undefined);
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantId
+                ? {
+                    ...m,
+                    resolvedQuery: frame.resolvedQuery as string | undefined,
+                    productResults: frame.productResults as ChatMessage["productResults"],
+                    commerceInsight: frame.commerceInsight as ChatMessage["commerceInsight"],
+                    compareMode: frame.compareMode as boolean | undefined,
+                    chips: frame.chips as string[] | undefined,
+                    conversationDebug:
+                      frame.conversationDebug as ChatMessage["conversationDebug"],
+                  }
+                : m,
+            ),
+          );
+        } else if (frame.type === "delta") {
+          acc += (frame.text as string) ?? "";
+          setMessages((prev) =>
+            prev.map((m) => (m.id === assistantId ? { ...m, content: acc } : m)),
+          );
+        }
+      };
+
+      const drain = (chunk: string) => {
+        buffer += chunk;
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          try {
+            handleFrame(JSON.parse(line));
+          } catch {
+            /* ignore partial/non-JSON line */
+          }
+        }
+      };
+
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        drain(decoder.decode(value, { stream: true }));
+      }
+      if (buffer.trim()) {
+        try {
+          handleFrame(JSON.parse(buffer));
+        } catch {
+          /* ignore */
+        }
+      }
+
+      // If the stream produced no text at all, show a graceful fallback.
+      if (!acc.trim()) {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId
+              ? { ...m, content: "Sorry — I couldn't put that together. Try again?" }
+              : m,
+          ),
+        );
+      }
+    },
+    [],
+  );
+
   const scrollToBottom = useCallback(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
@@ -450,25 +580,53 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
         properties: { query: trimmed, source: "chat" },
       });
 
+      const requestBody = JSON.stringify({
+        message: trimmed,
+        session: sessionRef.current,
+        // Send undefined (not "") when no ZIP is set, so the server falls
+        // back to the session's stored ZIP instead of treating an empty
+        // string as an intentional "no ZIP" override.
+        zipCode: zipRef.current || zipCode || undefined,
+        learningProfile,
+        progressive: true,
+        history: [...messagesRef.current, userMsg].slice(-10).map((m) => ({
+          role: m.role,
+          content: m.content,
+        })),
+      });
+
+      // Buying-advice turns stream token-by-token so the answer starts
+      // appearing immediately ("typing") instead of waiting ~10s for the whole
+      // reply. Speed is the product, so advice goes through the streaming route.
+      if (looksLikeAdviceRequest(trimmed)) {
+        try {
+          await streamAdviceReply({
+            body: requestBody,
+            applySession: applySessionSideEffects,
+          });
+        } catch (err) {
+          console.error("[chat] advice stream failed:", err);
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: uid(),
+              role: "assistant",
+              content: "Something went wrong — please try again.",
+              timestamp: Date.now(),
+            },
+          ]);
+        } finally {
+          setLoading(false);
+        }
+        return;
+      }
+
       try {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-            body: JSON.stringify({
-            message: trimmed,
-            session: sessionRef.current,
-            // Send undefined (not "") when no ZIP is set, so the server falls
-            // back to the session's stored ZIP instead of treating an empty
-            // string as an intentional "no ZIP" override.
-            zipCode: zipRef.current || zipCode || undefined,
-            learningProfile,
-            progressive: true,
-            history: [...messagesRef.current, userMsg].slice(-10).map((m) => ({
-              role: m.role,
-              content: m.content,
-            })),
-          }),
+          body: requestBody,
         });
 
         if (!res.ok) {
@@ -478,35 +636,9 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
         }
 
         const data = await res.json();
-        setSession(data.session);
-
-        if (data.session?.intent?.query) {
-          setLearningProfile(
-            learnFromSearch({
-              query: data.session.intent.query,
-              category: data.session.intent.category,
-              gender: data.session.intent.gender,
-              ageGroup: data.session.intent.ageGroup,
-              zipCode: data.session.intent.zipCode,
-            }),
-          );
-        }
-
-        if (data.session?.intent?.zipCode) {
-          const z = data.session.intent.zipCode;
-          // Sync the ZIP pill + ref so a ZIP that was set inside the chat
-          // (e.g. via "add ZIP") isn't lost on the next search. Without this,
-          // the next request sends an empty zipCode and clobbers the one the
-          // user already set, making "ships to …" fall back to the default.
-          if (isValidZip(z) && z !== zipRef.current) {
-            setZipCode(z);
-            zipRef.current = z;
-          }
-          persistAddress({
-            ...(loadAddress() ?? { label: "Home" }),
-            zipCode: z,
-          });
-        }
+        // setSession + learning profile + ZIP sync (see helper for the ZIP
+        // clobber note).
+        applySessionSideEffects(data.session);
 
         const assistantMsg: ChatMessage = {
           id: uid(),
@@ -616,7 +748,16 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
         setLoading(false);
       }
     },
-    [loading, zipCode, persistAddress, learningProfile, router, inputHint],
+    [
+      loading,
+      zipCode,
+      persistAddress,
+      learningProfile,
+      router,
+      inputHint,
+      applySessionSideEffects,
+      streamAdviceReply,
+    ],
   );
 
   useEffect(() => {

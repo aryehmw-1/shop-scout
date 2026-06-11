@@ -83,6 +83,39 @@ export async function identifyProductFromImage(
   return cleaned;
 }
 
+/**
+ * Streaming variant of {@link generateGeminiText}. Yields the answer in
+ * incremental text deltas as the model produces them, so the UI can start
+ * "typing" the reply immediately instead of waiting for the whole response.
+ * Used for buying-advice turns, where perceived speed matters most.
+ */
+export async function* generateGeminiTextStream(
+  prompt: string,
+  options: GenerateTextOptions = {},
+): AsyncGenerator<string, void, unknown> {
+  const model = getGeminiModel(options.model);
+  const ai = new GoogleGenAI({ apiKey: getGeminiApiKey() });
+
+  const stream = await ai.models.generateContentStream({
+    model,
+    contents: prompt,
+    config: {
+      systemInstruction: options.system,
+      temperature: options.temperature ?? 0.4,
+      maxOutputTokens: options.maxOutputTokens ?? 700,
+      ...(options.thinkingBudget !== undefined
+        ? { thinkingConfig: { thinkingBudget: options.thinkingBudget } }
+        : {}),
+      ...(options.useWebSearch ? { tools: [{ googleSearch: {} }] } : {}),
+    },
+  });
+
+  for await (const chunk of stream) {
+    const text = chunk.text;
+    if (text) yield text;
+  }
+}
+
 export async function generateGeminiText(
   prompt: string,
   options: GenerateTextOptions = {},
