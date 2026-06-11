@@ -160,6 +160,34 @@ textarea {
   animation: fade-in 0.35s ease-out forwards;
 }
 
+/* Smooth page-to-page transition. Applied by app/template.tsx, which re-mounts
+   on every route change, so tapping Saved / Compare / Inventory fades the new
+   page in gently instead of snapping. Kept short so navigation still feels
+   instant. */
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-in {
+  animation: page-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-page-in {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 .animate-float {
   animation: float 4s ease-in-out infinite;
 }
