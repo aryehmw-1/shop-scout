@@ -1019,7 +1019,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
         ) : (
           /* ── ACTIVE CHAT: messages + floating bottom bar ── */
           <div className="relative flex min-h-0 flex-1 flex-col">
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pt-6 pb-20 lg:px-8">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pt-6 pb-20 lg:px-8 lg:pb-24">
               <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-1 sm:px-2">
                 {messages.filter((m) => m.id !== "welcome").map((msg) => (
                   <ChatMessageBubble
