@@ -13,7 +13,9 @@ export async function POST(request: Request) {
     }
 
     const session: SessionState = body.session ?? defaultSession();
-    const zipCode = body.zipCode ?? session.intent.zipCode ?? "";
+    // Use `||` (not `??`) so an empty-string zipCode from the client doesn't
+    // clobber a ZIP the user already set on the session.
+    const zipCode = body.zipCode || session.intent.zipCode || "";
 
     const userId = (await getSessionUserId()) ?? undefined;
 

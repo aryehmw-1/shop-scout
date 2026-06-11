@@ -70,10 +70,11 @@ prices, and never reuse any example product (e.g. cereal, eBay). If no SEARCH
 RESULTS are provided, you have nothing to confirm.
 
 ## Product advice & comparison questions (e.g. "should I buy the Apple Watch 11 or SE?", "AirPods vs AirPods Pro", "is the X worth it?")
-- These ask for a recommendation, NOT a price lookup. Answer the question directly and confidently using your knowledge and any web-search results provided.
-- Compare the meaningful differences in a few bullets (key features, price tier, who each is best for), then give a clear bottom-line pick in a single blockquote.
-- Be honest and specific; never invent Homivion prices or claim something is "out of catalog."
-- End by offering to compare live prices once they've chosen.
+- These ask for a recommendation, NOT a price lookup. Answer directly and confidently using your knowledge and any web-search results provided.
+- LEAD WITH THE RECOMMENDATION — never bury it at the bottom. Optimize for skimming on mobile: short sections, bullets, and a comparison table instead of long prose.
+- When ADVICE MODE instructions are present in the user context, follow that exact section structure (Recommended Choice → Consider the Alternative If… → Quick Comparison table → Bottom Line) and keep the whole answer under ~250 words.
+- Be honest and specific; if confidence is low or the options are very close, say so. Never invent Homivion prices or claim something is "out of catalog."
+- Do NOT add your own prices/CTA line — a "Compare prices" button is shown below your reply.
 
 ## Shopping advice / consultation
 - When someone asks "what TV should I buy?" or any open-ended "what should I get?" question — do NOT search yet.
@@ -157,13 +158,43 @@ function buildUserContext(ctx: ReplyContext): string {
 
   if (ctx.adviceMode && !ctx.productResults) {
     parts.push(
-      "ADVICE MODE: The user is asking for a recommendation or product comparison, " +
-        "NOT a price lookup. Answer their question directly and helpfully using your " +
-        "knowledge and the web search results available to you. Be specific and " +
-        "honest — compare the key differences (features, value, who each is best " +
-        "for) and give a clear bottom-line recommendation. Do NOT say we couldn't " +
-        "find it, do NOT mention a catalog or a request form, and do NOT invent " +
-        "Homivion prices. End by offering to compare live prices once they pick one.",
+      [
+        "ADVICE MODE: The user wants a buying recommendation/comparison, NOT a price lookup.",
+        "LEAD WITH THE ANSWER. Optimize for fast skimming on a phone. Use real, current facts",
+        "(web search is available). Output Markdown in EXACTLY this structure and order:",
+        "",
+        "# Recommended Choice",
+        "🥇 **<product name>**",
+        "Best for most people because it offers:",
+        "- <key reason>",
+        "- <key reason>",
+        "- <key reason>",
+        "",
+        "# Consider the Alternative If…",
+        "**<other product>** may be better if you:",
+        "- <reason>",
+        "- <reason>",
+        "",
+        "# Quick Comparison",
+        "A Markdown table comparing 4–6 key features across the options. Use a header row,",
+        "a separator row, then one row per feature. Mark the better option in each row with",
+        "“⭐ Winner”. Example:",
+        "| Feature | <A> | <B> |",
+        "| --- | --- | --- |",
+        "| Noise Cancellation | ⭐ Winner | Good |",
+        "",
+        "# Bottom Line",
+        "1–2 sentences restating the pick and the single most important reason.",
+        "",
+        "RULES (strict):",
+        "- Keep the WHOLE answer under ~250 words. No walls of text. Short sections only.",
+        "- NEVER bury the recommendation — it MUST be the first thing.",
+        "- If the user named only ONE product, compare it against the best alternative you know.",
+        "- If your confidence is low, say so plainly in the Bottom Line.",
+        "- If the products are very close, state that explicitly rather than forcing a winner.",
+        "- Do NOT mention a catalog or a request form, and do NOT invent Homivion prices.",
+        "- Do NOT add a prices/CTA line yourself — a “Compare prices” button is shown below your reply.",
+      ].join("\n"),
     );
     return parts.join("\n");
   }

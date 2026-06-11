@@ -189,9 +189,37 @@ function isGeneralKnowledgeQuestion(text: string): boolean {
   return true;
 }
 
+/**
+ * Conservative keyboard-mash / gibberish detector for a SINGLE-token query
+ * (e.g. "hjj", "asdfgh", "zzzz"). The goal is to avoid surfacing the "request
+ * this product" form for obvious nonsense, WITHOUT blocking real short queries.
+ * Product names get weird, so we only flag the clear cases and keep an allowlist
+ * of legitimate consonant-only terms (tv, ps5, ssd, gpu, oled, …).
+ */
+const NON_GIBBERISH_CONSONANT_TERMS = new Set([
+  "tv", "pc", "ps", "psp", "ps5", "ps4", "vr", "dvd", "hd", "ssd", "hdd", "gpu",
+  "cpu", "usb", "hdmi", "rgb", "led", "lcd", "oled", "qled", "dslr", "sd", "xl",
+  "xs", "xxl", "lg", "hp", "tws", "anc", "rtx", "gtx", "nvme", "mtg",
+]);
+function looksLikeGibberish(text: string): boolean {
+  const t = text.trim().toLowerCase();
+  // Only judge single tokens — multi-word queries are almost never mash.
+  if (/\s/.test(t)) return false;
+  // Anything with a digit reads as a model number (ps5, rtx4090, a51) — keep it.
+  if (/\d/.test(t)) return false;
+  if (!/^[a-z]+$/.test(t)) return false;
+  if (NON_GIBBERISH_CONSONANT_TERMS.has(t)) return false;
+  // The same letter typed 3+ times in a row ("zzzz", "aaa", "hjjj").
+  if (/(.)\1\1/.test(t)) return true;
+  // No vowels at all in a 3+ letter alphabetic token ("hjj", "zxcv", "qwrt").
+  if (t.length >= 3 && !/[aeiou]/.test(t)) return true;
+  return false;
+}
+
 function isProductSearchMessage(text: string): boolean {
   const t = text.trim();
   if (t.length < 2 || isValidZip(t) || GREETING.test(t)) return false;
+  if (looksLikeGibberish(t)) return false;
   if (extractUrl(t)) return false;
   if (isRecheckMessage(t) || isFollowUpAboutResults(t)) return false;
   if (/^(help|how does this work|\?)$/i.test(t)) return false;
@@ -770,7 +798,8 @@ export async function resolveChatTurn(
   }
 
   const shouldSearch =
-    isProductSearchMessage(text) || (phase === "ready" && !GREETING.test(text));
+    !looksLikeGibberish(text) &&
+    (isProductSearchMessage(text) || (phase === "ready" && !GREETING.test(text)));
 
   if (shouldSearch) {
     const merging = shouldMergeWithPreviousSearch(text, session);

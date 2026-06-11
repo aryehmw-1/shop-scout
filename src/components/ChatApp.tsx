@@ -458,7 +458,10 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
             body: JSON.stringify({
             message: trimmed,
             session: sessionRef.current,
-            zipCode: zipRef.current || zipCode,
+            // Send undefined (not "") when no ZIP is set, so the server falls
+            // back to the session's stored ZIP instead of treating an empty
+            // string as an intentional "no ZIP" override.
+            zipCode: zipRef.current || zipCode || undefined,
             learningProfile,
             progressive: true,
             history: [...messagesRef.current, userMsg].slice(-10).map((m) => ({
@@ -491,6 +494,14 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
 
         if (data.session?.intent?.zipCode) {
           const z = data.session.intent.zipCode;
+          // Sync the ZIP pill + ref so a ZIP that was set inside the chat
+          // (e.g. via "add ZIP") isn't lost on the next search. Without this,
+          // the next request sends an empty zipCode and clobbers the one the
+          // user already set, making "ships to …" fall back to the default.
+          if (isValidZip(z) && z !== zipRef.current) {
+            setZipCode(z);
+            zipRef.current = z;
+          }
           persistAddress({
             ...(loadAddress() ?? { label: "Home" }),
             zipCode: z,
@@ -710,7 +721,10 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
                 ? "Paste a product page URL"
                 : "Ask for a product or paste a link"
           }
-          className="w-full resize-none overflow-y-auto rounded-2xl border border-orange-200/70 bg-white py-3.5 pl-12 pr-14 text-[15px] text-ink-800 shadow-[0_8px_30px_rgba(234,88,12,0.12)] placeholder:text-ink-400 focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200/50"
+          /* text-base (16px) is required: iOS Safari auto-zooms the page when a
+             focused input has a font smaller than 16px. After a search the focus
+             returns here, so anything under 16px makes the page zoom in. */
+          className="w-full resize-none overflow-y-auto rounded-2xl border border-orange-200/70 bg-white py-3.5 pl-12 pr-14 text-base text-ink-800 shadow-[0_8px_30px_rgba(234,88,12,0.12)] placeholder:text-ink-400 focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200/50"
           style={{ maxHeight: "14rem" }}
           disabled={loading}
         />
