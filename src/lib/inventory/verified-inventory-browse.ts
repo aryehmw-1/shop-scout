@@ -52,8 +52,12 @@ export async function loadVerifiedInventoryBrowse(
 
   const rows = await prisma.priceQuote.findMany({
     where: {
+      // Inventory shows ONLY products ingested via the Bright Data pipeline.
+      providerSource: "bright_data",
       source: { in: VERIFIED_SOURCES },
       expiresAt: { gt: now },
+      // Public, published + approved canonical products only.
+      product: { published: true, validationStatus: "approved" },
     },
     include: {
       product: true,

@@ -10,7 +10,7 @@ import { ProductGrid } from "./ProductGrid";
 import { CompareTable } from "./CompareTable";
 import { ProductImage } from "./ProductImage";
 import { PhotoSourceLabel } from "./PhotoSourceLabel";
-import { LayoutGrid, List, Truck, AlertTriangle, Loader2, ExternalLink } from "lucide-react";
+import { LayoutGrid, List, Truck, AlertTriangle, Loader2, ExternalLink, Search, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { LinkProductHero } from "./LinkProductHero";
 import { CompareExperience } from "./CompareExperience";
@@ -173,6 +173,9 @@ export function ProductResults({
   // User opted to see the available size even though it doesn't match the
   // volume they asked for (e.g. show gallon milk after requesting half-gallon).
   const [showMismatchAnyway, setShowMismatchAnyway] = useState(false);
+  // Version C: when we have similar alternatives, the request form stays collapsed
+  // behind a button so users review alternatives first (keeps the page clean).
+  const [showRequestForm, setShowRequestForm] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -264,12 +267,34 @@ export function ProductResults({
             <SimilarAlternatives similar={similarAlternatives} exactCount={0} searchQuery={searchQuery} />
           </div>
         )}
+        {/* Case 1 (similar exist) → collapsible request CTA so the form is opt-in. */}
+        {hasSimilar ? (
+          <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-4 py-3">
+            <button
+              type="button"
+              onClick={() => setShowRequestForm((v) => !v)}
+              aria-expanded={showRequestForm}
+              className="flex w-full items-center justify-between gap-2 text-left"
+            >
+              <span className="flex items-center gap-2 text-sm font-semibold text-stone-800">
+                <Search size={16} className="text-stone-400" aria-hidden />
+                Can&apos;t find what you&apos;re looking for? Request this exact product
+              </span>
+              <ChevronDown
+                size={18}
+                className={`shrink-0 text-stone-400 transition-transform ${showRequestForm ? "rotate-180" : ""}`}
+                aria-hidden
+              />
+            </button>
+            {showRequestForm && (
+              <div className="mt-3 border-t border-stone-200 pt-3">
+                <ProductRequestForm searchQuery={q} />
+              </div>
+            )}
+          </div>
+        ) : (
         <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-5 py-5 space-y-4">
-          {hasSimilar ? (
-            <p className="text-base font-semibold text-stone-900 leading-relaxed">
-              Still not it? Request the exact product and we&apos;ll add it.
-            </p>
-          ) : volumeMissing && q ? (
+          {volumeMissing && q ? (
             <p className="text-sm text-stone-600 leading-relaxed">
               We don&apos;t carry{" "}
               <span className="font-semibold text-stone-800">{q}</span>{" "}
@@ -309,6 +334,7 @@ export function ProductResults({
             </button>
           )}
         </div>
+        )}
         {results.searchDebug && searchDebugEnabledClient() && (
           <SearchPipelineDebugPanel debug={results.searchDebug} />
         )}
