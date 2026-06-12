@@ -1,7 +1,19 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-12T17:44:58.311Z",
+  "updatedAt": "2026-06-12T17:57:41.463Z",
   "events": [
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "grocery"
+      },
+      "at": "2026-06-12T17:57:41.463Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "grocery",
+      "at": "2026-06-12T17:57:41.460Z"
+    },
     {
       "event": "session_return",
       "sessionId": "s_mqb7vbqq_vr6y9e",

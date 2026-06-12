@@ -551,6 +551,8 @@ export function ProductResults({
                 offers={online}
                 onShopClick={onShopClick}
                 searchQuery={searchQuery}
+                onSave={onSave}
+                savedIds={savedIds}
               />
             )}
           </div>
@@ -563,6 +565,8 @@ export function ProductResults({
               offers={online}
               onShopClick={onShopClick}
               searchQuery={searchQuery}
+              onSave={onSave}
+              savedIds={savedIds}
             />
           </div>
         </section>

@@ -5,7 +5,7 @@ import { ProductImage } from "./ProductImage";
 import { OutboundLink } from "./OutboundLink";
 import { FreshnessIndicator } from "./FreshnessIndicator";
 import { formatPrice } from "@/lib/utils/format";
-import { Crown, ExternalLink, TrendingDown } from "lucide-react";
+import { Crown, ExternalLink, TrendingDown, Heart } from "lucide-react";
 
 /**
  * Single, honest shipping statement for an offer. We never double up with a
@@ -44,6 +44,8 @@ interface OfferListBProps {
   onShopClick?: (offer: ProductOffer) => void;
   searchQuery?: string;
   variant?: "exact" | "similar";
+  onSave?: (offer: ProductOffer) => void;
+  savedIds?: Set<string>;
 }
 
 /**
@@ -52,7 +54,7 @@ interface OfferListBProps {
  * price pinned to the far right above a "View at store" button. Used at `lg`+;
  * phones use the compact `MobileOfferList`.
  */
-export function DesktopOfferListB({ offers, onShopClick, searchQuery, variant = "exact" }: OfferListBProps) {
+export function DesktopOfferListB({ offers, onShopClick, searchQuery, variant = "exact", onSave, savedIds }: OfferListBProps) {
   if (!offers.length) return null;
   const isSimilar = variant === "similar";
   const highest = maxDelivered(offers);
@@ -74,6 +76,20 @@ export function DesktopOfferListB({ offers, onShopClick, searchQuery, variant = 
               best ? "border-orange-300 ring-1 ring-orange-200/70" : "border-stone-200"
             }`}
           >
+            {onSave && (
+              <button
+                type="button"
+                onClick={() => onSave(offer)}
+                aria-label={savedIds?.has(offer.id) ? "Saved" : "Save product"}
+                className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white ring-1 ring-stone-200 transition hover:bg-stone-50 active:scale-95"
+              >
+                <Heart
+                  size={16}
+                  className={savedIds?.has(offer.id) ? "fill-rose-500 text-rose-500" : "text-stone-400"}
+                  aria-hidden
+                />
+              </button>
+            )}
             <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-stone-50 ring-1 ring-stone-100">
               <ProductImage
                 src={offer.imageUrl}

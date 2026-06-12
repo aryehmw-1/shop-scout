@@ -8,7 +8,7 @@ import { FreshnessIndicator } from "./FreshnessIndicator";
 import { offerShipping } from "./OfferListB";
 import { TrustModal } from "./TrustModal";
 import { formatPrice } from "@/lib/utils/format";
-import { Crown, ExternalLink, ShieldCheck, TrendingDown } from "lucide-react";
+import { Crown, ExternalLink, ShieldCheck, TrendingDown, Heart } from "lucide-react";
 
 /**
  * Compact, phone-only "verified pricing" note (format V-2). Shows a single
@@ -55,6 +55,8 @@ interface MobileOfferListProps {
   /** "similar" renders the same card but badged "Similar" (no Best, no price
    *  comparison pills) — for alternative products, not the same item. */
   variant?: "exact" | "similar";
+  onSave?: (offer: ProductOffer) => void;
+  savedIds?: Set<string>;
 }
 
 /**
@@ -64,7 +66,7 @@ interface MobileOfferListProps {
  * honest shipping line, and a "View" pill. Used only below `lg`; desktop uses
  * the roomier `DesktopOfferListB`.
  */
-export function MobileOfferList({ offers, onShopClick, searchQuery, variant = "exact" }: MobileOfferListProps) {
+export function MobileOfferList({ offers, onShopClick, searchQuery, variant = "exact", onSave, savedIds }: MobileOfferListProps) {
   if (!offers.length) return null;
   const isSimilar = variant === "similar";
   const highest = Math.max(
@@ -91,6 +93,24 @@ export function MobileOfferList({ offers, onShopClick, searchQuery, variant = "e
               best ? "border-orange-300 ring-1 ring-orange-200/70" : "border-stone-200"
             }`}
           >
+            {onSave && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onSave(offer);
+                }}
+                aria-label={savedIds?.has(offer.id) ? "Saved" : "Save product"}
+                className="absolute right-1.5 top-1.5 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 ring-1 ring-stone-200 transition active:scale-95"
+              >
+                <Heart
+                  size={14}
+                  className={savedIds?.has(offer.id) ? "fill-rose-500 text-rose-500" : "text-stone-400"}
+                  aria-hidden
+                />
+              </button>
+            )}
             <div className="relative h-[68px] w-[68px] shrink-0 overflow-hidden rounded-lg bg-stone-50 ring-1 ring-stone-100">
               <ProductImage
                 src={offer.imageUrl}
