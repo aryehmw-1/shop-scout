@@ -1,7 +1,62 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-12T17:57:41.463Z",
+  "updatedAt": "2026-06-12T18:11:37.511Z",
   "events": [
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "grocery"
+      },
+      "at": "2026-06-12T18:11:37.511Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "grocery",
+      "at": "2026-06-12T18:11:37.508Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "grocery"
+      },
+      "at": "2026-06-12T18:09:20.506Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "grocery",
+      "at": "2026-06-12T18:09:20.503Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqb8qbt7_dsrgni",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-12T18:09:19.160Z"
+    },
+    {
+      "event": "offer_click",
+      "canonicalId": "cat-ikea-lack-coffee-table---black-brown-35-38x21-58-mnsdcx",
+      "retailer": "ikea",
+      "sessionId": "s_mqb8qbt7_dsrgni",
+      "meta": {
+        "clickedWinner": true,
+        "cohort": "general"
+      },
+      "at": "2026-06-12T18:09:04.618Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "grocery"
+      },
+      "at": "2026-06-12T18:06:41.428Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "grocery",
+      "at": "2026-06-12T18:06:41.425Z"
+    },
     {
       "event": "recommendation_no_match",
       "meta": {

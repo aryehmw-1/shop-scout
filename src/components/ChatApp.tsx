@@ -135,6 +135,10 @@ interface ChatAppProps {
   inputHint?: "link";
 }
 
+/** Approx height (px) of the composer textarea on a single line — anything taller
+ *  is "extra" growth that the spacer compensates for. */
+const SINGLE_LINE_INPUT_H = 52;
+
 export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps) {
   const router = useRouter();
   const { user, updateAddress, syncSavedOffers } = useAuth();
@@ -153,6 +157,11 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
   const [learningProfile, setLearningProfile] = useState(loadLearningProfile);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  // Extra height the growing composer adds beyond one line — drives a spacer so
+  // a tall input never covers the latest results, and the view shifts back when
+  // text is deleted.
+  const [inputExtraHeight, setInputExtraHeight] = useState(0);
   const sessionRef = useRef(session);
   const messagesRef = useRef(messages);
   // Always holds the freshest ZIP so a search can never send a stale value from
@@ -168,8 +177,17 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
   useEffect(() => {
     if (input === "" && inputRef.current) {
       inputRef.current.style.height = "auto";
+      setInputExtraHeight(0);
     }
   }, [input]);
+
+  // Keep the conversation pinned to the bottom as the composer grows/shrinks, so
+  // the latest results stay visible just above the input (and slide back down
+  // when the user deletes text).
+  useEffect(() => {
+    const sc = scrollContainerRef.current;
+    if (sc) sc.scrollTop = sc.scrollHeight;
+  }, [inputExtraHeight]);
 
   useEffect(() => {
     sessionRef.current = session;
@@ -866,7 +884,11 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
             setInput(e.target.value);
             const el = e.target;
             el.style.height = "auto";
-            el.style.height = Math.min(el.scrollHeight, 14 * 16) + "px";
+            const nextH = Math.min(el.scrollHeight, 14 * 16);
+            el.style.height = nextH + "px";
+            // Grow a spacer + keep the conversation anchored so a tall input
+            // bar never hides the latest results (Claude-style composer growth).
+            setInputExtraHeight(Math.max(0, nextH - SINGLE_LINE_INPUT_H));
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -1012,7 +1034,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
         ) : (
           /* ── ACTIVE CHAT: messages + floating bottom bar ── */
           <div className="relative flex min-h-0 flex-1 flex-col">
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pt-6 pb-20 lg:px-8 lg:pb-24">
+            <div ref={scrollContainerRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-2 pt-6 pb-20 lg:px-8 lg:pb-24">
               <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-1 sm:px-2">
                 {messages.filter((m) => m.id !== "welcome").map((msg) => (
                   <ChatMessageBubble
@@ -1047,6 +1069,9 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
                     </p>
                   </div>
                 )}
+                {/* Grows with the composer so a tall input never covers results;
+                    collapses back as the user deletes text. */}
+                <div aria-hidden style={{ height: inputExtraHeight }} />
                 <div ref={bottomRef} className="h-4" />
               </div>
             </div>

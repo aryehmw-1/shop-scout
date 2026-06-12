@@ -12,7 +12,7 @@ import { createPortal } from "react-dom";
 const mainNav = [
   { href: "/", label: "Compare", icon: Search },
   { href: "/inventory", label: "Inventory", icon: Package },
-  { href: "/saved", label: "Saved", icon: Heart },
+  { href: "/saved", label: "Saved Products", icon: Heart },
 ];
 
 const STORAGE_KEY = "homivion-sidebar-expanded";

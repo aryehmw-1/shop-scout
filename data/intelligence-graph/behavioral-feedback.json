@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-12T13:00:37.478Z",
+  "updatedAt": "2026-06-12T18:09:04.621Z",
   "retailers": {
     "ebay": {
       "clicks": 6,
@@ -17,7 +17,7 @@
       "repeatSelections": 0
     },
     "ikea": {
-      "clicks": 1,
+      "clicks": 2,
       "saves": 0,
       "ignores": 0,
       "reversals": 0,
@@ -56,7 +56,7 @@
       "ignores": 0
     },
     "cat-ikea-lack-coffee-table---black-brown-35-38x21-58-mnsdcx": {
-      "clicks": 1,
+      "clicks": 2,
       "saves": 0,
       "ignores": 0
     }

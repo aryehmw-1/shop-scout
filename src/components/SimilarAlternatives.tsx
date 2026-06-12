@@ -10,6 +10,8 @@ interface Props {
   /** Exact-match offers already shown (to honor the 7-card cap). */
   exactCount: number;
   searchQuery?: string;
+  onSave?: (offer: ProductOffer) => void;
+  savedIds?: Set<string>;
 }
 
 /** Build a ProductOffer so similar items render through the SAME card components
@@ -46,7 +48,7 @@ function similarToOffer(s: SimilarProduct): ProductOffer {
  * (mirroring the "Verified live prices" strip) separates them from the exact
  * offers above.
  */
-export function SimilarAlternatives({ similar, exactCount, searchQuery }: Props) {
+export function SimilarAlternatives({ similar, exactCount, searchQuery, onSave, savedIds }: Props) {
   if (!similar.length) return null;
   const cap = Math.max(0, 7 - exactCount);
   const offers = similar
@@ -68,10 +70,22 @@ export function SimilarAlternatives({ similar, exactCount, searchQuery }: Props)
         </span>
       </div>
       <div className="hidden lg:block">
-        <DesktopOfferListB offers={offers} searchQuery={searchQuery} variant="similar" />
+        <DesktopOfferListB
+          offers={offers}
+          searchQuery={searchQuery}
+          variant="similar"
+          onSave={onSave}
+          savedIds={savedIds}
+        />
       </div>
       <div className="lg:hidden">
-        <MobileOfferList offers={offers} searchQuery={searchQuery} variant="similar" />
+        <MobileOfferList
+          offers={offers}
+          searchQuery={searchQuery}
+          variant="similar"
+          onSave={onSave}
+          savedIds={savedIds}
+        />
       </div>
     </section>
   );

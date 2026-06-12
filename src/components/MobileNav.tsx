@@ -21,7 +21,7 @@ import { APP_NAME } from "@/lib/constants";
 const nav = [
   { href: "/chat", label: "Compare", icon: Search },
   { href: "/inventory", label: "Inventory", icon: Package },
-  { href: "/saved", label: "Saved", icon: Heart },
+  { href: "/saved", label: "Saved Products", icon: Heart },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -63,7 +63,7 @@ export function MobileNav() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open menu"
-        className="fixed left-3 top-2 z-40 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100/70 text-orange-700 ring-1 ring-orange-200/70 shadow-sm transition hover:bg-orange-200/70"
+        className="fixed left-3 top-2 z-40 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-700 ring-1 ring-orange-300/80 shadow-[0_2px_8px_rgba(120,80,30,0.18)] transition hover:bg-orange-200/80"
       >
         <Menu size={20} strokeWidth={2.2} aria-hidden />
       </button>

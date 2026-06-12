@@ -264,7 +264,7 @@ export function ProductResults({
             <p className="mb-1 text-xs text-stone-500">
               Here are similar products you might like instead.
             </p>
-            <SimilarAlternatives similar={similarAlternatives} exactCount={0} searchQuery={searchQuery} />
+            <SimilarAlternatives similar={similarAlternatives} exactCount={0} searchQuery={searchQuery} onSave={onSave} savedIds={savedIds} />
           </div>
         )}
         {/* Case 1 (similar exist) → collapsible request CTA so the form is opt-in. */}
@@ -574,7 +574,7 @@ export function ProductResults({
 
       {similarAlternatives.length > 0 &&
         !(display.matchTiers?.similar?.length ?? 0) && (
-          <SimilarAlternatives similar={similarAlternatives} exactCount={online.length} searchQuery={searchQuery} />
+          <SimilarAlternatives similar={similarAlternatives} exactCount={online.length} searchQuery={searchQuery} onSave={onSave} savedIds={savedIds} />
         )}
 
       {display.catalogFreshnessWarning &&

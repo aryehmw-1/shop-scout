@@ -32,7 +32,7 @@ export default function SavedPage() {
           <div className="mx-auto flex max-w-4xl items-center gap-3">
             <Heart className="text-red-400" fill="currentColor" size={28} />
             <div>
-              <h1 className="text-2xl font-bold text-stone-900">Saved deals</h1>
+              <h1 className="text-2xl font-bold text-stone-900">Saved Products</h1>
               <p className="text-stone-600">
                 Your favorite finds, ready when you are
               </p>
