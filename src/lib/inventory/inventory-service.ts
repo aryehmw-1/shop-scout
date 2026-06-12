@@ -4,7 +4,8 @@ import type { Product, PriceQuote } from "@prisma/client";
 import { prisma } from "../db/prisma";
 import { CATALOG, type CatalogItem } from "../retailers/catalog";
 import { getRetailerMeta } from "../retailers/meta";
-import type { ProductOffer, ProductSearchResults, RetailerId, ShoppingIntent } from "../types";
+import type { ProductOffer, ProductSearchResults, RetailerId, ShoppingIntent, SimilarProduct } from "../types";
+import { affiliateSafeDestination } from "../affiliate/outbound";
 import { storedRowToLiveQuoteFields } from "../indexing/offer-rows";
 import { mergeLivePrices } from "../search/merge-live-prices";
 import { compareViaCatalog } from "../search/connectors/catalog-connector";
@@ -34,7 +35,10 @@ export function demoInventoryFallbackEnabled(): boolean {
 function catalogItemFromProduct(product: Product): CatalogItem | null {
   const existing = CATALOG.find((item) => item.id === product.catalogId);
   if (existing) return existing;
-  if (!demoInventoryFallbackEnabled()) return null;
+  // Not in the static catalog → synthesize from the DB Product. Callers only pass
+  // PUBLISHED + APPROVED products here, so DB-only products (e.g. IKEA, ingested
+  // via Bright Data) are first-class and discoverable, not gated behind the demo
+  // fallback flag.
   return {
     id: product.catalogId,
     title: product.title,
@@ -112,12 +116,24 @@ export async function searchProducts(
   const normalized = query.trim();
   if (normalized.length < 2) return null;
   const now = new Date();
-  const candidates = rankVerifiedInventoryCandidates(normalized).slice(0, filters.limit ?? 5);
-  const catalogIds = candidates.map((candidate) => candidate.catalogId);
+  const limit = filters.limit ?? 5;
+  const candidates = rankVerifiedInventoryCandidates(normalized).slice(0, limit);
+  const staticIds = candidates.map((candidate) => candidate.catalogId);
+
+  // ALWAYS also search the DB by tokens so products imported via the ingestion
+  // pipeline (e.g. IKEA) are discoverable even when the static catalog returns
+  // weak lookalikes for common words ("table", "cabinet"). Reads only published +
+  // approved rows from Postgres (no scraping/AI/Bright Data).
+  const dbIds = await dbProductCatalogIdsForQuery(normalized, limit);
+  const catalogIds = [...new Set([...staticIds, ...dbIds])];
+  // No match at all: return null (never query the whole table).
+  if (catalogIds.length === 0) return null;
 
   const products = await prisma.product.findMany({
     where: {
-      ...(catalogIds.length ? { catalogId: { in: catalogIds } } : {}),
+      catalogId: { in: catalogIds },
+      published: true,
+      validationStatus: "approved",
       ...(filters.category ? { category: filters.category } : {}),
       ...(filters.brand ? { brand: { contains: filters.brand } } : {}),
     },
@@ -131,15 +147,129 @@ export async function searchProducts(
         take: 40,
       },
     },
-    take: filters.limit ?? 5,
+    take: catalogIds.length,
   });
 
-  const ordered = catalogIds.length ?
-    products.sort((a, b) => catalogIds.indexOf(a.catalogId) - catalogIds.indexOf(b.catalogId))
-  : products;
-  const product = ordered.find((row) => row.priceQuotes.length > 0);
-  if (!product) return null;
-  return productToResults(product, { query: normalized });
+  // Among products that actually have offers, pick the MOST RELEVANT to the query
+  // (title/brand token overlap) — so "LACK coffee table" picks the IKEA LACK, not
+  // a grocery lookalike that merely shares the word "coffee".
+  const withQuotes = products.filter((row) => row.priceQuotes.length > 0);
+  if (!withQuotes.length) return null;
+  const tokens = normalized.toLowerCase().split(/\s+/).filter((t) => t.length > 1);
+  const ql = normalized.toLowerCase();
+  const product = withQuotes
+    .map((row) => {
+      const hay = `${row.brand} ${row.title} ${row.category}`.toLowerCase();
+      let score = hay.includes(ql) ? 40 : 0;
+      for (const t of tokens) if (hay.includes(t)) score += 12;
+      return { row, score };
+    })
+    .sort((a, b) => b.score - a.score)[0]!.row;
+  const results = await productToResults(product, { query: normalized });
+
+  // Fill toward 7 cards with clearly-labelled SIMILAR alternatives when there
+  // aren't enough exact-match offers (e.g. single-seller IKEA products).
+  if (results && results.online.length < 5) {
+    results.similar = await findSimilarProducts({
+      category: product.category,
+      excludeCatalogId: product.catalogId,
+      limit: 7 - results.online.length,
+    });
+  }
+  return results;
+}
+
+/**
+ * Postgres token search over PUBLISHED + APPROVED products → relevance-ordered
+ * catalogIds. Used when the static in-memory catalog has no match, so DB-only
+ * products (Bright Data imports like IKEA) are discoverable by chat search.
+ */
+async function dbProductCatalogIdsForQuery(query: string, limit: number): Promise<string[]> {
+  const tokens = query
+    .toLowerCase()
+    .split(/\s+/)
+    .map((t) => t.replace(/[^a-z0-9]/gi, ""))
+    .filter((t) => t.length > 1);
+  if (!tokens.length) return [];
+
+  const rows = await prisma.product.findMany({
+    where: {
+      published: true,
+      validationStatus: "approved",
+      OR: [
+        ...tokens.map((t) => ({ title: { contains: t, mode: "insensitive" as const } })),
+        ...tokens.map((t) => ({ brand: { contains: t, mode: "insensitive" as const } })),
+        ...tokens.map((t) => ({ keywordsJson: { contains: t, mode: "insensitive" as const } })),
+      ],
+    },
+    select: { catalogId: true, title: true, brand: true, category: true, keywordsJson: true },
+    take: 50,
+  });
+
+  const ql = query.toLowerCase();
+  return rows
+    .map((p) => {
+      const hay = `${p.brand} ${p.title} ${p.category} ${p.keywordsJson}`.toLowerCase();
+      let score = hay.includes(ql) ? 40 : 0;
+      for (const t of tokens) if (hay.includes(t)) score += 12;
+      return { catalogId: p.catalogId, score };
+    })
+    .filter((s) => s.score >= 24) // ≥2 token hits or a full-phrase hit
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map((s) => s.catalogId);
+}
+
+/**
+ * Find SIMILAR alternative products (different items) in the same category for
+ * the results grid. Published + approved only; excludes the matched product.
+ * Returns one lightweight card per product (cheapest fresh offer). Never used for
+ * price comparison — these are labelled alternatives.
+ */
+export async function findSimilarProducts(
+  opts: { category: string; excludeCatalogId: string; limit?: number },
+): Promise<SimilarProduct[]> {
+  const now = new Date();
+  const products = await prisma.product.findMany({
+    where: {
+      category: opts.category,
+      published: true,
+      validationStatus: "approved",
+      catalogId: { not: opts.excludeCatalogId },
+    },
+    include: {
+      priceQuotes: {
+        where: {
+          expiresAt: { gt: now },
+          source: { in: ["scraped", "connector_api", "daily_index", "nightly_index"] },
+        },
+        orderBy: { landedCostUsd: "asc" },
+        take: 1,
+      },
+    },
+    orderBy: [{ popularityScore: "desc" }, { searchFrequency: "desc" }],
+    take: (opts.limit ?? 6) * 3, // over-fetch; filter to those with a live offer
+  });
+
+  const out: SimilarProduct[] = [];
+  for (const p of products) {
+    const q = p.priceQuotes[0];
+    if (!q) continue;
+    const retailer = q.retailerId as RetailerId;
+    out.push({
+      catalogId: p.catalogId,
+      title: p.title,
+      brand: p.brand,
+      imageUrl: p.imageUrl ?? q.imageUrl ?? "",
+      retailer,
+      retailerName: getRetailerMeta(retailer).name,
+      price: q.priceUsd,
+      productUrl: q.productUrl,
+      affiliateUrl: affiliateSafeDestination(retailer, q.productUrl, q.affiliateUrl),
+    });
+    if (out.length >= (opts.limit ?? 6)) break;
+  }
+  return out;
 }
 
 export async function getProductById(id: string): Promise<InventoryProductDetails | null> {

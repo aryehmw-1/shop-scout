@@ -99,6 +99,14 @@ const ALL_RETAILERS: RetailerMeta[] = [
     types: ["grocery", "general", "clothing"],
   },
   {
+    id: "ikea",
+    name: "IKEA",
+    shortName: "IKEA",
+    color: "#0058A3",
+    tagline: "Affordable home furnishings",
+    types: ["home"],
+  },
+  {
     id: "aldi",
     name: "Aldi",
     shortName: "Aldi",

@@ -386,6 +386,12 @@ export async function resolveVerifiedInventoryQuery(
     };
   }
 
+  // Static catalog missed. Fall back to DB-backed product search so products
+  // imported via the ingestion pipeline (e.g. IKEA) are discoverable by chat —
+  // still reading ONLY published/approved rows from Postgres (no scraping/AI).
+  const dbHit = await resolveFromDbProducts(query, candidates);
+  if (dbHit) return dbHit;
+
   return {
     hit: false,
     matchMethod: "none",
@@ -393,6 +399,119 @@ export async function resolveVerifiedInventoryQuery(
     candidates,
     quotes: [],
   };
+}
+
+/** Turn a DB Product row into the flat CatalogItem shape the chat path expects. */
+function productToCatalogItem(p: {
+  catalogId: string;
+  title: string;
+  brand: string;
+  sizeLabel: string;
+  upc: string | null;
+  imageUrl: string | null;
+  category: string;
+  keywordsJson: string;
+  organic: boolean;
+  basePriceUsd: number;
+  unitLabel: string;
+  slug: string;
+}): CatalogItem {
+  let keywords: string[] = [];
+  try {
+    keywords = JSON.parse(p.keywordsJson) as string[];
+  } catch {
+    /* ignore */
+  }
+  return {
+    id: p.catalogId,
+    title: p.title,
+    brand: p.brand,
+    size: p.sizeLabel,
+    upc: p.upc ?? "",
+    imageUrl: p.imageUrl ?? "",
+    category: p.category,
+    keywords,
+    organic: p.organic,
+    basePrice: p.basePriceUsd,
+    unitLabel: p.unitLabel,
+    slug: p.slug,
+  };
+}
+
+/**
+ * Postgres-backed product search over PUBLISHED + APPROVED catalog rows. Used as
+ * a fallback when the static in-memory catalog has no match, so DB-only products
+ * (Bright Data imports) are discoverable. No scraping, AI, or Bright Data calls.
+ */
+async function resolveFromDbProducts(
+  query: string,
+  existingCandidates: VerifiedInventoryCandidate[],
+): Promise<VerifiedInventoryResolution | null> {
+  const tokens = groceryTokens(query);
+  if (!tokens.length) return null;
+
+  const products = await prisma.product.findMany({
+    where: {
+      published: true,
+      validationStatus: "approved",
+      OR: [
+        ...tokens.map((t) => ({ title: { contains: t, mode: "insensitive" as const } })),
+        ...tokens.map((t) => ({ brand: { contains: t, mode: "insensitive" as const } })),
+        ...tokens.map((t) => ({ keywordsJson: { contains: t, mode: "insensitive" as const } })),
+      ],
+    },
+    take: 30,
+    select: {
+      catalogId: true, title: true, brand: true, sizeLabel: true, upc: true,
+      imageUrl: true, category: true, keywordsJson: true, organic: true,
+      basePriceUsd: true, unitLabel: true, slug: true,
+    },
+  });
+  if (!products.length) return null;
+
+  const ql = query.toLowerCase();
+  const scored = products
+    .map((p) => {
+      const hay = `${p.brand} ${p.title} ${p.category} ${p.keywordsJson}`.toLowerCase();
+      let score = hay.includes(ql) ? 40 : 0;
+      for (const t of tokens) if (hay.includes(t)) score += 12;
+      return { p, score };
+    })
+    .filter((s) => s.score >= 24) // require ≥2 token hits or a phrase hit
+    .sort((a, b) => b.score - a.score);
+  if (!scored.length) return null;
+
+  const dbCandidates: VerifiedInventoryCandidate[] = scored.map((s) => ({
+    catalogId: s.p.catalogId,
+    title: s.p.title,
+    brand: s.p.brand,
+    score: s.score,
+    method: "title_token",
+    hasPersistedQuotes: false,
+  }));
+
+  for (const { p, score } of scored.slice(0, 8)) {
+    const quotes = await loadPersistedLiveQuotes(p.catalogId);
+    if (!quotes.length) continue;
+    return {
+      hit: true,
+      catalogItem: productToCatalogItem(p),
+      resolved: {
+        catalogId: p.catalogId,
+        title: p.title,
+        brand: p.brand,
+        confidence: Math.min(0.95, 0.6 + score / 200),
+        matchReason: "db_product_title_token",
+        synthetic: false,
+      },
+      matchMethod: "title_token",
+      matchScore: score,
+      candidates: [...existingCandidates, ...dbCandidates],
+      quotes,
+      lastVerifiedAt: quotes[0]!.fetchedAt,
+    };
+  }
+  return null;
 }
 
 export async function resolveVerifiedInventoryByAsin(

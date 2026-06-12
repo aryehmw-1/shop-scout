@@ -112,7 +112,13 @@ export async function loadVerifiedInventoryBrowse(
       brand: entry.brand,
       category: entry.category,
       size: entry.size,
-      imageUrl: catalog ? imageForProduct(catalog) : "",
+      // Prefer the static catalog image; fall back to the DB product/offer image
+      // for DB-only products (e.g. IKEA, ingested via the Bright Data pipeline).
+      imageUrl:
+        (catalog ? imageForProduct(catalog) : "") ||
+        best.product.imageUrl ||
+        best.imageUrl ||
+        "",
       minPrice: Math.min(...prices),
       maxPrice: Math.max(...prices),
       quoteCount: entry.quotes.length,

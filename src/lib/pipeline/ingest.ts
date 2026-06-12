@@ -8,35 +8,13 @@ import { prisma } from "../db/prisma";
 import { getRetailerSource } from "./ingestion/product-source";
 import type { RetailerSourceMode } from "./ingestion/adapter";
 import { getRetailerConfig } from "./ingestion/retailer-config";
+import { mapBrightDataRow } from "./ingestion/normalize-row";
 import {
   operationForIntent,
   type IngestIntent,
   type SourceOperation,
 } from "./ingestion/operations";
 import type { SourcingRetailer } from "./sourcing/retailer-strategy";
-
-/** Best-effort field extraction. Bright Data shapes vary per dataset, so we map
- * the common keys and always retain the untouched row in rawJson. */
-function pick(row: Record<string, unknown>, keys: string[]): string | undefined {
-  for (const k of keys) {
-    const v = row[k];
-    if (typeof v === "string" && v.trim()) return v.trim();
-    if (typeof v === "number") return String(v);
-  }
-  return undefined;
-}
-
-function pickNumber(row: Record<string, unknown>, keys: string[]): number | undefined {
-  for (const k of keys) {
-    const v = row[k];
-    if (typeof v === "number" && !Number.isNaN(v)) return v;
-    if (typeof v === "string") {
-      const n = parseFloat(v.replace(/[^0-9.]/g, ""));
-      if (!Number.isNaN(n)) return n;
-    }
-  }
-  return undefined;
-}
 
 export interface IngestResult {
   retailer: string;
@@ -80,9 +58,14 @@ export async function ingestRetailerProducts(req: IngestRequest): Promise<Ingest
   if (source.mode === "disabled") return { retailer: config.name, inserted: 0 };
 
   // Operation chosen by intent (keyword_search → import, url_lookup → refresh,
-  // upc_lookup → cross-retailer match), overridable explicitly.
+  // upc_lookup → cross-retailer match), overridable explicitly. Catalog-built
+  // retailers (e.g. IKEA) override the import operation to category_discovery.
+  const intent: IngestIntent = req.intent ?? "import";
   const operation: SourceOperation =
-    req.operation ?? operationForIntent(req.intent ?? "import");
+    req.operation ??
+    (intent === "import" && config.importOperation
+      ? config.importOperation
+      : operationForIntent(intent));
 
   const { rows, snapshotId } = await source.searchProducts(req.query, {
     operation,
@@ -92,29 +75,7 @@ export async function ingestRetailerProducts(req: IngestRequest): Promise<Ingest
   });
   if (!rows.length) return { retailer: config.name, inserted: 0, snapshotId };
 
-  const alias = config.fieldAliases ?? {};
-  const data = rows.map((row) => ({
-    retailer: config.name,
-    retailerDomain: config.domain,
-    productUrl: pick(row, ["product_url", "url", "link"]),
-    title: pick(row, ["title", "name", "product_name", ...(alias.title ?? [])]),
-    brand: pick(row, ["brand", "manufacturer", ...(alias.brand ?? [])]),
-    imageUrl: pick(row, ["image_url", "image", "main_image", "images", ...(alias.image ?? [])]),
-    price: pickNumber(row, ["price", "final_price", "current_price", ...(alias.price ?? [])]),
-    availability: pick(row, ["availability", "stock", "in_stock"]),
-    upcGtin: pick(row, ["upc", "upc_gtin", "barcode", ...(alias.upc ?? [])]),
-    ean: pick(row, ["ean"]),
-    gtin: pick(row, ["gtin"]),
-    modelNumber: pick(row, ["model_number", "model", "mpn", "part_number"]),
-    size: pick(row, ["size", "package_size", "weight"]),
-    quantity: pick(row, ["quantity", "count", "pack_size"]),
-    unitCount: pickNumber(row, ["unit_count", "units"]),
-    color: pick(row, ["color", "colour"]),
-    variant: pick(row, ["variant", "style", "configuration"]),
-    category: pick(row, ["category", "department", "categories"]),
-    rawJson: JSON.stringify(row),
-    processingStatus: "RAW",
-  }));
+  const data = rows.map((row) => mapBrightDataRow(row, config));
 
   const result = await prisma.rawProductRecord.createMany({ data });
   return { retailer: config.name, inserted: result.count, snapshotId };

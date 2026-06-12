@@ -82,6 +82,23 @@ export function slugForProduct(s: string): string {
     .slice(0, 80);
 }
 
+/**
+ * ASCII-folded, de-duplicated search tokens from a title (+brand). Strips
+ * diacritics (BESTÅ → besta, TÄRNABY → tarnaby) so plain-text chat queries match
+ * Scandinavian/accented product names.
+ */
+export function searchKeywords(title: string, brand?: string): string[] {
+  const text = `${brand ?? ""} ${title}`
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "") // strip combining accents
+    .toLowerCase();
+  const tokens = text
+    .split(/[^a-z0-9]+/)
+    .map((t) => t.trim())
+    .filter((t) => t.length > 1);
+  return [...new Set(tokens)];
+}
+
 /** Short stable suffix so slugs/catalogIds don't collide. */
 export function shortHash(input: string): string {
   let h = 0;

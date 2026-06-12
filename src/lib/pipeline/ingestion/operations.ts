@@ -14,7 +14,8 @@ export type SourceOperation =
   | "keyword_search"
   | "url_lookup"
   | "upc_lookup"
-  | "sku_lookup";
+  | "sku_lookup"
+  | "category_discovery";
 
 /** Default attempt order (keyword → url → identity[upc/sku]). */
 export const OPERATION_PRIORITY: readonly SourceOperation[] = [
@@ -47,7 +48,7 @@ export function operationForIntent(intent: IngestIntent): SourceOperation {
  */
 export interface BrightDataOperation {
   /** Bright Data discover_by value; null = Collect-by-URL (no discover type). */
-  discoverBy: "keyword" | "upc" | "sku" | null;
+  discoverBy: "keyword" | "upc" | "sku" | "category" | null;
   inputFields: readonly string[];
 }
 

@@ -330,6 +330,50 @@ async function main() {
     assert.equal(getRetailerOperation(walmart, "upc_lookup"), null);
   });
 
+  // IKEA: catalog-build retailer — Discover by category + Collect by URL only.
+  const ikea = getRetailerConfig("ikea");
+  check("IKEA imports via category_discovery (not keyword search)", () => {
+    assert.equal(ikea.importOperation, "category_discovery");
+    const op = getRetailerOperation(ikea, "category_discovery");
+    assert.ok(op);
+    assert.equal(op!.discoverBy, "category");
+    assert.deepEqual(
+      buildOperationInput(op!, "https://www.ikea.com/us/en/cat/coffee-tables-10716/"),
+      { category_url: "https://www.ikea.com/us/en/cat/coffee-tables-10716/" },
+    );
+  });
+  check("IKEA refreshes via Collect by URL", () => {
+    const op = getRetailerOperation(ikea, "url_lookup");
+    assert.ok(op && op.discoverBy === null);
+    assert.deepEqual(buildOperationInput(op!, "https://www.ikea.com/us/en/p/lack-40104294/"), {
+      url: "https://www.ikea.com/us/en/p/lack-40104294/",
+    });
+  });
+  check("IKEA is a trusted first-party catalog source", () => {
+    assert.equal(ikea.trustedCatalogSource, true);
+  });
+  const { mapBrightDataRow } = await import("../src/lib/pipeline/ingestion/normalize-row");
+  check("IKEA row maps correctly via the generic mapper (real field names)", () => {
+    const row = {
+      main_title: 'LACK Coffee table - black-brown 35 3/8x21 5/8 "',
+      final_price: 29.99,
+      main_image: "https://www.ikea.com/us/en/images/products/lack.jpg",
+      url: "https://www.ikea.com/us/en/p/lack-coffee-table-black-brown-40104294/",
+      in_stock: true, // boolean availability
+      brand: "IKEA",
+      sku: "401.042.94",
+      model_number: "40104294",
+    };
+    const m = mapBrightDataRow(row, ikea);
+    assert.equal(m.title, 'LACK Coffee table - black-brown 35 3/8x21 5/8 "');
+    assert.equal(m.price, 29.99);
+    assert.equal(m.brand, "IKEA");
+    assert.equal(m.availability, "in_stock"); // boolean → normalized string
+    assert.ok(m.imageUrl?.startsWith("http"));
+    assert.ok(m.productUrl?.startsWith("http"));
+    assert.equal(m.modelNumber, "40104294");
+  });
+
   // Target: same generic architecture, dataset gd_ltppk5mx2lp0v1k0vo.
   const target = getRetailerConfig("target");
   check("Target keyword_search → Discover by keyword {keyword, zipcode}", () => {
@@ -408,6 +452,55 @@ async function main() {
         `bright-data-adapter.ts must not name retailer "${r}" in code`,
       );
     }
+  });
+
+  // ── 9. Exact-match vs similar card assembly ────────────────────────────────
+  console.log("Exact vs similar card assembly (7-card rules):");
+  const { assembleResultCards, comparableOffers } = await import(
+    "../src/lib/search/result-cards"
+  );
+  const offer = (id: string, price: number) =>
+    ({ id, price, landedCost: price, retailer: "ikea", retailerName: "IKEA" } as never);
+
+  check("5 exact + 3 similar → 5 exact + 2 similar = 7 cards", () => {
+    const cards = assembleResultCards(
+      [offer("a", 199), offer("b", 189), offer("c", 194), offer("d", 199), offer("e", 175), offer("f", 210)],
+      [offer("s1", 50), offer("s2", 60), offer("s3", 70)],
+    );
+    assert.equal(cards.length, 7);
+    assert.equal(cards.filter((c) => c.kind === "exact").length, 5);
+    assert.equal(cards.filter((c) => c.kind === "similar").length, 2);
+  });
+  check("cheapest exact is Best; similar never Best", () => {
+    const cards = assembleResultCards(
+      [offer("a", 199), offer("e", 175), offer("c", 194)],
+      [offer("s1", 50)],
+    );
+    const best = cards.find((c) => c.isBest)!;
+    assert.equal(best.offer.id, "e"); // 175 cheapest
+    assert.equal(best.kind, "exact");
+    assert.ok(cards.filter((c) => c.kind === "similar").every((c) => !c.isBest));
+  });
+  check("single seller (IKEA): 1 exact + fill similar up to 7", () => {
+    const cards = assembleResultCards(
+      [offer("ikea", 29.99)],
+      [offer("s1", 49), offer("s2", 59), offer("s3", 69), offer("s4", 79), offer("s5", 89), offer("s6", 99), offer("s7", 109)],
+    );
+    assert.equal(cards.length, 7);
+    assert.equal(cards.filter((c) => c.kind === "exact").length, 1);
+    assert.equal(cards[0]!.badge, "best");
+    assert.equal(cards.filter((c) => c.kind === "similar").length, 6);
+  });
+  check("zero exact → only similar, no Best badge", () => {
+    const cards = assembleResultCards([], [offer("s1", 50), offer("s2", 60)]);
+    assert.equal(cards.length, 2);
+    assert.ok(cards.every((c) => c.kind === "similar" && !c.isBest));
+  });
+  check("price comparison uses EXACT offers only (similar excluded)", () => {
+    const cards = assembleResultCards([offer("a", 199), offer("e", 175)], [offer("s1", 10)]);
+    const cmp = comparableOffers(cards);
+    assert.equal(cmp.length, 2);
+    assert.ok(!cmp.some((o) => o.id === "s1")); // the $10 similar never undercuts Best
   });
 
   console.log(`\nAll ${passed} checks passed ✓`);

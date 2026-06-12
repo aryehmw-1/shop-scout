@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-03T22:10:35.415Z",
+  "updatedAt": "2026-06-12T13:00:37.478Z",
   "retailers": {
     "ebay": {
       "clicks": 6,
@@ -10,6 +10,13 @@
       "repeatSelections": 0
     },
     "amazon": {
+      "clicks": 1,
+      "saves": 0,
+      "ignores": 0,
+      "reversals": 0,
+      "repeatSelections": 0
+    },
+    "ikea": {
       "clicks": 1,
       "saves": 0,
       "ignores": 0,
@@ -44,6 +51,11 @@
       "ignores": 0
     },
     "paper-towels": {
+      "clicks": 1,
+      "saves": 0,
+      "ignores": 0
+    },
+    "cat-ikea-lack-coffee-table---black-brown-35-38x21-58-mnsdcx": {
       "clicks": 1,
       "saves": 0,
       "ignores": 0

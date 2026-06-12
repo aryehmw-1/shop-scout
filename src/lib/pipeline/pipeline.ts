@@ -15,7 +15,12 @@ import { matchListings, needsAiAssist } from "./match";
 import { scoreMatch } from "./score";
 import { classify } from "./state-machine";
 import { aiValidateMatch } from "./ai-validate";
-import { createCanonicalProduct, isCanonicalCreationSafe } from "./canonical";
+import {
+  createCanonicalProduct,
+  isCanonicalCreationSafe,
+  publishTrustedCatalogRecord,
+} from "./canonical";
+import { getRetailerConfigByName } from "./ingestion/retailer-config";
 import { logValidation } from "./validation-log";
 import type { NormalizedListing, ProcessingStatus, ValidationOutcome } from "./types";
 
@@ -51,6 +56,36 @@ export async function processRawRecord(
       reasons: fieldCheck.reasons,
       aiUsed: false,
     });
+  }
+
+  // Stage 1.5 — TRUSTED first-party catalog source (e.g. IKEA). We own the data,
+  // so each record is its OWN canonical identity (keyed by its item number). We
+  // deliberately SKIP cross-retailer matching: an IKEA product must never be
+  // matched against (and rejected by) another IKEA product or a lookalike from a
+  // different retailer. Publish its own product + offer directly.
+  const sourceConfig = getRetailerConfigByName(record.retailer);
+  if (sourceConfig?.trustedCatalogSource) {
+    const { productId } = await publishTrustedCatalogRecord(
+      {
+        id: recordId,
+        productUrl: record.productUrl,
+        imageUrl: record.imageUrl,
+        price: record.price,
+        retailerId: sourceConfig.retailer,
+      },
+      listing,
+    );
+    return {
+      recordId,
+      outcome: {
+        processingStatus: "PUBLISHED",
+        validationStatus: "approved",
+        confidenceScore: 95,
+        reasons: ["trusted_catalog_published"],
+        aiUsed: false,
+      },
+      matchedProductId: productId,
+    };
   }
 
   // Stage 2 — find the best canonical match among existing products.

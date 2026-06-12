@@ -11,6 +11,7 @@ export type RetailerId =
   | "bestbuy"
   | "instacart"
   | "costco"
+  | "ikea"
   | "sams"
   | "publix"
   | "burlington"
@@ -460,6 +461,20 @@ export interface SearchPipelineDebugSummary {
 /** Evidence-backed recommendation copy from commerce intelligence graph. */
 export type IntelligenceInsight = import("@/lib/commerce-intelligence/explain").RecommendationExplanation;
 
+/** A similar alternative product (different item) shown as a labelled card. */
+export interface SimilarProduct {
+  catalogId: string;
+  title: string;
+  brand: string;
+  imageUrl: string;
+  retailer: RetailerId;
+  retailerName: string;
+  price: number;
+  productUrl: string;
+  /** Affiliate-safe outbound URL (null → hide the outbound link). */
+  affiliateUrl: string | null;
+}
+
 export interface ProductSearchResults {
   local: ProductOffer[];
   online: ProductOffer[];
@@ -481,6 +496,12 @@ export interface ProductSearchResults {
   lowConfidenceOnline?: ProductOffer[];
   /** True when no exact/likely match passed trust gates — only similar/weak remain. */
   noExactMatchFound?: boolean;
+  /**
+   * Clearly-labelled SIMILAR alternatives (different products, not the same item).
+   * Never part of price comparison and never eligible for "Best". Used to fill the
+   * results grid up to 7 cards when exact offers are few (e.g. single-seller IKEA).
+   */
+  similar?: SimilarProduct[];
   /** Grocery search surfaced catalog estimates when no verified quotes exist. */
   closestMatchFallback?: boolean;
   /** User has not set ZIP — shipping/tax are generic estimates. */

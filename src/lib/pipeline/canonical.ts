@@ -16,6 +16,7 @@ import {
   duplicateGroupKey,
   slugForProduct as slug,
   shortHash,
+  searchKeywords,
 } from "./canonical-identity";
 import type { NormalizedListing } from "./types";
 
@@ -79,6 +80,9 @@ export async function createCanonicalProduct(
       sizeLabel: listing.sizeNormalized ?? listing.size ?? "1 unit",
       basePriceUsd: listing.price ?? 0,
       imageUrl: listing.imageUrl ?? null,
+      // ASCII-folded title/brand tokens so diacritic-heavy names (IKEA's BESTÅ,
+      // TÄRNABY, …) are matchable by plain-text chat queries ("besta", "tarnaby").
+      keywordsJson: JSON.stringify(searchKeywords(listing.title, listing.brand)),
       duplicateGroupId: groupKey,
       // Provenance: minted by the verification pipeline, already approved.
       processingStatus: "PUBLISHED",
@@ -127,4 +131,70 @@ export async function createCanonicalProduct(
   });
 
   return { productId: product.id, created: true };
+}
+
+// ── Trusted first-party catalog publishing (e.g. IKEA) ───────────────────────
+
+interface TrustedRecordInput {
+  id: string;
+  productUrl: string | null;
+  imageUrl: string | null;
+  price: number | null;
+  retailerId: string;
+}
+
+/**
+ * Publish a verified raw record from a TRUSTED first-party catalog source
+ * (e.g. IKEA): create/link its OWN canonical Product and attach a price offer so
+ * it shows in search immediately. It is never auto-merged with other retailers'
+ * lookalikes — its duplicateGroupKey is its own identity (barcode/brand+model).
+ */
+export async function publishTrustedCatalogRecord(
+  record: TrustedRecordInput,
+  listing: NormalizedListing,
+): Promise<{ productId: string; offerCreated: boolean }> {
+  const { productId } = await createCanonicalProduct(record.id, listing);
+
+  // Attach a single retailer offer so the product surfaces with a price.
+  const price = record.price ?? listing.price;
+  const url = record.productUrl ?? listing.productUrl;
+  if (!price || price <= 0 || !url) {
+    return { productId, offerCreated: false };
+  }
+
+  // Idempotent: one offer per product+retailer+url.
+  const existing = await prisma.priceQuote.findFirst({
+    where: { productId, retailerId: record.retailerId, productUrl: url },
+    select: { id: true },
+  });
+  if (existing) return { productId, offerCreated: false };
+
+  const now = new Date();
+  await prisma.priceQuote.create({
+    data: {
+      productId,
+      retailerId: record.retailerId,
+      channel: "online",
+      storeTitle: listing.title,
+      imageUrl: record.imageUrl ?? listing.imageUrl ?? null,
+      priceUsd: price,
+      landedCostUsd: price,
+      unitPriceUsd: price,
+      inStock: listing.availability !== "out_of_stock",
+      // "scraped" keeps it within the consumer-visible VERIFIED_SOURCES set.
+      source: "scraped",
+      providerSource: "bright_data",
+      sourceLabel: record.retailerId,
+      productUrl: url,
+      affiliateUrl: url, // IKEA is not an affiliate retailer — link is the page itself.
+      matchConfidence: 0.95,
+      validationStatus: "approved",
+      confidenceScore: 95,
+      lastVerifiedAt: now,
+      fetchedAt: now,
+      expiresAt: new Date(now.getTime() + 14 * 24 * 3600_000),
+    },
+  });
+
+  return { productId, offerCreated: true };
 }

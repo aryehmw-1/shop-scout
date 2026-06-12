@@ -22,6 +22,7 @@ import { ConversationDebugPanel } from "./ConversationDebugPanel";
 import { buildRetrievalTrustDiagnostic } from "@/lib/search/retrieval-trust-message";
 import { ProductRequestForm } from "./ProductRequestForm";
 import { MobileOfferList, MobileVerifiedNote } from "./MobileOfferList";
+import { SimilarAlternatives } from "./SimilarAlternatives";
 import { DesktopOfferListB } from "./OfferListB";
 import { VerifiedCompareHeader } from "./search/VerifiedCompareHeader";
 import { CatalogFreshnessBanner } from "./FreshnessIndicator";
@@ -145,7 +146,7 @@ export function ProductResults({
     results.estimatedOnline !== undefined ?
       results
     : prepareResultsForDisplay(results, { searchQuery });
-  const { online: rawOnline, estimatedOnline = [], lowConfidenceOnline = [], zipCode, compareMode, referenceProduct, similarMode } =
+  const { online: rawOnline, estimatedOnline = [], lowConfidenceOnline = [], zipCode, compareMode, referenceProduct, similarMode, similar: similarAlternatives = [] } =
     display;
   const online = useMemo(
     () =>
@@ -522,6 +523,12 @@ export function ProductResults({
           </div>
         </section>
       )}
+
+      {similarAlternatives.length > 0 &&
+        !(display.matchTiers?.similar?.length ?? 0) &&
+        !compareMode && (
+          <SimilarAlternatives similar={similarAlternatives} exactCount={online.length} />
+        )}
 
       {display.catalogFreshnessWarning &&
         (online.length > 0 || estimatedOnline.length > 0) && (

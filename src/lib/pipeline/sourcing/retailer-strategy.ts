@@ -21,7 +21,8 @@ export type SourcingRetailer =
   | "target"
   | "bestbuy"
   | "homedepot"
-  | "costco";
+  | "costco"
+  | "ikea";
 
 /** Global priority order (lower index = checked first). Costco is optional. */
 export const TOP_RETAILERS: readonly SourcingRetailer[] = [

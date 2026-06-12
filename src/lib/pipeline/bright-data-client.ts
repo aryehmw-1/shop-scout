@@ -23,7 +23,7 @@ export interface BrightDataScrapeOptions {
    * This is the ONLY difference between operations — same dataset, same async
    * trigger/poll/download flow, regardless of retailer.
    */
-  discoverBy?: "keyword" | "upc" | "sku" | null;
+  discoverBy?: "keyword" | "upc" | "sku" | "category" | null;
   /** Max ms to wait for the snapshot to finish before giving up. */
   timeoutMs?: number;
   /** Poll interval while the snapshot is "running". */
@@ -101,11 +101,16 @@ export class BrightDataClient {
    */
   async ping(): Promise<{ ok: boolean; status?: number; detail: string }> {
     try {
-      const res = await fetch(`${BASE_URL}/datasets/list`, { headers: this.headers() });
-      if (!res.ok) {
+      // Probe an authenticated endpoint with a sentinel snapshot id. A bad/inactive
+      // key yields 401/403; any other status (e.g. 400/404 "snapshot not found")
+      // proves the key authenticated successfully — without spending a scrape.
+      const res = await fetch(`${BASE_URL}/progress/sd_ping_check`, {
+        headers: this.headers(),
+      });
+      if (res.status === 401 || res.status === 403) {
         const detail = await safeText(res);
-        console.error(`[bright-data] ping failed (status ${res.status}): ${detail}`);
-        return { ok: false, status: res.status, detail };
+        console.error(`[bright-data] ping auth failed (status ${res.status}): ${detail}`);
+        return { ok: false, status: res.status, detail: `Authentication failed: ${detail}` };
       }
       return { ok: true, status: res.status, detail: "Authenticated successfully." };
     } catch (err) {
@@ -118,7 +123,7 @@ export class BrightDataClient {
   private async trigger(
     datasetId: string,
     input: Record<string, unknown>[],
-    discoverBy?: "keyword" | "upc" | "sku" | null,
+    discoverBy?: "keyword" | "upc" | "sku" | "category" | null,
   ): Promise<string> {
     // Discover operations add `type=discover_new&discover_by=<x>`; Collect-by-URL
     // (discoverBy null/undefined) uses the plain trigger.

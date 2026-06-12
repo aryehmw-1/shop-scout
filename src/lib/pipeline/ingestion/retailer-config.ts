@@ -27,6 +27,12 @@ export interface RetailerConfig {
    * declare these once Bright Data supports them.
    */
   operations?: Partial<Record<SourceOperation, BrightDataOperation>>;
+  /**
+   * Operation used when IMPORTING new products (intent "import"). Defaults to
+   * keyword_search; retailers we catalog-build (e.g. IKEA) override this to
+   * category_discovery so we bulk-import by category instead of guessing keywords.
+   */
+  importOperation?: SourceOperation;
   /** Affiliate monetization is required before any public link is shown. */
   affiliateRequired: boolean;
   /** Per-retailer raw-field aliases merged into the generic field extraction. */
@@ -35,6 +41,14 @@ export interface RetailerConfig {
   officialApiCredentialEnvVars?: string[];
   /** Default ingestion source when no DB override exists. */
   defaultSourceMode: RetailerSourceMode;
+  /**
+   * First-party catalog source we trust as authoritative (e.g. IKEA — own SKUs,
+   * prices, images). Verified raw records from a trusted source create a
+   * published canonical product + offer directly, instead of waiting for
+   * cross-retailer corroboration. They are still their OWN canonical identity —
+   * never auto-merged with other retailers' lookalikes.
+   */
+  trustedCatalogSource?: boolean;
   enabled: boolean;
 }
 
@@ -147,10 +161,51 @@ const CONFIGS: Record<SourcingRetailer, RetailerConfig> = {
     defaultSourceMode: "disabled",
     enabled: false,
   },
+  ikea: {
+    retailer: "ikea",
+    name: "IKEA",
+    domain: "ikea.com",
+    // We CATALOG-BUILD IKEA: discover by category (bulk import), refresh by URL.
+    // No keyword search — we own the product DB, we don't query IKEA live.
+    inputType: "category",
+    brightDataDatasetEnv: "BRIGHT_DATA_DATASET_IKEA",
+    importOperation: "category_discovery",
+    operations: {
+      // Discover by category — bulk-import a whole IKEA category.
+      category_discovery: { discoverBy: "category", inputFields: ["category_url"] },
+      // Collect by URL — scheduled refresh of products already in our DB.
+      url_lookup: { discoverBy: null, inputFields: ["url"] },
+    },
+    // IKEA dataset field names → our canonical fields (verified against a real
+    // snapshot; rawJson always retains the untouched row).
+    fieldAliases: {
+      title: ["main_title", "title", "model_name"],
+      price: ["final_price", "initial_price", "price"],
+      image: ["main_image", "image_urls"],
+      brand: ["brand"],
+    },
+    affiliateRequired: false,
+    defaultSourceMode: "bright_data",
+    trustedCatalogSource: true,
+    enabled: true,
+  },
 };
 
 export function getRetailerConfig(retailer: SourcingRetailer): RetailerConfig {
   return CONFIGS[retailer];
+}
+
+/** Look up a config by retailer display name (RawProductRecord.retailer). */
+export function getRetailerConfigByName(name: string): RetailerConfig | undefined {
+  const lc = name.trim().toLowerCase();
+  return allRetailerConfigs().find(
+    (c) => c.name.toLowerCase() === lc || c.retailer === lc,
+  );
+}
+
+/** Retailer id (RetailerId-compatible string) for a config — used on offers. */
+export function retailerIdOf(config: RetailerConfig): string {
+  return config.retailer;
 }
 
 /** Synthesize a default operation from `inputType` for retailers that haven't
