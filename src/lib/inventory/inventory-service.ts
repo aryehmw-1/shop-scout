@@ -173,6 +173,7 @@ export async function searchProducts(
     results.similar = await findSimilarProducts({
       category: product.category,
       excludeCatalogId: product.catalogId,
+      matchedTitle: product.title,
       limit: 7 - results.online.length,
     });
   }
@@ -226,8 +227,24 @@ async function dbProductCatalogIdsForQuery(query: string, limit: number): Promis
  * Returns one lightweight card per product (cheapest fresh offer). Never used for
  * price comparison — these are labelled alternatives.
  */
+const SIMILAR_STOP = new Set([
+  "the", "and", "with", "for", "set", "of", "in", "x", "cm", "oz", "inch", "inches",
+  "white", "black", "brown", "gray", "grey", "anthracite", "oak", "veneer",
+]);
+
+function similarTokens(text: string): Set<string> {
+  return new Set(
+    text
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[̀-ͯ]/g, "")
+      .split(/[^a-z0-9]+/)
+      .filter((t) => t.length > 2 && !SIMILAR_STOP.has(t)),
+  );
+}
+
 export async function findSimilarProducts(
-  opts: { category: string; excludeCatalogId: string; limit?: number },
+  opts: { category: string; excludeCatalogId: string; matchedTitle: string; limit?: number },
 ): Promise<SimilarProduct[]> {
   const now = new Date();
   const products = await prisma.product.findMany({
@@ -248,13 +265,26 @@ export async function findSimilarProducts(
       },
     },
     orderBy: [{ popularityScore: "desc" }, { searchFrequency: "desc" }],
-    take: (opts.limit ?? 6) * 3, // over-fetch; filter to those with a live offer
+    take: 60,
   });
 
-  const out: SimilarProduct[] = [];
+  // Relevance gate: a "similar" item must share the same category AND at least one
+  // meaningful word with the matched product (e.g. "coffee table" → other coffee
+  // tables), so we never surface unrelated same-category noise (cereal → coffee).
+  const matchWords = similarTokens(`${opts.matchedTitle}`);
+  const scored: { p: (typeof products)[number]; overlap: number }[] = [];
   for (const p of products) {
-    const q = p.priceQuotes[0];
-    if (!q) continue;
+    if (!p.priceQuotes[0]) continue;
+    const words = similarTokens(p.title);
+    let overlap = 0;
+    for (const w of words) if (matchWords.has(w)) overlap += 1;
+    if (overlap > 0) scored.push({ p, overlap });
+  }
+  scored.sort((a, b) => b.overlap - a.overlap);
+
+  const out: SimilarProduct[] = [];
+  for (const { p } of scored) {
+    const q = p.priceQuotes[0]!;
     const retailer = q.retailerId as RetailerId;
     out.push({
       catalogId: p.catalogId,

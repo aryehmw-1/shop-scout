@@ -1,7 +1,139 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-12T13:05:47.319Z",
+  "updatedAt": "2026-06-12T13:20:10.625Z",
   "events": [
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "grocery"
+      },
+      "at": "2026-06-12T13:20:10.625Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "grocery",
+      "at": "2026-06-12T13:20:10.623Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqay3wqo_06l1kx",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-12T13:20:10.197Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-12T13:19:36.866Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-12T13:19:36.863Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqay3wqo_06l1kx",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-12T13:19:35.580Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-12T13:17:25.369Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-12T13:17:25.365Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqay3wqo_06l1kx",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-12T13:17:24.913Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "grocery"
+      },
+      "at": "2026-06-12T13:16:50.190Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "grocery",
+      "at": "2026-06-12T13:16:50.186Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqay3wqo_06l1kx",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-12T13:16:48.764Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "grocery"
+      },
+      "at": "2026-06-12T13:12:35.122Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "grocery",
+      "at": "2026-06-12T13:12:35.120Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqay3wqo_06l1kx",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-12T13:12:34.494Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "grocery"
+      },
+      "at": "2026-06-12T13:11:43.086Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "grocery",
+      "at": "2026-06-12T13:11:43.083Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqay3wqo_06l1kx",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-12T13:11:42.211Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "grocery"
+      },
+      "at": "2026-06-12T13:10:13.400Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "grocery",
+      "at": "2026-06-12T13:10:13.397Z"
+    },
     {
       "event": "recommendation_no_match",
       "meta": {

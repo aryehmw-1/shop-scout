@@ -248,10 +248,28 @@ export function ProductResults({
           (c) => c.id === volumeClassOf(`${online[0]?.brand ?? ""} ${online[0]?.title ?? ""}`),
         )?.label
       : undefined;
+    const hasSimilar = similarAlternatives.length > 0;
     return (
       <div className="mt-4 space-y-4">
+        {/* Case 1 — no exact match but we DO have relevant alternatives: lead with
+            them, clearly labelled, and make the request form secondary. */}
+        {hasSimilar && (
+          <div className="rounded-2xl border border-orange-200/70 bg-cream-50/60 px-4 py-4">
+            <p className="mb-1 text-base font-semibold text-stone-900">
+              We couldn&apos;t find an exact match{q ? <> for <span className="text-stone-900">{q}</span></> : null}.
+            </p>
+            <p className="mb-1 text-xs text-stone-500">
+              Here are similar products you might like instead.
+            </p>
+            <SimilarAlternatives similar={similarAlternatives} exactCount={0} />
+          </div>
+        )}
         <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-5 py-5 space-y-4">
-          {volumeMissing && q ? (
+          {hasSimilar ? (
+            <p className="text-base font-semibold text-stone-900 leading-relaxed">
+              Still not it? Request the exact product and we&apos;ll add it.
+            </p>
+          ) : volumeMissing && q ? (
             <p className="text-sm text-stone-600 leading-relaxed">
               We don&apos;t carry{" "}
               <span className="font-semibold text-stone-800">{q}</span>{" "}
@@ -525,8 +543,7 @@ export function ProductResults({
       )}
 
       {similarAlternatives.length > 0 &&
-        !(display.matchTiers?.similar?.length ?? 0) &&
-        !compareMode && (
+        !(display.matchTiers?.similar?.length ?? 0) && (
           <SimilarAlternatives similar={similarAlternatives} exactCount={online.length} />
         )}
 

@@ -27,7 +27,7 @@ export function SimilarAlternatives({ similar, exactCount }: Props) {
       {exactCount === 1 && (
         <p className="mb-2 flex items-start gap-1.5 px-1 text-[11px] leading-snug text-stone-400">
           <Info size={13} className="mt-px shrink-0" aria-hidden />
-          <span>Sold only here — no other verified sellers to compare right now.</span>
+          <span>Only one verified seller so far — we&apos;ll add more as we check other stores.</span>
         </p>
       )}
       <p className="mb-2 flex items-center gap-1.5 px-1 text-[11px] font-semibold text-stone-500">

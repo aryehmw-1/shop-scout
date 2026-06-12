@@ -14,9 +14,16 @@ import { Crown, ExternalLink, TrendingDown } from "lucide-react";
  */
 export function offerShipping(o: ProductOffer): { text: string; free: boolean } {
   if (o.freeShippingEligible) return { text: "Free shipping", free: true };
-  const isAmazon =
-    o.retailer === "amazon" || (o.retailerName ?? "").toLowerCase().includes("amazon");
-  if (isAmazon) return { text: "Shipping at checkout", free: false };
+  // Retailers whose shipping we can't determine up front — show the honest
+  // "Shipping at checkout" instead of a fabricated estimate. IKEA shipping
+  // depends on cart size / delivery method, so it's only known at checkout.
+  const name = (o.retailerName ?? "").toLowerCase();
+  const checkoutOnly =
+    o.retailer === "amazon" ||
+    o.retailer === "ikea" ||
+    name.includes("amazon") ||
+    name.includes("ikea");
+  if (checkoutOnly) return { text: "Shipping at checkout", free: false };
   const ship = o.estimatedShipping;
   if (ship === 0) return { text: "Free shipping", free: true };
   if (ship != null && ship > 0) {
