@@ -1,7 +1,43 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-03T21:02:58.234Z",
+  "updatedAt": "2026-06-11T23:53:54.671Z",
   "sessions": [
+    {
+      "id": "sr_mqa5ly3y_650a50",
+      "sessionId": "e0a39ac5f7c6e062",
+      "cohort": "general",
+      "at": "2026-06-11T23:53:54.670Z",
+      "queryCategory": "general",
+      "matched": true,
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerRetailer": "Costco",
+      "winnerPrice": 241.08,
+      "trustSummary": "We recommend Costco at $241.08 — Highest decision score (0.95) among validated offers.",
+      "identityScore": 0.89,
+      "evidenceCount": 1,
+      "uncertaintyCount": 0,
+      "interactionTrail": [
+        "recommendation_shown"
+      ]
+    },
+    {
+      "id": "sr_mqa5le4e_5d8a77",
+      "sessionId": "45b35ea7976f62c2",
+      "cohort": "general",
+      "at": "2026-06-11T23:53:28.766Z",
+      "queryCategory": "general",
+      "matched": true,
+      "canonicalId": "apple-airpods-pro-2",
+      "winnerRetailer": "Costco",
+      "winnerPrice": 241.08,
+      "trustSummary": "We recommend Costco at $241.08 — Highest decision score (0.95) among validated offers.",
+      "identityScore": 0.89,
+      "evidenceCount": 1,
+      "uncertaintyCount": 0,
+      "interactionTrail": [
+        "recommendation_shown"
+      ]
+    },
     {
       "id": "sr_mpyjzaux_ec30f8",
       "sessionId": "6ccb53ea6c9c16a0",

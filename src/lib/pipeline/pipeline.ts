@@ -15,6 +15,7 @@ import { matchListings, needsAiAssist } from "./match";
 import { scoreMatch } from "./score";
 import { classify } from "./state-machine";
 import { aiValidateMatch } from "./ai-validate";
+import { createCanonicalProduct, isCanonicalCreationSafe } from "./canonical";
 import { logValidation } from "./validation-log";
 import type { NormalizedListing, ProcessingStatus, ValidationOutcome } from "./types";
 
@@ -90,12 +91,30 @@ export async function processRawRecord(
     }
   }
 
-  // No catalog corroboration → hold for review, don't invent a product.
+  // No catalog corroboration. SAFELY mint a canonical product only when the
+  // record is strongly identified (barcode or brand+model) AND high-confidence;
+  // otherwise hold for human review rather than inventing a noisy product.
   if (!best) {
+    const selfScore = scoreMatch(listing).score;
+    if (isCanonicalCreationSafe(listing, selfScore)) {
+      const { productId } = await createCanonicalProduct(recordId, listing);
+      // createCanonicalProduct already set the record to PUBLISHED + logged it.
+      return {
+        recordId,
+        outcome: {
+          processingStatus: "PUBLISHED",
+          validationStatus: "approved",
+          confidenceScore: selfScore,
+          reasons: ["canonical_created"],
+          aiUsed: false,
+        },
+        matchedProductId: productId,
+      };
+    }
     return finalize(recordId, oldStatus, {
       processingStatus: "NEEDS_REVIEW",
       validationStatus: "needs_review",
-      confidenceScore: scoreMatch(listing).score,
+      confidenceScore: selfScore,
       reasons: ["no_catalog_match"],
       aiUsed: false,
     });

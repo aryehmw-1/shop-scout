@@ -104,15 +104,25 @@ export async function* generateGeminiTextStream(
       temperature: options.temperature ?? 0.4,
       maxOutputTokens: options.maxOutputTokens ?? 700,
       ...(options.thinkingBudget !== undefined
-        ? { thinkingConfig: { thinkingBudget: options.thinkingBudget } }
+        ? { thinkingConfig: { thinkingBudget: options.thinkingBudget, includeThoughts: false } }
         : {}),
       ...(options.useWebSearch ? { tools: [{ googleSearch: {} }] } : {}),
     },
   });
 
+  // CRITICAL: only yield ANSWER parts. When thinking is enabled (advice turns use
+  // a non-zero thinkingBudget), Gemini streams hidden-reasoning "thought" parts in
+  // the same stream, and `chunk.text` concatenates them — which leaked the model's
+  // chain-of-thought ("Confidence Score: 5/5", "Strategizing complete…") into the
+  // visible reply AND duplicated the answer (thought draft + final answer). Skip
+  // any part flagged `thought`.
   for await (const chunk of stream) {
-    const text = chunk.text;
-    if (text) yield text;
+    const parts = chunk.candidates?.[0]?.content?.parts;
+    if (!parts) continue;
+    for (const part of parts) {
+      if (part.thought) continue;
+      if (typeof part.text === "string" && part.text) yield part.text;
+    }
   }
 }
 
@@ -139,7 +149,7 @@ export async function generateGeminiText(
               // well-structured replies), pass it through so the model's hidden
               // reasoning can't eat the output budget and truncate the answer.
               ...(options.thinkingBudget !== undefined
-                ? { thinkingConfig: { thinkingBudget: options.thinkingBudget } }
+                ? { thinkingConfig: { thinkingBudget: options.thinkingBudget, includeThoughts: false } }
                 : {}),
               // Google Search grounding — lets the model answer product
               // advice/comparison questions from current web results.

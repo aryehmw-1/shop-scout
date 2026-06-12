@@ -25,6 +25,8 @@ CREATE TABLE "RetailerSource" (
     "retailerDomain" TEXT NOT NULL,
     "brightDataDatasetId" TEXT NOT NULL,
     "inputType" TEXT NOT NULL DEFAULT 'url',
+    "sourceMode" TEXT NOT NULL DEFAULT 'bright_data',
+    "priority" INTEGER NOT NULL DEFAULT 100,
     "active" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -87,6 +89,9 @@ CREATE TABLE "ValidationLog" (
 
 -- CreateIndex
 CREATE INDEX "RetailerSource_active_idx" ON "RetailerSource"("active");
+
+-- CreateIndex
+CREATE INDEX "RetailerSource_sourceMode_idx" ON "RetailerSource"("sourceMode");
 
 -- CreateIndex
 CREATE INDEX "RetailerSource_retailerName_idx" ON "RetailerSource"("retailerName");

@@ -24,6 +24,10 @@ export function OutboundLink({
 }: OutboundLinkProps) {
   const href = buildOutboundUrl(offer, context);
 
+  // Affiliate-required retailers (Amazon/eBay) with no attachable tracking:
+  // hide the outbound link entirely rather than send an un-monetized click.
+  if (!href) return null;
+
   return (
     <a
       href={href}

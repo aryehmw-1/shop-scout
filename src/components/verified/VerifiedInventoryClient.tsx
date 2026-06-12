@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { ShieldCheck, ExternalLink, CheckCircle2, Clock } from "lucide-react";
 import type { VerifiedBrowseResult } from "@/lib/inventory/verified-inventory-browse";
+import { affiliateSafeDestination } from "@/lib/affiliate/outbound";
+import type { RetailerId } from "@/lib/types";
 import { formatPrice } from "@/lib/utils/format";
 import { ProductImage } from "@/components/ProductImage";
 import { getCategoryCoverageProfile } from "@/lib/inventory/category-coverage";
@@ -169,15 +171,26 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
                   >
                     Compare
                   </Link>
-                  <a
-                    href={p.bestQuote.productUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-xl border border-stone-200 px-3 py-2 text-stone-600 hover:bg-stone-50"
-                    aria-label="View on retailer"
-                  >
-                    <ExternalLink size={16} />
-                  </a>
+                  {(() => {
+                    // Affiliate-safe: Amazon/eBay links without attachable
+                    // tracking are hidden rather than shown raw.
+                    const dest = affiliateSafeDestination(
+                      p.bestQuote.retailerId as RetailerId,
+                      p.bestQuote.productUrl,
+                    );
+                    if (!dest) return null;
+                    return (
+                      <a
+                        href={dest}
+                        target="_blank"
+                        rel="noopener noreferrer sponsored"
+                        className="inline-flex items-center justify-center rounded-xl border border-stone-200 px-3 py-2 text-stone-600 hover:bg-stone-50"
+                        aria-label="View on retailer"
+                      >
+                        <ExternalLink size={16} />
+                      </a>
+                    );
+                  })()}
                 </div>
               </div>
             </article>

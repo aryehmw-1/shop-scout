@@ -1,7 +1,53 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-11T19:14:27.840Z",
+  "updatedAt": "2026-06-12T00:52:22.093Z",
   "events": [
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqa5plfm_haztog",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-12T00:52:22.093Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqa5plfm_haztog",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-11T23:56:45.238Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-11T23:53:54.653Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-11T23:53:28.748Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-11T23:34:06.519Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-11T23:34:06.514Z"
+    },
+    {
+      "event": "session_return",
+      "sessionId": "s_mqa4wcab_0qvlsq",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-11T23:34:00.443Z"
+    },
     {
       "event": "session_return",
       "sessionId": "s_mq9qc77g_xj7709",

@@ -5,7 +5,15 @@ import "server-only";
 // rawJson). Nothing here is published — that's the pipeline's job.
 
 import { prisma } from "../db/prisma";
-import { getBrightDataClient } from "./bright-data-client";
+import { getRetailerSource } from "./ingestion/product-source";
+import type { RetailerSourceMode } from "./ingestion/adapter";
+import { getRetailerConfig } from "./ingestion/retailer-config";
+import {
+  operationForIntent,
+  type IngestIntent,
+  type SourceOperation,
+} from "./ingestion/operations";
+import type { SourcingRetailer } from "./sourcing/retailer-strategy";
 
 /** Best-effort field extraction. Bright Data shapes vary per dataset, so we map
  * the common keys and always retain the untouched row in rawJson. */
@@ -36,38 +44,65 @@ export interface IngestResult {
   snapshotId?: string;
 }
 
+export interface IngestRequest {
+  retailer: SourcingRetailer;
+  /** keyword | url | upc — interpreted per the resolved operation. */
+  query: string;
+  /**
+   * What we're doing, which selects the Bright Data operation:
+   *   import (default) → keyword_search · refresh → url_lookup ·
+   *   cross_retailer_match → upc_lookup.
+   * `operation` overrides `intent` when both are given.
+   */
+  intent?: IngestIntent;
+  operation?: SourceOperation;
+  /** ZIP for localized pricing/availability. */
+  zipcode?: string;
+  language?: string;
+  /** Override the retailer's configured source mode for this run. */
+  sourceMode?: RetailerSourceMode;
+  /** Cap rows kept (top-retailers-first keeps only the best few offers). */
+  limit?: number;
+}
+
 /**
- * Scrape one retailer_sources row and persist results as RAW records.
- * Returns how many rows were stored.
+ * Generic ingestion: search ONE retailer via the productSource facade and
+ * persist results as RAW records. Source-agnostic — Bright Data, an official
+ * API, or disabled are all selected by config/mode, never by branching here.
+ * Field aliases from retailer config extend the generic extraction so a
+ * retailer's quirky key names are handled by config, not bespoke code.
  */
-export async function ingestRetailerSource(
-  retailerSourceId: string,
-  input: Record<string, unknown>[],
-): Promise<IngestResult> {
-  const source = await prisma.retailerSource.findUnique({ where: { id: retailerSourceId } });
-  if (!source || !source.active) {
-    throw new Error(`retailer source ${retailerSourceId} not found or inactive`);
-  }
-  const client = getBrightDataClient();
-  if (!client) throw new Error("Bright Data is not configured.");
+export async function ingestRetailerProducts(req: IngestRequest): Promise<IngestResult> {
+  const config = getRetailerConfig(req.retailer);
+  if (!config.enabled) return { retailer: config.name, inserted: 0 };
 
-  const { snapshotId, rows } = await client.scrape({
-    datasetId: source.brightDataDatasetId,
-    input,
+  const source = getRetailerSource(req.retailer, req.sourceMode);
+  if (source.mode === "disabled") return { retailer: config.name, inserted: 0 };
+
+  // Operation chosen by intent (keyword_search → import, url_lookup → refresh,
+  // upc_lookup → cross-retailer match), overridable explicitly.
+  const operation: SourceOperation =
+    req.operation ?? operationForIntent(req.intent ?? "import");
+
+  const { rows, snapshotId } = await source.searchProducts(req.query, {
+    operation,
+    zipcode: req.zipcode,
+    language: req.language,
+    limit: req.limit,
   });
+  if (!rows.length) return { retailer: config.name, inserted: 0, snapshotId };
 
-  if (!rows.length) return { retailer: source.retailerName, inserted: 0, snapshotId };
-
+  const alias = config.fieldAliases ?? {};
   const data = rows.map((row) => ({
-    retailer: source.retailerName,
-    retailerDomain: source.retailerDomain,
+    retailer: config.name,
+    retailerDomain: config.domain,
     productUrl: pick(row, ["product_url", "url", "link"]),
-    title: pick(row, ["title", "name", "product_name"]),
-    brand: pick(row, ["brand", "manufacturer"]),
-    imageUrl: pick(row, ["image_url", "image", "main_image", "images"]),
-    price: pickNumber(row, ["price", "final_price", "current_price"]),
+    title: pick(row, ["title", "name", "product_name", ...(alias.title ?? [])]),
+    brand: pick(row, ["brand", "manufacturer", ...(alias.brand ?? [])]),
+    imageUrl: pick(row, ["image_url", "image", "main_image", "images", ...(alias.image ?? [])]),
+    price: pickNumber(row, ["price", "final_price", "current_price", ...(alias.price ?? [])]),
     availability: pick(row, ["availability", "stock", "in_stock"]),
-    upcGtin: pick(row, ["upc", "upc_gtin", "barcode"]),
+    upcGtin: pick(row, ["upc", "upc_gtin", "barcode", ...(alias.upc ?? [])]),
     ean: pick(row, ["ean"]),
     gtin: pick(row, ["gtin"]),
     modelNumber: pick(row, ["model_number", "model", "mpn", "part_number"]),
@@ -82,5 +117,5 @@ export async function ingestRetailerSource(
   }));
 
   const result = await prisma.rawProductRecord.createMany({ data });
-  return { retailer: source.retailerName, inserted: result.count, snapshotId };
+  return { retailer: config.name, inserted: result.count, snapshotId };
 }

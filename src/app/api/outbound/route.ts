@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { decodeOutboundTarget } from "@/lib/affiliate/outbound";
+import {
+  decodeOutboundTarget,
+  hasRequiredAffiliateTracking,
+} from "@/lib/affiliate/outbound";
+import type { RetailerId } from "@/lib/types";
 import { getSessionUserId } from "@/lib/auth/session";
 import { recordAnalyticsEvent } from "@/lib/analytics/record";
 
@@ -17,6 +21,16 @@ export async function GET(request: Request) {
 
   const offerId = searchParams.get("oid") ?? undefined;
   const retailer = searchParams.get("r") ?? undefined;
+
+  // Defense-in-depth: never redirect to an affiliate-required retailer
+  // (Amazon/eBay) without our tracking attached, even if a stale/crafted link
+  // reached this route.
+  if (retailer && !hasRequiredAffiliateTracking(retailer as RetailerId, target)) {
+    console.error(
+      `[affiliate] blocked un-tracked outbound link for ${retailer}: ${target.slice(0, 120)}`,
+    );
+    return NextResponse.json({ error: "affiliate tracking required" }, { status: 400 });
+  }
   const catalogId = searchParams.get("cid") ?? undefined;
   const isBestDeal = searchParams.get("bd") === "1";
   const price = searchParams.get("p");

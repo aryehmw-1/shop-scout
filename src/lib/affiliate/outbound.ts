@@ -1,4 +1,4 @@
-import type { ProductOffer } from "../types";
+import type { ProductOffer, RetailerId } from "../types";
 import { buildAffiliateUrl } from "../affiliate";
 import { allExperimentVariants } from "../experiments/flags";
 import { decodeBase64Url, encodeBase64Url } from "../encoding/base64url";
@@ -9,14 +9,67 @@ export interface OutboundClickContext {
   source?: "card" | "compare" | "hero" | "table" | "mobile_list";
 }
 
-/** Build commission-safe redirect URL through /api/outbound (logs click before redirect). */
+/**
+ * Retailers where we earn commission and MUST attach affiliate tracking before
+ * showing an outbound link. If tracking can't be attached, the link is hidden
+ * rather than shown raw (no un-monetized clicks to these partners).
+ */
+export const AFFILIATE_REQUIRED_RETAILERS: readonly RetailerId[] = ["amazon", "ebay"];
+
+export function isAffiliateRequired(retailer: RetailerId): boolean {
+  return AFFILIATE_REQUIRED_RETAILERS.includes(retailer);
+}
+
+/** Does this URL already carry the tracking param required for `retailer`? */
+export function hasRequiredAffiliateTracking(retailer: RetailerId, url: string): boolean {
+  if (!isAffiliateRequired(retailer)) return true;
+  try {
+    const params = new URL(url).searchParams;
+    if (retailer === "amazon") return Boolean(params.get("tag")?.trim());
+    if (retailer === "ebay") return Boolean(params.get("campid")?.trim());
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Central affiliate-safe link builder. Returns the affiliate-tracked destination
+ * URL, or `null` when the retailer requires affiliate tracking (Amazon / eBay)
+ * but a valid tag/campaign could not be attached — in which case callers MUST
+ * hide the outbound link. Never returns a raw, un-tracked Amazon/eBay link.
+ */
+export function affiliateSafeDestination(
+  retailer: RetailerId,
+  rawUrl: string | undefined,
+  prebuiltAffiliateUrl?: string,
+): string | null {
+  if (!rawUrl && !prebuiltAffiliateUrl) return null;
+  const candidate = prebuiltAffiliateUrl || buildAffiliateUrl(retailer, rawUrl ?? "");
+  // If a prebuilt URL was passed but lacks tracking, try rebuilding from the raw URL.
+  const url =
+    hasRequiredAffiliateTracking(retailer, candidate) || !rawUrl
+      ? candidate
+      : buildAffiliateUrl(retailer, rawUrl);
+  if (isAffiliateRequired(retailer) && !hasRequiredAffiliateTracking(retailer, url)) {
+    return null;
+  }
+  return url;
+}
+
+/** Build commission-safe redirect URL through /api/outbound (logs click before
+ * redirect). Returns `null` when the link must be hidden (Amazon/eBay without
+ * attachable affiliate tracking). */
 export function buildOutboundUrl(
   offer: ProductOffer,
   ctx: OutboundClickContext = {},
-): string {
-  const affiliateUrl =
-    offer.affiliateUrl ||
-    buildAffiliateUrl(offer.retailer, offer.productUrl ?? "");
+): string | null {
+  const affiliateUrl = affiliateSafeDestination(
+    offer.retailer,
+    offer.productUrl ?? undefined,
+    offer.affiliateUrl,
+  );
+  if (!affiliateUrl) return null;
 
   const params = new URLSearchParams();
   params.set("to", encodeBase64Url(affiliateUrl));

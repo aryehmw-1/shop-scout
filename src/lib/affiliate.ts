@@ -480,7 +480,9 @@ export function buildAffiliateUrl(
     const url = new URL(productUrl);
     const tag = AFFILIATE_TAGS[retailer];
     // Affiliate params on search URLs often break TJX / Oracle Commerce stores.
-    if (tag && isRetailerSearchUrl(productUrl)) {
+    // Amazon Associates explicitly supports tagged search/category links, so we
+    // never strip the tag there (doing so leaked un-monetized Amazon clicks).
+    if (tag && retailer !== "amazon" && isRetailerSearchUrl(productUrl)) {
       return productUrl;
     }
     if (tag) {

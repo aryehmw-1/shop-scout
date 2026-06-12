@@ -77,6 +77,30 @@ export default function ProductValidationAdmin() {
     [load],
   );
 
+  // Product-level actions (publish/unpublish/merge/split/reject/revalidate) on
+  // the canonical Product a raw record is matched to. Calls /api/admin/products.
+  const productAct = useCallback(
+    async (productId: string, action: string) => {
+      let targetProductId: string | undefined;
+      if (action === "merge") {
+        targetProductId =
+          window.prompt("Merge INTO which surviving product id?")?.trim() || undefined;
+        if (!targetProductId) return;
+      }
+      const res = await fetch("/api/admin/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ productId, action, targetProductId }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        window.alert(`Action failed: ${err.error ?? res.status}`);
+      }
+      load();
+    },
+    [load],
+  );
+
   const runBatch = useCallback(async () => {
     setLoading(true);
     await fetch("/api/admin/product-validation", {
@@ -188,6 +212,31 @@ export default function ProductValidationAdmin() {
                   Reject
                 </button>
               </div>
+              {r.matchedProductId && (
+                <div className="flex shrink-0 flex-col gap-1 border-l border-stone-100 pl-3">
+                  <span className="text-[9px] font-bold uppercase tracking-wide text-stone-400">
+                    Canonical product
+                  </span>
+                  <button onClick={() => productAct(r.matchedProductId!, "publish")} className="rounded bg-emerald-700 px-3 py-1 text-xs font-semibold text-white">
+                    Publish
+                  </button>
+                  <button onClick={() => productAct(r.matchedProductId!, "unpublish")} className="rounded bg-stone-600 px-3 py-1 text-xs font-semibold text-white">
+                    Unpublish
+                  </button>
+                  <button onClick={() => productAct(r.matchedProductId!, "revalidate")} className="rounded bg-amber-600 px-3 py-1 text-xs font-semibold text-white">
+                    Revalidate
+                  </button>
+                  <button onClick={() => productAct(r.matchedProductId!, "merge")} className="rounded bg-indigo-600 px-3 py-1 text-xs font-semibold text-white">
+                    Merge…
+                  </button>
+                  <button onClick={() => productAct(r.matchedProductId!, "split")} className="rounded bg-purple-600 px-3 py-1 text-xs font-semibold text-white">
+                    Split
+                  </button>
+                  <button onClick={() => productAct(r.matchedProductId!, "reject")} className="rounded bg-red-700 px-3 py-1 text-xs font-semibold text-white">
+                    Reject product
+                  </button>
+                </div>
+              )}
             </div>
           );
         })}

@@ -40,6 +40,34 @@ If you run the nightly ingestion cron or scripts on another host (e.g. a CI
 runner or a separate worker), set `BRIGHT_DATA_API_KEY` there too. The key is the
 only Bright Data secret required.
 
+## Operations (one config, one provider, three operations)
+
+A retailer is sourced three ways — the **operation** (not a separate scraper)
+decides the Bright Data input payload. Amazon's single dataset
+(`gd_l7q7dkf244hwjntr0`) backs all three:
+
+| Operation        | Bright Data        | Input payload            | Used when                         |
+| ---------------- | ------------------ | ------------------------ | --------------------------------- |
+| `keyword_search` | Discover by keyword| `{ keyword, zipcode }`   | importing NEW products            |
+| `url_lookup`     | Collect by URL     | `{ url, zipcode, language }` | refreshing KNOWN product pages |
+| `upc_lookup`     | Discover by UPC    | `{ upc, zipcode }`       | exact-matching ACROSS retailers   |
+| `sku_lookup`     | Discover by SKU    | `{ sku, zipcode }`       | exact-matching by retailer item id|
+
+Per-retailer operation support (all config, no per-retailer scraper code):
+
+| Retailer | dataset env                 | operations                              |
+| -------- | --------------------------- | --------------------------------------- |
+| Amazon   | `BRIGHT_DATA_DATASET_AMAZON`| keyword_search · url_lookup · upc_lookup |
+| Walmart  | `BRIGHT_DATA_DATASET_WALMART`| keyword_search · url_lookup · sku_lookup |
+| Target   | `BRIGHT_DATA_DATASET_TARGET`| keyword_search · url_lookup · upc_lookup |
+
+Priority order: keyword → url → identity (upc/sku). The ingestion pipeline picks
+the operation from intent (`import` → keyword_search, `refresh` → url_lookup,
+`cross_retailer_match` → upc_lookup). Operations are generic — any retailer can
+declare the same ones in `src/lib/pipeline/ingestion/retailer-config.ts` once
+Bright Data supports them. There is exactly one Bright Data provider underneath;
+the operation alone decides the input payload and discover semantics.
+
 ## Verifying the connection
 
 - **Admin page:** visit `/admin/bright-data` and click **Test connection**.

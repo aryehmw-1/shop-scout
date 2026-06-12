@@ -14,6 +14,16 @@ export interface BrightDataScrapeOptions {
   datasetId: string;
   /** Input rows for the dataset (e.g. [{ url }], [{ keyword }], [{ upc }]). */
   input: Record<string, unknown>[];
+  /**
+   * Bright Data operation semantics:
+   *   - undefined/null → Collect by URL (no discover type)
+   *   - "keyword"      → Discover by keyword
+   *   - "upc"          → Discover by UPC
+   *   - "sku"          → Discover by SKU
+   * This is the ONLY difference between operations — same dataset, same async
+   * trigger/poll/download flow, regardless of retailer.
+   */
+  discoverBy?: "keyword" | "upc" | "sku" | null;
   /** Max ms to wait for the snapshot to finish before giving up. */
   timeoutMs?: number;
   /** Poll interval while the snapshot is "running". */
@@ -73,10 +83,11 @@ export class BrightDataClient {
   async scrape({
     datasetId,
     input,
+    discoverBy,
     timeoutMs = 180_000,
     pollIntervalMs = 4_000,
   }: BrightDataScrapeOptions): Promise<BrightDataSnapshot> {
-    const snapshotId = await this.trigger(datasetId, input);
+    const snapshotId = await this.trigger(datasetId, input, discoverBy);
     await this.waitUntilReady(snapshotId, timeoutMs, pollIntervalMs);
     const rows = await this.download(snapshotId);
     return { snapshotId, rows };
@@ -104,11 +115,27 @@ export class BrightDataClient {
     }
   }
 
-  private async trigger(datasetId: string, input: Record<string, unknown>[]): Promise<string> {
-    const res = await fetch(
-      `${BASE_URL}/trigger?dataset_id=${encodeURIComponent(datasetId)}&include_errors=true`,
-      { method: "POST", headers: this.headers(), body: JSON.stringify(input) },
-    );
+  private async trigger(
+    datasetId: string,
+    input: Record<string, unknown>[],
+    discoverBy?: "keyword" | "upc" | "sku" | null,
+  ): Promise<string> {
+    // Discover operations add `type=discover_new&discover_by=<x>`; Collect-by-URL
+    // (discoverBy null/undefined) uses the plain trigger.
+    const params = new URLSearchParams({
+      dataset_id: datasetId,
+      notify: "false",
+      include_errors: "true",
+    });
+    if (discoverBy) {
+      params.set("type", "discover_new");
+      params.set("discover_by", discoverBy);
+    }
+    const res = await fetch(`${BASE_URL}/trigger?${params.toString()}`, {
+      method: "POST",
+      headers: this.headers(),
+      body: JSON.stringify(input),
+    });
     if (!res.ok) {
       throw new BrightDataError(`Trigger failed: ${await safeText(res)}`, "trigger", res.status);
     }

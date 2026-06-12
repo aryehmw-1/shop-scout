@@ -472,12 +472,17 @@ model RetailerSource {
   retailerDomain      String
   brightDataDatasetId String
   inputType           String   @default("url") // url | keyword | category | upc | sku
+  // Ingestion source for this retailer. Bright Data is a SOURCE, not a hard
+  // dependency — flip to official_api later without touching the rest of the app.
+  sourceMode          String   @default("bright_data") // bright_data | official_api | disabled
+  priority            Int      @default(100) // lower = checked first (top-retailers-first)
   active              Boolean  @default(true)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
   @@unique([retailerDomain, brightDataDatasetId])
   @@index([active])
+  @@index([sourceMode])
   @@index([retailerName])
 }
 
