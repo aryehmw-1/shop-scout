@@ -43,6 +43,7 @@ interface OfferListBProps {
   offers: ProductOffer[];
   onShopClick?: (offer: ProductOffer) => void;
   searchQuery?: string;
+  variant?: "exact" | "similar";
 }
 
 /**
@@ -51,18 +52,19 @@ interface OfferListBProps {
  * price pinned to the far right above a "View at store" button. Used at `lg`+;
  * phones use the compact `MobileOfferList`.
  */
-export function DesktopOfferListB({ offers, onShopClick, searchQuery }: OfferListBProps) {
+export function DesktopOfferListB({ offers, onShopClick, searchQuery, variant = "exact" }: OfferListBProps) {
   if (!offers.length) return null;
+  const isSimilar = variant === "similar";
   const highest = maxDelivered(offers);
 
   return (
     <div className="space-y-3">
       {offers.map((offer, i) => {
-        const best = i === 0;
+        const best = !isSimilar && i === 0;
         const delivered = offer.deliveredTotal ?? offer.landedCost ?? offer.price;
-        const save = highest - delivered;
+        const save = isSimilar ? 0 : highest - delivered;
         const ship = offerShipping(offer);
-        const pctBelow = offer.percentBelowMarket
+        const pctBelow = !isSimilar && offer.percentBelowMarket
           ? Math.round(offer.percentBelowMarket)
           : 0;
         return (
@@ -81,6 +83,11 @@ export function DesktopOfferListB({ offers, onShopClick, searchQuery }: OfferLis
               {best && (
                 <span className="absolute left-0 top-0 inline-flex items-center gap-0.5 rounded-br-xl bg-gradient-to-r from-orange-500 to-amber-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                   <Crown size={10} aria-hidden /> Best
+                </span>
+              )}
+              {isSimilar && (
+                <span className="absolute left-0 top-0 inline-flex items-center gap-0.5 rounded-br-xl bg-stone-700 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                  Similar
                 </span>
               )}
             </div>

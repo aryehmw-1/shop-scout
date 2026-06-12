@@ -1,7 +1,27 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-12T13:20:10.625Z",
+  "updatedAt": "2026-06-12T13:25:54.563Z",
   "events": [
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "grocery"
+      },
+      "at": "2026-06-12T13:25:54.563Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "grocery",
+      "at": "2026-06-12T13:25:54.552Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqay3wqo_06l1kx",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-12T13:25:53.364Z"
+    },
     {
       "event": "recommendation_no_match",
       "meta": {

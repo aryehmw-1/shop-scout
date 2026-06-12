@@ -1,85 +1,78 @@
 "use client";
 
-import { ExternalLink, Sparkles, Info } from "lucide-react";
-import type { SimilarProduct } from "@/lib/types";
-import { ProductImage } from "@/components/ProductImage";
+import { Sparkles } from "lucide-react";
+import type { ProductOffer, SimilarProduct } from "@/lib/types";
+import { MobileOfferList } from "./MobileOfferList";
+import { DesktopOfferListB } from "./OfferListB";
 
 interface Props {
   similar: SimilarProduct[];
-  /** How many exact-match offers were shown (to honor the 7-card cap + copy). */
+  /** Exact-match offers already shown (to honor the 7-card cap). */
   exactCount: number;
+  searchQuery?: string;
+}
+
+/** Build a ProductOffer so similar items render through the SAME card components
+ *  as exact results — identical layout, just badged "Similar" (no Best, no
+ *  price-comparison pills). */
+function similarToOffer(s: SimilarProduct): ProductOffer {
+  return {
+    id: `similar-${s.catalogId}`,
+    title: s.title,
+    brand: s.brand,
+    size: "",
+    catalogId: s.catalogId,
+    imageUrl: s.imageUrl,
+    retailer: s.retailer,
+    retailerName: s.retailerName,
+    channel: "online",
+    price: s.price,
+    unitPrice: s.price,
+    unitLabel: "each",
+    inStock: true,
+    pickupAvailable: false,
+    landedCost: s.price,
+    deliveredTotal: s.price,
+    productUrl: s.productUrl,
+    affiliateUrl: s.affiliateUrl ?? "",
+    matchConfidence: 0.5,
+    matchBand: "similar",
+  };
 }
 
 /**
- * Clearly-labelled SIMILAR alternatives (Option 3). Different products — never
- * part of price comparison, never "Best". When there is exactly one verified
- * seller we say so honestly instead of faking a comparison. The grid is capped so
- * exact + similar never exceeds 7 cards.
+ * Similar alternatives — different products, rendered in the SAME card format as
+ * exact results (cheapest first), each badged "Similar". A single clear banner
+ * (mirroring the "Verified live prices" strip) separates them from the exact
+ * offers above.
  */
-export function SimilarAlternatives({ similar, exactCount }: Props) {
+export function SimilarAlternatives({ similar, exactCount, searchQuery }: Props) {
   if (!similar.length) return null;
   const cap = Math.max(0, 7 - exactCount);
-  const items = similar.slice(0, cap);
-  if (!items.length) return null;
+  const offers = similar
+    .map(similarToOffer)
+    .sort((a, b) => a.price - b.price)
+    .slice(0, cap);
+  if (!offers.length) return null;
 
   return (
-    <section className="mt-3">
-      {exactCount === 1 && (
-        <p className="mb-2 flex items-start gap-1.5 px-1 text-[11px] leading-snug text-stone-400">
-          <Info size={13} className="mt-px shrink-0" aria-hidden />
-          <span>Only one verified seller so far — we&apos;ll add more as we check other stores.</span>
-        </p>
-      )}
-      <p className="mb-2 flex items-center gap-1.5 px-1 text-[11px] font-semibold text-stone-500">
-        <Sparkles size={13} className="text-sage-500" aria-hidden />
-        Similar alternatives
-      </p>
-      <ul className="space-y-2">
-        {items.map((s) => {
-          const inner = (
-            <>
-              <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-stone-50 ring-1 ring-stone-100">
-                <ProductImage src={s.imageUrl} alt={s.title} className="h-full w-full object-cover" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="rounded bg-stone-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-stone-600">
-                    Similar
-                  </span>
-                  <span className="text-xs font-semibold text-stone-900">{s.retailerName}</span>
-                </div>
-                <p className="mt-0.5 truncate text-xs text-stone-500">{s.title}</p>
-              </div>
-              <span className="shrink-0 text-sm font-bold text-stone-900">
-                ${s.price.toFixed(2)}
-              </span>
-              {s.affiliateUrl && (
-                <ExternalLink size={14} className="shrink-0 text-stone-300" aria-hidden />
-              )}
-            </>
-          );
-          const className =
-            "flex items-center gap-3 rounded-xl border border-stone-200 bg-white p-2 transition hover:border-stone-300";
-          // Affiliate-safe: hide the outbound link entirely when no tracked URL.
-          return s.affiliateUrl ? (
-            <li key={s.catalogId}>
-              <a
-                href={s.affiliateUrl}
-                target="_blank"
-                rel="noopener noreferrer sponsored"
-                className={className}
-                aria-label={`View ${s.title} at ${s.retailerName}`}
-              >
-                {inner}
-              </a>
-            </li>
-          ) : (
-            <li key={s.catalogId} className={className}>
-              {inner}
-            </li>
-          );
-        })}
-      </ul>
+    <section className="mt-3 space-y-2">
+      <div className="flex w-full items-center gap-2 rounded-lg bg-stone-100 px-3 py-2 text-[12px] font-semibold text-stone-700 ring-1 ring-stone-200">
+        <Sparkles size={14} className="shrink-0 text-stone-500" aria-hidden />
+        <span>
+          Similar alternatives
+          <span className="font-normal text-stone-500">
+            {" "}— close options, not the exact item
+            {exactCount === 0 ? " we could find" : " you searched"}
+          </span>
+        </span>
+      </div>
+      <div className="hidden lg:block">
+        <DesktopOfferListB offers={offers} searchQuery={searchQuery} variant="similar" />
+      </div>
+      <div className="lg:hidden">
+        <MobileOfferList offers={offers} searchQuery={searchQuery} variant="similar" />
+      </div>
     </section>
   );
 }

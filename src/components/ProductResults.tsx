@@ -261,7 +261,7 @@ export function ProductResults({
             <p className="mb-1 text-xs text-stone-500">
               Here are similar products you might like instead.
             </p>
-            <SimilarAlternatives similar={similarAlternatives} exactCount={0} />
+            <SimilarAlternatives similar={similarAlternatives} exactCount={0} searchQuery={searchQuery} />
           </div>
         )}
         <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-5 py-5 space-y-4">
@@ -544,7 +544,7 @@ export function ProductResults({
 
       {similarAlternatives.length > 0 &&
         !(display.matchTiers?.similar?.length ?? 0) && (
-          <SimilarAlternatives similar={similarAlternatives} exactCount={online.length} />
+          <SimilarAlternatives similar={similarAlternatives} exactCount={online.length} searchQuery={searchQuery} />
         )}
 
       {display.catalogFreshnessWarning &&

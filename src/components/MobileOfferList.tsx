@@ -52,6 +52,9 @@ interface MobileOfferListProps {
   offers: ProductOffer[];
   onShopClick?: (offer: ProductOffer) => void;
   searchQuery?: string;
+  /** "similar" renders the same card but badged "Similar" (no Best, no price
+   *  comparison pills) — for alternative products, not the same item. */
+  variant?: "exact" | "similar";
 }
 
 /**
@@ -61,8 +64,9 @@ interface MobileOfferListProps {
  * honest shipping line, and a "View" pill. Used only below `lg`; desktop uses
  * the roomier `DesktopOfferListB`.
  */
-export function MobileOfferList({ offers, onShopClick, searchQuery }: MobileOfferListProps) {
+export function MobileOfferList({ offers, onShopClick, searchQuery, variant = "exact" }: MobileOfferListProps) {
   if (!offers.length) return null;
+  const isSimilar = variant === "similar";
   const highest = Math.max(
     ...offers.map((o) => o.deliveredTotal ?? o.landedCost ?? o.price),
   );
@@ -70,11 +74,11 @@ export function MobileOfferList({ offers, onShopClick, searchQuery }: MobileOffe
   return (
     <div className="space-y-2">
       {offers.map((offer, i) => {
-        const best = i === 0;
+        const best = !isSimilar && i === 0;
         const delivered = offer.deliveredTotal ?? offer.landedCost ?? offer.price;
-        const save = highest - delivered;
+        const save = isSimilar ? 0 : highest - delivered;
         const ship = offerShipping(offer);
-        const pctBelow = offer.percentBelowMarket
+        const pctBelow = !isSimilar && offer.percentBelowMarket
           ? Math.round(offer.percentBelowMarket)
           : 0;
         return (
@@ -96,6 +100,11 @@ export function MobileOfferList({ offers, onShopClick, searchQuery }: MobileOffe
               {best && (
                 <span className="absolute left-0 top-0 inline-flex items-center gap-0.5 rounded-br-lg bg-gradient-to-r from-orange-500 to-amber-500 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
                   <Crown size={9} aria-hidden /> Best
+                </span>
+              )}
+              {isSimilar && (
+                <span className="absolute left-0 top-0 inline-flex items-center gap-0.5 rounded-br-lg bg-stone-700 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+                  Similar
                 </span>
               )}
             </div>
