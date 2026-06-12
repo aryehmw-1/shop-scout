@@ -76,26 +76,26 @@ export function DesktopOfferListB({ offers, onShopClick, searchQuery, variant = 
               best ? "border-orange-300 ring-1 ring-orange-200/70" : "border-stone-200"
             }`}
           >
-            {onSave && (
-              <button
-                type="button"
-                onClick={() => onSave(offer)}
-                aria-label={savedIds?.has(offer.id) ? "Saved" : "Save product"}
-                className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white ring-1 ring-stone-200 transition hover:bg-stone-50 active:scale-95"
-              >
-                <Heart
-                  size={16}
-                  className={savedIds?.has(offer.id) ? "fill-rose-500 text-rose-500" : "text-stone-400"}
-                  aria-hidden
-                />
-              </button>
-            )}
             <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-stone-50 ring-1 ring-stone-100">
               <ProductImage
                 src={offer.imageUrl}
                 alt={offer.title}
                 className="h-full w-full object-cover"
               />
+              {onSave && (
+                <button
+                  type="button"
+                  onClick={() => onSave(offer)}
+                  aria-label={savedIds?.has(offer.id) ? "Saved" : "Save product"}
+                  className="absolute right-1 top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/95 ring-1 ring-stone-200 transition hover:bg-white active:scale-95"
+                >
+                  <Heart
+                    size={15}
+                    className={savedIds?.has(offer.id) ? "fill-rose-500 text-rose-500" : "text-stone-400"}
+                    aria-hidden
+                  />
+                </button>
+              )}
               {best && (
                 <span className="absolute left-0 top-0 inline-flex items-center gap-0.5 rounded-br-xl bg-gradient-to-r from-orange-500 to-amber-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
                   <Crown size={10} aria-hidden /> Best
