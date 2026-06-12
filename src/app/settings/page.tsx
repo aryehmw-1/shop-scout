@@ -9,7 +9,7 @@ import { loadAddress, loadPreferences, saveAddress, savePreferences } from "@/li
 import { isValidUsZip, normalizeZip, zipOnlyAddress } from "@/lib/location/zip-only";
 import { THEME_PRESETS, type ThemeId } from "@/lib/theme/presets";
 import type { UserAddress } from "@/lib/types";
-import { Check, LogOut } from "lucide-react";
+import { Check, LogOut, Mail, ChevronRight } from "lucide-react";
 
 export default function SettingsPage() {
   const { user, loading, updateAddress, logout } = useAuth();
@@ -170,6 +170,24 @@ export default function SettingsPage() {
                 </div>
               )}
             </section>
+
+            <Link
+              href="/contact"
+              className="flex items-center justify-between rounded-2xl border border-stone-200/80 bg-white p-6 shadow-sm transition hover:border-sage-300 hover:bg-sage-50/40"
+            >
+              <div className="flex items-center gap-3">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sage-50 text-sage-700">
+                  <Mail size={20} />
+                </span>
+                <div>
+                  <h2 className="font-semibold text-stone-800">Contact us</h2>
+                  <p className="mt-0.5 text-sm text-stone-500">
+                    Questions, feedback, or a wrong price? We&apos;d love to hear from you.
+                  </p>
+                </div>
+              </div>
+              <ChevronRight size={20} className="shrink-0 text-stone-400" aria-hidden />
+            </Link>
           </div>
         </main>
 

@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps) {
     const p = getCanonicalProductById(decoded);
     if (p) return { title: `${p.canonical_title} | Homivion` };
   }
-  return { title: "Product | Shop Scout" };
+  return { title: "Product | Homivion" };
 }
 
 export default async function InventoryProductPage({ params }: PageProps) {

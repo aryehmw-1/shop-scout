@@ -3,7 +3,6 @@
 import { Sparkles } from "lucide-react";
 import type { ProductOffer, SimilarProduct } from "@/lib/types";
 import { MobileOfferList } from "./MobileOfferList";
-import { DesktopOfferListB } from "./OfferListB";
 
 interface Props {
   similar: SimilarProduct[];
@@ -69,24 +68,13 @@ export function SimilarAlternatives({ similar, exactCount, searchQuery, onSave, 
           </span>
         </span>
       </div>
-      <div className="hidden lg:block">
-        <DesktopOfferListB
-          offers={offers}
-          searchQuery={searchQuery}
-          variant="similar"
-          onSave={onSave}
-          savedIds={savedIds}
-        />
-      </div>
-      <div className="lg:hidden">
-        <MobileOfferList
-          offers={offers}
-          searchQuery={searchQuery}
-          variant="similar"
-          onSave={onSave}
-          savedIds={savedIds}
-        />
-      </div>
+      <MobileOfferList
+        offers={offers}
+        searchQuery={searchQuery}
+        variant="similar"
+        onSave={onSave}
+        savedIds={savedIds}
+      />
     </section>
   );
 }

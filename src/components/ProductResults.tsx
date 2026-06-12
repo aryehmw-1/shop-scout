@@ -504,71 +504,21 @@ export function ProductResults({
       )}
 
       {online.length > 0 && (
-        <section className="flex min-w-0 flex-col rounded-2xl border-2 border-sage-400/70 bg-sage-50/30 p-2 sm:p-5">
-          {/* Desktop keeps the roomy verified-pricing card; phones get the
-              compact V-2 tap-to-expand note (below) so products lead. */}
-          <div className="hidden lg:block">
-            <VerifiedCompareHeader
-              categoryId={categoryId}
-              offerCount={online.length}
-              zipCode={zipCode}
-            />
-          </div>
-          <div className="mb-4 hidden items-start justify-between gap-3 lg:flex">
-            <div className="flex min-w-0 gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm">
-                <Truck size={22} className="text-sage-700" />
-              </div>
-              <div className="min-w-0">
-                <h4 className="text-base font-bold text-stone-900 sm:text-lg">
-                  {display.closestMatchFallback ?
-                    `Closest matches (${online.length})`
-                  : results.linkMatch?.useExactCompare ?
-                    "Matching offers"
-                  : "Best prices"} ({online.length})
-                </h4>
-                <p className="mt-0.5 text-xs text-stone-600 sm:text-sm">
-                  {display.closestMatchFallback ?
-                    "Estimated catalog prices · confirm pack size on retailer"
-                  : "Verified live retailer pricing"}
-                  {zipCode ? ` · ships to ${zipCode}` : " · add ZIP for regional shipping/tax"}
-                </p>
-              </div>
-            </div>
-            {showViewToggle && (
-              <div className="hidden lg:block">
-                <ResultsViewToggle view={view} onChange={setViewPersisted} />
-              </div>
-            )}
-          </div>
-          {/* Desktop uses the roomy Option B list (unless comparing or in the
-              explicit table view); phones get the compact Option B list. */}
-          <div className="hidden lg:block">
-            {view === "table" ? (
-              renderOffers(online)
-            ) : (
-              <DesktopOfferListB
-                offers={online}
-                onShopClick={onShopClick}
-                searchQuery={searchQuery}
-                onSave={onSave}
-                savedIds={savedIds}
-              />
-            )}
-          </div>
-          <div className="lg:hidden">
-            <MobileVerifiedNote
-              zipCode={zipCode}
-              estimated={Boolean(display.closestMatchFallback)}
-            />
-            <MobileOfferList
-              offers={online}
-              onShopClick={onShopClick}
-              searchQuery={searchQuery}
-              onSave={onSave}
-              savedIds={savedIds}
-            />
-          </div>
+        <section className="mx-auto flex w-full max-w-2xl min-w-0 flex-col rounded-2xl border-2 border-sage-400/70 bg-sage-50/30 p-2 sm:p-5">
+          {/* One layout everywhere — the compact "iPhone" card list, on mobile and
+              desktop alike (same verified-prices note, same card, heart on the
+              right, price on the left). */}
+          <MobileVerifiedNote
+            zipCode={zipCode}
+            estimated={Boolean(display.closestMatchFallback)}
+          />
+          <MobileOfferList
+            offers={online}
+            onShopClick={onShopClick}
+            searchQuery={searchQuery}
+            onSave={onSave}
+            savedIds={savedIds}
+          />
         </section>
       )}
 
