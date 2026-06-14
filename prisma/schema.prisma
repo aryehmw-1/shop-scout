@@ -626,3 +626,29 @@ model MissingProduct {
   @@index([query])
   @@index([sessionId])
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+/// Stored product-pair match decisions (classify.ts). Every non-DIFFERENT
+/// decision is logged with its confidence + method so an admin can review bad
+/// matches and approve/reject them; `adminOverride` becomes the source of truth
+/// for that pair on future classifications (the feedback loop).
+model ProductMatchDecision {
+  id            String    @id @default(cuid())
+  pairKey       String    @unique
+  productAId    String?
+  productBId    String?
+  titleA        String
+  titleB        String
+  decision      String // EXACT_MATCH | SIMILAR_ALTERNATIVE | DIFFERENT
+  confidence    Float
+  method        String // deterministic | embedding | llm
+  reasonsJson   String    @default("[]")
+  adminStatus   String    @default("pending") // pending | approved | rejected
+  adminOverride String? // admin-corrected decision, wins on future runs
+  adminNote     String?
+  createdAt     DateTime  @default(now())
+  reviewedAt    DateTime?
+
+  @@index([adminStatus, createdAt])
+  @@index([decision, confidence])
+}
