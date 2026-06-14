@@ -19,6 +19,7 @@ import {
   createCanonicalProduct,
   isCanonicalCreationSafe,
   publishTrustedCatalogRecord,
+  attachRetailerOffer,
 } from "./canonical";
 import { getRetailerConfigByName } from "./ingestion/retailer-config";
 import { logValidation } from "./validation-log";
@@ -133,6 +134,23 @@ export async function processRawRecord(
     const selfScore = scoreMatch(listing).score;
     if (isCanonicalCreationSafe(listing, selfScore)) {
       const { productId } = await createCanonicalProduct(recordId, listing);
+      // createCanonicalProduct mints the Product but attaches NO offer. Search
+      // only returns products with a live offer, so attach this retailer's own
+      // listing (price + URL) — otherwise a freshly published Amazon/Walmart/
+      // Target product would be invisible. (IKEA does this via the trusted path.)
+      if (sourceConfig) {
+        await attachRetailerOffer(
+          {
+            id: recordId,
+            productUrl: record.productUrl,
+            imageUrl: record.imageUrl,
+            price: record.price,
+            retailerId: sourceConfig.retailer,
+          },
+          listing,
+          productId,
+        );
+      }
       // createCanonicalProduct already set the record to PUBLISHED + logged it.
       return {
         recordId,
@@ -155,7 +173,23 @@ export async function processRawRecord(
     });
   }
 
-  return finalize(recordId, oldStatus, best.outcome, best.product.id);
+  const result = await finalize(recordId, oldStatus, best.outcome, best.product.id);
+  // A record that publishes by matching an existing canonical product still
+  // contributes its OWN retailer offer (a new price/seller for that product).
+  if (result.outcome.processingStatus === "PUBLISHED" && sourceConfig) {
+    await attachRetailerOffer(
+      {
+        id: recordId,
+        productUrl: record.productUrl,
+        imageUrl: record.imageUrl,
+        price: record.price,
+        retailerId: sourceConfig.retailer,
+      },
+      listing,
+      best.product.id,
+    );
+  }
+  return result;
 }
 
 async function finalize(

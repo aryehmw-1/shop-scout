@@ -38,6 +38,9 @@ export interface SearchProductsOptions {
   language?: string;
   /** Cap on offers/rows to keep (top-retailers-first stores only the best few). */
   limit?: number;
+  /** Max ms to wait for an async snapshot before giving up (Bright Data). Keyword
+   *  discovery is slow, so bulk imports raise this above the 180s default. */
+  timeoutMs?: number;
 }
 
 /**

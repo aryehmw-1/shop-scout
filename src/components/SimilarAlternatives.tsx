@@ -16,7 +16,7 @@ interface Props {
 /** Build a ProductOffer so similar items render through the SAME card components
  *  as exact results — identical layout, just badged "Similar" (no Best, no
  *  price-comparison pills). */
-function similarToOffer(s: SimilarProduct): ProductOffer {
+export function similarToOffer(s: SimilarProduct): ProductOffer {
   return {
     id: `similar-${s.catalogId}`,
     title: s.title,

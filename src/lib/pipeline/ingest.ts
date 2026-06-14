@@ -41,6 +41,8 @@ export interface IngestRequest {
   sourceMode?: RetailerSourceMode;
   /** Cap rows kept (top-retailers-first keeps only the best few offers). */
   limit?: number;
+  /** Max ms to wait for an async snapshot (Bright Data keyword discovery is slow). */
+  timeoutMs?: number;
 }
 
 /**
@@ -72,6 +74,7 @@ export async function ingestRetailerProducts(req: IngestRequest): Promise<Ingest
     zipcode: req.zipcode,
     language: req.language,
     limit: req.limit,
+    timeoutMs: req.timeoutMs,
   });
   if (!rows.length) return { retailer: config.name, inserted: 0, snapshotId };
 

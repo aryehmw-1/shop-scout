@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ShieldCheck, ExternalLink, Search } from "lucide-react";
 import type { VerifiedBrowseResult } from "@/lib/inventory/verified-inventory-browse";
@@ -8,6 +8,7 @@ import { affiliateSafeDestination } from "@/lib/affiliate/outbound";
 import type { RetailerId } from "@/lib/types";
 import { formatPrice } from "@/lib/utils/format";
 import { ProductImage } from "@/components/ProductImage";
+import { trackEvent } from "@/lib/analytics/track-client";
 
 interface VerifiedInventoryClientProps {
   initial: VerifiedBrowseResult;
@@ -15,6 +16,14 @@ interface VerifiedInventoryClientProps {
 
 export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProps) {
   const [query, setQuery] = useState("");
+
+  // Fire once per mount — inventory page view.
+  useEffect(() => {
+    trackEvent({
+      name: "inventory_page_viewed",
+      properties: { productCount: initial.products.length },
+    });
+  }, [initial.products.length]);
 
   const products = useMemo(() => {
     const q = query.trim().toLowerCase();

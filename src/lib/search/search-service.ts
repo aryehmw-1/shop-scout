@@ -18,6 +18,7 @@ import {
 } from "../inventory/verified-inventory-resolver";
 import { inventoryService } from "../inventory/inventory-service";
 import { mergeLivePrices } from "./merge-live-prices";
+import { coversQuery } from "./query-understanding";
 import { attachMatchedProduct } from "./matched-product";
 import { enrichSearchResultsWithImages } from "./product-image-lookup";
 import { recordSnapshotsOnSearch } from "../own-db/config";
@@ -85,19 +86,14 @@ export class SearchService {
       const merged = productDataToSearchResults(products, item, intent, base);
       if (!merged) return base;
 
-      // Relevance guard: only accept live results whose top offer title has
-      // meaningful token overlap with the query. Prevents eBay returning
-      // "Romaine Hearts" when the user searched for "Cheerios".
-      const queryTokens = (intent.query || item.title)
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, " ")
-        .split(/\s+/)
-        .filter((t) => t.length > 2);
-
-      const relevantOffers = merged.online.filter((offer) => {
-        const offerText = `${offer.storeTitle ?? ""} ${offer.title} ${offer.brand ?? ""}`.toLowerCase();
-        return queryTokens.some((t) => offerText.includes(t));
-      });
+      // Relevance guard: only accept live results that genuinely COVER the
+      // query's content words (whole-word, units/numbers ignored). Prevents
+      // "spring water" → "...Spring Water SCENT hand soap" or "Cheerios" →
+      // "Romaine Hearts". See coversQuery for the coverage rules.
+      const relevanceQuery = intent.query || item.title;
+      const relevantOffers = merged.online.filter((offer) =>
+        coversQuery(`${offer.storeTitle ?? ""} ${offer.title} ${offer.brand ?? ""}`, relevanceQuery),
+      );
 
       if (!relevantOffers.length) {
         console.log("[SearchService] live-provider results rejected (no query overlap)", {

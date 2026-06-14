@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { Resend } from "resend";
 import { prisma } from "@/lib/db/prisma";
 import { signToken } from "@/lib/product-request-token";
+import { getSessionUserId } from "@/lib/auth/session";
+import { capturePostHogServer } from "@/lib/analytics/posthog-server";
 
 const OWNER_EMAIL = process.env.OWNER_EMAIL ?? "Aryehmweiss@icloud.com";
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? "noreply@homivion.com";
@@ -27,10 +29,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid email" }, { status: 400 });
     }
 
-    // Save to DB
+    // Save to DB (+ analytics attribution: session + known user).
+    const sessionId = (body.sessionId ?? "").toString().trim() || null;
+    const userId = (await getSessionUserId()) ?? null;
     const request = await prisma.productRequest.create({
-      data: { productQuery, userEmail, status: "pending" },
+      data: { productQuery, userEmail, status: "pending", sessionId, userId },
     });
+
+    // Analytics: product_request_submitted → PostHog (DB row is this table itself).
+    void capturePostHogServer(
+      {
+        name: "product_request_submitted",
+        properties: { query: productQuery, email: userEmail },
+      },
+      { userId: userId ?? undefined, sessionId: sessionId ?? undefined },
+    );
 
     // Build one-click approve / decline URLs
     const approveUrl = `${APP_URL}/api/product-request/review?id=${request.id}&action=approve&token=${signToken(request.id, "approve")}`;

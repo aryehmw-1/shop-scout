@@ -1,6 +1,7 @@
 "use client";
 
 import type { AnalyticsEvent } from "./events";
+import { capturePostHogClient } from "./posthog-client";
 
 const SESSION_KEY = "shop-scout:analytics-session";
 
@@ -18,12 +19,16 @@ function analyticsSessionId(): string {
 export function trackEvent(event: AnalyticsEvent): void {
   if (typeof window === "undefined") return;
 
+  const sessionId = event.sessionId ?? analyticsSessionId();
   const payload = {
     ...event,
     timestamp: event.timestamp ?? Date.now(),
-    sessionId: event.sessionId ?? analyticsSessionId(),
+    sessionId,
     path: window.location.pathname,
   };
+
+  // Mirror to PostHog from the browser (server also captures via /api/analytics).
+  capturePostHogClient(event.name, { ...event.properties, sessionId });
 
   const body = JSON.stringify(payload);
 

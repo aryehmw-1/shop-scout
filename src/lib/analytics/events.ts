@@ -13,6 +13,14 @@ export type AnalyticsEventName =
   | "experiment_exposure"
   | "compare_view"
   | "page_view"
+  // User-intelligence events: also persisted to dedicated analytics tables
+  // (SearchEvent / ProductClick / MissingProduct) and PostHog. `search_performed`
+  // above doubles as the SearchEvent + zero-result MissingProduct trigger.
+  | "product_clicked"
+  | "retailer_clicked"
+  | "product_request_submitted"
+  | "inventory_page_viewed"
+  | "user_signed_up"
   | "link_pasted"
   | "link_ingest_success"
   | "link_ingest_failed"

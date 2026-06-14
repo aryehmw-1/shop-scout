@@ -59,6 +59,8 @@ export class BrightDataAdapter implements RetailerIngestionAdapter {
       buildOperationInput(opConfig, query, {
         zipcode: options?.zipcode,
         language: options?.language,
+        // Some datasets (Walmart, Target keyword discovery) require the site URL.
+        domain: `https://www.${this.config.domain}`,
       }),
     ];
 
@@ -66,8 +68,13 @@ export class BrightDataAdapter implements RetailerIngestionAdapter {
       datasetId,
       input,
       discoverBy: opConfig.discoverBy,
+      ...(options?.timeoutMs ? { timeoutMs: options.timeoutMs } : {}),
+      // Cap discovery AT THE SOURCE (`limit_per_input`) — this is what actually
+      // controls how many records Bright Data crawls and BILLS. We must NOT slice
+      // afterwards: every row we paid for is kept and persisted. (The old
+      // post-download slice discarded ~95% of billed rows — never again.)
+      ...(options?.limit ? { limitPerInput: options.limit } : {}),
     });
-    const limited = options?.limit ? rows.slice(0, options.limit) : rows;
-    return { rows: limited, snapshotId };
+    return { rows, snapshotId };
   }
 }

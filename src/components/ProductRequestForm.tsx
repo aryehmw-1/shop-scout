@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { BellPlus, CheckCircle2, Loader2 } from "lucide-react";
 import { APP_NAME } from "@/lib/constants";
+import { trackEvent, analyticsSessionId } from "@/lib/analytics/track-client";
 
 const SPECIFIC_EXAMPLES = [
   "Quaker Oats Old Fashioned 18oz canister",
@@ -78,7 +79,11 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
       const res = await fetch("/api/product-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productQuery: product.trim(), userEmail: email.trim() }),
+        body: JSON.stringify({
+          productQuery: product.trim(),
+          userEmail: email.trim(),
+          sessionId: analyticsSessionId(),
+        }),
       });
 
       if (!res.ok) {
@@ -86,6 +91,12 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
         throw new Error(data.error ?? "Something went wrong");
       }
 
+      // PostHog (DB row written by the API). Server also captures, but this
+      // ensures browser-side person attribution.
+      trackEvent({
+        name: "product_request_submitted",
+        properties: { query: product.trim(), email: email.trim() },
+      });
       setStatus("success");
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Something went wrong. Please try again.");

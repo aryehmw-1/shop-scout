@@ -376,14 +376,23 @@ async function main() {
 
   // Target: same generic architecture, dataset gd_ltppk5mx2lp0v1k0vo.
   const target = getRetailerConfig("target");
-  check("Target keyword_search → Discover by keyword {keyword, zipcode}", () => {
+  check("Target keyword_search → Discover by keywords {keyword, domain, zipcode}", () => {
     const op = getRetailerOperation(target, "keyword_search");
     assert.ok(op);
-    assert.equal(op!.discoverBy, "keyword");
-    assert.deepEqual(buildOperationInput(op!, "laundry detergent", { zipcode: "78701" }), {
-      keyword: "laundry detergent",
-      zipcode: "78701",
-    });
+    // Target's dataset uses the "keywords" discover collector (plural) and
+    // REQUIRES a domain (site URL) alongside the keyword — verified live.
+    assert.equal(op!.discoverBy, "keywords");
+    assert.deepEqual(
+      buildOperationInput(op!, "laundry detergent", {
+        zipcode: "78701",
+        domain: "https://www.target.com",
+      }),
+      {
+        keyword: "laundry detergent",
+        domain: "https://www.target.com",
+        zipcode: "78701",
+      },
+    );
   });
   check("Target url_lookup → Collect by URL {url, zipcode} (no discover_by)", () => {
     const op = getRetailerOperation(target, "url_lookup");

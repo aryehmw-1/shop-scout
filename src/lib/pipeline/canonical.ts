@@ -19,6 +19,8 @@ import {
   searchKeywords,
 } from "./canonical-identity";
 import type { NormalizedListing } from "./types";
+import { buildTrackedAffiliateUrl } from "../affiliate/integration";
+import type { RetailerId } from "../types";
 
 // Re-export the pure identity helpers so existing importers keep working.
 export {
@@ -144,30 +146,31 @@ interface TrustedRecordInput {
 }
 
 /**
- * Publish a verified raw record from a TRUSTED first-party catalog source
- * (e.g. IKEA): create/link its OWN canonical Product and attach a price offer so
- * it shows in search immediately. It is never auto-merged with other retailers'
- * lookalikes — its duplicateGroupKey is its own identity (barcode/brand+model).
+ * Attach the retailer's OWN listing (price + product URL) to a canonical product
+ * as a PriceQuote so the product surfaces in search/inventory immediately. Used
+ * by BOTH the trusted-catalog publish (IKEA) and the conservative non-trusted
+ * publish path (Amazon/Walmart/Target via createCanonicalProduct) — search only
+ * returns products that carry at least one live offer, so a published product
+ * without an offer would be invisible. Idempotent on product+retailer+url.
+ *
+ * The affiliate URL is built through the central affiliate builder, which falls
+ * back to the plain product URL when a retailer has no affiliate program/creds.
  */
-export async function publishTrustedCatalogRecord(
+export async function attachRetailerOffer(
   record: TrustedRecordInput,
   listing: NormalizedListing,
-): Promise<{ productId: string; offerCreated: boolean }> {
-  const { productId } = await createCanonicalProduct(record.id, listing);
-
-  // Attach a single retailer offer so the product surfaces with a price.
+  productId: string,
+): Promise<boolean> {
   const price = record.price ?? listing.price;
   const url = record.productUrl ?? listing.productUrl;
-  if (!price || price <= 0 || !url) {
-    return { productId, offerCreated: false };
-  }
+  if (!price || price <= 0 || !url) return false;
 
   // Idempotent: one offer per product+retailer+url.
   const existing = await prisma.priceQuote.findFirst({
     where: { productId, retailerId: record.retailerId, productUrl: url },
     select: { id: true },
   });
-  if (existing) return { productId, offerCreated: false };
+  if (existing) return false;
 
   const now = new Date();
   await prisma.priceQuote.create({
@@ -186,7 +189,9 @@ export async function publishTrustedCatalogRecord(
       providerSource: "bright_data",
       sourceLabel: record.retailerId,
       productUrl: url,
-      affiliateUrl: url, // IKEA is not an affiliate retailer — link is the page itself.
+      // Central affiliate builder: tracked link when a program is configured,
+      // otherwise the plain product page URL.
+      affiliateUrl: buildTrackedAffiliateUrl(record.retailerId as RetailerId, url),
       matchConfidence: 0.95,
       validationStatus: "approved",
       confidenceScore: 95,
@@ -196,5 +201,20 @@ export async function publishTrustedCatalogRecord(
     },
   });
 
-  return { productId, offerCreated: true };
+  return true;
+}
+
+/**
+ * Publish a verified raw record from a TRUSTED first-party catalog source
+ * (e.g. IKEA): create/link its OWN canonical Product and attach a price offer so
+ * it shows in search immediately. It is never auto-merged with other retailers'
+ * lookalikes — its duplicateGroupKey is its own identity (barcode/brand+model).
+ */
+export async function publishTrustedCatalogRecord(
+  record: TrustedRecordInput,
+  listing: NormalizedListing,
+): Promise<{ productId: string; offerCreated: boolean }> {
+  const { productId } = await createCanonicalProduct(record.id, listing);
+  const offerCreated = await attachRetailerOffer(record, listing, productId);
+  return { productId, offerCreated };
 }

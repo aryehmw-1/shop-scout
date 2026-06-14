@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { IMPACT_VERIFICATION_META_HTML } from "@/lib/affiliate/impact-verification";
+import { checkAdminAuth } from "@/lib/auth/admin-auth";
 
 /** Prevents middleware fetch loop when rewriting HTML. */
 const HTML_META_SKIP_HEADER = "x-homivion-html-meta-skip";
@@ -77,6 +78,15 @@ async function injectImpactVerificationMeta(
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Admin gate — protect every /admin page and /api/admin route. Runs before the
+  // dev short-circuit so production is always protected; in dev it's only
+  // enforced when ADMIN_PASSWORD is set (see admin-auth fail-closed logic).
+  if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
+    const gate = checkAdminAuth(request);
+    if (!gate.ok) return gate.challenge!;
+    return NextResponse.next();
+  }
 
   if (process.env.NODE_ENV === "development") {
     return NextResponse.next();

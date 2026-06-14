@@ -23,11 +23,18 @@ export interface BrightDataScrapeOptions {
    * This is the ONLY difference between operations — same dataset, same async
    * trigger/poll/download flow, regardless of retailer.
    */
-  discoverBy?: "keyword" | "upc" | "sku" | "category" | null;
+  discoverBy?: "keyword" | "keywords" | "upc" | "sku" | "category" | null;
   /** Max ms to wait for the snapshot to finish before giving up. */
   timeoutMs?: number;
   /** Poll interval while the snapshot is "running". */
   pollIntervalMs?: number;
+  /**
+   * Cap records Bright Data DISCOVERS per input row (the `limit_per_input`
+   * trigger param). CRITICAL for cost: discovery bills for EVERY product it
+   * crawls, so without this a single keyword can bill hundreds of records even
+   * if we only keep a few. Only meaningful for discover operations.
+   */
+  limitPerInput?: number;
 }
 
 export interface BrightDataSnapshot {
@@ -86,8 +93,9 @@ export class BrightDataClient {
     discoverBy,
     timeoutMs = 180_000,
     pollIntervalMs = 4_000,
+    limitPerInput,
   }: BrightDataScrapeOptions): Promise<BrightDataSnapshot> {
-    const snapshotId = await this.trigger(datasetId, input, discoverBy);
+    const snapshotId = await this.trigger(datasetId, input, discoverBy, limitPerInput);
     await this.waitUntilReady(snapshotId, timeoutMs, pollIntervalMs);
     const rows = await this.download(snapshotId);
     return { snapshotId, rows };
@@ -123,7 +131,8 @@ export class BrightDataClient {
   private async trigger(
     datasetId: string,
     input: Record<string, unknown>[],
-    discoverBy?: "keyword" | "upc" | "sku" | "category" | null,
+    discoverBy?: "keyword" | "keywords" | "upc" | "sku" | "category" | null,
+    limitPerInput?: number,
   ): Promise<string> {
     // Discover operations add `type=discover_new&discover_by=<x>`; Collect-by-URL
     // (discoverBy null/undefined) uses the plain trigger.
@@ -135,6 +144,11 @@ export class BrightDataClient {
     if (discoverBy) {
       params.set("type", "discover_new");
       params.set("discover_by", discoverBy);
+      // Cap discovered records per input — only valid for discover operations.
+      // Without it, discovery bills for the whole crawl, not what we keep.
+      if (limitPerInput && limitPerInput > 0) {
+        params.set("limit_per_input", String(limitPerInput));
+      }
     }
     const res = await fetch(`${BASE_URL}/trigger?${params.toString()}`, {
       method: "POST",

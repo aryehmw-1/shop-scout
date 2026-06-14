@@ -10,6 +10,8 @@ import {
 import type { ProductOffer, PublicUser, UserAddress } from "@/lib/types";
 import { zipOnlyAddress } from "@/lib/location/zip-only";
 import { savePreferences } from "@/lib/storage";
+import { trackEvent } from "@/lib/analytics/track-client";
+import { identifyPostHog } from "@/lib/analytics/posthog-client";
 
 interface AuthContextValue {
   user: PublicUser | null;
@@ -95,6 +97,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!res.ok) throw new Error(data.error ?? "Signup failed");
     setUser(data.user);
     applyUserToLocal(data.user);
+    // Analytics: identify the new user and record the signup.
+    if (data.user?.id) identifyPostHog(data.user.id, { email: signupData.email });
+    trackEvent({ name: "user_signed_up", properties: { email: signupData.email } });
   };
 
   const logout = async () => {

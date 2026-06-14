@@ -48,17 +48,20 @@ export function operationForIntent(intent: IngestIntent): SourceOperation {
  */
 export interface BrightDataOperation {
   /** Bright Data discover_by value; null = Collect-by-URL (no discover type). */
-  discoverBy: "keyword" | "upc" | "sku" | "category" | null;
+  discoverBy: "keyword" | "keywords" | "upc" | "sku" | "category" | null;
   inputFields: readonly string[];
 }
 
 export interface OperationInputContext {
   zipcode?: string;
   language?: string;
+  /** Retailer site URL (e.g. https://www.walmart.com). Some Bright Data datasets
+   *  (Walmart, Target keyword discovery) REQUIRE a `domain` input field. */
+  domain?: string;
   categoryKind?: ProductCategoryKind;
 }
 
-const CONTEXT_FIELDS = new Set(["zipcode", "language"]);
+const CONTEXT_FIELDS = new Set(["zipcode", "language", "domain"]);
 
 /**
  * Build the Bright Data input row for an operation. Pure + deterministic so it
@@ -77,6 +80,8 @@ export function buildOperationInput(
       if (ctx.zipcode) row.zipcode = ctx.zipcode;
     } else if (field === "language") {
       row.language = ctx.language ?? "en";
+    } else if (field === "domain") {
+      if (ctx.domain) row.domain = ctx.domain;
     } else if (!CONTEXT_FIELDS.has(field)) {
       // Primary field — keyword | url | upc.
       row[field] = query;

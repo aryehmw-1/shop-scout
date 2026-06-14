@@ -29,6 +29,7 @@ import { MapPin, ShoppingBasket, Headphones, Wheat, Plus, Loader2, RotateCcw } f
 import { SearchSendIcon } from "@/components/icons/SearchSendIcon";
 import { TypewriterInput } from "@/components/TypewriterInput";
 import { identifyProductImage } from "@/lib/vision/identify-client";
+import { PHOTO_SEARCH_ENABLED } from "@/lib/config/features";
 
 const SHOPPING_LOADING_STEPS = [
   "Checking the database for saved prices...",
@@ -536,6 +537,11 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
 
   const handleShopClick = useCallback((offer: ProductOffer) => {
     setLearningProfile(learnFromProduct(offer));
+    // Outbound retailer click → ProductClick(kind=retailer) + PostHog.
+    trackEvent({
+      name: "retailer_clicked",
+      properties: { retailer: offer.retailer, productId: offer.catalogId },
+    });
     const lastAssistant = [...messagesRef.current]
       .reverse()
       .find((m) => m.role === "assistant");
@@ -850,28 +856,35 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
       }}
     >
       <div className="relative">
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          className="hidden"
-          onChange={handlePhoto}
-        />
-        <button
-          type="button"
-          aria-label="Add a product photo"
-          title="Add a product photo"
-          onClick={() => fileRef.current?.click()}
-          disabled={loading || scanningPhoto}
-          className="absolute bottom-3.5 left-2.5 z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-stone-400 transition hover:bg-orange-50 hover:text-orange-500 disabled:opacity-50"
-        >
-          {scanningPhoto ? (
-            <Loader2 size={20} strokeWidth={2.2} className="animate-spin text-orange-500" aria-hidden />
-          ) : (
-            <Plus size={20} strokeWidth={2.2} aria-hidden />
-          )}
-        </button>
+        {/* Photo search — hidden in the public UI (PHOTO_SEARCH_ENABLED), full
+            backend preserved. The file input + handler stay mounted only when
+            the feature is on. */}
+        {PHOTO_SEARCH_ENABLED && (
+          <>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={handlePhoto}
+            />
+            <button
+              type="button"
+              aria-label="Add a product photo"
+              title="Add a product photo"
+              onClick={() => fileRef.current?.click()}
+              disabled={loading || scanningPhoto}
+              className="absolute bottom-3.5 left-2.5 z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-stone-400 transition hover:bg-orange-50 hover:text-orange-500 disabled:opacity-50"
+            >
+              {scanningPhoto ? (
+                <Loader2 size={20} strokeWidth={2.2} className="animate-spin text-orange-500" aria-hidden />
+              ) : (
+                <Plus size={20} strokeWidth={2.2} aria-hidden />
+              )}
+            </button>
+          </>
+        )}
         <textarea
           ref={inputRef}
           name="q"
@@ -907,7 +920,7 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
           /* text-base (16px) is required: iOS Safari auto-zooms the page when a
              focused input has a font smaller than 16px. After a search the focus
              returns here, so anything under 16px makes the page zoom in. */
-          className="w-full resize-none overflow-y-auto rounded-2xl border border-orange-200/70 bg-white py-3.5 pl-12 pr-14 text-base text-ink-800 shadow-[0_8px_30px_rgba(234,88,12,0.12)] placeholder:text-ink-400 focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200/50"
+          className={`w-full resize-none overflow-y-auto rounded-2xl border border-orange-200/70 bg-white py-3.5 ${PHOTO_SEARCH_ENABLED ? "pl-12" : "pl-5"} pr-14 text-base text-ink-800 shadow-[0_8px_30px_rgba(234,88,12,0.12)] placeholder:text-ink-400 focus:border-orange-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-200/50`}
           style={{ maxHeight: "14rem" }}
           disabled={loading}
         />

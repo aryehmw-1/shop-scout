@@ -52,9 +52,12 @@ interface MobileOfferListProps {
   offers: ProductOffer[];
   onShopClick?: (offer: ProductOffer) => void;
   searchQuery?: string;
-  /** "similar" renders the same card but badged "Similar" (no Best, no price
-   *  comparison pills) — for alternative products, not the same item. */
-  variant?: "exact" | "similar";
+  /** Card style:
+   *   - "exact"    → sellers of the SAME product; cheapest badged "Best", price pills.
+   *   - "similar"  → alternative products, badged "Similar" (no Best/pills).
+   *   - "matching" → distinct products that all match the query (a category list);
+   *     clean cards with NO "Best" and NO "Similar" badge, no cross-product pills. */
+  variant?: "exact" | "similar" | "matching";
   onSave?: (offer: ProductOffer) => void;
   savedIds?: Set<string>;
 }
@@ -69,6 +72,9 @@ interface MobileOfferListProps {
 export function MobileOfferList({ offers, onShopClick, searchQuery, variant = "exact", onSave, savedIds }: MobileOfferListProps) {
   if (!offers.length) return null;
   const isSimilar = variant === "similar";
+  // Both "similar" and "matching" suppress the Best badge + cross-product price
+  // pills (those only make sense comparing sellers of the SAME product).
+  const isExact = variant === "exact";
   const highest = Math.max(
     ...offers.map((o) => o.deliveredTotal ?? o.landedCost ?? o.price),
   );
@@ -76,11 +82,11 @@ export function MobileOfferList({ offers, onShopClick, searchQuery, variant = "e
   return (
     <div className="space-y-2">
       {offers.map((offer, i) => {
-        const best = !isSimilar && i === 0;
+        const best = isExact && i === 0;
         const delivered = offer.deliveredTotal ?? offer.landedCost ?? offer.price;
-        const save = isSimilar ? 0 : highest - delivered;
+        const save = isExact ? highest - delivered : 0;
         const ship = offerShipping(offer);
-        const pctBelow = !isSimilar && offer.percentBelowMarket
+        const pctBelow = isExact && offer.percentBelowMarket
           ? Math.round(offer.percentBelowMarket)
           : 0;
         return (

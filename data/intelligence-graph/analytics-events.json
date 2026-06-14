@@ -1,7 +1,199 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-12T18:22:57.504Z",
+  "updatedAt": "2026-06-14T13:19:21.953Z",
   "events": [
+    {
+      "event": "session_return",
+      "sessionId": "s_mqdt9gh9_1sd9n7",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-14T13:19:21.953Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-14T04:01:51.578Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-14T04:01:51.559Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqd6rx01_qp9err",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-14T04:01:49.095Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-14T03:59:58.314Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-14T03:59:58.300Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqd6rx01_qp9err",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-14T03:59:56.526Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-14T03:48:28.246Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-14T03:48:28.231Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqd6rx01_qp9err",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-14T03:48:25.469Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-14T03:41:52.188Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-14T03:41:52.176Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqd6rx01_qp9err",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-14T02:55:58.657Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-14T02:54:29.215Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-14T02:54:29.211Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-14T02:52:32.890Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-14T02:52:32.886Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqd6rx01_qp9err",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-14T02:52:08.176Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-14T02:50:14.852Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-14T02:50:14.846Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqd6rx01_qp9err",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-14T02:49:51.646Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-14T02:47:54.442Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-14T02:47:54.436Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-14T02:44:52.447Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-14T02:44:52.441Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqd6juhc_8zsd4a",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-14T02:43:35.046Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-14T02:42:37.771Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-14T02:42:37.757Z"
+    },
+    {
+      "event": "session_return",
+      "sessionId": "s_mqd5j2ji_u7541t",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-14T02:15:00.057Z"
+    },
     {
       "event": "recommendation_no_match",
       "meta": {

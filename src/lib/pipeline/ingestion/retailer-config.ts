@@ -99,8 +99,9 @@ const CONFIGS: Record<SourcingRetailer, RetailerConfig> = {
     // One Walmart dataset (gd_l95fol7l1ru6rlo116), three Bright Data operations —
     // same generic architecture as Amazon, config only, no Walmart-specific code.
     operations: {
-      // Discover by keyword — find/import new products.
-      keyword_search: { discoverBy: "keyword", inputFields: ["keyword", "zipcode"] },
+      // Discover by keyword — find/import new products. Walmart's dataset
+      // REQUIRES a `domain` (site URL) alongside the keyword.
+      keyword_search: { discoverBy: "keyword", inputFields: ["keyword", "domain", "zipcode"] },
       // Collect by URL — refresh known product pages.
       url_lookup: { discoverBy: null, inputFields: ["url", "zipcode", "language"] },
       // Discover by SKU — exact match by Walmart item id.
@@ -119,8 +120,10 @@ const CONFIGS: Record<SourcingRetailer, RetailerConfig> = {
     // One Target dataset (gd_ltppk5mx2lp0v1k0vo), three Bright Data operations —
     // same generic architecture as Amazon/Walmart, config only, no Target code.
     operations: {
-      // Discover by keywords — import new Target products overnight.
-      keyword_search: { discoverBy: "keyword", inputFields: ["keyword", "zipcode"] },
+      // Discover by keywords — import new Target products overnight. Target's
+      // dataset REQUIRES a `domain` (site URL) alongside the keyword, and its
+      // discover collector id is "keywords" (plural), unlike Amazon/Walmart.
+      keyword_search: { discoverBy: "keywords", inputFields: ["keyword", "domain", "zipcode"] },
       // Collect by URL — refresh known Target product pages.
       url_lookup: { discoverBy: null, inputFields: ["url", "zipcode"] },
       // Discover by UPC — exact match across retailers.

@@ -548,15 +548,81 @@ model ValidationLog {
 }
 
 /// User-submitted product requests from the zero-results "suggest a product" form.
+/// Analytics mapping: `productQuery` = spec's `query`, `userEmail` = spec's `email`.
 model ProductRequest {
   id           String    @id @default(cuid())
   productQuery String
-  userEmail    String
+  userEmail    String    @default("")
   status       String    @default("pending")
   notifiedAt   DateTime?
+  sessionId    String?
+  userId       String?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
   @@index([status, createdAt])
   @@index([userEmail])
+  @@index([createdAt])
+  @@index([sessionId])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Analytics & user-intelligence event log. High-write, append-only tables that
+// capture what users search, click, and request. `sessionId` is a client cookie
+// id; `userId` is the authenticated user when known (nullable). No FK relations
+// so analytics writes never block on or cascade from core tables.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// One row per executed search (after submit — not per keystroke).
+model SearchEvent {
+  id              String   @id @default(cuid())
+  query           String
+  queryNormalized String?
+  resultsCount    Int      @default(0)
+  category        String?
+  sessionId       String?
+  userId          String?
+  pageUrl         String?
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([sessionId])
+  @@index([userId])
+  @@index([query])
+}
+
+/// One row per click on a product card OR a retailer/offer link. `kind`
+/// distinguishes them so product-CTR and retailer-CTR can both be computed.
+model ProductClick {
+  id        String   @id @default(cuid())
+  productId String?
+  retailer  String?
+  kind      String   @default("product") // "product" | "retailer"
+  query     String?
+  category  String?
+  sessionId String?
+  userId    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([productId])
+  @@index([retailer])
+  @@index([kind])
+  @@index([sessionId])
+}
+
+/// One row whenever a search returns zero results — demand we don't yet serve.
+model MissingProduct {
+  id              String   @id @default(cuid())
+  query           String
+  queryNormalized String?
+  category        String?
+  sessionId       String?
+  userId          String?
+  createdAt       DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([query])
+  @@index([sessionId])
 }

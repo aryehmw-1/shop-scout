@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { SearchSendIcon } from "@/components/icons/SearchSendIcon";
 import { identifyProductImage } from "@/lib/vision/identify-client";
+import { PHOTO_SEARCH_ENABLED } from "@/lib/config/features";
 
 interface Props {
   onSearch: (query: string) => void;
@@ -71,30 +72,35 @@ export function TypewriterInput({ onSearch }: Props) {
           Product to compare
         </label>
 
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          className="hidden"
-          onChange={handlePhoto}
-        />
-
-        {/* Left "+" — upload a product photo to identify it */}
-        <button
-          type="button"
-          aria-label="Add a product photo"
-          title="Add a product photo"
-          onClick={() => fileRef.current?.click()}
-          disabled={scanning}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-stone-400 transition hover:bg-orange-50 hover:text-orange-500 disabled:opacity-60"
-        >
-          {scanning ? (
-            <Loader2 size={20} strokeWidth={2.2} className="animate-spin text-orange-500" aria-hidden />
-          ) : (
-            <Plus size={20} strokeWidth={2.2} aria-hidden />
-          )}
-        </button>
+        {/* Photo search — hidden in the public UI (PHOTO_SEARCH_ENABLED). Backend
+            and handler preserved; only mounted when the flag is on. */}
+        {PHOTO_SEARCH_ENABLED && (
+          <>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={handlePhoto}
+            />
+            {/* Left "+" — upload a product photo to identify it */}
+            <button
+              type="button"
+              aria-label="Add a product photo"
+              title="Add a product photo"
+              onClick={() => fileRef.current?.click()}
+              disabled={scanning}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-stone-400 transition hover:bg-orange-50 hover:text-orange-500 disabled:opacity-60"
+            >
+              {scanning ? (
+                <Loader2 size={20} strokeWidth={2.2} className="animate-spin text-orange-500" aria-hidden />
+              ) : (
+                <Plus size={20} strokeWidth={2.2} aria-hidden />
+              )}
+            </button>
+          </>
+        )}
 
         <textarea
           ref={inputRef}

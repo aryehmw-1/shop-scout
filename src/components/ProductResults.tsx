@@ -13,6 +13,7 @@ import { PhotoSourceLabel } from "./PhotoSourceLabel";
 import { LayoutGrid, List, Truck, AlertTriangle, Loader2, ExternalLink, Search, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { LinkProductHero } from "./LinkProductHero";
+import { trackEvent } from "@/lib/analytics/track-client";
 import { CompareExperience } from "./CompareExperience";
 import {
   SearchPipelineDebugPanel,
@@ -22,7 +23,7 @@ import { ConversationDebugPanel } from "./ConversationDebugPanel";
 import { buildRetrievalTrustDiagnostic } from "@/lib/search/retrieval-trust-message";
 import { ProductRequestForm } from "./ProductRequestForm";
 import { MobileOfferList, MobileVerifiedNote } from "./MobileOfferList";
-import { SimilarAlternatives } from "./SimilarAlternatives";
+import { SimilarAlternatives, similarToOffer } from "./SimilarAlternatives";
 import { DesktopOfferListB } from "./OfferListB";
 import { VerifiedCompareHeader } from "./search/VerifiedCompareHeader";
 import { CatalogFreshnessBanner } from "./FreshnessIndicator";
@@ -407,6 +408,28 @@ export function ProductResults({
 
   const showViewToggle = viewReady && (online.length > 0 || estimatedOnline.length > 0);
 
+  // Category-style result: the query resolved to a SINGLE product with a single
+  // seller (so there's no price comparison to show) but we DO have several other
+  // products that match the query — e.g. "soap" → many distinct soaps. Rather
+  // than show one "exact" item and bury the rest under "Similar", present them
+  // together as a list of matching products and keep a couple as similar.
+  // (compareMode is the DEFAULT for searches and doesn't change the main list
+  // render, so we don't exclude it — otherwise this never triggers.)
+  const MAX_MATCHING = 5;
+  const isCategoryResult =
+    !similarMode &&
+    !results.linkMatch &&
+    online.length === 1 &&
+    similarAlternatives.length >= 2;
+  // Matching products = the exact item first, then similar products, capped.
+  const matchingOffers = isCategoryResult
+    ? [online[0], ...similarAlternatives.map(similarToOffer)].slice(0, MAX_MATCHING)
+    : [];
+  // Whatever didn't make the matching list stays as "Similar" (≥2 by construction).
+  const leftoverSimilar = isCategoryResult
+    ? similarAlternatives.slice(MAX_MATCHING - 1)
+    : similarAlternatives;
+
   return (
     <div className="mt-4 w-full max-w-full space-y-4">
       {!display.verifiedInventoryHit?.matched &&
@@ -436,6 +459,12 @@ export function ProductResults({
         <div className="flex justify-end">
           <Link
             href={compareHref}
+            onClick={() =>
+              trackEvent({
+                name: "product_clicked",
+                properties: { productId: online[0]?.catalogId, query: searchQuery },
+              })
+            }
             className="inline-flex items-center gap-1.5 rounded-xl border border-sage-200 bg-white px-3 py-2 text-sm font-semibold text-sage-800 shadow-sm hover:border-sage-400 hover:bg-sage-50"
           >
             Open full compare view
@@ -503,7 +532,27 @@ export function ProductResults({
         </div>
       )}
 
-      {online.length > 0 && (
+      {online.length > 0 && isCategoryResult && (
+        <section className="mx-auto flex w-full max-w-2xl min-w-0 flex-col rounded-2xl border-2 border-sage-400/70 bg-sage-50/30 p-2 sm:p-5">
+          {/* Category-style result: several distinct products that match the
+              query, shown as a list of options (no single "Best price" badge —
+              these are different products, not sellers of the same item). */}
+          <div className="mb-2 flex items-center gap-2 px-1 text-[12px] font-semibold text-sage-800">
+            Matching products
+            <span className="font-normal text-stone-500">— verified live prices</span>
+          </div>
+          <MobileOfferList
+            offers={matchingOffers}
+            onShopClick={onShopClick}
+            searchQuery={searchQuery}
+            variant="matching"
+            onSave={onSave}
+            savedIds={savedIds}
+          />
+        </section>
+      )}
+
+      {online.length > 0 && !isCategoryResult && (
         <section className="mx-auto flex w-full max-w-2xl min-w-0 flex-col rounded-2xl border-2 border-sage-400/70 bg-sage-50/30 p-2 sm:p-5">
           {/* One layout everywhere — the compact "iPhone" card list, on mobile and
               desktop alike (same verified-prices note, same card, heart on the
@@ -522,9 +571,15 @@ export function ProductResults({
         </section>
       )}
 
-      {similarAlternatives.length > 0 &&
+      {leftoverSimilar.length > 0 &&
         !(display.matchTiers?.similar?.length ?? 0) && (
-          <SimilarAlternatives similar={similarAlternatives} exactCount={online.length} searchQuery={searchQuery} onSave={onSave} savedIds={savedIds} />
+          <SimilarAlternatives
+            similar={leftoverSimilar}
+            exactCount={isCategoryResult ? matchingOffers.length : online.length}
+            searchQuery={searchQuery}
+            onSave={onSave}
+            savedIds={savedIds}
+          />
         )}
 
       {display.catalogFreshnessWarning &&

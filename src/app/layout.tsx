@@ -10,6 +10,7 @@ import {
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AppChrome } from "@/components/AppChrome";
+import { PostHogProvider } from "@/lib/analytics/posthog-client";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -98,11 +99,13 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full antialiased">
-        <ThemeProvider>
-          <AuthProvider>
-            <AppChrome>{children}</AppChrome>
-          </AuthProvider>
-        </ThemeProvider>
+        <PostHogProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <AppChrome>{children}</AppChrome>
+            </AuthProvider>
+          </ThemeProvider>
+        </PostHogProvider>
       </body>
     </html>
   );
