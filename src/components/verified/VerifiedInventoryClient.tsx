@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ShieldCheck, ExternalLink, Search } from "lucide-react";
+import { ShieldCheck, Store, Search } from "lucide-react";
 import type { VerifiedBrowseResult } from "@/lib/inventory/verified-inventory-browse";
 import { affiliateSafeDestination } from "@/lib/affiliate/outbound";
 import type { RetailerId } from "@/lib/types";
@@ -116,59 +116,61 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {products.map((p) => (
-          <article
-            key={p.catalogId}
-            className="flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm"
-          >
-            <div className="relative aspect-square bg-stone-50">
-              <ProductImage
-                src={p.imageUrl}
-                alt={p.title}
-                className="h-full w-full object-contain p-2"
-              />
-            </div>
-            <div className="flex flex-1 flex-col p-4">
-              <h3 className="font-semibold leading-snug text-stone-900">
-                {p.brand} {p.title}
-              </h3>
-              {p.size && <p className="text-xs text-stone-500">{p.size}</p>}
-              <p className="mt-2 text-lg font-bold text-sage-800">
-                {p.minPrice === p.maxPrice
-                  ? formatPrice(p.minPrice)
-                  : `${formatPrice(p.minPrice)} – ${formatPrice(p.maxPrice)}`}
-              </p>
-              <p className="mt-1 text-xs text-stone-500">{p.retailers.join(", ")}</p>
-              <div className="mt-auto flex gap-2 pt-4">
-                <Link
-                  href={`/chat?q=${encodeURIComponent(`${p.brand} ${p.title}`)}`}
-                  className="flex-1 rounded-xl bg-sage-700 py-2 text-center text-sm font-semibold text-white hover:bg-sage-800"
-                >
-                  Compare
-                </Link>
-                {(() => {
-                  const dest = affiliateSafeDestination(
-                    p.bestQuote.retailerId as RetailerId,
-                    p.bestQuote.productUrl,
-                  );
-                  if (!dest) return null;
-                  return (
+      {/* Mobile: Micro 3-col dense tiles. Desktop (lg+): the roomier 4-col card,
+          unchanged, now with a labeled "Go to store" button. */}
+      <div className="grid grid-cols-3 gap-2 lg:grid-cols-4 lg:gap-3">
+        {products.map((p) => {
+          const dest = affiliateSafeDestination(
+            p.bestQuote.retailerId as RetailerId,
+            p.bestQuote.productUrl,
+          );
+          return (
+            <article
+              key={p.catalogId}
+              className="flex flex-col overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm lg:rounded-2xl"
+            >
+              <div className="relative aspect-square bg-stone-50">
+                <ProductImage
+                  src={p.imageUrl}
+                  alt={p.title}
+                  className="h-full w-full object-contain p-1 lg:p-2"
+                />
+              </div>
+              <div className="flex flex-1 flex-col p-1.5 lg:p-4">
+                <h3 className="line-clamp-2 text-[11px] font-semibold leading-tight text-stone-900 lg:text-base lg:leading-snug">
+                  {p.brand} {p.title}
+                </h3>
+                {p.size && <p className="hidden text-xs text-stone-500 lg:block">{p.size}</p>}
+                <p className="mt-0.5 text-[13px] font-bold text-sage-800 lg:mt-2 lg:text-lg">
+                  {p.minPrice === p.maxPrice
+                    ? formatPrice(p.minPrice)
+                    : `${formatPrice(p.minPrice)} – ${formatPrice(p.maxPrice)}`}
+                </p>
+                <p className="truncate text-[10px] text-stone-500 lg:mt-1 lg:text-xs">{p.retailers.join(", ")}</p>
+                <div className="mt-1.5 flex items-stretch gap-1 pt-0 lg:mt-auto lg:gap-2 lg:pt-4">
+                  <Link
+                    href={`/chat?q=${encodeURIComponent(`${p.brand} ${p.title}`)}`}
+                    className="flex-1 rounded-md bg-sage-700 py-1 text-center text-[10px] font-semibold text-white hover:bg-sage-800 lg:rounded-xl lg:py-2 lg:text-sm"
+                  >
+                    Compare
+                  </Link>
+                  {dest && (
                     <a
                       href={dest}
                       target="_blank"
                       rel="noopener noreferrer sponsored"
-                      className="inline-flex items-center justify-center rounded-xl border border-stone-200 px-3 py-2 text-stone-600 hover:bg-stone-50"
-                      aria-label="View on retailer"
+                      className="inline-flex shrink-0 items-center justify-center gap-1 rounded-md border border-orange-200 px-1.5 py-1 text-[10px] font-semibold text-orange-600 hover:bg-orange-50 lg:flex-1 lg:rounded-xl lg:px-3 lg:py-2 lg:text-sm"
+                      aria-label="Go to store"
                     >
-                      <ExternalLink size={16} />
+                      <Store size={13} aria-hidden />
+                      <span className="hidden lg:inline">Go to store</span>
                     </a>
-                  );
-                })()}
+                  )}
+                </div>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
 
       {products.length < total && (
