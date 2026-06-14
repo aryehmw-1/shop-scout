@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ShieldCheck, ExternalLink, Search } from "lucide-react";
 import type { VerifiedBrowseResult } from "@/lib/inventory/verified-inventory-browse";
@@ -14,26 +14,56 @@ interface VerifiedInventoryClientProps {
   initial: VerifiedBrowseResult;
 }
 
+const PAGE_SIZE = 48;
+
 export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProps) {
   const [query, setQuery] = useState("");
+  // Paginated: we start with the server's first page and load more on demand —
+  // never the full ~13k catalog at once.
+  const [products, setProducts] = useState(initial.products);
+  const [total, setTotal] = useState(initial.totalProducts);
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   // Fire once per mount — inventory page view.
   useEffect(() => {
-    trackEvent({
-      name: "inventory_page_viewed",
-      properties: { productCount: initial.products.length },
-    });
-  }, [initial.products.length]);
+    trackEvent({ name: "inventory_page_viewed", properties: { productCount: initial.totalProducts } });
+  }, [initial.totalProducts]);
 
-  const products = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return initial.products;
-    const tokens = q.split(/\s+/).filter(Boolean);
-    return initial.products.filter((p) => {
-      const hay = `${p.brand} ${p.title} ${p.category}`.toLowerCase();
-      return tokens.every((t) => hay.includes(t));
-    });
-  }, [query, initial.products]);
+  // Debounced server-side search (uses the trgm index). Empty query → first page.
+  useEffect(() => {
+    const q = query.trim();
+    const handle = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/inventory/browse?offset=0&limit=${PAGE_SIZE}&q=${encodeURIComponent(q)}`);
+        const data = await res.json();
+        setProducts(data.products ?? []);
+        setTotal(data.totalProducts ?? 0);
+      } catch {
+        /* keep current results on error */
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+    return () => clearTimeout(handle);
+  }, [query]);
+
+  async function loadMore() {
+    setLoadingMore(true);
+    try {
+      const res = await fetch(
+        `/api/inventory/browse?offset=${products.length}&limit=${PAGE_SIZE}&q=${encodeURIComponent(query.trim())}`,
+      );
+      const data = await res.json();
+      setProducts((prev) => [...prev, ...(data.products ?? [])]);
+      setTotal(data.totalProducts ?? total);
+    } catch {
+      /* ignore */
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -67,12 +97,12 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
       </div>
 
       <p className="text-sm text-stone-600">
-        <strong>{products.length}</strong>
-        {query ? ` of ${initial.totalProducts}` : ""} product
-        {products.length === 1 ? "" : "s"}
+        Showing <strong>{products.length}</strong> of {total.toLocaleString()} product
+        {total === 1 ? "" : "s"}
+        {loading && <span className="ml-2 text-stone-400">searching…</span>}
       </p>
 
-      {products.length === 0 && (
+      {products.length === 0 && !loading && (
         <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-8 text-center">
           <p className="font-medium text-stone-800">
             {query ? `No products match "${query}"` : "No products yet"}
@@ -140,6 +170,19 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
           </article>
         ))}
       </div>
+
+      {products.length < total && (
+        <div className="flex justify-center pt-2">
+          <button
+            type="button"
+            onClick={loadMore}
+            disabled={loadingMore}
+            className="rounded-xl border border-sage-300 bg-white px-6 py-2.5 text-sm font-semibold text-sage-800 shadow-sm hover:bg-sage-50 disabled:opacity-60"
+          >
+            {loadingMore ? "Loading…" : `Load more (${(total - products.length).toLocaleString()} left)`}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,33 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-14T13:19:21.953Z",
+  "updatedAt": "2026-06-14T18:34:20.630Z",
   "events": [
+    {
+      "event": "session_return",
+      "sessionId": "s_mqe4iinp_drsdy8",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-14T18:34:20.630Z"
+    },
+    {
+      "event": "session_return",
+      "sessionId": "s_mqdvamf8_3ixi6p",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-14T14:16:15.206Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-14T14:13:57.646Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-14T14:13:56.438Z"
+    },
     {
       "event": "session_return",
       "sessionId": "s_mqdt9gh9_1sd9n7",

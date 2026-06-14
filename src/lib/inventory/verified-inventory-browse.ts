@@ -45,88 +45,83 @@ function catalogFor(catalogId: string) {
   return CATALOG.find((c) => c.id === catalogId);
 }
 
+export interface BrowseOptions {
+  /** Page size (default 48). */
+  limit?: number;
+  /** Offset for pagination (default 0). */
+  offset?: number;
+  /** Optional case-insensitive title/brand search (uses the pg_trgm index). */
+  query?: string;
+}
+
+/**
+ * Paginated inventory browse. PRODUCT-level pagination (not quote-level) so we
+ * load one page of products + only their quotes — never the full ~13k catalog
+ * / ~20k quotes at once. Search runs in the DB (trgm-indexed ILIKE), not in the
+ * browser. `totalProducts` is the full count so the UI can show "X of N".
+ */
 export async function loadVerifiedInventoryBrowse(
   mode: VerifiedBrowseMode = "all",
+  opts: BrowseOptions = {},
 ): Promise<VerifiedBrowseResult> {
   const now = new Date();
+  const limit = Math.min(Math.max(opts.limit ?? 48, 1), 100);
+  const offset = Math.max(opts.offset ?? 0, 0);
+  const q = opts.query?.trim();
 
-  const rows = await prisma.priceQuote.findMany({
-    where: {
-      // Inventory shows ONLY products ingested via the Bright Data pipeline.
-      providerSource: "bright_data",
-      source: { in: VERIFIED_SOURCES },
-      expiresAt: { gt: now },
-      // Public, published + approved canonical products only.
-      product: { published: true, validationStatus: "approved" },
+  const liveQuote = {
+    providerSource: "bright_data",
+    source: { in: VERIFIED_SOURCES },
+    expiresAt: { gt: now },
+  };
+
+  // Products that are public AND carry a live Bright-Data offer. Optional search
+  // and (for qa_approved mode) an approved QA review.
+  const where: Record<string, unknown> = {
+    published: true,
+    validationStatus: "approved",
+    priceQuotes: {
+      some: mode === "qa_approved" ? { ...liveQuote, qaReview: { status: "approved" } } : liveQuote,
     },
-    include: {
-      product: true,
-      qaReview: true,
-    },
-    orderBy: [{ product: { category: "asc" } }, { priceUsd: "asc" }],
-  });
+    ...(q
+      ? { OR: [{ title: { contains: q, mode: "insensitive" } }, { brand: { contains: q, mode: "insensitive" } }] }
+      : {}),
+  };
 
-  const byProduct = new Map<
-    string,
-    {
-      catalogId: string;
-      title: string;
-      brand: string;
-      category: string;
-      size: string;
-      quotes: typeof rows;
-    }
-  >();
-
-  for (const row of rows) {
-    const catalogId = row.product.catalogId;
-    const catalog = catalogFor(catalogId);
-    const existing = byProduct.get(catalogId);
-    if (existing) {
-      existing.quotes.push(row);
-    } else {
-      byProduct.set(catalogId, {
-        catalogId,
-        title: catalog?.title ?? row.product.title,
-        brand: catalog?.brand ?? row.product.brand,
-        category: catalog?.category ?? row.product.category,
-        size: catalog?.size ?? row.product.sizeLabel,
-        quotes: [row],
-      });
-    }
-  }
+  const [total, productRows] = await Promise.all([
+    prisma.product.count({ where }),
+    prisma.product.findMany({
+      where,
+      orderBy: [{ category: "asc" }, { title: "asc" }],
+      take: limit,
+      skip: offset,
+      include: {
+        priceQuotes: { where: liveQuote, orderBy: { priceUsd: "asc" }, include: { qaReview: true } },
+      },
+    }),
+  ]);
 
   const products: VerifiedBrowseProduct[] = [];
-
-  for (const entry of byProduct.values()) {
-    const qaApproved = entry.quotes.some((q) => q.qaReview?.status === "approved");
-    const qaPending = entry.quotes.some(
-      (q) => !q.qaReview || q.qaReview.status === "pending",
-    );
-
-    if (mode === "qa_approved" && !qaApproved) continue;
-
-    const best = entry.quotes[0]!;
-    const prices = entry.quotes.map((q) => q.priceUsd);
-    const catalog = catalogFor(entry.catalogId);
+  for (const product of productRows) {
+    const quotes = product.priceQuotes;
+    if (!quotes.length) continue;
+    const catalog = catalogFor(product.catalogId);
+    const qaApproved = quotes.some((qq) => qq.qaReview?.status === "approved");
+    const qaPending = quotes.some((qq) => !qq.qaReview || qq.qaReview.status === "pending");
+    const best = quotes[0]!;
+    const prices = quotes.map((qq) => qq.priceUsd);
 
     products.push({
-      catalogId: entry.catalogId,
-      title: entry.title,
-      brand: entry.brand,
-      category: entry.category,
-      size: entry.size,
-      // Prefer the static catalog image; fall back to the DB product/offer image
-      // for DB-only products (e.g. IKEA, ingested via the Bright Data pipeline).
-      imageUrl:
-        (catalog ? imageForProduct(catalog) : "") ||
-        best.product.imageUrl ||
-        best.imageUrl ||
-        "",
+      catalogId: product.catalogId,
+      title: catalog?.title ?? product.title,
+      brand: catalog?.brand ?? product.brand,
+      category: catalog?.category ?? product.category,
+      size: catalog?.size ?? product.sizeLabel,
+      imageUrl: (catalog ? imageForProduct(catalog) : "") || product.imageUrl || best.imageUrl || "",
       minPrice: Math.min(...prices),
       maxPrice: Math.max(...prices),
-      quoteCount: entry.quotes.length,
-      retailers: [...new Set(entry.quotes.map((q) => q.retailerId))],
+      quoteCount: quotes.length,
+      retailers: [...new Set(quotes.map((qq) => qq.retailerId))],
       qaApproved,
       qaPending,
       bestQuote: {
@@ -139,16 +134,11 @@ export async function loadVerifiedInventoryBrowse(
     });
   }
 
-  products.sort((a, b) => {
-    if (a.qaApproved !== b.qaApproved) return a.qaApproved ? -1 : 1;
-    return a.minPrice - b.minPrice;
-  });
-
   return {
     generatedAt: new Date().toISOString(),
     mode,
-    totalProducts: products.length,
-    totalQuotes: rows.length,
+    totalProducts: total,
+    totalQuotes: products.reduce((n, p) => n + p.quoteCount, 0),
     qaApprovedCount: products.filter((p) => p.qaApproved).length,
     products,
   };

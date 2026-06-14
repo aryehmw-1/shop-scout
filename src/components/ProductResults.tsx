@@ -537,10 +537,16 @@ export function ProductResults({
           {/* Category-style result: several distinct products that match the
               query, shown as a list of options (no single "Best price" badge —
               these are different products, not sellers of the same item). */}
-          <div className="mb-2 flex items-center gap-2 px-1 text-[12px] font-semibold text-sage-800">
+          <div className="mb-1 flex items-center gap-2 px-1 text-[12px] font-semibold text-sage-800">
             Matching products
-            <span className="font-normal text-stone-500">— verified live prices</span>
+            <span className="font-normal text-stone-500">— closest options for your search</span>
           </div>
+          {/* Keep the "Why trust this ›" disclosure here too — it builds trust and
+              was previously only on single-product results. */}
+          <MobileVerifiedNote
+            zipCode={zipCode}
+            estimated={Boolean(display.closestMatchFallback)}
+          />
           <MobileOfferList
             offers={matchingOffers}
             onShopClick={onShopClick}

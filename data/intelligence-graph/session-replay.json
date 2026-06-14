@@ -1,7 +1,43 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-11T23:53:54.671Z",
+  "updatedAt": "2026-06-14T14:13:57.651Z",
   "sessions": [
+    {
+      "id": "sr_mqdv7ok3_506d30",
+      "sessionId": "f256fae3f27e9610",
+      "cohort": "general",
+      "at": "2026-06-14T14:13:57.651Z",
+      "queryCategory": "general",
+      "matched": true,
+      "canonicalId": "tide-pods",
+      "winnerRetailer": "Costco",
+      "winnerPrice": 18.98,
+      "trustSummary": "Best pick: Costco · $18.98.",
+      "identityScore": 0.89,
+      "evidenceCount": 1,
+      "uncertaintyCount": 0,
+      "interactionTrail": [
+        "recommendation_shown"
+      ]
+    },
+    {
+      "id": "sr_mqdv7nmw_3f7939",
+      "sessionId": "f7aaad793345bc12",
+      "cohort": "general",
+      "at": "2026-06-14T14:13:56.456Z",
+      "queryCategory": "general",
+      "matched": true,
+      "canonicalId": "bounty-paper-towels",
+      "winnerRetailer": "Costco",
+      "winnerPrice": 23.73,
+      "trustSummary": "We recommend Costco at $23.73 — Highest decision score (0.95) among validated offers.",
+      "identityScore": 0.89,
+      "evidenceCount": 1,
+      "uncertaintyCount": 0,
+      "interactionTrail": [
+        "recommendation_shown"
+      ]
+    },
     {
       "id": "sr_mqa5ly3y_650a50",
       "sessionId": "e0a39ac5f7c6e062",
