@@ -1,7 +1,43 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-14T14:13:57.651Z",
+  "updatedAt": "2026-06-15T15:21:12.634Z",
   "sessions": [
+    {
+      "id": "sr_mqfd20mx_9d1dec",
+      "sessionId": "49df0a38d4fd2264",
+      "cohort": "general",
+      "at": "2026-06-15T15:21:12.634Z",
+      "queryCategory": "general",
+      "matched": true,
+      "canonicalId": "ninja-air-fryer",
+      "winnerRetailer": "Costco",
+      "winnerPrice": 124.9,
+      "trustSummary": "Costco at $124.90 — Highest decision score (0.95) among validated offers. (our best match today).",
+      "identityScore": 0.89,
+      "evidenceCount": 1,
+      "uncertaintyCount": 0,
+      "interactionTrail": [
+        "recommendation_shown"
+      ]
+    },
+    {
+      "id": "sr_mqfd1jio_561185",
+      "sessionId": "49df0a38d4fd2264",
+      "cohort": "general",
+      "at": "2026-06-15T15:20:50.449Z",
+      "queryCategory": "general",
+      "matched": true,
+      "canonicalId": "ninja-air-fryer",
+      "winnerRetailer": "Costco",
+      "winnerPrice": 124.9,
+      "trustSummary": "Costco at $124.90 — Highest decision score (0.93) among validated offers. (our best match today).",
+      "identityScore": 0.89,
+      "evidenceCount": 1,
+      "uncertaintyCount": 0,
+      "interactionTrail": [
+        "recommendation_shown"
+      ]
+    },
     {
       "id": "sr_mqdv7ok3_506d30",
       "sessionId": "f256fae3f27e9610",

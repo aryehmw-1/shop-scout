@@ -642,15 +642,18 @@ export function CompareExperience({
   const useGrid = layoutMode === "grid";
   const useTable = !useGrid && experimentLayout === "table";
 
+  // EXACT match comparison: the 5 lowest-priced offers, sorted low→high by the
+  // REAL item price. Shipping/tax are estimates and must never reorder offers
+  // (a fabricated shipping fee was previously flipping the cheapest-first order).
   const offers = useMemo(
     () =>
-      [...results.online].sort((a, b) => {
-        const aLanded = a.deliveredTotal ?? a.landedCost ?? a.price;
-        const bLanded = b.deliveredTotal ?? b.landedCost ?? b.price;
-        const aPrice = aLanded > 0 ? aLanded : Number.POSITIVE_INFINITY;
-        const bPrice = bLanded > 0 ? bLanded : Number.POSITIVE_INFINITY;
-        return aPrice - bPrice;
-      }).slice(0, 5),
+      [...results.online]
+        .sort((a, b) => {
+          const ap = a.price && a.price > 0 ? a.price : Number.POSITIVE_INFINITY;
+          const bp = b.price && b.price > 0 ? b.price : Number.POSITIVE_INFINITY;
+          return ap - bp;
+        })
+        .slice(0, 5),
     [results.online],
   );
   const matched = results.matchedProduct;

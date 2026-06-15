@@ -1,7 +1,61 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-15T00:37:38.665Z",
+  "updatedAt": "2026-06-15T15:21:56.373Z",
   "events": [
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-15T15:21:56.373Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-15T15:21:56.372Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-15T15:21:50.962Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-15T15:21:50.948Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-15T15:21:12.624Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-15T15:20:50.425Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-15T15:20:47.325Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-15T15:20:47.312Z"
+    },
+    {
+      "event": "session_return",
+      "sessionId": "s_mqfd0hrh_uc2j70",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-15T15:20:02.194Z"
+    },
     {
       "event": "session_return",
       "sessionId": "s_mqehhq87_xx856i",

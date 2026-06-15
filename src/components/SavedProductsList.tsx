@@ -2,8 +2,11 @@
 
 // Real Saved Products list. Mobile = P2 list rows; Desktop = D4 trust-forward
 // cards (verified badge + retailer), widened to fill the screen. Every item has
-// a heart (remove), Compare, and Go to store.
+// a heart (remove), Compare, and Go to store. Shows a manageable first page with
+// a "Show all" expander so a large list never runs endlessly off-screen (keeps
+// the footer reachable).
 
+import { useState } from "react";
 import Link from "next/link";
 import { Heart, Store, ShieldCheck } from "lucide-react";
 import type { ProductOffer, RetailerId } from "@/lib/types";
@@ -21,12 +24,17 @@ const compareHref = (o: ProductOffer) =>
 const storeHref = (o: ProductOffer) =>
   affiliateSafeDestination(o.retailer as RetailerId, o.productUrl || o.affiliateUrl || "");
 
+const INITIAL_VISIBLE = 12;
+
 export function SavedProductsList({ offers, onRemove }: Props) {
+  const [showAll, setShowAll] = useState(false);
+  const visible = showAll ? offers : offers.slice(0, INITIAL_VISIBLE);
+  const hidden = offers.length - visible.length;
   return (
     <>
       {/* ── Mobile: P2 list rows ── */}
       <div className="space-y-2 lg:hidden">
-        {offers.map((o) => {
+        {visible.map((o) => {
           const dest = storeHref(o);
           return (
             <article key={o.id} className="flex gap-3 rounded-xl border border-stone-200 bg-white p-2.5">
@@ -53,7 +61,7 @@ export function SavedProductsList({ offers, onRemove }: Props) {
 
       {/* ── Desktop: D4 trust-forward cards, full-width grid ── */}
       <div className="hidden gap-4 lg:grid lg:grid-cols-3 xl:grid-cols-4">
-        {offers.map((o) => {
+        {visible.map((o) => {
           const dest = storeHref(o);
           return (
             <article key={o.id} className="flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white">
@@ -75,6 +83,18 @@ export function SavedProductsList({ offers, onRemove }: Props) {
           );
         })}
       </div>
+
+      {(hidden > 0 || showAll) && offers.length > INITIAL_VISIBLE && (
+        <div className="mt-4 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setShowAll((v) => !v)}
+            className="rounded-xl border border-sage-300 bg-white px-6 py-2.5 text-sm font-semibold text-sage-800 shadow-sm hover:bg-sage-50"
+          >
+            {showAll ? "Show less" : `Show all ${offers.length} saved`}
+          </button>
+        </div>
+      )}
     </>
   );
 }

@@ -116,9 +116,10 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
         </div>
       )}
 
-      {/* Mobile: Micro 3-col dense tiles. Desktop (lg+): the roomier 4-col card,
-          unchanged, now with a labeled "Go to store" button. */}
-      <div className="grid grid-cols-3 gap-2 lg:grid-cols-4 lg:gap-3">
+      {/* Mobile: Micro 3-col dense tiles. Desktop: roomier 3-col cards (wide
+          enough for "Compare" + "Go to store" side-by-side on one line each),
+          4-col only on very wide screens. */}
+      <div className="grid grid-cols-3 gap-2 lg:grid-cols-3 lg:gap-4 xl:grid-cols-4">
         {products.map((p) => {
           const dest = affiliateSafeDestination(
             p.bestQuote.retailerId as RetailerId,
@@ -150,7 +151,7 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
                 <div className="mt-1.5 flex items-stretch gap-1 pt-0 lg:mt-auto lg:gap-2 lg:pt-4">
                   <Link
                     href={`/chat?q=${encodeURIComponent(`${p.brand} ${p.title}`)}`}
-                    className="flex-1 rounded-md bg-sage-700 py-1 text-center text-[10px] font-semibold text-white hover:bg-sage-800 lg:rounded-xl lg:py-2 lg:text-sm"
+                    className="flex-1 whitespace-nowrap rounded-md bg-sage-700 py-1 text-center text-[10px] font-semibold text-white hover:bg-sage-800 lg:rounded-xl lg:py-2 lg:text-sm"
                   >
                     Compare
                   </Link>
@@ -159,7 +160,7 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
                       href={dest}
                       target="_blank"
                       rel="noopener noreferrer sponsored"
-                      className="inline-flex shrink-0 items-center justify-center gap-1 rounded-md border border-orange-200 px-1.5 py-1 text-[10px] font-semibold text-orange-600 hover:bg-orange-50 lg:flex-1 lg:rounded-xl lg:px-3 lg:py-2 lg:text-sm"
+                      className="inline-flex shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-md border border-orange-200 px-1.5 py-1 text-[10px] font-semibold text-orange-600 hover:bg-orange-50 lg:flex-1 lg:rounded-xl lg:px-3 lg:py-2 lg:text-sm"
                       aria-label="Go to store"
                     >
                       <Store size={13} aria-hidden />
