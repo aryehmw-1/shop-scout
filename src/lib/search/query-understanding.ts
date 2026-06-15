@@ -110,3 +110,45 @@ export function expandQueryTokens(query: string, cap = 24): string[] {
   }
   return [...out].slice(0, cap);
 }
+
+/**
+ * Synonym-aware coverage — same thresholds as {@link coversQuery} (1–2 words → all,
+ * 3+ → at least half) but a query word also counts as covered by its singular form
+ * or a known synonym. Used as the catalog-match relevance FLOOR so "fridge" still
+ * matches a product titled "Refrigerator", while a weak lookalike that shares no
+ * content word ("car trash bag" vs a snack) is still rejected.
+ */
+export function coversQueryExpanded(text: string, query: string): boolean {
+  const content = baseTokens(query);
+  if (!content.length) return true;
+  const min = content.length <= 2 ? content.length : Math.ceil(content.length / 2);
+  const words = new Set(text.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean));
+  const covers = (t: string): boolean => {
+    const sing = singularize(t);
+    if (words.has(t) || words.has(`${t}s`) || words.has(sing)) return true;
+    if (t.endsWith("s") && words.has(t.slice(0, -1))) return true;
+    const syn = SYNONYM_INDEX.get(t) ?? SYNONYM_INDEX.get(sing);
+    if (syn) for (const s of syn) if (words.has(s) || words.has(`${s}s`)) return true;
+    return false;
+  };
+  return content.filter(covers).length >= min;
+}
+
+/**
+ * Similar-alternative gate: does a candidate product share at least one CONTENT
+ * word with the user's QUERY (whole-word, singular/plural + synonym aware)?
+ *
+ * This is the strong category/relevance guard for "Similar alternatives": a car
+ * trash bag must never surface cheese crackers, an air fryer must never surface a
+ * charger. We deliberately gate on the user's own query (not a possibly-wrong
+ * matched product), and return `false` for an empty query so the UI shows
+ * "no relevant alternatives" rather than random noise.
+ */
+export function sharesContentWord(query: string, candidateText: string): boolean {
+  const q = new Set(expandQueryTokens(query));
+  if (!q.size) return false;
+  for (const w of baseTokens(candidateText)) {
+    if (q.has(w) || q.has(singularize(w))) return true;
+  }
+  return false;
+}

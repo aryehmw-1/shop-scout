@@ -12,6 +12,7 @@ import { compareViaCatalog } from "../search/connectors/catalog-connector";
 import { finalizeSearchPrices } from "../search/price-truth";
 import { finalizeResultsForUser } from "../pricing/deal-intelligence";
 import { rankVerifiedInventoryCandidates } from "./verified-inventory-resolver";
+import { coversQueryExpanded, sharesContentWord } from "../search/query-understanding";
 
 type ProductWithQuotes = Product & { priceQuotes: PriceQuote[] };
 
@@ -165,6 +166,17 @@ export async function searchProducts(
       return { row, score };
     })
     .sort((a, b) => b.score - a.score)[0]!.row;
+
+  // Relevance FLOOR: the best candidate must genuinely COVER the query's content
+  // words (whole-word). Without this, a weak lookalike that merely shares a common
+  // word (a snack that comes in a "bag" for "car trash bag") becomes the matched
+  // product — and then its same-category "similar" items are unrelated junk
+  // (→ cheese crackers). If nothing covers the query, there is NO match: return
+  // null so chat shows the honest "couldn't find it" state with NO similar items.
+  if (!coversQueryExpanded(`${product.brand} ${product.title} ${product.category}`, normalized)) {
+    return null;
+  }
+
   const results = await productToResults(product, { query: normalized });
 
   // Fill toward 7 cards with clearly-labelled SIMILAR alternatives when there
@@ -174,6 +186,7 @@ export async function searchProducts(
       category: product.category,
       excludeCatalogId: product.catalogId,
       matchedTitle: product.title,
+      query: normalized,
       limit: 7 - results.online.length,
     });
   }
@@ -244,7 +257,14 @@ function similarTokens(text: string): Set<string> {
 }
 
 export async function findSimilarProducts(
-  opts: { category: string; excludeCatalogId: string; matchedTitle: string; limit?: number },
+  opts: {
+    category: string;
+    excludeCatalogId: string;
+    matchedTitle: string;
+    /** The user's original query — the gate similar items must stay relevant to. */
+    query?: string;
+    limit?: number;
+  },
 ): Promise<SimilarProduct[]> {
   const now = new Date();
   const products = await prisma.product.findMany({
@@ -268,17 +288,23 @@ export async function findSimilarProducts(
     take: 60,
   });
 
-  // Relevance gate: a "similar" item must share the same category AND at least one
-  // meaningful word with the matched product (e.g. "coffee table" → other coffee
-  // tables), so we never surface unrelated same-category noise (cereal → coffee).
+  // STRONG relevance gate: a "similar" item must share the same category AND at
+  // least one meaningful CONTENT word with the user's QUERY (whole-word, synonym
+  // aware) — not merely with the matched product, which can itself be a weak match.
+  // This is what stops "car trash bag" → cheese crackers or "refrigerator" →
+  // coffee. We fall back to the matched title only when no query was supplied.
+  // Items that fail the gate are dropped entirely; if none pass, we return []
+  // and the UI shows "no relevant alternatives" rather than random products.
+  const relevantTo = opts.query?.trim() || opts.matchedTitle;
   const matchWords = similarTokens(`${opts.matchedTitle}`);
   const scored: { p: (typeof products)[number]; overlap: number }[] = [];
   for (const p of products) {
     if (!p.priceQuotes[0]) continue;
+    if (!sharesContentWord(relevantTo, p.title)) continue;
     const words = similarTokens(p.title);
     let overlap = 0;
     for (const w of words) if (matchWords.has(w)) overlap += 1;
-    if (overlap > 0) scored.push({ p, overlap });
+    scored.push({ p, overlap });
   }
   scored.sort((a, b) => b.overlap - a.overlap);
 

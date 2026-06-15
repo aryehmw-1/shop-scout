@@ -13,6 +13,7 @@
     "clean:install": "node scripts/clean-dev.mjs --reinstall",
     "build": "prisma generate && npm run verify:build && next build && node scripts/inject-impact-verification-html.mjs",
     "typecheck": "tsc --noEmit",
+    "test": "tsx --test \"src/**/*.test.ts\"",
     "verify:build": "node scripts/verify-build-imports.mjs",
     "verify:db-inventory": "node scripts/verify-db-inventory.mjs",
     "demo:build-canonical": "tsx scrapers/run.ts build-canonical",

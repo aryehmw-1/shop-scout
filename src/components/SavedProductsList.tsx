@@ -10,7 +10,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Heart, Store, ShieldCheck } from "lucide-react";
 import type { ProductOffer, RetailerId } from "@/lib/types";
-import { affiliateSafeDestination } from "@/lib/affiliate/outbound";
+import { storeOutboundHref } from "@/lib/affiliate/outbound";
 import { formatPrice } from "@/lib/utils/format";
 import { ProductImage } from "@/components/ProductImage";
 
@@ -22,7 +22,11 @@ interface Props {
 const compareHref = (o: ProductOffer) =>
   o.catalogId ? `/compare?product=${encodeURIComponent(o.catalogId)}` : `/chat?q=${encodeURIComponent(`${o.brand} ${o.title}`)}`;
 const storeHref = (o: ProductOffer) =>
-  affiliateSafeDestination(o.retailer as RetailerId, o.productUrl || o.affiliateUrl || "");
+  storeOutboundHref(o.retailer as RetailerId, o.productUrl || undefined, o.affiliateUrl, {
+    offerId: o.id,
+    catalogId: o.catalogId,
+    source: "card",
+  });
 
 const INITIAL_VISIBLE = 12;
 
@@ -76,7 +80,7 @@ export function SavedProductsList({ offers, onRemove }: Props) {
                 <p className="text-[11px] text-stone-400">{o.retailerName ?? o.retailer}</p>
                 <div className="mt-3 flex gap-2">
                   <Link href={compareHref(o)} className="flex-1 rounded-xl bg-sage-700 py-2 text-center text-sm font-semibold text-white hover:bg-sage-800">Compare</Link>
-                  {dest && <a href={dest} target="_blank" rel="noopener noreferrer sponsored" className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-orange-200 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50"><Store size={14} /> Store</a>}
+                  {dest && <a href={dest} target="_blank" rel="noopener noreferrer sponsored" className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-orange-200 py-2 text-sm font-semibold text-orange-600 hover:bg-orange-50"><Store size={14} /> Go to store</a>}
                 </div>
               </div>
             </article>

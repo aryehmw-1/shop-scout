@@ -19,6 +19,7 @@ import {
 import { inventoryService } from "../inventory/inventory-service";
 import { mergeLivePrices } from "./merge-live-prices";
 import { coversQuery } from "./query-understanding";
+import { runEmbeddingShadow } from "./embeddings-shadow";
 import { attachMatchedProduct } from "./matched-product";
 import { enrichSearchResultsWithImages } from "./product-image-lookup";
 import { recordSnapshotsOnSearch } from "../own-db/config";
@@ -104,6 +105,11 @@ export class SearchService {
       }
 
       const filtered = { ...merged, online: relevantOffers };
+
+      // PHASE 2 (shadow): observe what embedding-similarity reranking WOULD do on
+      // this candidate set. Flag-gated, fire-and-forget, never reorders `filtered`
+      // — production ranking is untouched until we review the logged divergence.
+      runEmbeddingShadow(relevanceQuery, relevantOffers);
 
       // Ingest relevant live offers into DB so the next search is a fast DB-first hit.
       const liveOffers = relevantOffers.filter(

@@ -57,18 +57,48 @@ export function affiliateSafeDestination(
   return url;
 }
 
+/**
+ * Lightweight "Go to store" href for surfaces that render a plain `<a>` (Saved,
+ * Inventory). Non-affiliate retailers link directly to the (optionally tagged)
+ * retailer URL. Affiliate-required retailers (Amazon/eBay) route through
+ * /api/outbound with the RAW url so the server — which alone has the tag env —
+ * attaches tracking. That way the button is never hidden just because the client
+ * can't tag it. Returns `null` only when there is no URL at all.
+ */
+export function storeOutboundHref(
+  retailer: RetailerId,
+  rawUrl: string | undefined,
+  prebuiltAffiliateUrl?: string,
+  meta?: { offerId?: string; catalogId?: string; source?: OutboundClickContext["source"] },
+): string | null {
+  if (!isAffiliateRequired(retailer)) {
+    return affiliateSafeDestination(retailer, rawUrl, prebuiltAffiliateUrl);
+  }
+  const raw = prebuiltAffiliateUrl || rawUrl;
+  if (!raw) return null;
+  const params = new URLSearchParams();
+  params.set("to", encodeBase64Url(raw));
+  params.set("r", retailer);
+  if (meta?.offerId) params.set("oid", meta.offerId);
+  if (meta?.catalogId) params.set("cid", meta.catalogId);
+  if (meta?.source) params.set("src", meta.source);
+  return `/api/outbound?${params.toString()}`;
+}
+
 /** Build commission-safe redirect URL through /api/outbound (logs click before
- * redirect). Returns `null` when the link must be hidden (Amazon/eBay without
- * attachable affiliate tracking). */
+ * redirect). The server attaches affiliate tracking, so for Amazon/eBay we pass
+ * the raw URL rather than hiding the link. Returns `null` only when no URL exists. */
 export function buildOutboundUrl(
   offer: ProductOffer,
   ctx: OutboundClickContext = {},
 ): string | null {
-  const affiliateUrl = affiliateSafeDestination(
-    offer.retailer,
-    offer.productUrl ?? undefined,
-    offer.affiliateUrl,
-  );
+  // Tagged URL when the client can build one; otherwise the raw URL, which
+  // /api/outbound tags server-side before redirecting.
+  const affiliateUrl =
+    affiliateSafeDestination(offer.retailer, offer.productUrl ?? undefined, offer.affiliateUrl) ??
+    offer.affiliateUrl ??
+    offer.productUrl ??
+    null;
   if (!affiliateUrl) return null;
 
   const params = new URLSearchParams();

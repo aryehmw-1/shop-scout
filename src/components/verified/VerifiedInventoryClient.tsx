@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ShieldCheck, Store, Search } from "lucide-react";
 import type { VerifiedBrowseResult } from "@/lib/inventory/verified-inventory-browse";
-import { affiliateSafeDestination } from "@/lib/affiliate/outbound";
+import { storeOutboundHref } from "@/lib/affiliate/outbound";
 import type { RetailerId } from "@/lib/types";
 import { formatPrice } from "@/lib/utils/format";
 import { ProductImage } from "@/components/ProductImage";
@@ -116,14 +116,16 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
         </div>
       )}
 
-      {/* Mobile: Micro 3-col dense tiles. Desktop: roomier 3-col cards (wide
-          enough for "Compare" + "Go to store" side-by-side on one line each),
-          4-col only on very wide screens. */}
+      {/* Mobile: Micro 3-col dense tiles. Desktop: roomier 3-col cards inside a
+          wider max-w-7xl shell (4-col only on very wide screens); actions stack
+          full-width so the buttons read cleanly. */}
       <div className="grid grid-cols-3 gap-2 lg:grid-cols-3 lg:gap-4 xl:grid-cols-4">
         {products.map((p) => {
-          const dest = affiliateSafeDestination(
+          const dest = storeOutboundHref(
             p.bestQuote.retailerId as RetailerId,
             p.bestQuote.productUrl,
+            undefined,
+            { catalogId: p.catalogId, source: "card" },
           );
           return (
             <article
@@ -148,10 +150,13 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
                     : `${formatPrice(p.minPrice)} – ${formatPrice(p.maxPrice)}`}
                 </p>
                 <p className="truncate text-[10px] text-stone-500 lg:mt-1 lg:text-xs">{p.retailers.join(", ")}</p>
-                <div className="mt-1.5 flex items-stretch gap-1 pt-0 lg:mt-auto lg:gap-2 lg:pt-4">
+                {/* Mobile: Compare + icon-only store side by side (micro tiles).
+                    Desktop: full-width stacked buttons so "Compare" and
+                    "Go to store" each get a whole line and never feel squeezed. */}
+                <div className="mt-1.5 flex items-stretch gap-1 pt-0 lg:mt-auto lg:flex-col lg:gap-2 lg:pt-4">
                   <Link
                     href={`/chat?q=${encodeURIComponent(`${p.brand} ${p.title}`)}`}
-                    className="flex-1 whitespace-nowrap rounded-md bg-sage-700 py-1 text-center text-[10px] font-semibold text-white hover:bg-sage-800 lg:rounded-xl lg:py-2 lg:text-sm"
+                    className="flex-1 whitespace-nowrap rounded-md bg-sage-700 py-1 text-center text-[10px] font-semibold text-white hover:bg-sage-800 lg:w-full lg:flex-none lg:rounded-xl lg:py-2.5 lg:text-sm"
                   >
                     Compare
                   </Link>
@@ -160,10 +165,10 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
                       href={dest}
                       target="_blank"
                       rel="noopener noreferrer sponsored"
-                      className="inline-flex shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-md border border-orange-200 px-1.5 py-1 text-[10px] font-semibold text-orange-600 hover:bg-orange-50 lg:flex-1 lg:rounded-xl lg:px-3 lg:py-2 lg:text-sm"
+                      className="inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-orange-200 px-1.5 py-1 text-[10px] font-semibold text-orange-600 hover:bg-orange-50 lg:w-full lg:flex-none lg:rounded-xl lg:px-3 lg:py-2.5 lg:text-sm"
                       aria-label="Go to store"
                     >
-                      <Store size={13} aria-hidden />
+                      <Store size={14} aria-hidden />
                       <span className="hidden lg:inline">Go to store</span>
                     </a>
                   )}
