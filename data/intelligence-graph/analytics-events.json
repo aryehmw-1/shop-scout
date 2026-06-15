@@ -1,7 +1,15 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-14T20:33:12.121Z",
+  "updatedAt": "2026-06-15T00:37:38.665Z",
   "events": [
+    {
+      "event": "session_return",
+      "sessionId": "s_mqehhq87_xx856i",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-15T00:37:38.664Z"
+    },
     {
       "event": "session_return",
       "sessionId": "s_mqe8rdgx_uypk91",

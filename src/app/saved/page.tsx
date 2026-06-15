@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
-import { ProductCard } from "@/components/ProductCard";
+import { SavedProductsList } from "@/components/SavedProductsList";
 import { loadSavedOffers, toggleSavedOffer } from "@/lib/storage";
 import { useAuth } from "@/contexts/AuthContext";
 import type { ProductOffer } from "@/lib/types";
@@ -41,7 +41,7 @@ export default function SavedPage() {
         </header>
 
         <main className="flex-1 px-6 py-8 lg:px-12">
-          <div className="mx-auto max-w-4xl">
+          <div className="mx-auto max-w-6xl">
             {offers.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-stone-300 bg-white/80 py-20 text-center">
                 <Heart className="mx-auto text-stone-300" size={48} />
@@ -60,16 +60,7 @@ export default function SavedPage() {
                 </Link>
               </div>
             ) : (
-              <div className="flex gap-4 overflow-x-auto pb-4">
-                {offers.map((offer) => (
-                  <ProductCard
-                    key={offer.id}
-                    offer={offer}
-                    onSave={handleSave}
-                    saved
-                  />
-                ))}
-              </div>
+              <SavedProductsList offers={offers} onRemove={handleSave} />
             )}
           </div>
         </main>

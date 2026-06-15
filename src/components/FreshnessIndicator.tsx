@@ -3,7 +3,7 @@
 import { useState } from "react";
 import type { ProductOffer } from "@/lib/types";
 import { classifyOfferFreshness } from "@/lib/pricing/quote-freshness-policy";
-import { Clock, AlertTriangle } from "lucide-react";
+import { Clock, AlertTriangle, ChevronDown } from "lucide-react";
 
 const TIER_STYLES = {
   fresh: "bg-emerald-50 text-emerald-800 border-emerald-200",
@@ -41,8 +41,8 @@ export function FreshnessIndicator({
   const styles = TIER_STYLES[tier] ?? TIER_STYLES.stale_visible;
   const [open, setOpen] = useState(false);
 
-  if (tier === "fresh" && compact) return null;
-
+  // Every card shows a status chip — including "fresh" — so freshness is
+  // consistent across all products on the compare page (was hidden for fresh).
   const Icon = tier === "stale_visible" || tier === "expired" ? AlertTriangle : Clock;
   const badgeClass = `inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${styles} ${className}`;
 
@@ -118,22 +118,36 @@ export function CatalogFreshnessBanner({
   staleCount,
   totalCount,
 }: CatalogFreshnessBannerProps) {
+  const [open, setOpen] = useState(false);
   const allStale = staleCount >= totalCount && totalCount > 0;
   const headline = allStale
     ? "These prices were last confirmed a few days ago"
     : "A few of these prices were confirmed a few days ago";
 
   return (
-    <div
-      className="flex items-start gap-2 rounded-xl border border-stone-200 bg-stone-50/80 px-3.5 py-2.5 text-stone-600"
-      role="status"
-    >
-      <Clock size={15} className="mt-0.5 shrink-0 text-stone-400" aria-hidden />
-      <p className="text-xs leading-relaxed">
-        <span className="font-medium text-stone-700">{headline}</span> — not re-verified
-        today, so it&rsquo;s worth a quick check at the retailer before you buy. We only show
-        prices we&rsquo;ve actually confirmed, never guesses.
-      </p>
+    <div className="rounded-xl border border-stone-200 bg-stone-50/80 text-stone-600" role="status">
+      {/* Collapsed: just the headline + arrow. Click to expand the full note. */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left"
+      >
+        <Clock size={15} className="shrink-0 text-stone-400" aria-hidden />
+        <span className="flex-1 text-xs font-medium text-stone-700">{headline}</span>
+        <ChevronDown
+          size={16}
+          className={`shrink-0 text-stone-400 transition-transform ${open ? "rotate-180" : ""}`}
+          aria-hidden
+        />
+      </button>
+      {open && (
+        <p className="px-3.5 pb-3 pl-[2.4rem] text-xs leading-relaxed">
+          These prices were not re-verified today, so it&rsquo;s worth a quick check at the
+          retailer before you buy. We only show prices we&rsquo;ve actually confirmed on the
+          retailer&rsquo;s own listing, never guesses.
+        </p>
+      )}
     </div>
   );
 }

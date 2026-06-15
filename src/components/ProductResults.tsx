@@ -151,12 +151,12 @@ export function ProductResults({
     display;
   const online = useMemo(
     () =>
+      // Cheapest REAL item price first (shipping/tax are estimates — never sort by
+      // landed/delivered totals, which would let a fake shipping fee reorder results).
       [...rawOnline].sort((a, b) => {
-        const aDelivered = a.deliveredTotal ?? a.landedCost ?? a.price;
-        const bDelivered = b.deliveredTotal ?? b.landedCost ?? b.price;
-        const aPrice = aDelivered > 0 ? aDelivered : Number.POSITIVE_INFINITY;
-        const bPrice = bDelivered > 0 ? bDelivered : Number.POSITIVE_INFINITY;
-        return aPrice - bPrice;
+        const ap = a.price && a.price > 0 ? a.price : Number.POSITIVE_INFINITY;
+        const bp = b.price && b.price > 0 ? b.price : Number.POSITIVE_INFINITY;
+        return ap - bp;
       }).slice(0, 5),
     [rawOnline],
   );

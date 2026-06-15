@@ -142,17 +142,24 @@ export function rankOffersForDisplay(
   catalogTitle?: string,
   categoryId?: string,
 ): ProductOffer[] {
-  const scored = offers.map((o) => ({
-    offer: o,
-    rank: computeOfferRankScore(o, catalogTitle, categoryId),
-  }));
+  // Ranking = CHEAPEST REAL PRICE FIRST, within a coarse quality tier. We rank by
+  // the trusted item price (offer.price), NOT landed cost — shipping/tax are
+  // estimates and must never reorder results. A tier keeps junk (non-verified or
+  // search-result URLs that aren't a real buyable price) below real PDP offers,
+  // but among genuine offers the cheapest wins.
+  const tier = (o: ProductOffer): number => {
+    if (!isVerifiedOffer(o)) return 2;
+    if (isSearchProductUrl(o.productUrl)) return 1;
+    return 0;
+  };
+  const priceOf = (o: ProductOffer): number =>
+    o.price && o.price > 0 ? o.price : o.landedCost || Number.POSITIVE_INFINITY;
 
+  const scored = offers.map((o) => ({ offer: o }));
   scored.sort((a, b) => {
-    const av = isVerifiedOffer(a.offer) ? 1 : 0;
-    const bv = isVerifiedOffer(b.offer) ? 1 : 0;
-    if (bv !== av) return bv - av;
-    if (b.rank.score !== a.rank.score) return b.rank.score - a.rank.score;
-    return a.offer.landedCost - b.offer.landedCost;
+    const t = tier(a.offer) - tier(b.offer);
+    if (t !== 0) return t;
+    return priceOf(a.offer) - priceOf(b.offer);
   });
 
   return scored.map((s) => s.offer);
@@ -288,9 +295,10 @@ export function prepareResultsForDisplay(
     .slice(0, lowLimit)
     .map((o) => finalizeOfferRow(o, options.item, options.intent));
 
-  const bestId =
-    displayVerified.find((o) => o.isBestDeal)?.id ??
-    [...displayVerified].sort((a, b) => a.landedCost - b.landedCost)[0]?.id;
+  // "Best" = cheapest REAL item price (not landed cost — shipping/tax estimated).
+  const bestPrice = (o: ProductOffer) =>
+    o.price && o.price > 0 ? o.price : o.landedCost || Number.POSITIVE_INFINITY;
+  const bestId = [...displayVerified].sort((a, b) => bestPrice(a) - bestPrice(b))[0]?.id;
 
   const online = displayVerified.map((o) => ({
     ...o,

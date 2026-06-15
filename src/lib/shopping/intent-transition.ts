@@ -87,7 +87,13 @@ const TAXONOMY: Record<string, RegExp> = {
   produce: /\b(spinach|salad|greens|lettuce|banana|produce|fruit)\b/i,
   meat: /\b(chicken|beef|pork|fish|salmon|meat)\b/i,
   bedding: /\b(mattress|pillow|sheets?|comforter|duvet|bedding)\b/i,
-  electronics: /\b(laptop|macbook|computer|tablet|phone|iphone)\b/i,
+  electronics:
+    /\b(laptop|macbook|computer|tablet|phone|iphone|tv|tvs|television|monitor|headphones?|earbuds?|airpods?|speaker|camera|console|xbox|playstation|ps5)\b/i,
+  appliance:
+    /\b(refrigerator|fridge|freezer|microwave|dishwasher|washer|dryer|oven|stove|range|blender|vacuum|air fryer|toaster|coffee maker|kettle)\b/i,
+  baby: /\b(diapers?|wipes|formula|pacifier|stroller|onesie)\b/i,
+  lighting: /\b(lamp|lamps|light bulb|lighting|chandelier|sconce)\b/i,
+  furniture: /\b(sofa|couch|loveseat|sectional|armchair|desk|dresser|nightstand|bookcase|wardrobe)\b/i,
 };
 
 const APPAREL_TAXONOMY = new Set(["apparel_bottom", "apparel_top", "footwear"]);

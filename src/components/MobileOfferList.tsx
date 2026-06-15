@@ -170,9 +170,9 @@ export function MobileOfferList({ offers, onShopClick, searchQuery, variant = "e
                 </div>
                 <span
                   className={`inline-flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-bold text-white shadow-sm ${
-                    best
-                      ? "bg-gradient-to-r from-orange-500 to-amber-500"
-                      : "bg-stone-800"
+                    isSimilar
+                      ? "bg-stone-900" // Similar alternatives → black View
+                      : "bg-gradient-to-r from-orange-500 to-amber-500" // Matching/exact → orange View
                   }`}
                 >
                   View

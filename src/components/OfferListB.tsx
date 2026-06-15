@@ -13,23 +13,20 @@ import { Crown, ExternalLink, TrendingDown, Heart } from "lucide-react";
  * genuinely can't know it up front (Amazon), a "Shipping at checkout" note.
  */
 export function offerShipping(o: ProductOffer): { text: string; free: boolean } {
-  if (o.freeShippingEligible) return { text: "Free shipping", free: true };
-  // Retailers whose shipping we can't determine up front — show the honest
-  // "Shipping at checkout" instead of a fabricated estimate. IKEA shipping
-  // depends on cart size / delivery method, so it's only known at checkout.
-  const name = (o.retailerName ?? "").toLowerCase();
-  const checkoutOnly =
-    o.retailer === "amazon" ||
-    o.retailer === "ikea" ||
-    name.includes("amazon") ||
-    name.includes("ikea");
-  if (checkoutOnly) return { text: "Shipping at checkout", free: false };
-  const ship = o.estimatedShipping;
-  if (ship === 0) return { text: "Free shipping", free: true };
-  if (ship != null && ship > 0) {
-    return { text: `+${formatPrice(ship)} est. shipping`, free: false };
+  // HONEST SHIPPING: we only show a dollar figure when a live provider that
+  // actually returns shipping (eBay / ShopSavvy) supplied one. The Bright Data
+  // catalog (Walmart/Amazon/Target/IKEA) exposes delivery availability, NOT a
+  // shipping price — so we never fabricate an estimate. We show an honest
+  // "Shipping calculated at checkout" instead.
+  const providerHasShipping =
+    (o.providerSource === "ebay" || o.providerSource === "shopsavvy") &&
+    o.estimatedShipping != null;
+  if (providerHasShipping) {
+    return o.estimatedShipping === 0
+      ? { text: "Free shipping", free: true }
+      : { text: `+${formatPrice(o.estimatedShipping!)} shipping`, free: false };
   }
-  return { text: "", free: false };
+  return { text: "Shipping calculated at checkout", free: false };
 }
 
 /** Highest delivered price across the set — used to show how much you save. */
