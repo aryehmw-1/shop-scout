@@ -1,6 +1,7 @@
 import { parseBrandFromText } from "../shopping/brands";
 import { stripShoppingPrefixes } from "../shopping/query";
 import { parseQueryAttributes } from "../retailers/search";
+import { extractRetailerFromQuery } from "../retailers/retailer-query";
 import type { ShoppingIntent } from "../types";
 
 /** Rule-based intent — always runs (no API key needed) */
@@ -8,7 +9,13 @@ export function extractIntentFromMessage(
   message: string,
   zipCode?: string,
 ): Partial<ShoppingIntent> {
-  const cleaned = stripShoppingPrefixes(message.trim());
+  // Pull a retailer name OUT of the query first so "Target shirt" searches for
+  // "shirt" (target as a preference), not the "Target Shooting" tee. Done here —
+  // the single rule-based parser — so EVERY path (search + AI clarify) is clean.
+  const { retailer, query: retailerStripped } = extractRetailerFromQuery(
+    stripShoppingPrefixes(message.trim()),
+  );
+  const cleaned = retailerStripped;
   const lower = cleaned.toLowerCase();
   const attrs = parseQueryAttributes(cleaned);
 
@@ -70,5 +77,6 @@ export function extractIntentFromMessage(
     colors: attrs.colors.length ? attrs.colors : undefined,
     productSubtype,
     organic: lower.includes("organic") ? true : undefined,
+    retailerPreference: retailer,
   };
 }

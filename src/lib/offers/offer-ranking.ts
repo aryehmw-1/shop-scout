@@ -264,8 +264,31 @@ export function prepareResultsForDisplay(
     return ap - bp;
   };
 
-  const verified = [...verifiedRaw]
-    .sort(priceAsc)
+  // PRICE-OUTLIER GUARD: with enough offers to form a baseline, drop ones priced
+  // absurdly above the median (an eBay "lot" charger at $267 among $20 chargers)
+  // so junk never becomes the best result.
+  const filterPriceOutliers = (offers: ProductOffer[]): ProductOffer[] => {
+    const priced = offers.map((o) => o.price ?? 0).filter((p) => p > 0).sort((a, b) => a - b);
+    if (priced.length < 3) return offers;
+    const median = priced[Math.floor(priced.length / 2)];
+    const ceiling = median * 4; // generous — only kills extreme junk, not real spread
+    return offers.filter((o) => !(o.price && o.price > ceiling));
+  };
+
+  // RETAILER PREFERENCE: when the query named a store ("Amazon iPhone charger"),
+  // that retailer's offers lead; cheapest-first within each group.
+  const pref = options.intent?.retailerPreference;
+  const preferThenPrice = (a: ProductOffer, b: ProductOffer) => {
+    if (pref) {
+      const ar = a.retailer === pref ? 0 : 1;
+      const br = b.retailer === pref ? 0 : 1;
+      if (ar !== br) return ar - br;
+    }
+    return priceAsc(a, b);
+  };
+
+  const verified = filterPriceOutliers([...verifiedRaw])
+    .sort(preferThenPrice)
     .slice(0, limit)
     .map((o) => finalizeOfferRow(o, options.item, options.intent));
 
@@ -350,6 +373,8 @@ export function prepareResultsForDisplay(
         true
       : noExactMatchFound,
     closestMatchFallback: groceryClosest.length > 0,
+    retailerPreference: pref,
+    retailerPreferenceHasOffers: pref ? online.some((o) => o.retailer === pref) : undefined,
     matchTiers: {
       exact: exactTier.slice(0, limit).map((o) => finalizeOfferRow(o, options.item, options.intent)),
       similar: similarTier.slice(0, lowLimit).map((o) => finalizeOfferRow(o, options.item, options.intent)),

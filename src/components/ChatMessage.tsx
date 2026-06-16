@@ -5,7 +5,9 @@ import type { ChatMessage as ChatMessageType, ProductOffer } from "@/lib/types";
 import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { FormattedText } from "./FormattedText";
 import { ProductResults } from "./ProductResults";
+import { CompareExperience } from "./CompareExperience";
 import { QuickChips } from "./QuickChips";
+import { getRetailerMeta } from "@/lib/retailers/meta";
 
 /**
  * Reveals an assistant message gradually, as if it's being written in real
@@ -90,17 +92,55 @@ export function ChatMessageBubble({
           )}
         </div>
 
+        {message.productResults?.retailerPreference &&
+          message.productResults.retailerPreferenceHasOffers === false &&
+          (message.productResults.online?.length ?? 0) > 0 && (
+            <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50/80 px-3 py-2 text-sm text-amber-900">
+              No {getRetailerMeta(message.productResults.retailerPreference).name} offers
+              right now — showing the best matches from other stores.
+            </div>
+          )}
+
         {message.productResults && (
           <div className="mt-4 min-w-0 w-[calc(100%+56px)] -ml-[52px] lg:w-full lg:ml-0 lg:max-w-full">
-            <ProductResults
-              results={message.productResults}
-              savedIds={savedIds}
-              onSave={onSave}
-              onShopClick={onShopClick}
-              enriching={enriching}
-              searchQuery={searchQuery}
-              conversationDebug={message.conversationDebug}
-            />
+            {/* MOBILE (frozen): the existing chat results layout. */}
+            <div className="lg:hidden">
+              <ProductResults
+                results={message.productResults}
+                savedIds={savedIds}
+                onSave={onSave}
+                onShopClick={onShopClick}
+                enriching={enriching}
+                searchQuery={searchQuery}
+                conversationDebug={message.conversationDebug}
+              />
+            </div>
+            {/* DESKTOP: the AI chat IS the compare experience — render the
+                compare-page L5 layout (separate exact cards + grouped similar
+                rail) when we have offers; fall back to ProductResults for the
+                request-form / similar-only / "checking live prices" states. */}
+            <div className="hidden lg:block">
+              {(message.productResults.online?.length ?? 0) > 0 ? (
+                <CompareExperience
+                  results={message.productResults}
+                  savedIds={savedIds}
+                  onSave={onSave}
+                  onShopClick={onShopClick}
+                  searchQuery={searchQuery}
+                  layoutMode="grid"
+                />
+              ) : (
+                <ProductResults
+                  results={message.productResults}
+                  savedIds={savedIds}
+                  onSave={onSave}
+                  onShopClick={onShopClick}
+                  enriching={enriching}
+                  searchQuery={searchQuery}
+                  conversationDebug={message.conversationDebug}
+                />
+              )}
+            </div>
           </div>
         )}
 

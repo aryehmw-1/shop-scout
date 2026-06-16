@@ -35,7 +35,9 @@ import type {
   ConversationDebugSnapshot,
   IntelligenceInsight,
   LearningProfile,
+  ProductOffer,
   ProductSearchResults,
+  RetailerId,
   SessionState,
   ShoppingIntent,
 } from "../types";
@@ -69,9 +71,11 @@ function normalizeQuery(raw: string): string {
 }
 
 export function buildIntentFromQuery(query: string): Partial<ShoppingIntent> {
+  // extractIntentFromMessage strips any retailer name and sets retailerPreference
+  // ("Target shirt" → query "shirt", retailerPreference target).
   const normalized = normalizeQuery(query) || query;
   const base = extractIntentFromMessage(normalized);
-  const size = parseSizeFromText(normalized);
+  const size = parseSizeFromText(base.query ?? normalized);
   return size ? { ...base, size } : base;
 }
 
@@ -104,6 +108,7 @@ export function enrichIntent(
     colors: intent.colors ?? (attrs.colors.length ? attrs.colors : undefined),
     size: intent.size ?? parseSizeFromText(intent.query ?? ""),
     productSubtype: intent.productSubtype,
+    retailerPreference: intent.retailerPreference,
     learningProfile,
   };
 }
@@ -401,6 +406,7 @@ async function searchWithIntelligenceFirst(
       broadenedUsed: false,
       latencyMs: { total: Date.now() - t0 },
     });
+    applyRetailerPreference(intel.productResults, fullIntent.retailerPreference);
     return {
       productResults: intel.productResults,
       retrievalPayload: intel.retrievalPayload,
@@ -432,12 +438,42 @@ async function searchWithIntelligenceFirst(
     }
   }
 
+  // RETAILER PREFERENCE — applied at the single chat chokepoint so it's reliable
+  // across every path (DB-first, live, broadened), since some paths re-derive
+  // their own intent and drop the preference. The named retailer's offers lead
+  // (cheapest-first within each group); flags drive the "no offers from that
+  // store" note + alternatives.
+  applyRetailerPreference(productResults, fullIntent.retailerPreference);
+
   logSearchDebug(fullIntent, productResults, {
     path: "search_service",
     broadenedUsed,
     latencyMs: { search: searchMs, broaden: broadenMs, total: Date.now() - t0 },
   });
   return { productResults };
+}
+
+/**
+ * Re-order results so a query-named retailer leads (cheapest-first within each
+ * group), and flag whether that retailer actually has offers (drives the UI's
+ * "no offers from <store> — showing other stores" note). No-op without a
+ * preference. Mutates the passed results.
+ */
+function applyRetailerPreference(
+  results: ProductSearchResults,
+  pref: RetailerId | undefined,
+): void {
+  if (!pref) return;
+  const price = (o: ProductOffer) =>
+    o.price && o.price > 0 ? o.price : o.landedCost || Number.POSITIVE_INFINITY;
+  results.online = [...(results.online ?? [])].sort((a, b) => {
+    const ar = a.retailer === pref ? 0 : 1;
+    const br = b.retailer === pref ? 0 : 1;
+    if (ar !== br) return ar - br;
+    return price(a) - price(b);
+  });
+  results.retailerPreference = pref;
+  results.retailerPreferenceHasOffers = results.online.some((o) => o.retailer === pref);
 }
 
 /**

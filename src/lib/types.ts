@@ -504,6 +504,11 @@ export interface ProductSearchResults {
   similar?: SimilarProduct[];
   /** Grocery search surfaced catalog estimates when no verified quotes exist. */
   closestMatchFallback?: boolean;
+  /** Retailer the user named in the query ("Walmart TV" → walmart). */
+  retailerPreference?: RetailerId;
+  /** False when a retailer was requested but it has no offers (show a note +
+   *  alternatives from other stores). */
+  retailerPreferenceHasOffers?: boolean;
   /** User has not set ZIP — shipping/tax are generic estimates. */
   needsZipForShipping?: boolean;
   /** Structured trace when grocery retrieval dead-ends (debug). */
@@ -574,6 +579,9 @@ export interface ShoppingIntent {
   colors?: string[];
   /** e.g. Large, XL, 32x32 — merged on refinements */
   size?: string;
+  /** Retailer named in the query ("Target shirt" → target). Treated as a
+   *  preference/filter — that retailer's offers lead — NOT part of the title. */
+  retailerPreference?: RetailerId;
   /** Personalized ranking from past searches & clicks */
   learningProfile?: LearningProfile;
   /** Browser extension: Amazon PDP ASIN for PA-API GetItems */
