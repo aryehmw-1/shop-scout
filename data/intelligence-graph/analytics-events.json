@@ -1,7 +1,19 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-16T04:00:56.467Z",
+  "updatedAt": "2026-06-16T14:10:39.907Z",
   "events": [
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-16T14:10:39.907Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-16T14:10:39.900Z"
+    },
     {
       "event": "query_category",
       "queryCategory": "general",
