@@ -1,16 +1,5 @@
 import { imageForProduct } from "@/lib/catalog-images";
-
-const KNOWN_REUSED_DEMO_IMAGES = new Set([
-  "https://m.media-amazon.com/images/I/61SUj2aKoEL._AC_SL1500_.jpg",
-]);
-
-const DEMO_PLACEHOLDER_IMAGE_IDS = new Set([
-  "bounty-paper-towels",
-  "cheerios-cereal",
-  "chobani-greek-yogurt",
-  "organic-eggs-dozen",
-  "organic-whole-milk",
-]);
+import { isRecycledSeedImage } from "@/lib/images/recycled-seed-images";
 
 interface CanonicalImageInput {
   id: string;
@@ -21,18 +10,17 @@ interface CanonicalImageInput {
   imageUrl?: string | null;
 }
 
+/**
+ * Resolve the image to show for a canonical product. Trust a real, unique https
+ * image; but if the seed assigned a RECYCLED placeholder (one image reused across
+ * many unrelated products — see recycled-seed-images), suppress it and fall back
+ * to a neutral, category-appropriate placeholder. Never surface a misleading
+ * product photo (e.g. a MacBook image for the Ninja Air Fryer).
+ */
 export function canonicalDisplayImage(input: CanonicalImageInput): string {
   const imageUrl = input.imageUrl?.trim() ?? "";
-  const isKnownGoodAirPodsImage =
-    input.id === "apple-airpods-pro-2" && KNOWN_REUSED_DEMO_IMAGES.has(imageUrl);
-  const shouldUseDemoPlaceholder =
-    DEMO_PLACEHOLDER_IMAGE_IDS.has(input.id) && input.id !== "apple-airpods-pro-2";
 
-  if (
-    imageUrl.startsWith("https://") &&
-    !shouldUseDemoPlaceholder &&
-    (!KNOWN_REUSED_DEMO_IMAGES.has(imageUrl) || isKnownGoodAirPodsImage)
-  ) {
+  if (imageUrl.startsWith("https://") && !isRecycledSeedImage(imageUrl)) {
     return imageUrl;
   }
 

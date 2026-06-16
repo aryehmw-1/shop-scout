@@ -212,7 +212,20 @@ export async function searchProducts(
   // product — and then its same-category "similar" items are unrelated junk
   // (→ cheese crackers). If nothing covers the query, there is NO match: return
   // null so chat shows the honest "couldn't find it" state with NO similar items.
-  if (!coversQueryExpanded(`${product.brand} ${product.title} ${product.category}`, normalized)) {
+  const floorPasses = coversQueryExpanded(
+    `${product.brand} ${product.title} ${product.category}`,
+    normalized,
+  );
+  console.log("[search-db]", {
+    query: normalized,
+    retrievedCandidates: catalogIds.length,
+    withQuotes: withQuotes.length,
+    afterHeadGate: candidatePool.length,
+    removedByHeadGate: withQuotes.length - candidatePool.length,
+    selected: `${product.brand} ${product.title}`.slice(0, 48),
+    relevanceFloorPasses: floorPasses,
+  });
+  if (!floorPasses) {
     return null;
   }
 

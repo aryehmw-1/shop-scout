@@ -392,19 +392,27 @@ async function searchWithIntelligenceFirst(
   // leak into the UI — otherwise the "ships to 78701" line shows a ZIP the user
   // never entered. Stamp the user's REAL resolved ZIP (empty when unset) on the
   // displayed results, so the UI shows their ZIP or the "add ZIP" prompt.
+  const t0 = Date.now();
   const intel = tryIntelligenceSearch(fullIntent, zip);
   if (intel) {
     intel.productResults.zipCode = zip;
+    logSearchDebug(fullIntent, intel.productResults, {
+      path: "intelligence_graph",
+      broadenedUsed: false,
+      latencyMs: { total: Date.now() - t0 },
+    });
     return {
       productResults: intel.productResults,
       retrievalPayload: intel.retrievalPayload,
       commerceInsight: intel.commerceInsight,
     };
   }
+  const tSearch = Date.now();
   const productResults = await searchService.search(fullIntent, {
     userId,
     fastOnly: progressive,
   });
+  const searchMs = Date.now() - tSearch;
   productResults.zipCode = zip;
 
   // REQUEST FORM = LAST RESORT. If exact + stale + live all came back empty, don't
@@ -412,12 +420,55 @@ async function searchWithIntelligenceFirst(
   // qualifiers) and surface relevant similar/closest products — price-sorted and
   // relevance-gated — so e.g. "Ninja Air Fryer Max XL" shows other Ninja/air-fryer
   // options instead of an empty not-found.
+  let broadenedUsed = false;
+  let broadenMs = 0;
   if (productResults.online.length === 0 && !(productResults.similar?.length)) {
+    const tBroaden = Date.now();
     const broadened = await findBroadenedSimilar(fullIntent.query, 6);
-    if (broadened.length) productResults.similar = broadened;
+    broadenMs = Date.now() - tBroaden;
+    if (broadened.length) {
+      productResults.similar = broadened;
+      broadenedUsed = true;
+    }
   }
 
+  logSearchDebug(fullIntent, productResults, {
+    path: "search_service",
+    broadenedUsed,
+    latencyMs: { search: searchMs, broaden: broadenMs, total: Date.now() - t0 },
+  });
   return { productResults };
+}
+
+/**
+ * One structured line per chat search so we can see WHY a query feels like
+ * "nothing useful comes back": the query, interpreted category, result counts
+ * (exact/online vs similar), whether the request form will show, the image
+ * source of the top result, and latency by step.
+ */
+function logSearchDebug(
+  intent: ShoppingIntent,
+  results: ProductSearchResults,
+  meta: { path: string; broadenedUsed: boolean; latencyMs: Record<string, number> },
+): void {
+  const online = results.online ?? [];
+  const similar = results.similar ?? [];
+  const top = online[0] ?? similar[0];
+  const requestForm = online.length === 0 && similar.length === 0;
+  console.log("[search-debug]", {
+    query: intent.query,
+    category: intent.category ?? null,
+    matched: results.matchedProduct?.title ?? null,
+    path: meta.path,
+    online: online.length,
+    similar: similar.length,
+    broadenedUsed: meta.broadenedUsed,
+    requestForm,
+    topImageSource: top?.imageSource ?? null,
+    topPrice: top?.price ?? null,
+    pricesAscending: online.length < 2 || online.every((o, i) => i === 0 || (online[i - 1].price ?? 0) <= (o.price ?? 0)),
+    latencyMs: meta.latencyMs,
+  });
 }
 
 function withConversationDebug(

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { IMAGE_FALLBACK } from "@/lib/catalog-images";
 import { proxiedImageUrl } from "@/lib/image-display";
 import { retailerLogoFallbackUrl } from "@/lib/offers/offer-image-fallback";
+import { isRecycledSeedImage } from "@/lib/images/recycled-seed-images";
 import type { RetailerId } from "@/lib/types";
 
 interface ProductImageProps {
@@ -15,6 +16,11 @@ interface ProductImageProps {
 
 function resolveImageSrc(src: string | undefined, retailerId?: RetailerId): string {
   if (!src?.startsWith("https://")) {
+    return retailerId ? retailerLogoFallbackUrl(retailerId) : IMAGE_FALLBACK;
+  }
+  // Defense-in-depth: never render a recycled seed placeholder (one image reused
+  // across many unrelated products) as a product photo — show a neutral fallback.
+  if (isRecycledSeedImage(src)) {
     return retailerId ? retailerLogoFallbackUrl(retailerId) : IMAGE_FALLBACK;
   }
   if (src.includes("placehold.co") && retailerId) {
