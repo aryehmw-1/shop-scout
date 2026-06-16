@@ -10,6 +10,7 @@ import assert from "node:assert/strict";
 import {
   coversQueryExpanded,
   sharesContentWord,
+  sharesProductType,
   isShortQuery,
   matchesAsHeadTerm,
 } from "./query-understanding";
@@ -91,15 +92,24 @@ test("refrigerator does not match a refrigerator-SAFE juice bottle", () => {
   assert.equal(matchesAsHeadTerm("fridge", "Frigidaire Refrigerator 18 cu ft", "appliances"), true);
 });
 
-test("short-query head gate keeps real matches, drops descriptor-only hits", () => {
+test("short-query head gate uses the head region, not front modifiers", () => {
   assert.equal(matchesAsHeadTerm("charger", "Anker 65W USB-C Charger", "electronics"), true);
-  // "charger" buried at the end as a compatibility note — not the product type.
+  // "refrigerator" is a front modifier here; the head is "light bulb" → reject.
   assert.equal(
-    matchesAsHeadTerm(
-      "charger",
-      "Spigen Tough Armor Phone Case for iPhone 15 Drop Protection Slim Compatible Wireless Charger",
-      "phone cases",
-    ),
+    matchesAsHeadTerm("refrigerator", "Vgogfly LED Refrigerator Light Bulb 40W Equivalent", "lighting"),
     false,
   );
+  // real fridge: refrigerator is in the head region → accept.
+  assert.equal(matchesAsHeadTerm("refrigerator", "Whirlpool Refrigerator 25 cu ft", "appliances"), true);
+});
+
+// ── sharesProductType: type-coherence for similar/broadened fallbacks ──
+
+test("broadened fallback stays within the query's product type", () => {
+  // "Ninja Air Fryer Max XL" type = fryer
+  assert.equal(sharesProductType("Ninja Air Fryer Max XL", "Cosori Pro II Air Fryer 5.8 Qt", "kitchen"), true);
+  assert.equal(sharesProductType("Ninja Air Fryer Max XL", "Ninja Professional Blender 1000W", "kitchen"), false);
+  // "refrigerator" type = refrigerator
+  assert.equal(sharesProductType("refrigerator", "Frigidaire Refrigerator 18 cu ft", "appliances"), true);
+  assert.equal(sharesProductType("refrigerator", "Vgogfly LED Refrigerator Light Bulb", "lighting"), false);
 });

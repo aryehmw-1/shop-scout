@@ -1,5 +1,6 @@
 import { getStoresNearZip } from "../retailers/catalog";
 import { searchService } from "../search/search-service";
+import { findBroadenedSimilar } from "../inventory/inventory-service";
 import { tryIntelligenceSearch } from "../commerce-intelligence/retrieval/intelligence-search";
 import type { CommerceRetrievalPayload } from "../commerce-intelligence/ai/retrieval-payload";
 import { parseProductUrl } from "../matching/url-parser";
@@ -405,6 +406,17 @@ async function searchWithIntelligenceFirst(
     fastOnly: progressive,
   });
   productResults.zipCode = zip;
+
+  // REQUEST FORM = LAST RESORT. If exact + stale + live all came back empty, don't
+  // jump straight to "we'll hunt it down". Broaden the query (drop trailing
+  // qualifiers) and surface relevant similar/closest products — price-sorted and
+  // relevance-gated — so e.g. "Ninja Air Fryer Max XL" shows other Ninja/air-fryer
+  // options instead of an empty not-found.
+  if (productResults.online.length === 0 && !(productResults.similar?.length)) {
+    const broadened = await findBroadenedSimilar(fullIntent.query, 6);
+    if (broadened.length) productResults.similar = broadened;
+  }
+
   return { productResults };
 }
 

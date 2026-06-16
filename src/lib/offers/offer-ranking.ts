@@ -255,7 +255,17 @@ export function prepareResultsForDisplay(
       merged.filter((o) => !isVerifiedOffer(o) && (o.matchConfidence ?? 0) >= 0.35)
     : [];
 
-  const verified = verifiedRaw
+  // CHEAPEST-FIRST: always order valid matches by real item price ascending, and
+  // sort BEFORE slicing so the cheapest valid offers are the ones we keep — never
+  // hide a cheaper valid match behind a higher-priced (but higher deal-score) one.
+  const priceAsc = (a: ProductOffer, b: ProductOffer) => {
+    const ap = a.price && a.price > 0 ? a.price : a.landedCost || Number.POSITIVE_INFINITY;
+    const bp = b.price && b.price > 0 ? b.price : b.landedCost || Number.POSITIVE_INFINITY;
+    return ap - bp;
+  };
+
+  const verified = [...verifiedRaw]
+    .sort(priceAsc)
     .slice(0, limit)
     .map((o) => finalizeOfferRow(o, options.item, options.intent));
 
@@ -269,6 +279,7 @@ export function prepareResultsForDisplay(
             o.price > 0 &&
             o.productUrl?.startsWith("http"),
         )
+        .sort(priceAsc)
         .slice(0, limit)
         .map((o) =>
           finalizeOfferRow(

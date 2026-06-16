@@ -160,20 +160,69 @@ export function isShortQuery(query: string): boolean {
   return n > 0 && n <= 2;
 }
 
+/** Spec/qualifier tokens that are never the product's head noun — stripped so we
+ *  can find the real type word (e.g. "Whirlpool Refrigerator 25 cu ft" → fridge,
+ *  "Ninja Air Fryer Max XL" → fryer). Numbers are dropped separately. */
+const HEAD_SPEC = new Set([
+  "cu", "ft", "w", "watt", "watts", "v", "hz", "lb", "lbs", "kg", "mah", "mm",
+  "qt", "gal", "pcs", "pc", "ct", "pk", "set", "max", "xl", "xxl", "plus", "pro",
+  "mini", "new", "digital", "large", "small", "compact", "portable", "reusable",
+  "premium", "deluxe",
+]);
+
+/** Core content tokens (specs/numbers removed), in title order. */
+function coreTokens(text: string): string[] {
+  return baseTokens(text).filter((t) => !HEAD_SPEC.has(t) && !/^\d/.test(t));
+}
+
+/** The product's HEAD REGION — the last ~2 core tokens, where English names the
+ *  product type. "LED Refrigerator Light Bulb" → [light, bulb]; "Air Fryer Oven"
+ *  → [fryer, oven]; "Whirlpool Refrigerator" → [whirlpool, refrigerator]. */
+function headRegion(text: string): string[] {
+  const core = coreTokens(text);
+  return core.slice(-2);
+}
+
 /**
- * HEAD-TERM gate for short queries. "refrigerator" must match a product whose
- * TYPE is a refrigerator — not a juice bottle whose title happens to say
- * "refrigerator-safe" near the end. We require a query term (or synonym) to land
- * in the product's HEAD (first ~6 content tokens of brand+title) or its category,
- * where the product's actual type is named — not buried among descriptors.
+ * HEAD-NOUN gate for short queries. "refrigerator" must match a product whose
+ * TYPE is a refrigerator (head region or category) — NOT a juice bottle that says
+ * "refrigerator-safe" nor a "refrigerator light bulb" where refrigerator is just a
+ * front modifier (head region is [light, bulb]). Synonym-aware.
  */
 export function matchesAsHeadTerm(query: string, titleText: string, category?: string): boolean {
   const q = new Set(expandQueryTokens(query));
   if (!q.size) return false;
-  const head = baseTokens(titleText).slice(0, 6);
-  const cat = category ? baseTokens(category) : [];
-  for (const w of [...head, ...cat]) {
+  const region = [...headRegion(titleText), ...(category ? baseTokens(category) : [])];
+  for (const w of region) {
     if (q.has(w) || q.has(singularize(w))) return true;
+  }
+  return false;
+}
+
+/**
+ * Type-coherence gate for similar/broadened fallbacks: does a candidate share the
+ * QUERY's product TYPE (its head noun)? "Ninja Air Fryer Max XL" (type = fryer)
+ * matches other air fryers but not a Ninja blender; "refrigerator" matches real
+ * fridges but not a refrigerator light bulb. Returns false when the query has no
+ * clear head noun.
+ */
+export function sharesProductType(query: string, candidateText: string, category?: string): boolean {
+  const qCore = coreTokens(query);
+  const qHead = qCore[qCore.length - 1];
+  if (!qHead) return false;
+  const variants = new Set<string>([qHead, singularize(qHead)]);
+  const syn = SYNONYM_INDEX.get(qHead) ?? SYNONYM_INDEX.get(singularize(qHead));
+  if (syn) for (const s of syn) variants.add(s);
+  // Candidate must name this TYPE as its STRICT head noun (last core token) or in
+  // its category — not merely mention it somewhere (a "cleaner for refrigerator"
+  // ends in a different head and is correctly rejected).
+  const cCore = coreTokens(candidateText);
+  const cHead = cCore[cCore.length - 1];
+  if (cHead && (variants.has(cHead) || variants.has(singularize(cHead)))) return true;
+  if (category) {
+    for (const w of baseTokens(category)) {
+      if (variants.has(w) || variants.has(singularize(w))) return true;
+    }
   }
   return false;
 }

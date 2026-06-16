@@ -15,8 +15,10 @@ import { rankVerifiedInventoryCandidates } from "./verified-inventory-resolver";
 import {
   coversQueryExpanded,
   sharesContentWord,
+  sharesProductType,
   isShortQuery,
   matchesAsHeadTerm,
+  baseTokens,
 } from "../search/query-understanding";
 
 type ProductWithQuotes = Product & { priceQuotes: PriceQuote[] };
@@ -362,7 +364,70 @@ export async function findSimilarProducts(
     });
     if (out.length >= (opts.limit ?? 6)) break;
   }
+  // Selected by relevance (overlap), but DISPLAYED cheapest-first within the
+  // similar section so the best values lead.
+  out.sort((a, b) => a.price - b.price);
   return out;
+}
+
+/**
+ * BROADENED fallback for when an EXACT search found nothing — so the request form
+ * is a true last resort. Progressively drops trailing qualifier tokens (e.g.
+ * "Ninja Air Fryer Max XL" → "Ninja Air Fryer" → "Ninja") and returns relevant
+ * products as similar/closest matches, each still gated to the ORIGINAL query
+ * (synonym-aware) so we never fill space with junk. Price-sorted (cheapest first).
+ */
+export async function findBroadenedSimilar(
+  query: string,
+  limit = 6,
+): Promise<SimilarProduct[]> {
+  const tokens = baseTokens(query);
+  if (tokens.length < 1) return [];
+
+  for (let keep = Math.min(tokens.length, 3); keep >= 1; keep--) {
+    const broad = tokens.slice(0, keep).join(" ");
+    const ids = await dbProductCatalogIdsForQuery(broad, 24);
+    if (!ids.length) continue;
+
+    const products = await prisma.product.findMany({
+      where: { catalogId: { in: ids }, published: true, validationStatus: "approved" },
+      include: {
+        priceQuotes: {
+          where: { source: { in: ["scraped", "connector_api", "daily_index", "nightly_index"] } },
+          orderBy: [{ fetchedAt: "desc" }, { landedCostUsd: "asc" }],
+          take: 1,
+        },
+      },
+      take: ids.length,
+    });
+
+    const out: SimilarProduct[] = [];
+    for (const p of products) {
+      const q = p.priceQuotes[0];
+      if (!q) continue;
+      // Must share the broadened STEM's product TYPE (head noun) — so "Ninja Air
+      // Fryer Max XL …" yields other air fryers, never a Ninja blender, and
+      // "refrigerator" never yields a light bulb or a "cleaner for refrigerator".
+      if (!sharesProductType(broad, `${p.brand} ${p.title}`, p.category)) continue;
+      const retailer = q.retailerId as RetailerId;
+      out.push({
+        catalogId: p.catalogId,
+        title: p.title,
+        brand: p.brand,
+        imageUrl: p.imageUrl ?? q.imageUrl ?? "",
+        retailer,
+        retailerName: getRetailerMeta(retailer).name,
+        price: q.priceUsd,
+        productUrl: q.productUrl,
+        affiliateUrl: affiliateSafeDestination(retailer, q.productUrl, q.affiliateUrl),
+      });
+    }
+    if (out.length) {
+      out.sort((a, b) => a.price - b.price);
+      return out.slice(0, limit);
+    }
+  }
+  return [];
 }
 
 export async function getProductById(id: string): Promise<InventoryProductDetails | null> {
