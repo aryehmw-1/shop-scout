@@ -6,6 +6,7 @@ import { generateAIText, isClaudeConfigured, isGeminiConfigured } from "./index"
 import { generateGeminiTextStream } from "./gemini";
 import { summarizeSearchResults } from "./summarize-results";
 import { matchLooksIrrelevant } from "../search/relevance";
+import { getRetailerMeta } from "../retailers/meta";
 import type { ShoppingIntent } from "../types";
 
 export type ChatAction =
@@ -223,6 +224,18 @@ function buildUserContext(ctx: ReplyContext): string {
           "match for their search, and invite them to request it (a request form is shown below).",
       );
     } else {
+      const pref = ctx.productResults.retailerPreference;
+      if (pref && ctx.productResults.retailerPreferenceHasOffers === false) {
+        // User asked for a specific store that has no offers — say so CLEARLY and
+        // up front; never silently lead with a different retailer.
+        const store = getRetailerMeta(pref).name;
+        parts.push(
+          `RETAILER NOTE: the user asked for ${store}, but we found NO ${store} offers for ` +
+            `this item. Open your reply by saying that plainly (e.g. "No ${store} offers were ` +
+            `found for this — here are the best alternatives from other stores."), then present ` +
+            `the results below.`,
+        );
+      }
       parts.push("SEARCH RESULTS (use only this data):\n" + summarizeSearchResults(ctx.productResults));
     }
   } else if (query) {
