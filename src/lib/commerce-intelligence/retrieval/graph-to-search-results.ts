@@ -18,6 +18,7 @@ function offerFromGraph(
     category: graph.canonical.category,
     keywords: graph.canonical.keywords,
     imageUrl: graph.canonical.canonical_image,
+    asin: graph.canonical.identifiers?.asin,
   });
 
   return {
@@ -65,6 +66,7 @@ export function graphToProductSearchResults(
     category: graph.canonical.category,
     keywords: graph.canonical.keywords,
     imageUrl: graph.canonical.canonical_image,
+    asin: graph.canonical.identifiers?.asin,
   });
 
   const online: ProductOffer[] = validated.map((o) => {

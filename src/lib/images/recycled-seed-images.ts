@@ -36,3 +36,17 @@ export function isRecycledSeedImage(url: string | undefined | null): boolean {
   const id = amazonImageId(url);
   return id !== null && RECYCLED_SEED_IMAGE_IDS.has(id);
 }
+
+/**
+ * Real product photo from an Amazon ASIN via Amazon's public image-by-ASIN
+ * endpoint (no API key). Returns the AUTHORITATIVE image for that exact product,
+ * so an air fryer shows an air fryer. An invalid ASIN returns Amazon's tiny blank
+ * placeholder (never an unrelated product), so this is always safe. Returns null
+ * for a malformed ASIN.
+ */
+export function amazonAsinImageUrl(asin: string | undefined | null): string | null {
+  if (!asin) return null;
+  const clean = asin.trim().toUpperCase();
+  if (!/^[A-Z0-9]{10}$/.test(clean)) return null;
+  return `https://images-na.ssl-images-amazon.com/images/P/${clean}.01._SCLZZZZZZZ_.jpg`;
+}
