@@ -6,7 +6,7 @@ import { shouldShowBestDealBadge } from "@/lib/offers/offer-trust";
 import { getOfferPriceDisplay } from "@/lib/shopping/offer-price-display";
 import { formatPrice } from "@/lib/utils/format";
 import { getRetailerMeta } from "@/lib/retailers/meta";
-import { CheckCircle2, Sparkles, ExternalLink, Info, Trophy, TrendingDown } from "lucide-react";
+import { CheckCircle2, Sparkles, ExternalLink, Heart, Info, Trophy, TrendingDown } from "lucide-react";
 import { ProductImage } from "./ProductImage";
 import { similarToOffer } from "./SimilarAlternatives";
 import { PhotoSourceLabel } from "./PhotoSourceLabel";
@@ -196,6 +196,7 @@ function ExactOfferCard({
   const priceDisplay = getOfferPriceDisplay(offer);
   const isBest = rank === 1;
   const image = offer.imageUrl || matched?.imageUrl || "";
+  const productName = matched?.title ?? offer.storeTitle ?? `${offer.brand} ${offer.title}`;
 
   return (
     <article
@@ -208,7 +209,7 @@ function ExactOfferCard({
         <div className="h-36 w-36 overflow-hidden rounded-xl">
           <ProductImage
             src={image}
-            alt={offer.storeTitle ?? `${offer.brand} ${offer.title}`}
+            alt={productName}
             retailerId={offer.retailer}
             className="h-full w-full object-contain"
           />
@@ -218,11 +219,31 @@ function ExactOfferCard({
             <Trophy size={11} aria-hidden /> Lowest price
           </span>
         )}
+        {/* Heart (save) — replaces the old "Save" text button */}
+        {onSave && (
+          <button
+            type="button"
+            onClick={() => onSave(offer)}
+            aria-label={saved ? "Remove from saved" : "Save product"}
+            className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 shadow-sm ring-1 ring-stone-200 hover:bg-white"
+          >
+            <Heart
+              size={18}
+              className={saved ? "text-red-500" : "text-stone-400"}
+              fill={saved ? "currentColor" : "none"}
+            />
+          </button>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-4">
+        {/* Product name — one of the most obvious elements on the card */}
+        <h3 className="line-clamp-2 text-base font-bold leading-snug text-stone-900">
+          {productName}
+        </h3>
+
         {/* Retailer + freshness */}
-        <div className="flex items-center justify-between gap-2">
+        <div className="mt-2 flex items-center justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
             <span
               className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[9px] font-bold text-white"
@@ -255,13 +276,13 @@ function ExactOfferCard({
           <RetailerTrustBadge offer={offer} compact />
         </div>
 
-        {/* Action — Go to store */}
-        <div className="mt-4 flex items-center gap-2">
+        {/* Action — Go to store (full width; saving is the heart on the photo) */}
+        <div className="mt-4">
           <OutboundLink
             offer={offer}
             context={{ source: "compare", catalogId, searchQuery }}
             onNavigate={onShopClick}
-            className={`inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-bold text-white ${
+            className={`inline-flex w-full items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-bold text-white ${
               isBest
                 ? "bg-gradient-to-r from-orange-500 to-amber-500 hover:opacity-95"
                 : "bg-stone-900 hover:bg-stone-800"
@@ -270,16 +291,6 @@ function ExactOfferCard({
             Go to store
             <ExternalLink size={14} aria-hidden />
           </OutboundLink>
-          {onSave && (
-            <button
-              type="button"
-              onClick={() => onSave(offer)}
-              className="rounded-xl border border-stone-200 px-3 py-2.5 text-xs font-semibold text-stone-600 hover:bg-stone-50"
-              aria-label={saved ? "Remove from watchlist" : "Save to watchlist"}
-            >
-              {saved ? "Saved" : "Save"}
-            </button>
-          )}
         </div>
       </div>
     </article>

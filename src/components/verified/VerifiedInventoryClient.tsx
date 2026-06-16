@@ -140,7 +140,7 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
                 />
               </div>
               <div className="flex flex-1 flex-col p-1.5 lg:p-4">
-                <h3 className="line-clamp-2 text-[11px] font-semibold leading-tight text-stone-900 lg:text-base lg:leading-snug">
+                <h3 className="line-clamp-2 text-[11px] font-semibold leading-tight text-stone-900 lg:text-lg lg:font-bold lg:leading-snug">
                   {p.brand} {p.title}
                 </h3>
                 {p.size && <p className="hidden text-xs text-stone-500 lg:block">{p.size}</p>}
@@ -150,13 +150,14 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
                     : `${formatPrice(p.minPrice)} – ${formatPrice(p.maxPrice)}`}
                 </p>
                 <p className="truncate text-[10px] text-stone-500 lg:mt-1 lg:text-xs">{p.retailers.join(", ")}</p>
-                {/* Mobile: Compare + icon-only store side by side (micro tiles).
-                    Desktop: full-width stacked buttons so "Compare" and
-                    "Go to store" each get a whole line and never feel squeezed. */}
+                {/* Mobile: Compare + icon-only store side by side (micro tiles) —
+                    UNCHANGED. Desktop: full-width stacked buttons with Go-to-store
+                    ON TOP and Compare beneath (lg:order swaps without touching the
+                    mobile DOM order). */}
                 <div className="mt-1.5 flex items-stretch gap-1 pt-0 lg:mt-auto lg:flex-col lg:gap-2 lg:pt-4">
                   <Link
                     href={`/chat?q=${encodeURIComponent(`${p.brand} ${p.title}`)}`}
-                    className="flex-1 whitespace-nowrap rounded-md bg-sage-700 py-1 text-center text-[10px] font-semibold text-white hover:bg-sage-800 lg:w-full lg:flex-none lg:rounded-xl lg:py-2.5 lg:text-sm"
+                    className="flex-1 whitespace-nowrap rounded-md bg-sage-700 py-1 text-center text-[10px] font-semibold text-white hover:bg-sage-800 lg:order-2 lg:w-full lg:flex-none lg:rounded-xl lg:py-2.5 lg:text-sm"
                   >
                     Compare
                   </Link>
@@ -165,7 +166,7 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
                       href={dest}
                       target="_blank"
                       rel="noopener noreferrer sponsored"
-                      className="inline-flex shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-md border border-orange-200 px-1.5 py-1 text-[10px] font-semibold text-orange-600 hover:bg-orange-50 lg:w-full lg:flex-none lg:rounded-xl lg:px-3 lg:py-2.5 lg:text-sm"
+                      className="inline-flex shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-md border border-orange-200 px-1.5 py-1 text-[10px] font-semibold text-orange-600 hover:bg-orange-50 lg:order-1 lg:w-full lg:flex-none lg:rounded-xl lg:px-3 lg:py-2.5 lg:text-sm"
                       aria-label="Go to store"
                     >
                       <Store size={13} aria-hidden />
