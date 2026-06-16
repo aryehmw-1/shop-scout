@@ -266,9 +266,14 @@ function ExactOfferCard({
             Was {formatPrice(offer.wasPrice)}
           </p>
         )}
-        <p className="mt-1 text-sm font-medium text-stone-700">
-          <ShippingLabel offer={offer} />
-        </p>
+        {/* When shipping is unknown, DeliveredConfidenceLabel already says
+            "Shipping unknown — total may vary", so don't also print a bare
+            "Shipping unknown" above it (avoids the duplicate line). */}
+        {(offer.estimatedShipping ?? offer.deliveryFee) != null && (
+          <p className="mt-1 text-sm font-medium text-stone-700">
+            <ShippingLabel offer={offer} />
+          </p>
+        )}
         <DeliveredConfidenceLabel offer={offer} />
 
         {/* Trust */}
