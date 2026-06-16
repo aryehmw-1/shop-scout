@@ -78,23 +78,6 @@ function looksLikeAdviceRequest(text: string) {
   );
 }
 
-/**
- * A natural-language QUESTION that isn't a product/price lookup — e.g. "what's
- * the best material for running socks?", "how does noise cancelling work?".
- * These get a pure text answer, so we route them to the streaming endpoint to
- * start typing immediately. Product/price searches and bare product names are
- * excluded so they keep their reliable results pipeline.
- */
-function looksLikeGeneralQuestion(text: string) {
-  const t = text.trim().toLowerCase();
-  if (looksLikeShoppingRequest(text)) return false;
-  if (/https?:\/\/|www\./.test(t)) return false;
-  const isQuestion =
-    /\?\s*$/.test(t) ||
-    /^(what|why|how|which|is|are|should|can|does|do|who|when|where|tell me|explain)\b/.test(t);
-  // Require a few words so bare nouns like "milk?" stay on the search path.
-  return isQuestion && t.split(/\s+/).filter(Boolean).length >= 3;
-}
 
 function looksLikeShoppingRequest(text: string) {
   const lower = text.toLowerCase();
@@ -380,9 +363,13 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
     async ({
       body,
       applySession,
+      searchStarted,
+      query,
     }: {
       body: string;
       applySession: (sess: SessionState | undefined) => void;
+      searchStarted?: number;
+      query?: string;
     }) => {
       const res = await fetch("/api/chat/advice-stream", {
         method: "POST",
@@ -406,13 +393,14 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
       const handleFrame = (frame: Record<string, unknown>) => {
         if (frame.type === "meta") {
           applySession(frame.session as SessionState | undefined);
+          const productResults = frame.productResults as ChatMessage["productResults"];
           setMessages((prev) =>
             prev.map((m) =>
               m.id === assistantId
                 ? {
                     ...m,
                     resolvedQuery: frame.resolvedQuery as string | undefined,
-                    productResults: frame.productResults as ChatMessage["productResults"],
+                    productResults,
                     commerceInsight: frame.commerceInsight as ChatMessage["commerceInsight"],
                     compareMode: frame.compareMode as boolean | undefined,
                     chips: frame.chips as string[] | undefined,
@@ -422,6 +410,61 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
                 : m,
             ),
           );
+          // Results are in — drop the "thinking" animation so the reply streams in.
+          setLoading(false);
+
+          if (productResults) {
+            trackEvent({
+              name: "search_first_results",
+              properties: {
+                query,
+                offerCount: productResults.online?.length ?? 0,
+                timeToFirstResultMs: searchStarted ? Date.now() - searchStarted : undefined,
+                progressive: true,
+                catalogId: productResults.enrichmentCatalogId,
+                streamed: true,
+              },
+            });
+          }
+
+          // Progressive enrichment: the fast pass may flag enrichmentPending — kick
+          // off the background live refresh and merge results when it lands. The
+          // ProductResults "Checking live prices…" state covers the gap so the
+          // request form never flashes while results are still loading.
+          const sess = frame.session as SessionState | undefined;
+          if (productResults?.enrichmentPending && sess?.intent) {
+            setEnrichingId(assistantId);
+            fetch("/api/search/enrich", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({
+                intent: sess.intent,
+                catalogId: productResults.enrichmentCatalogId,
+              }),
+            })
+              .then((r) => (r.ok ? r.json() : null))
+              .then((enriched) => {
+                if (!enriched?.productResults) return;
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantId && m.productResults
+                      ? {
+                          ...m,
+                          productResults: mergeEnrichedSearchResults(
+                            m.productResults,
+                            enriched.productResults,
+                          ),
+                        }
+                      : m,
+                  ),
+                );
+              })
+              .catch(() => {})
+              .finally(() =>
+                setEnrichingId((cur) => (cur === assistantId ? null : cur)),
+              );
+          }
         } else if (frame.type === "delta") {
           acc += (frame.text as string) ?? "";
           setMessages((prev) =>
@@ -642,149 +685,19 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
       // We also stream the user's REPLY within an ongoing advice thread (the
       // server marks the session `advicePending`) unless they're now clearly
       // asking for a price lookup — mirroring the server's routing.
-      const inAdviceThread =
-        Boolean(sessionRef.current?.advicePending) && !looksLikeShoppingRequest(trimmed);
-      if (
-        looksLikeAdviceRequest(trimmed) ||
-        inAdviceThread ||
-        looksLikeGeneralQuestion(trimmed)
-      ) {
-        try {
-          await streamAdviceReply({
-            body: requestBody,
-            applySession: applySessionSideEffects,
-          });
-        } catch (err) {
-          console.error("[chat] advice stream failed:", err);
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: uid(),
-              role: "assistant",
-              content: "Something went wrong — please try again.",
-              timestamp: Date.now(),
-            },
-          ]);
-        } finally {
-          setLoading(false);
-        }
-        return;
-      }
-
+      // Stream EVERY turn through the NDJSON endpoint: the `meta` frame renders
+      // product results the moment the search resolves, then the reply types in
+      // on top. (Advice/general questions stream their full answer too.) Replaces
+      // the old buffered /api/chat path so nothing waits for the whole response.
       try {
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
+        await streamAdviceReply({
           body: requestBody,
+          applySession: applySessionSideEffects,
+          searchStarted,
+          query: trimmed,
         });
-
-        if (!res.ok) {
-          const errData = await res.json().catch(() => ({}));
-          console.error("[chat] API error:", res.status, errData);
-          throw new Error(errData?.detail ?? "Chat failed");
-        }
-
-        const data = await res.json();
-        // setSession + learning profile + ZIP sync (see helper for the ZIP
-        // clobber note).
-        applySessionSideEffects(data.session);
-
-        const assistantMsg: ChatMessage = {
-          id: uid(),
-          role: "assistant",
-          content: data.reply,
-          resolvedQuery: data.resolvedQuery,
-          productResults: data.productResults,
-          commerceInsight:
-            data.commerceInsight ?? data.productResults?.intelligenceInsight,
-          compareMode: data.compareMode,
-          chips: data.chips,
-          conversationDebug: data.conversationDebug,
-          timestamp: Date.now(),
-        };
-
-        setMessages((prev) => [...prev, assistantMsg]);
-
-        if (data.productResults) {
-          trackEvent({
-            name: "search_first_results",
-            properties: {
-              query: trimmed,
-              offerCount: data.productResults.online?.length ?? 0,
-              timeToFirstResultMs: Date.now() - searchStarted,
-              cacheHit: data.productResults.meta?.cacheHit,
-              progressive: true,
-              catalogId: data.productResults.enrichmentCatalogId,
-            },
-          });
-        }
-
-        if (
-          data.productResults?.enrichmentPending &&
-          data.session?.intent
-        ) {
-          setEnrichingId(assistantMsg.id);
-          const enrichStart = Date.now();
-          const catalogId = data.productResults.enrichmentCatalogId;
-
-          trackEvent({
-            name: "enrichment_started",
-            properties: {
-              catalogId,
-              query: trimmed,
-              offerCountBefore: data.productResults.online?.length ?? 0,
-            },
-          });
-
-          fetch("/api/search/enrich", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({
-              intent: data.session.intent,
-              catalogId: data.productResults.enrichmentCatalogId,
-            }),
-          })
-            .then((r) => (r.ok ? r.json() : null))
-            .then((enriched) => {
-              if (!enriched?.productResults) return;
-              setMessages((prev) =>
-                prev.map((m) =>
-                  m.id === assistantMsg.id && m.productResults ?
-                    {
-                      ...m,
-                      productResults: mergeEnrichedSearchResults(
-                        m.productResults,
-                        enriched.productResults,
-                      ),
-                    }
-                  : m,
-                ),
-              );
-              trackEvent({
-                name: "enrichment_completed",
-                properties: {
-                  catalogId,
-                  latencyMs: Date.now() - enrichStart,
-                  offerCountAfter: enriched.productResults.online?.length ?? 0,
-                  success: true,
-                },
-              });
-            })
-            .catch(() => {
-              trackEvent({
-                name: "enrichment_completed",
-                properties: {
-                  catalogId,
-                  latencyMs: Date.now() - enrichStart,
-                  success: false,
-                },
-              });
-            })
-            .finally(() => setEnrichingId(null));
-        }
-      } catch {
+      } catch (err) {
+        console.error("[chat] stream failed:", err);
         setMessages((prev) => [
           ...prev,
           {
@@ -797,11 +710,11 @@ export function ChatApp({ initialMessage, initialZip, inputHint }: ChatAppProps)
       } finally {
         setLoading(false);
       }
+      return;
     },
     [
       loading,
       zipCode,
-      persistAddress,
       learningProfile,
       router,
       inputHint,
