@@ -2,6 +2,17 @@
   "version": 1,
   "snapshots": [
     {
+      "at": "2026-06-16T04:00:56.480Z",
+      "canonicalId": "ninja-air-fryer",
+      "winnerOfferId": "ninja-air-fryer-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 124.9,
+      "compositeScore": 0.948,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 4,
+      "priceSpreadRatio": 0.05047894176676286
+    },
+    {
       "at": "2026-06-15T15:21:12.626Z",
       "canonicalId": "ninja-air-fryer",
       "winnerOfferId": "ninja-air-fryer-costco",

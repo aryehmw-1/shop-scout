@@ -1,7 +1,7 @@
 import { getSessionUserId } from "@/lib/auth/session";
 import { buildReplyContext, defaultSession } from "@/lib/conversation/engine";
 import { resolveChatTurn } from "@/lib/conversation/turn";
-import { generateAssistantReply, streamAssistantReply } from "@/lib/ai/generate-reply";
+import { streamAssistantReply } from "@/lib/ai/generate-reply";
 import type { ChatRequest, SessionState } from "@/lib/types";
 import { NextResponse } from "next/server";
 
@@ -61,19 +61,13 @@ export async function POST(request: Request) {
       });
 
       try {
-        // Token-stream advice AND plain conversational answers (general
-        // questions) — anything that's a pure text reply. Product/price
-        // searches carry results, not a streamed essay, so they're emitted as a
-        // single buffered delta to keep the results pipeline intact.
-        const tokenStream =
-          turn.adviceMode || (turn.action === "conversational" && !turn.productResults);
-        if (tokenStream) {
-          for await (const delta of streamAssistantReply(ctx)) {
-            send({ type: "delta", text: delta });
-          }
-        } else {
-          const reply = await generateAssistantReply(ctx);
-          send({ type: "delta", text: reply });
+        // Token-stream EVERY reply so text starts appearing immediately. The
+        // product results already went out in the `meta` frame above (cards
+        // render the moment the search resolves), and the reply then types in on
+        // top. streamAssistantReply degrades to a single buffered reply when
+        // Gemini streaming isn't available.
+        for await (const delta of streamAssistantReply(ctx)) {
+          send({ type: "delta", text: delta });
         }
       } catch (error) {
         const detail = error instanceof Error ? error.message : String(error);

@@ -94,6 +94,13 @@ export function graphToProductSearchResults(
   return {
     local: [],
     online,
+    // These offers are ALREADY finalized/validated by the intelligence graph.
+    // Setting estimatedOnline (even empty) marks the result as finalized so the
+    // client renders `online` as-is instead of re-running prepareResultsForDisplay
+    // — which would re-apply the freshness gate to offers that carry no freshness
+    // timestamp and wrongly drop every result, dumping the user into the request
+    // form (e.g. "Ninja Air Fryer Max XL").
+    estimatedOnline: [],
     zipCode,
     compareMode: true,
     matchedProduct: {

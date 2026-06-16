@@ -223,6 +223,29 @@ export function ProductResults({
     !showMismatchAnyway &&
     requestedVolumeMissing(searchQuery, [...online, ...estimatedOnline], results.matchedProduct?.title);
 
+  // Still fetching live prices (progressive enrichment in flight) and nothing to
+  // show yet — render a "checking live prices" state, NEVER the request form. The
+  // request form is a true last resort, only after enrichment finishes empty.
+  if (enriching && !online.length && !estimatedOnline.length && !similarAlternatives.length) {
+    return (
+      <div className="mt-4 rounded-2xl border border-orange-100 bg-white px-4 py-5 shadow-sm">
+        <div className="flex items-center gap-3 text-sm font-semibold text-stone-700">
+          <Loader2 size={18} className="animate-spin text-orange-500" aria-hidden />
+          Checking live prices across stores…
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="animate-pulse rounded-xl border border-stone-200 bg-white p-3">
+              <div className="aspect-square rounded-lg bg-stone-200" />
+              <div className="mt-2 h-3 w-2/3 rounded bg-stone-200" />
+              <div className="mt-1 h-4 w-1/2 rounded bg-stone-100" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   if (
     irrelevantMatch ||
     volumeMissing ||

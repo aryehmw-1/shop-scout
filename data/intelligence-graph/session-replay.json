@@ -1,7 +1,25 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-15T15:21:12.634Z",
+  "updatedAt": "2026-06-16T04:00:56.492Z",
   "sessions": [
+    {
+      "id": "sr_mqg471d7_a0bbd5",
+      "sessionId": "bb0a946eee341d73",
+      "cohort": "general",
+      "at": "2026-06-16T04:00:56.491Z",
+      "queryCategory": "general",
+      "matched": true,
+      "canonicalId": "ninja-air-fryer",
+      "winnerRetailer": "Costco",
+      "winnerPrice": 124.9,
+      "trustSummary": "Costco at $124.90 — Highest decision score (0.95) among validated offers. (our best match today).",
+      "identityScore": 0.89,
+      "evidenceCount": 1,
+      "uncertaintyCount": 0,
+      "interactionTrail": [
+        "recommendation_shown"
+      ]
+    },
     {
       "id": "sr_mqfd20mx_9d1dec",
       "sessionId": "49df0a38d4fd2264",
