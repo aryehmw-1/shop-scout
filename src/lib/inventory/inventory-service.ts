@@ -12,7 +12,12 @@ import { compareViaCatalog } from "../search/connectors/catalog-connector";
 import { finalizeSearchPrices } from "../search/price-truth";
 import { finalizeResultsForUser } from "../pricing/deal-intelligence";
 import { rankVerifiedInventoryCandidates } from "./verified-inventory-resolver";
-import { coversQueryExpanded, sharesContentWord } from "../search/query-understanding";
+import {
+  coversQueryExpanded,
+  sharesContentWord,
+  isShortQuery,
+  matchesAsHeadTerm,
+} from "../search/query-understanding";
 
 type ProductWithQuotes = Product & { priceQuotes: PriceQuote[] };
 
@@ -130,35 +135,67 @@ export async function searchProducts(
   // No match at all: return null (never query the whole table).
   if (catalogIds.length === 0) return null;
 
-  const products = await prisma.product.findMany({
-    where: {
-      catalogId: { in: catalogIds },
-      published: true,
-      validationStatus: "approved",
-      ...(filters.category ? { category: filters.category } : {}),
-      ...(filters.brand ? { brand: { contains: filters.brand } } : {}),
-    },
-    include: {
-      priceQuotes: {
-        where: {
-          ...(filters.freshOnly ? { expiresAt: { gt: now } } : {}),
-          source: { in: ["scraped", "connector_api", "daily_index", "nightly_index"] },
-        },
-        orderBy: [{ fetchedAt: "desc" }, { landedCostUsd: "asc" }],
-        take: 40,
+  const fetchCandidates = (freshOnly: boolean) =>
+    prisma.product.findMany({
+      where: {
+        catalogId: { in: catalogIds },
+        published: true,
+        validationStatus: "approved",
+        ...(filters.category ? { category: filters.category } : {}),
+        ...(filters.brand ? { brand: { contains: filters.brand } } : {}),
       },
-    },
-    take: catalogIds.length,
-  });
+      include: {
+        priceQuotes: {
+          where: {
+            ...(freshOnly ? { expiresAt: { gt: now } } : {}),
+            source: { in: ["scraped", "connector_api", "daily_index", "nightly_index"] },
+          },
+          orderBy: [{ fetchedAt: "desc" }, { landedCostUsd: "asc" }],
+          take: 40,
+        },
+      },
+      take: catalogIds.length,
+    });
+
+  let products = await fetchCandidates(Boolean(filters.freshOnly));
+  let withQuotes = products.filter((row) => row.priceQuotes.length > 0);
+
+  // STALE-FALLBACK RECALL: the product exists but only has stale/expired quotes.
+  // Don't return null and pretend we don't know it — re-fetch the latest quote
+  // regardless of freshness so it surfaces, clearly labeled stale downstream
+  // (FreshnessIndicator + the "showing last known prices" banner). Honest recall
+  // beats a false "couldn't find it".
+  if (!withQuotes.length && filters.freshOnly) {
+    products = await fetchCandidates(false);
+    withQuotes = products.filter((row) => row.priceQuotes.length > 0);
+    if (withQuotes.length) {
+      console.log("[inventory] stale-fallback recall used", {
+        query: normalized,
+        candidates: withQuotes.length,
+      });
+    }
+  }
 
   // Among products that actually have offers, pick the MOST RELEVANT to the query
   // (title/brand token overlap) — so "LACK coffee table" picks the IKEA LACK, not
   // a grocery lookalike that merely shares the word "coffee".
-  const withQuotes = products.filter((row) => row.priceQuotes.length > 0);
   if (!withQuotes.length) return null;
+
+  // SHORT-QUERY HEAD-TERM GATE: for 1–2 word searches, only keep products whose
+  // TYPE matches the query — "refrigerator" must be a refrigerator, not a juice
+  // bottle whose title says "refrigerator-safe". If nothing qualifies, return null
+  // (honest no-match) rather than surfacing an incidental-keyword lookalike.
+  const candidatePool =
+    isShortQuery(normalized)
+      ? withQuotes.filter((row) =>
+          matchesAsHeadTerm(normalized, `${row.brand} ${row.title}`, row.category),
+        )
+      : withQuotes;
+  if (!candidatePool.length) return null;
+
   const tokens = normalized.toLowerCase().split(/\s+/).filter((t) => t.length > 1);
   const ql = normalized.toLowerCase();
-  const product = withQuotes
+  const product = candidatePool
     .map((row) => {
       const hay = `${row.brand} ${row.title} ${row.category}`.toLowerCase();
       let score = hay.includes(ql) ? 40 : 0;

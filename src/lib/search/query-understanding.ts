@@ -152,3 +152,28 @@ export function sharesContentWord(query: string, candidateText: string): boolean
   }
   return false;
 }
+
+/** A query is "short" (1–2 content words) — the regime where a single word
+ *  appearing anywhere in a long title creates false matches. */
+export function isShortQuery(query: string): boolean {
+  const n = baseTokens(query).length;
+  return n > 0 && n <= 2;
+}
+
+/**
+ * HEAD-TERM gate for short queries. "refrigerator" must match a product whose
+ * TYPE is a refrigerator — not a juice bottle whose title happens to say
+ * "refrigerator-safe" near the end. We require a query term (or synonym) to land
+ * in the product's HEAD (first ~6 content tokens of brand+title) or its category,
+ * where the product's actual type is named — not buried among descriptors.
+ */
+export function matchesAsHeadTerm(query: string, titleText: string, category?: string): boolean {
+  const q = new Set(expandQueryTokens(query));
+  if (!q.size) return false;
+  const head = baseTokens(titleText).slice(0, 6);
+  const cat = category ? baseTokens(category) : [];
+  for (const w of [...head, ...cat]) {
+    if (q.has(w) || q.has(singularize(w))) return true;
+  }
+  return false;
+}

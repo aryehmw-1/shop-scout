@@ -907,6 +907,46 @@ export async function resolveChatTurn(
         );
 
     if (analysis.needsClarification && analysis.clarification) {
+      // Don't dead-end a broad query on a clarifying question with ZERO results
+      // (the #1 "nothing useful comes back" failure — e.g. "iphone charger",
+      // "refrigerator"). Run the search anyway and show the best matches; the
+      // clarification options become optional REFINE chips so the user can still
+      // narrow down. Fall back to a pure question ONLY when we truly found nothing.
+      const clarifyIntent = enrichIntent(
+        { ...intent, ...analysis.intent, zipCode: zip },
+        learningProfile,
+      );
+      const {
+        productResults: clarifyResults,
+        retrievalPayload: clarifyPayload,
+        commerceInsight: clarifyInsight,
+      } = await searchWithIntelligenceFirst(clarifyIntent, zip, userId, progressive);
+
+      if ((clarifyResults?.online?.length ?? 0) > 0) {
+        return withConversationDebug(
+          {
+            action: "search",
+            session: {
+              phase: "ready",
+              intent: clarifyIntent,
+              asked: [...asked, "clarify"],
+              sourceUrl: merging ? sourceUrl : undefined,
+              sourceProductTitle: merging ? sourceProductTitle : undefined,
+              compareMode: false,
+            },
+            productResults: clarifyResults,
+            retrievalPayload: clarifyPayload,
+            commerceInsight: clarifyInsight,
+            compareMode: false,
+            zipCode: zip,
+            query: clarifyIntent.query,
+            // Refine suggestions (not a blocking question) now that we have results.
+            chips: analysis.clarification.options,
+          },
+          { message: text, priorSession, merged: merging },
+        );
+      }
+
       return {
         action: "clarify",
         session: {

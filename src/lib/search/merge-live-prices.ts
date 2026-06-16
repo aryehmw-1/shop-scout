@@ -177,8 +177,14 @@ function buildLiveOffer(
     title: liveTitle,
     storeTitle: quote.storeTitle,
     brand: extractBrandFromLiveTitle(quote.storeTitle) ?? item.brand,
-    size: item.size,
-    upc: item.upc,
+    // Only inherit the catalog item's size on a CONFIDENT match. Otherwise this
+    // leaks a fallback item's size onto unrelated live offers — e.g. a no-match
+    // "air fryer" falls back to the whole-milk catalog item and every air fryer
+    // wrongly shows "1 gal". Low-confidence/fallback matches carry no size badge.
+    size: matchAnalysis.confidence >= 0.7 ? item.size : "",
+    // Don't leak the fallback item's UPC onto a low-confidence live offer either
+    // (a wrong barcode can create false "exact" matches downstream).
+    upc: matchAnalysis.confidence >= 0.7 ? item.upc : "",
     imageUrl: liveImage,
     imageSource,
     retailer: quote.retailerId,

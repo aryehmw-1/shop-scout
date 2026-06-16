@@ -165,10 +165,10 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
                       href={dest}
                       target="_blank"
                       rel="noopener noreferrer sponsored"
-                      className="inline-flex shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-orange-200 px-1.5 py-1 text-[10px] font-semibold text-orange-600 hover:bg-orange-50 lg:w-full lg:flex-none lg:rounded-xl lg:px-3 lg:py-2.5 lg:text-sm"
+                      className="inline-flex shrink-0 items-center justify-center gap-1 whitespace-nowrap rounded-md border border-orange-200 px-1.5 py-1 text-[10px] font-semibold text-orange-600 hover:bg-orange-50 lg:w-full lg:flex-none lg:rounded-xl lg:px-3 lg:py-2.5 lg:text-sm"
                       aria-label="Go to store"
                     >
-                      <Store size={14} aria-hidden />
+                      <Store size={13} aria-hidden />
                       <span className="hidden lg:inline">Go to store</span>
                     </a>
                   )}

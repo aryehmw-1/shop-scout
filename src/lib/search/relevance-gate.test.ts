@@ -10,6 +10,8 @@ import assert from "node:assert/strict";
 import {
   coversQueryExpanded,
   sharesContentWord,
+  isShortQuery,
+  matchesAsHeadTerm,
 } from "./query-understanding";
 
 // ── coversQueryExpanded: the catalog-match relevance FLOOR ──
@@ -63,4 +65,41 @@ test("refrigerator should not return coffee", () => {
 test("empty / junk query returns no alternatives (show nothing, not noise)", () => {
   assert.equal(sharesContentWord("", "Anything At All"), false);
   assert.equal(sharesContentWord("   ", "Cheese Crackers"), false);
+});
+
+// ── matchesAsHeadTerm: short-query incidental-keyword gate (P2) ──
+
+test("short query is detected for 1-2 content words", () => {
+  assert.equal(isShortQuery("refrigerator"), true);
+  assert.equal(isShortQuery("air fryer"), true);
+  assert.equal(isShortQuery("car trash bag large capacity hanging"), false);
+});
+
+test("refrigerator does not match a refrigerator-SAFE juice bottle", () => {
+  // "refrigerator" appears late, as a descriptor — must NOT count as a match.
+  assert.equal(
+    matchesAsHeadTerm(
+      "refrigerator",
+      "Mrsdry Glass Juice Bottles with Lids 18 oz, Reusable for Juicing, Refrigerator, BPA Free",
+      "drinkware",
+    ),
+    false,
+  );
+  // A real refrigerator names its type up front.
+  assert.equal(matchesAsHeadTerm("refrigerator", "Whirlpool Refrigerator 25 cu ft", "appliances"), true);
+  // Synonym: "fridge" query → "Refrigerator" head term.
+  assert.equal(matchesAsHeadTerm("fridge", "Frigidaire Refrigerator 18 cu ft", "appliances"), true);
+});
+
+test("short-query head gate keeps real matches, drops descriptor-only hits", () => {
+  assert.equal(matchesAsHeadTerm("charger", "Anker 65W USB-C Charger", "electronics"), true);
+  // "charger" buried at the end as a compatibility note — not the product type.
+  assert.equal(
+    matchesAsHeadTerm(
+      "charger",
+      "Spigen Tough Armor Phone Case for iPhone 15 Drop Protection Slim Compatible Wireless Charger",
+      "phone cases",
+    ),
+    false,
+  );
 });
