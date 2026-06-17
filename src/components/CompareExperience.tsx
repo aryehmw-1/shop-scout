@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ProductOffer, ProductSearchResults, SimilarProduct } from "@/lib/types";
 import { shouldShowBestDealBadge } from "@/lib/offers/offer-trust";
 import { getOfferPriceDisplay } from "@/lib/shopping/offer-price-display";
 import { formatPrice } from "@/lib/utils/format";
 import { getRetailerMeta } from "@/lib/retailers/meta";
-import { CheckCircle2, Sparkles, ExternalLink, Heart, Info, Trophy, TrendingDown } from "lucide-react";
+import { CheckCircle2, Sparkles, ExternalLink, Heart, Info, ShieldCheck, Trophy, TrendingDown } from "lucide-react";
 import { ProductImage } from "./ProductImage";
 import { similarToOffer } from "./SimilarAlternatives";
 import { PhotoSourceLabel } from "./PhotoSourceLabel";
@@ -18,6 +18,7 @@ import { CompareTable } from "./CompareTable";
 import { DeliveredPriceBreakdown } from "./DeliveredPriceBreakdown";
 import { FreshnessIndicator } from "./FreshnessIndicator";
 import { TrustSummaryCard } from "./trust/TrustSummaryCard";
+import { TrustModal } from "./TrustModal";
 import { useExperiment } from "@/lib/experiments/useExperiment";
 import { trackEvent } from "@/lib/analytics/track-client";
 
@@ -633,6 +634,36 @@ function PriceExplanationCard({
  * uses the newer L5 design: each exact match is its own separate, spaced card and
  * similar products show as a grouped rail.
  */
+/** Compact WHITE trust bar shown above the desktop compare cards. Reuses the
+ *  existing TrustModal popup for "Why trust this?" (does not rebuild it). */
+function DesktopTrustBar({ zipCode, estimated }: { zipCode?: string; estimated?: boolean }) {
+  const [showTrust, setShowTrust] = useState(false);
+  return (
+    <>
+      <div className="flex w-full items-center gap-3 rounded-xl border border-stone-200 bg-white px-4 py-2.5 text-sm shadow-sm">
+        <span className="inline-flex items-center gap-1.5 font-semibold text-sage-800">
+          <ShieldCheck size={16} className="shrink-0 text-sage-600" aria-hidden />
+          {estimated ? "Estimated prices" : "Verified live prices"}
+        </span>
+        {zipCode ? (
+          <>
+            <span className="text-stone-300" aria-hidden>|</span>
+            <span className="text-stone-600">Ships to {zipCode}</span>
+          </>
+        ) : null}
+        <button
+          type="button"
+          onClick={() => setShowTrust(true)}
+          className="ml-auto shrink-0 font-semibold text-orange-600 hover:underline"
+        >
+          Why trust this?
+        </button>
+      </div>
+      {showTrust && <TrustModal estimated={estimated} onClose={() => setShowTrust(false)} />}
+    </>
+  );
+}
+
 function CompareEvidenceLayout({
   offers,
   matched,
@@ -668,18 +699,21 @@ function CompareEvidenceLayout({
       `${offers.length} verified eBay offer${offers.length === 1 ? "" : "s"}`
     : `${offers.length} offer${offers.length === 1 ? "" : "s"} checked`;
 
+  const productName =
+    matched?.title ?? bestOffer.storeTitle ?? `${bestOffer.brand} ${bestOffer.title}`;
+  const estimated = offers.every((o) => o.priceSource === "catalog_model");
+
   return (
     <div className="space-y-5">
-      <ProductIdentityHeader
-        matched={matched}
-        bestOffer={bestOffer}
-        zipCode={zipCode}
-        liveSourceLabel={liveSourceLabel}
-        offerCountLabel={offerCountLabel}
-      />
-
       {/* ── MOBILE / TABLET (<lg): original evidence layout, unchanged ── */}
       <div className="space-y-4 lg:hidden">
+        <ProductIdentityHeader
+          matched={matched}
+          bestOffer={bestOffer}
+          zipCode={zipCode}
+          liveSourceLabel={liveSourceLabel}
+          offerCountLabel={offerCountLabel}
+        />
         <div className="grid gap-4">
           <BestOfferAnswer
             offer={bestOffer}
@@ -722,12 +756,19 @@ function CompareEvidenceLayout({
         </section>
       </div>
 
-      {/* ── DESKTOP (lg+): L5 — separate exact-match cards + grouped similar rail ── */}
-      <div className="hidden space-y-5 lg:block">
+      {/* ── DESKTOP (lg+): a shopping-comparison page — compact white trust bar,
+          then the pricing cards as the primary content, then similar. No large
+          product hero (that pushed the results down). ── */}
+      <div className="hidden space-y-4 lg:block">
+        <DesktopTrustBar zipCode={zipCode} estimated={estimated} />
+
         <section className="space-y-3">
-          <div className="flex items-end justify-between">
-            <h2 className="font-bold text-stone-950">Where to buy it — cheapest first</h2>
-            <p className="text-xs font-semibold text-stone-500">
+          <div className="flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="font-bold text-stone-950">Where to buy it — cheapest first</h2>
+              <p className="line-clamp-1 text-xs text-stone-500">{productName}</p>
+            </div>
+            <p className="shrink-0 text-xs font-semibold text-stone-500">
               {offers.length} exact-match offer{offers.length === 1 ? "" : "s"}
             </p>
           </div>
