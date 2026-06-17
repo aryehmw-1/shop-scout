@@ -136,16 +136,32 @@ function aliasMatch(query: string): { catalogId: string; method: VerifiedMatchMe
 function scoreCatalogItem(item: CatalogItem, tokens: string[], query: string): number {
   const hay = `${item.brand} ${item.title} ${item.keywords.join(" ")} ${item.category}`.toLowerCase();
   let score = 0;
+  let textHit = false;
 
-  if (hay.includes(query)) score += 40;
+  if (hay.includes(query)) {
+    score += 40;
+    textHit = true;
+  }
   for (const t of tokens) {
-    if (hay.includes(t)) score += 12;
+    if (hay.includes(t)) {
+      score += 12;
+      textHit = true;
+    }
   }
 
-  if (isFlagshipCatalogId(item.id)) score += 15;
-
+  // The catalog's own fuzzy suggester ranking this item #1 is a real (synonym)
+  // signal even without a raw substring hit.
   const suggest = suggestCatalogProducts(query, 3);
-  if (suggest[0]?.catalogId === item.id) score += 20;
+  const isSuggested = suggest[0]?.catalogId === item.id;
+
+  // The flagship/suggest bonuses must NOT qualify an item on their own. Without a
+  // real textual (or suggester) basis, "office chair" would score +15 against a
+  // flagship "Spring Mix Salad" and — if it has a persisted quote — get accepted
+  // as a verified hit. Require an actual match before any bonus applies.
+  if (!textHit && !isSuggested) return 0;
+
+  if (isFlagshipCatalogId(item.id)) score += 15;
+  if (isSuggested) score += 20;
 
   return score;
 }
