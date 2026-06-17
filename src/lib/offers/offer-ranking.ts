@@ -5,6 +5,7 @@ import type { CatalogItem } from "../retailers/catalog";
 import { buildFullSearchQuery } from "../shopping/intent-merge";
 import type { ProductOffer, ProductSearchResults, ShoppingIntent } from "../types";
 import { isPdpProductUrl, isSearchProductUrl } from "./url-classifier";
+import { filterRelevantOffers } from "../search/result-relevance";
 import { hasUniqueRetailerImage, isVerifiedOffer } from "./offer-trust";
 import { applyOfferImageFallback } from "./offer-image-fallback";
 import { syncPriceBadge } from "./offer-pipeline-meta";
@@ -219,10 +220,19 @@ export function prepareResultsForDisplay(
   const queryFamily = inferQueryCategoryFamily(
     options.searchQuery ?? options.intent?.query,
   );
-  const merged = rankOffersForDisplay(
+  const rankedMerged = rankOffersForDisplay(
     filterPublicOffers([...results.online, ...results.local]),
     catalogTitle,
     categoryId,
+  );
+  // RELEVANCE/SANITY SAFETY NET: drop offers that share no word with the query,
+  // accessory/part/novelty mismatches, and absurd low-price outliers — so a
+  // no-match fallback (e.g. a "Spring Mix Salad" for "office chair") or a $3
+  // accessory never becomes the answer. Empties cleanly → request-form path.
+  const merged = filterRelevantOffers(
+    rankedMerged,
+    options.searchQuery ?? options.intent?.query,
+    catalogTitle,
   );
 
   const displayableRaw = merged.filter(isDisplayableOffer);
