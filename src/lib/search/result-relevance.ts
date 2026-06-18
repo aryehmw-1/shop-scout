@@ -1,5 +1,5 @@
 import type { ProductOffer } from "../types";
-import { sharesContentWord, baseTokens } from "./query-understanding";
+import { sharesContentWord, baseTokens, isIncidentalMention } from "./query-understanding";
 
 /**
  * Final relevance/sanity gates applied to displayed offers — the safety net that
@@ -103,7 +103,8 @@ export function filterRelevantOffers(
     (o) =>
       offerMatchesQuery(query, o, matchedTitle) &&
       !looksLikeAccessoryMismatch(query, o) &&
-      !isTypeModifierMismatch(query, o),
+      !isTypeModifierMismatch(query, o) &&
+      !isIncidentalMention(query, offerText(o)),
   );
   if (kept.length === 0) return kept; // nothing relevant → request-form path
 

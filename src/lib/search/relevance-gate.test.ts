@@ -13,6 +13,7 @@ import {
   sharesProductType,
   isShortQuery,
   matchesAsHeadTerm,
+  isIncidentalMention,
 } from "./query-understanding";
 
 // ── coversQueryExpanded: the catalog-match relevance FLOOR ──
@@ -117,6 +118,36 @@ test("short-query head gate uses the head region, not front modifiers", () => {
   // Trailing color/finish words must not hide the real head noun.
   assert.equal(matchesAsHeadTerm("coffee table", "LACK Coffee table black-brown", "furniture"), true);
   assert.equal(matchesAsHeadTerm("desk", "MICKE Desk white", "furniture"), true);
+});
+
+// ── isIncidentalMention: deep keyword mentions vs the product's real type ──
+
+test("incidental keyword mentions are rejected; leading/head matches are kept", () => {
+  // JUNK — query word buried deep (provider keyword-search bycatch).
+  assert.equal(
+    isIncidentalMention("monitor", "VTECHOLOGY Battery Tester Checker Universal Electrical Monitor Meter Equipment"),
+    true,
+  );
+  assert.equal(
+    isIncidentalMention("couch", "Enzyme Laundry Stain Remover for Carpet Couch Upholstery Pet Stains"),
+    true,
+  );
+  assert.equal(
+    isIncidentalMention("toaster", "Emeril Lagasse Everyday 360 Stainless Steel Air Fryer Toaster Oven Combo"),
+    true,
+  );
+
+  // LEGIT — the type word leads the name or is the head noun. Real office-chair
+  // titles vary (some end in adjectives) and must all survive.
+  for (const t of [
+    "Home Office Chair Desk Computer Chair Adjustable Ergonomic",
+    "Staples Emerge Vector Luxura Faux Leather Gaming Chair",
+    "Homall Office Chair High Back Computer Desk PU Leather",
+  ]) {
+    assert.equal(isIncidentalMention("office chair", t), false, t);
+  }
+  assert.equal(isIncidentalMention("air fryer", "Ninja Air Fryer Max XL 5.5 Qt"), false);
+  assert.equal(isIncidentalMention("coffee table", "LACK Coffee table black-brown"), false);
 });
 
 // ── sharesProductType: type-coherence for similar/broadened fallbacks ──

@@ -215,6 +215,32 @@ export function matchesAsHeadTerm(query: string, titleText: string, category?: s
 }
 
 /**
+ * INCIDENTAL-MENTION gate for short queries. Returns true when the query's type
+ * word appears in the title ONLY deep inside it — neither in the leading product
+ * name nor the head region — i.e. an incidental keyword, not the product's type.
+ * Catches the keyword-stuffed junk a plain word-overlap can't: "monitor" buried in
+ * a battery tester's "...Electrical Monitor Meter Equipment", "couch" listed as a
+ * use-case on a stain remover. A real "Office Chair ... Ergonomic" keeps it (chair
+ * leads); "Gaming Chair" keeps it (chair is the head). Conservative: if the query
+ * word isn't a core token at all, returns false (leave it to word-overlap).
+ */
+export function isIncidentalMention(query: string, titleText: string, category?: string): boolean {
+  if (!isShortQuery(query)) return false;
+  const q = new Set(expandQueryTokens(query));
+  if (!q.size) return false;
+  const matches = (w: string) => q.has(w) || q.has(singularize(w));
+
+  const core = coreTokens(titleText);
+  const hitPositions = core.map((t, i) => (matches(t) ? i : -1)).filter((i) => i >= 0);
+  if (!hitPositions.length) return false; // type word not a core token → not our case
+
+  const inLeading = hitPositions.some((i) => i < 3);
+  if (inLeading) return false;
+  if (matchesAsHeadTerm(query, titleText, category)) return false;
+  return true; // appears only deep / incidentally
+}
+
+/**
  * Type-coherence gate for similar/broadened fallbacks: does a candidate share the
  * QUERY's product TYPE (its head noun)? "Ninja Air Fryer Max XL" (type = fryer)
  * matches other air fryers but not a Ninja blender; "refrigerator" matches real
