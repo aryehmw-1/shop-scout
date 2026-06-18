@@ -6,6 +6,7 @@ import { prisma } from "../db/prisma";
 import { CATALOG, type CatalogItem } from "../retailers/catalog";
 import { getFlagshipCatalogIds, isFlagshipCatalogId } from "./flagship-catalog";
 import { normalizeSearchQuery, suggestCatalogProducts } from "../search/query-normalize";
+import { isShortQuery, matchesAsHeadTerm } from "../search/query-understanding";
 import type { ResolvedProduct } from "../search/types";
 import type { RetailerId } from "../types";
 import { storedRowToLiveQuoteFields } from "../indexing/offer-rows";
@@ -486,7 +487,15 @@ async function resolveFromDbProducts(
   if (!products.length) return null;
 
   const ql = query.toLowerCase();
+  // HEAD-NOUN gate for short/broad queries: the bulk-imported rows carry long,
+  // keyword-stuffed titles, so a plain substring match surfaces incidental
+  // mentions — "refrigerator" hits a juice bottle ("...for Juicing, Refrigerator,
+  // BPA Free"), "monitor" hits a battery tester ("...Electrical Monitor Meter"),
+  // "vacuum" hits a "Vacuum Insulated" water bottle. Require the query word in the
+  // product's HEAD REGION (or category), so the row's actual TYPE is the match.
+  const gateHead = isShortQuery(query);
   const scored = products
+    .filter((p) => !gateHead || matchesAsHeadTerm(query, `${p.brand} ${p.title}`, p.category ?? undefined))
     .map((p) => {
       const hay = `${p.brand} ${p.title} ${p.category} ${p.keywordsJson}`.toLowerCase();
       let score = hay.includes(ql) ? 40 : 0;

@@ -175,11 +175,26 @@ function coreTokens(text: string): string[] {
   return baseTokens(text).filter((t) => !HEAD_SPEC.has(t) && !/^\d/.test(t));
 }
 
+/** Trailing color/finish modifiers. English (and IKEA-style) names often append
+ *  these after the head noun — "Coffee table black-brown", "Office chair gray" —
+ *  so we strip them before reading the head region or the real type word is lost. */
+const TRAILING_MODIFIER = new Set([
+  "black", "white", "gray", "grey", "silver", "gold", "red", "blue", "green",
+  "yellow", "brown", "beige", "tan", "navy", "pink", "purple", "orange", "ivory",
+  "cream", "charcoal", "anthracite", "walnut", "oak", "espresso", "cherry",
+  "maple", "natural", "matte", "glossy",
+]);
+
 /** The product's HEAD REGION — the last ~2 core tokens, where English names the
  *  product type. "LED Refrigerator Light Bulb" → [light, bulb]; "Air Fryer Oven"
- *  → [fryer, oven]; "Whirlpool Refrigerator" → [whirlpool, refrigerator]. */
+ *  → [fryer, oven]; "Whirlpool Refrigerator" → [whirlpool, refrigerator]. Trailing
+ *  color/finish words are stripped first so "Coffee table black-brown" → [coffee,
+ *  table], not [black, brown]. */
 function headRegion(text: string): string[] {
-  const core = coreTokens(text);
+  let core = coreTokens(text);
+  while (core.length > 1 && TRAILING_MODIFIER.has(core[core.length - 1]!)) {
+    core = core.slice(0, -1);
+  }
   return core.slice(-2);
 }
 

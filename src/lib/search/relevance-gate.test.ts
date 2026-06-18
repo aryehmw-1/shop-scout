@@ -101,6 +101,22 @@ test("short-query head gate uses the head region, not front modifiers", () => {
   );
   // real fridge: refrigerator is in the head region → accept.
   assert.equal(matchesAsHeadTerm("refrigerator", "Whirlpool Refrigerator 25 cu ft", "appliances"), true);
+
+  // Production incidental-mention junk (keyword-stuffed import titles): the query
+  // word appears, but NOT as the product's type → reject.
+  assert.equal(
+    matchesAsHeadTerm("refrigerator", "Mrsdry Glass Juice Bottles Reusable for Juicing Refrigerator BPA Free Drinking Jar", "kitchen"),
+    false,
+  );
+  assert.equal(
+    matchesAsHeadTerm("monitor", "VTECHOLOGY Battery Tester Checker Universal Electrical Monitor Meter Equipment", "electronics"),
+    false,
+  );
+  assert.equal(matchesAsHeadTerm("vacuum", "CamelBak Chute Mag Vacuum Insulated Water Bottle", "kitchen"), false);
+
+  // Trailing color/finish words must not hide the real head noun.
+  assert.equal(matchesAsHeadTerm("coffee table", "LACK Coffee table black-brown", "furniture"), true);
+  assert.equal(matchesAsHeadTerm("desk", "MICKE Desk white", "furniture"), true);
 });
 
 // ── sharesProductType: type-coherence for similar/broadened fallbacks ──
