@@ -137,15 +137,16 @@ test("incidental keyword mentions are rejected; leading/head matches are kept", 
     true,
   );
 
-  // LEGIT — the type word leads the name or is the head noun. Real office-chair
-  // titles vary (some end in adjectives) and must all survive.
-  for (const t of [
-    "Home Office Chair Desk Computer Chair Adjustable Ergonomic",
-    "Staples Emerge Vector Luxura Faux Leather Gaming Chair",
-    "Homall Office Chair High Back Computer Desk PU Leather",
-  ]) {
-    assert.equal(isIncidentalMention("office chair", t), false, t);
-  }
+  // LEGIT single-word: the type word leads the name → kept.
+  assert.equal(isIncidentalMention("monitor", "LG 27BK400 Monitor"), false);
+  assert.equal(isIncidentalMention("blender", "Magic Bullet Blender Personal"), false);
+  assert.equal(isIncidentalMention("lamp", "TARNABY Table lamp dimmable anthracite"), false);
+
+  // Multi-word queries are SELF-PROTECTING (the phrase appears contiguously even
+  // mid-title): the check is single-token only, so these are never flagged. The
+  // paper-towels case regressed once when this gate ran on 2-word queries.
+  assert.equal(isIncidentalMention("paper towels", "Sparkle Pick-A-Size Paper Towels 6 Double Rolls"), false);
+  assert.equal(isIncidentalMention("office chair", "Home Office Chair Desk Computer Chair Adjustable Ergonomic"), false);
   assert.equal(isIncidentalMention("air fryer", "Ninja Air Fryer Max XL 5.5 Qt"), false);
   assert.equal(isIncidentalMention("coffee table", "LACK Coffee table black-brown"), false);
 });

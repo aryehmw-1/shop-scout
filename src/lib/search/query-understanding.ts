@@ -220,12 +220,17 @@ export function matchesAsHeadTerm(query: string, titleText: string, category?: s
  * name nor the head region — i.e. an incidental keyword, not the product's type.
  * Catches the keyword-stuffed junk a plain word-overlap can't: "monitor" buried in
  * a battery tester's "...Electrical Monitor Meter Equipment", "couch" listed as a
- * use-case on a stain remover. A real "Office Chair ... Ergonomic" keeps it (chair
- * leads); "Gaming Chair" keeps it (chair is the head). Conservative: if the query
- * word isn't a core token at all, returns false (leave it to word-overlap).
+ * use-case on a stain remover. A real "LG 27in Monitor" keeps it (monitor leads).
+ *
+ * SINGLE-token queries only. A multi-word query ("paper towels", "office chair")
+ * is self-protecting: the phrase appears contiguously in a real product even when
+ * the brand/size descriptor pushes it to the middle ("Sparkle Pick-A-Size Paper
+ * Towels Double Rolls") — applying the leading/head test there would wrongly drop
+ * it. Conservative: if the query word isn't a core token at all, returns false
+ * (leave it to word-overlap).
  */
 export function isIncidentalMention(query: string, titleText: string, category?: string): boolean {
-  if (!isShortQuery(query)) return false;
+  if (baseTokens(query).length !== 1) return false;
   const q = new Set(expandQueryTokens(query));
   if (!q.size) return false;
   const matches = (w: string) => q.has(w) || q.has(singularize(w));
