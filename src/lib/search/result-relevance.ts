@@ -73,6 +73,10 @@ const DISTINCT_HEAD_NOUNS = new Set([
   "lamp", "shade", "chair", "table", "shelf", "stand", "rack", "holder", "mat",
   "pad", "cover", "case", "light", "bulb", "filter", "fan", "cushion", "organizer",
   "riser", "tray", "sleeve", "mount", "bracket", "topper", "protector", "skirt",
+  // Microwavable / food heads — "microwave popcorn", "microwave meal" use the
+  // appliance word as an adjective; the product is the food, not a microwave.
+  "popcorn", "meal", "meals", "dinner", "dinners", "rice", "oatmeal", "soup",
+  "noodles", "pasta",
 ]);
 
 /**

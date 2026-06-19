@@ -103,6 +103,9 @@ test("microwave: ovens + combos kept, accessories dropped", () => {
     "Microwave Turntable Glass Plate Replacement 12.4in",
     "Microwave Splatter Cover Lid",
     "Universal Microwave Oven Tray",
+    // Microwavable FOOD — "microwave" is an adjective; the product is the food.
+    "Pop Secret Butter Microwave Popcorn 6ct",
+    "Lean Cuisine Microwave Meal Chicken",
   ]) {
     assert.equal(filterRelevantOffers([mk(t, 9)], "microwave", "Microwave").length, 0, t);
   }
