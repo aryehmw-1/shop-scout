@@ -156,7 +156,7 @@ export function VerifiedInventoryClient({ initial }: VerifiedInventoryClientProp
                     mobile DOM order). */}
                 <div className="mt-1.5 flex items-stretch gap-1 pt-0 lg:mt-auto lg:flex-col lg:gap-2 lg:pt-4">
                   <Link
-                    href={`/chat?q=${encodeURIComponent(`${p.brand} ${p.title}`)}`}
+                    href={`/compare?product=${encodeURIComponent(p.catalogId)}&q=${encodeURIComponent(`${p.brand} ${p.title}`)}`}
                     className="flex-1 whitespace-nowrap rounded-md bg-sage-700 py-1 text-center text-[10px] font-semibold text-white hover:bg-sage-800 lg:order-2 lg:w-full lg:flex-none lg:rounded-xl lg:py-2.5 lg:text-sm"
                   >
                     Compare
