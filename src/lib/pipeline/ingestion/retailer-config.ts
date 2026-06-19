@@ -120,10 +120,12 @@ const CONFIGS: Record<SourcingRetailer, RetailerConfig> = {
     // One Target dataset (gd_ltppk5mx2lp0v1k0vo), three Bright Data operations —
     // same generic architecture as Amazon/Walmart, config only, no Target code.
     operations: {
-      // Discover by keywords — import new Target products overnight. Target's
-      // dataset REQUIRES a `domain` (site URL) alongside the keyword, and its
-      // discover collector id is "keywords" (plural), unlike Amazon/Walmart.
-      keyword_search: { discoverBy: "keywords", inputFields: ["keyword", "domain", "zipcode"] },
+      // Discover by keywords. Target's dataset expects the search term in a field
+      // literally named `keywords` (matching discover_by=keywords) and REJECTS a
+      // `keyword` or `domain` field ("This input should not contain a keyword
+      // field"). So the primary field is `keywords`, no domain. (Verified live
+      // 2026-06-19: keyword+domain → validation_error.)
+      keyword_search: { discoverBy: "keywords", inputFields: ["keywords", "zipcode"] },
       // Collect by URL — refresh known Target product pages.
       url_lookup: { discoverBy: null, inputFields: ["url", "zipcode"] },
       // Discover by UPC — exact match across retailers.
