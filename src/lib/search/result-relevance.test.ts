@@ -29,6 +29,12 @@ test("looksLikeAccessoryMismatch: parts/accessories/novelty dropped", () => {
   assert.equal(looksLikeAccessoryMismatch("office chair", mk("Ergonomic Office Chair High Back", 89.99)), false);
   // If the user explicitly asks for the accessory, keep it.
   assert.equal(looksLikeAccessoryMismatch("refrigerator water filter", mk("Refrigerator Water Filter", 12.99)), false);
+  // "cleaner" distinction: a refrigerator/microwave cleaner is an accessory, but a
+  // vacuum cleaner IS the appliance.
+  assert.equal(looksLikeAccessoryMismatch("refrigerator", mk("Affresh Refrigerator Cleaner Spray", 6.99)), true);
+  assert.equal(looksLikeAccessoryMismatch("microwave", mk("Microwave Cleaner Steam Spray", 5.99)), true);
+  assert.equal(looksLikeAccessoryMismatch("vacuum", mk("Dyson V8 Cordless Vacuum Cleaner", 299)), false);
+  assert.equal(looksLikeAccessoryMismatch("carpet", mk("BISSELL Carpet Cleaner Machine", 129)), false);
 });
 
 test("isTypeModifierMismatch: single-word type as a modifier of another product", () => {
@@ -70,4 +76,34 @@ test("filterRelevantOffers: drops a $3 low-price outlier among real chairs", () 
 test("filterRelevantOffers: never empties a set of relevant offers", () => {
   const offers = [mk("Ninja Air Fryer Max XL", 124.9), mk("Ninja Air Fryer Max XL", 130.29)];
   assert.equal(filterRelevantOffers(offers, "air fryer").length, 2);
+});
+
+test("vacuum: insulated water bottle dropped, real cleaners kept", () => {
+  // The word "vacuum" is only the insulation tech in a trailing feature clause.
+  const goswag =
+    "GOSWAG Insulated Sports Water Bottle, 24oz 2 Lids, Stainless Steel Water Bottles with Double-Wall Vacuum Insulation";
+  assert.equal(filterRelevantOffers([mk(goswag, 20.99)], "vacuum", "Vacuum").length, 0);
+  for (const t of [
+    "Shark Navigator Lift-Away Upright Vacuum, NV356E",
+    "Dyson V8 Cordless Vacuum Cleaner",
+    "BISSELL CleanView Bagless Vacuum Cleaner",
+  ]) {
+    assert.equal(filterRelevantOffers([mk(t, 159)], "vacuum", "Vacuum").length, 1, t);
+  }
+});
+
+test("microwave: ovens + combos kept, accessories dropped", () => {
+  for (const t of [
+    "FRIGIDAIRE 1.2 cu ft Microwave, Digital Air Fryer Combo",
+    "Toshiba Microwave Oven 0.9 cu ft",
+  ]) {
+    assert.equal(filterRelevantOffers([mk(t, 99)], "microwave", "Microwave").length, 1, t);
+  }
+  for (const t of [
+    "Microwave Turntable Glass Plate Replacement 12.4in",
+    "Microwave Splatter Cover Lid",
+    "Universal Microwave Oven Tray",
+  ]) {
+    assert.equal(filterRelevantOffers([mk(t, 9)], "microwave", "Microwave").length, 0, t);
+  }
 });

@@ -175,6 +175,21 @@ function coreTokens(text: string): string[] {
   return baseTokens(text).filter((t) => !HEAD_SPEC.has(t) && !/^\d/.test(t));
 }
 
+/**
+ * A product's PRIMARY NAME — the clause before the first comma. Marketing titles
+ * put the real product name first and pile features/specs into trailing clauses
+ * ("GOSWAG Insulated Sports Water Bottle, 24oz ..., Double-Wall Vacuum
+ * Insulation"). The type lives in the primary name, so reading head/leading
+ * regions from it (not the keyword-stuffed tail) stops "vacuum" matching a bottle
+ * whose only "vacuum" is a feature, while "Microwave, Air Fryer Combo" still reads
+ * as a microwave. Falls back to the full text when the primary clause is too short
+ * to carry a type. */
+function primaryCore(text: string): string[] {
+  const firstClause = text.split(/[,;|]/)[0] ?? text;
+  const primary = coreTokens(firstClause);
+  return primary.length >= 2 ? primary : coreTokens(text);
+}
+
 /** Trailing color/finish modifiers. English (and IKEA-style) names often append
  *  these after the head noun — "Coffee table black-brown", "Office chair gray" —
  *  so we strip them before reading the head region or the real type word is lost. */
@@ -191,7 +206,7 @@ const TRAILING_MODIFIER = new Set([
  *  color/finish words are stripped first so "Coffee table black-brown" → [coffee,
  *  table], not [black, brown]. */
 function headRegion(text: string): string[] {
-  let core = coreTokens(text);
+  let core = primaryCore(text);
   while (core.length > 1 && TRAILING_MODIFIER.has(core[core.length - 1]!)) {
     core = core.slice(0, -1);
   }
@@ -220,14 +235,16 @@ export function matchesAsHeadTerm(query: string, titleText: string, category?: s
  * name nor the head region — i.e. an incidental keyword, not the product's type.
  * Catches the keyword-stuffed junk a plain word-overlap can't: "monitor" buried in
  * a battery tester's "...Electrical Monitor Meter Equipment", "couch" listed as a
- * use-case on a stain remover. A real "LG 27in Monitor" keeps it (monitor leads).
+ * use-case on a stain remover, "vacuum" as the insulation tech on a water bottle
+ * ("...Double-Wall Vacuum Insulation"). A real "LG 27in Monitor" keeps it (monitor
+ * leads); "Microwave, Air Fryer Combo" keeps it (microwave is the primary name).
  *
- * SINGLE-token queries only. A multi-word query ("paper towels", "office chair")
- * is self-protecting: the phrase appears contiguously in a real product even when
- * the brand/size descriptor pushes it to the middle ("Sparkle Pick-A-Size Paper
- * Towels Double Rolls") — applying the leading/head test there would wrongly drop
- * it. Conservative: if the query word isn't a core token at all, returns false
- * (leave it to word-overlap).
+ * The product's TYPE region is read from its PRIMARY NAME (pre-comma); the word
+ * must lead that name or be its head noun. SINGLE-token queries only — a multi-word
+ * query ("paper towels", "office chair") is self-protecting: the phrase appears
+ * contiguously in a real product even when a brand/size descriptor pushes it to the
+ * middle ("Sparkle Pick-A-Size Paper Towels Double Rolls"). Conservative: if the
+ * query word isn't in the title at all, returns false (leave it to word-overlap).
  */
 export function isIncidentalMention(query: string, titleText: string, category?: string): boolean {
   if (baseTokens(query).length !== 1) return false;
@@ -235,14 +252,14 @@ export function isIncidentalMention(query: string, titleText: string, category?:
   if (!q.size) return false;
   const matches = (w: string) => q.has(w) || q.has(singularize(w));
 
-  const core = coreTokens(titleText);
-  const hitPositions = core.map((t, i) => (matches(t) ? i : -1)).filter((i) => i >= 0);
-  if (!hitPositions.length) return false; // type word not a core token → not our case
+  // Present anywhere in the title? If not, not our case.
+  if (!coreTokens(titleText).some(matches)) return false;
 
-  const inLeading = hitPositions.some((i) => i < 3);
-  if (inLeading) return false;
+  // The type word must lead the PRIMARY name (first ~3 core tokens) or be its head.
+  const primaryLeading = primaryCore(titleText).slice(0, 3);
+  if (primaryLeading.some(matches)) return false;
   if (matchesAsHeadTerm(query, titleText, category)) return false;
-  return true; // appears only deep / incidentally
+  return true; // present only in trailing feature/use-case clauses → incidental
 }
 
 /**

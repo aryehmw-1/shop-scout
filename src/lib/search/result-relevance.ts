@@ -16,6 +16,10 @@ const ACCESSORY_WORDS = new Set([
   "filters", "bulb", "bulbs", "cleaner", "cleaners", "shelf", "shelves", "leg",
   "legs", "armrest", "screw", "screws", "bracket", "sticker", "decal", "skin",
   "strap", "manual", "refill", "refills",
+  // Microwave / fridge / appliance accessories — never the appliance itself.
+  "tray", "trays", "turntable", "plate", "plates", "liner", "liners", "rack",
+  "racks", "splatter", "steamer", "knob", "knobs", "handle", "handles", "gasket",
+  "vent", "grease",
 ]);
 
 /** Toy / novelty / miniature words — a toy chair is not an office chair. */
@@ -41,13 +45,23 @@ export function offerMatchesQuery(
   return false;
 }
 
+/** Query types for which "cleaner" is the real appliance HEAD, not an accessory:
+ *  a "vacuum cleaner" IS a vacuum, but a "refrigerator cleaner" (spray) is not a
+ *  refrigerator. So "cleaner" only counts as junk for non-cleaning queries. */
+const CLEANER_APPLIANCE = new Set([
+  "vacuum", "carpet", "steam", "steamer", "pressure", "floor", "window", "tile",
+  "upholstery", "pool",
+]);
+
 /** An accessory/part/novelty when the user asked for the real product. */
 export function looksLikeAccessoryMismatch(query: string, offer: ProductOffer): boolean {
   const q = new Set(baseTokens(query));
+  const cleanerIsAppliance = [...q].some((t) => CLEANER_APPLIANCE.has(t));
   const tokens = baseTokens(offerText(offer));
-  return tokens.some(
-    (t) => (ACCESSORY_WORDS.has(t) || NOVELTY_WORDS.has(t)) && !q.has(t),
-  );
+  return tokens.some((t) => {
+    if ((t === "cleaner" || t === "cleaners") && cleanerIsAppliance) return false;
+    return (ACCESSORY_WORDS.has(t) || NOVELTY_WORDS.has(t)) && !q.has(t);
+  });
 }
 
 /** Distinct product head-nouns. If a single-word TYPE query (e.g. "desk") is used
