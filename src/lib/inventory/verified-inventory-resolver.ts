@@ -7,6 +7,7 @@ import { CATALOG, type CatalogItem } from "../retailers/catalog";
 import { getFlagshipCatalogIds, isFlagshipCatalogId } from "./flagship-catalog";
 import { normalizeSearchQuery, suggestCatalogProducts } from "../search/query-normalize";
 import { isShortQuery, matchesAsHeadTerm } from "../search/query-understanding";
+import { titleIsRelevant } from "../search/result-relevance";
 import type { ResolvedProduct } from "../search/types";
 import type { RetailerId } from "../types";
 import { storedRowToLiveQuoteFields } from "../indexing/offer-rows";
@@ -336,6 +337,13 @@ export async function resolveVerifiedInventoryQuery(
 ): Promise<VerifiedInventoryResolution> {
   const candidates = rankVerifiedInventoryCandidates(query);
 
+  // A candidate that has a quote but whose TITLE would be dropped by the display
+  // relevance gates (e.g. "dish soap" → "365 … Dish Soap REFILL") must not win over
+  // a product that actually survives those gates. We keep looking, remembering the
+  // weaker options only as last-resort fallbacks.
+  let fallbackQuoted: VerifiedInventoryResolution | null = null;
+  let catalogOnly: VerifiedInventoryResolution | null = null;
+
   for (const candidate of candidates) {
     const quotes = await loadPersistedLiveQuotes(candidate.catalogId);
     candidate.hasPersistedQuotes = quotes.length > 0;
@@ -346,6 +354,8 @@ export async function resolveVerifiedInventoryQuery(
       continue;
     }
 
+    const relevant = titleIsRelevant(query, item.title, item.brand);
+
     if (quotes.length === 0) {
       candidate.rejectedReason = "no_active_persisted_quotes";
       const groceryCategory =
@@ -354,11 +364,13 @@ export async function resolveVerifiedInventoryQuery(
         item.category === "household" ||
         item.category === "produce";
       if (
+        !catalogOnly &&
+        relevant &&
         candidate.score >= 35 &&
         groceryCategory &&
         candidates[0]?.catalogId === candidate.catalogId
       ) {
-        return {
+        catalogOnly = {
           hit: false,
           catalogItem: item,
           resolved: {
@@ -381,8 +393,7 @@ export async function resolveVerifiedInventoryQuery(
 
     const bestQuote = quotes[0]!;
     const confidence = Math.min(0.98, 0.6 + candidate.score / 200);
-
-    return {
+    const result: VerifiedInventoryResolution = {
       hit: true,
       catalogItem: item,
       resolved: {
@@ -401,13 +412,18 @@ export async function resolveVerifiedInventoryQuery(
       qaStatus: bestQuote.qaStatus ?? "none",
       normalizationNote: bestQuote.normalizationNote,
     };
+    if (relevant) return result; // best case: a quote AND survives the display gates
+    if (!fallbackQuoted) fallbackQuoted = result;
   }
 
-  // Static catalog missed. Fall back to DB-backed product search so products
-  // imported via the ingestion pipeline (e.g. IKEA) are discoverable by chat —
-  // still reading ONLY published/approved rows from Postgres (no scraping/AI).
+  // Real, relevant DB import (e.g. the freshly imported Dawn dish soap, which
+  // survives the display gates) beats a catalog-only placeholder with no live
+  // price and beats a quoted-but-irrelevant static item.
   const dbHit = await resolveFromDbProducts(query, candidates);
   if (dbHit) return dbHit;
+
+  if (catalogOnly) return catalogOnly;
+  if (fallbackQuoted) return fallbackQuoted;
 
   return {
     hit: false,
@@ -515,10 +531,14 @@ async function resolveFromDbProducts(
     hasPersistedQuotes: false,
   }));
 
+  // Prefer the highest-scored product that has a quote AND survives the display
+  // relevance gates. A quoted-but-gated row (e.g. an accessory/refill) is kept only
+  // as a last resort, so it can never starve a real product that would show.
+  let fallback: VerifiedInventoryResolution | null = null;
   for (const { p, score } of scored.slice(0, 8)) {
     const quotes = await loadPersistedLiveQuotes(p.catalogId);
     if (!quotes.length) continue;
-    return {
+    const result: VerifiedInventoryResolution = {
       hit: true,
       catalogItem: productToCatalogItem(p),
       resolved: {
@@ -535,8 +555,10 @@ async function resolveFromDbProducts(
       quotes,
       lastVerifiedAt: quotes[0]!.fetchedAt,
     };
+    if (titleIsRelevant(query, p.title, p.brand)) return result;
+    if (!fallback) fallback = result;
   }
-  return null;
+  return fallback;
 }
 
 export async function resolveVerifiedInventoryByAsin(

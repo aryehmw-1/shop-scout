@@ -102,6 +102,37 @@ export function isTypeModifierMismatch(query: string, offer: ProductOffer): bool
 const realPrice = (o: ProductOffer): number =>
   o.price && o.price > 0 ? o.price : o.landedCost ?? 0;
 
+/** Does a single offer survive ALL the per-offer display gates (everything except
+ *  the multi-offer price-outlier guard)? The single source of truth shared by the
+ *  display filter and the catalog resolver, so the resolver never commits to a
+ *  product the display would then drop. */
+function offerPassesGates(query: string, offer: ProductOffer, matchedTitle?: string): boolean {
+  return (
+    offerMatchesQuery(query, offer, matchedTitle) &&
+    !looksLikeAccessoryMismatch(query, offer) &&
+    !isTypeModifierMismatch(query, offer) &&
+    !isIncidentalMention(query, offerText(offer))
+  );
+}
+
+/**
+ * Title-level version of the display gates, for the catalog resolver: would a
+ * product with this title (and brand) survive the per-offer relevance gates for
+ * the query? Lets the resolver SKIP a top text-match that the display layer would
+ * only reject — e.g. "dish soap" → "365 … Dish Soap REFILL" (accessory) — and keep
+ * looking for a product that actually shows.
+ */
+export function titleIsRelevant(
+  query: string | undefined,
+  title: string,
+  brand?: string,
+  matchedTitle?: string,
+): boolean {
+  if (!query?.trim() || !title?.trim()) return true;
+  const offer = { brand: brand ?? "", storeTitle: title } as unknown as ProductOffer;
+  return offerPassesGates(query, offer, matchedTitle);
+}
+
 /**
  * Apply the relevance + sanity gates to a set of offers for a query:
  *   1. drop offers that share NO content word with the query/matched product,
@@ -117,13 +148,7 @@ export function filterRelevantOffers(
 ): ProductOffer[] {
   if (!query?.trim() || offers.length === 0) return offers;
 
-  let kept = offers.filter(
-    (o) =>
-      offerMatchesQuery(query, o, matchedTitle) &&
-      !looksLikeAccessoryMismatch(query, o) &&
-      !isTypeModifierMismatch(query, o) &&
-      !isIncidentalMention(query, offerText(o)),
-  );
+  let kept = offers.filter((o) => offerPassesGates(query, o, matchedTitle));
   if (kept.length === 0) return kept; // nothing relevant → request-form path
 
   // LOW price-outlier guard: only with enough of a baseline to trust the median.

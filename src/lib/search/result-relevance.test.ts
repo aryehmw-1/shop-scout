@@ -6,6 +6,7 @@ import {
   looksLikeAccessoryMismatch,
   isTypeModifierMismatch,
   filterRelevantOffers,
+  titleIsRelevant,
 } from "./result-relevance";
 
 const mk = (title: string, price: number, brand = ""): ProductOffer =>
@@ -76,6 +77,17 @@ test("filterRelevantOffers: drops a $3 low-price outlier among real chairs", () 
 test("filterRelevantOffers: never empties a set of relevant offers", () => {
   const offers = [mk("Ninja Air Fryer Max XL", 124.9), mk("Ninja Air Fryer Max XL", 130.29)];
   assert.equal(filterRelevantOffers(offers, "air fryer").length, 2);
+});
+
+test("titleIsRelevant: resolver skips what the display gates would drop", () => {
+  // The "dish soap" starvation case: an old refill outranks fresh real imports.
+  assert.equal(titleIsRelevant("dish soap", "365 by Whole Foods Market Grapefruit Dish Soap Refill"), false);
+  assert.equal(titleIsRelevant("dish soap", "Dawn Ultra Dishwashing Liquid Dish Soap"), true);
+  assert.equal(titleIsRelevant("dish soap", "Seventh Generation Dish Liquid Soap"), true);
+  // Other gates flow through: incidental + accessory + type-modifier.
+  assert.equal(titleIsRelevant("vacuum", "GOSWAG Water Bottle, with Double-Wall Vacuum Insulation"), false);
+  assert.equal(titleIsRelevant("microwave", "Pop Secret Butter Microwave Popcorn"), false);
+  assert.equal(titleIsRelevant("paper towels", "Bounty Select-A-Size Paper Towels"), true);
 });
 
 test("vacuum: insulated water bottle dropped, real cleaners kept", () => {
