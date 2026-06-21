@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { BrandHomeMark } from "@/components/brand/BrandHomeMark";
 import { APP_NAME } from "@/lib/constants";
+import { NAV_PRESS, NAV_PRESS_IDLE } from "@/components/Sidebar";
 
 const nav = [
   { href: "/chat", label: "Compare", icon: Search },
@@ -63,7 +64,7 @@ export function MobileNav() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open menu"
-        className="fixed left-3 top-2 z-40 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-700 ring-1 ring-orange-300/80 shadow-[0_2px_8px_rgba(120,80,30,0.18)] transition hover:bg-orange-200/80"
+        className={`fixed left-3 top-2 z-40 flex h-10 w-10 items-center justify-center rounded-xl bg-orange-100 text-orange-700 ring-1 ring-orange-300/80 shadow-[0_2px_8px_rgba(120,80,30,0.18)] hover:bg-orange-200/80 ${NAV_PRESS} active:bg-orange-200`}
       >
         <Menu size={20} strokeWidth={2.2} aria-hidden />
       </button>
@@ -92,7 +93,7 @@ export function MobileNav() {
             type="button"
             onClick={() => setOpen(false)}
             aria-label="Close menu"
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-stone-400 transition hover:bg-white/70 hover:text-stone-700"
+            className={`flex h-9 w-9 items-center justify-center rounded-lg text-stone-400 hover:bg-white/70 hover:text-stone-700 ${NAV_PRESS_IDLE}`}
           >
             <X size={20} aria-hidden />
           </button>
@@ -107,7 +108,7 @@ export function MobileNav() {
               router.push("/chat");
               window.dispatchEvent(new CustomEvent("homivion:new-chat"));
             }}
-            className="mb-1 flex items-center gap-3 rounded-xl border border-orange-200/80 bg-white px-3 py-3 text-[15px] font-semibold text-ink-700 shadow-sm transition hover:border-orange-300 hover:bg-orange-50"
+            className={`mb-1 flex items-center gap-3 rounded-xl border border-orange-200/80 bg-white px-3 py-3 text-[15px] font-semibold text-ink-700 shadow-sm hover:border-orange-300 hover:bg-orange-50 ${NAV_PRESS} active:bg-orange-100`}
           >
             <RotateCcw size={18} strokeWidth={2} aria-hidden />
             New chat
@@ -120,10 +121,11 @@ export function MobileNav() {
                 key={href}
                 href={href}
                 scroll={false}
-                className={`flex items-center gap-3 rounded-xl px-3 py-3 text-[15px] font-semibold transition ${
+                aria-current={active ? "page" : undefined}
+                className={`flex items-center gap-3 rounded-xl px-3 py-3 text-[15px] font-semibold ${NAV_PRESS} ${
                   active
-                    ? "bg-orange-500 text-white shadow-sm shadow-orange-500/30"
-                    : "text-stone-700 hover:bg-white/70 hover:text-stone-950"
+                    ? "bg-orange-500 text-white shadow-sm shadow-orange-500/30 active:bg-orange-600"
+                    : "text-stone-700 hover:bg-white/70 hover:text-stone-950 active:bg-stone-200/80"
                 }`}
               >
                 <Icon size={19} strokeWidth={2} aria-hidden />
@@ -153,7 +155,7 @@ export function MobileNav() {
           ) : (
             <Link
               href="/login"
-              className="flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-bold text-stone-700 transition hover:bg-white/70 hover:text-stone-950"
+              className={`flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-bold text-stone-700 hover:bg-white/70 hover:text-stone-950 ${NAV_PRESS_IDLE}`}
             >
               <LogIn size={18} aria-hidden /> Sign in
             </Link>

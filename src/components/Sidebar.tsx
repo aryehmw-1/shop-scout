@@ -18,6 +18,17 @@ const mainNav = [
 const STORAGE_KEY = "homivion-sidebar-expanded";
 
 /**
+ * Press feedback shared by every nav control. `active:` fires on mouse-DOWN and
+ * touch-START — i.e. the instant the user presses, before navigation resolves — so
+ * a click/tap always feels registered even when the next page takes a moment.
+ * A fast scale + darken; disabled under prefers-reduced-motion.
+ */
+export const NAV_PRESS =
+  "transition-all duration-100 ease-out active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100";
+/** Press darken for an UNSELECTED item (selected items darken their own tint). */
+export const NAV_PRESS_IDLE = `${NAV_PRESS} active:bg-stone-200/80`;
+
+/**
  * Wraps a collapsed-sidebar nav item and shows a label tooltip on hover.
  * Renders the tooltip into document.body via a portal so it can never be
  * clipped by the sidebar's overflow:hidden, and uses the native `title`
@@ -112,7 +123,7 @@ export function Sidebar() {
                 onClick={toggle}
                 aria-label="Collapse sidebar"
                 title="Collapse sidebar"
-                className="ml-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-stone-400 transition hover:bg-stone-100 hover:text-stone-700"
+                className={`ml-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-stone-400 hover:bg-stone-100 hover:text-stone-700 ${NAV_PRESS_IDLE}`}
               >
                 <PanelLeftClose size={18} strokeWidth={2} aria-hidden />
               </button>
@@ -125,7 +136,7 @@ export function Sidebar() {
                 type="button"
                 onClick={toggle}
                 aria-label="Open sidebar"
-                className="group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl p-1 transition hover:bg-stone-100"
+                className={`group flex h-10 w-10 shrink-0 items-center justify-center rounded-xl p-1 hover:bg-stone-100 ${NAV_PRESS_IDLE}`}
               >
                 <BrandHomeMark size="md" className="group-hover:hidden" />
                 <PanelLeftOpen
@@ -157,12 +168,13 @@ export function Sidebar() {
                 <Link
                   href={href}
                   scroll={false}
-                  className={`flex items-center rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+                  aria-current={active ? "page" : undefined}
+                  className={`flex items-center rounded-xl px-3 py-2.5 text-sm font-semibold ${NAV_PRESS} ${
                     expanded ? "gap-3" : "justify-center"
                   } ${
                     active
-                      ? "bg-orange-500 text-white shadow-sm shadow-orange-500/30"
-                      : "text-stone-600 hover:bg-white/70 hover:text-stone-950"
+                      ? "bg-orange-500 text-white shadow-sm shadow-orange-500/30 active:bg-orange-600"
+                      : "text-stone-600 hover:bg-white/70 hover:text-stone-950 active:bg-stone-200/80"
                   }`}
                 >
                   <Icon size={18} strokeWidth={2} aria-hidden />
@@ -193,12 +205,13 @@ export function Sidebar() {
             <Link
               href="/settings"
               scroll={false}
-              className={`flex items-center rounded-xl px-3 py-2.5 text-sm font-semibold transition ${
+              aria-current={pathname.startsWith("/settings") ? "page" : undefined}
+              className={`flex items-center rounded-xl px-3 py-2.5 text-sm font-semibold ${NAV_PRESS} ${
                 expanded ? "gap-3" : "justify-center"
               } ${
                 pathname.startsWith("/settings")
-                  ? "bg-orange-50 text-orange-700"
-                  : "text-stone-600 hover:bg-stone-100 hover:text-stone-950"
+                  ? "bg-orange-50 text-orange-700 active:bg-orange-100"
+                  : "text-stone-600 hover:bg-stone-100 hover:text-stone-950 active:bg-stone-200/80"
               }`}
             >
               <Settings size={18} aria-hidden />
@@ -238,7 +251,7 @@ export function Sidebar() {
                   if (user) { await logout(); router.refresh(); }
                   else router.push("/login");
                 }}
-                className="flex items-center justify-center rounded-xl px-3 py-2.5 text-stone-600 transition hover:bg-stone-100 hover:text-stone-950"
+                className={`flex items-center justify-center rounded-xl px-3 py-2.5 text-stone-600 hover:bg-stone-100 hover:text-stone-950 ${NAV_PRESS_IDLE}`}
               >
                 {user ? <LogOut size={18} aria-hidden /> : <LogIn size={18} aria-hidden />}
               </button>
