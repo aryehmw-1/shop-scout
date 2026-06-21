@@ -6,7 +6,7 @@ import { prisma } from "../db/prisma";
 import { CATALOG, type CatalogItem } from "../retailers/catalog";
 import { getFlagshipCatalogIds, isFlagshipCatalogId } from "./flagship-catalog";
 import { normalizeSearchQuery, suggestCatalogProducts } from "../search/query-normalize";
-import { isShortQuery, matchesAsHeadTerm } from "../search/query-understanding";
+import { matchesAsHeadTerm } from "../search/query-understanding";
 import { titleIsRelevant } from "../search/result-relevance";
 import { classifyQuoteFreshness } from "../pricing/quote-freshness-policy";
 
@@ -529,13 +529,15 @@ async function resolveFromDbProducts(
   if (!products.length) return null;
 
   const ql = query.toLowerCase();
-  // HEAD-NOUN gate for short/broad queries: the bulk-imported rows carry long,
+  // HEAD-NOUN gate for SINGLE-word queries only: the bulk-imported rows carry long,
   // keyword-stuffed titles, so a plain substring match surfaces incidental
   // mentions — "refrigerator" hits a juice bottle ("...for Juicing, Refrigerator,
-  // BPA Free"), "monitor" hits a battery tester ("...Electrical Monitor Meter"),
-  // "vacuum" hits a "Vacuum Insulated" water bottle. Require the query word in the
-  // product's HEAD REGION (or category), so the row's actual TYPE is the match.
-  const gateHead = isShortQuery(query);
+  // BPA Free"), "monitor" hits a battery tester, "vacuum" hits a "Vacuum Insulated"
+  // bottle. Require the word in the product's HEAD REGION (or category).
+  // Multi-word queries are self-protecting (the phrase appears contiguously even
+  // mid-title — "Bounty Paper Towels Select-A-Size"), so the head gate would WRONGLY
+  // drop them; titleIsRelevant in the selection loop catches multi-word junk.
+  const gateHead = tokens.length === 1;
   const scored = products
     .filter((p) => !gateHead || matchesAsHeadTerm(query, `${p.brand} ${p.title}`, p.category ?? undefined))
     .map((p) => {
