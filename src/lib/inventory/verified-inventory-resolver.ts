@@ -8,6 +8,26 @@ import { getFlagshipCatalogIds, isFlagshipCatalogId } from "./flagship-catalog";
 import { normalizeSearchQuery, suggestCatalogProducts } from "../search/query-normalize";
 import { isShortQuery, matchesAsHeadTerm } from "../search/query-understanding";
 import { titleIsRelevant } from "../search/result-relevance";
+import { classifyQuoteFreshness } from "../pricing/quote-freshness-policy";
+
+/**
+ * Is a candidate's best quote DISPLAY-FRESH (tier fresh/aging)? Used only for
+ * PRODUCT SELECTION — so an aged static/flagship placeholder (whose quote is
+ * stale/expired) can't shadow a fresher, equally-relevant real import. It does NOT
+ * drop stale offers: a stale candidate is kept as a fallback and still displayed
+ * (labeled) when nothing fresher matches. Offer ORDERING (cheapest-first, stale
+ * included) is unchanged and happens later in the display layer.
+ */
+function bestQuoteIsFresh(quotes: LiveQuote[]): boolean {
+  const q = quotes[0];
+  if (!q) return false;
+  const tier = classifyQuoteFreshness({
+    fetchedAt: q.fetchedAt,
+    retailerId: q.retailerId,
+    priceSource: q.priceSource,
+  }).tier;
+  return tier === "fresh" || tier === "aging";
+}
 import type { ResolvedProduct } from "../search/types";
 import type { RetailerId } from "../types";
 import { storedRowToLiveQuoteFields } from "../indexing/offer-rows";
@@ -339,9 +359,11 @@ export async function resolveVerifiedInventoryQuery(
 
   // A candidate that has a quote but whose TITLE would be dropped by the display
   // relevance gates (e.g. "dish soap" → "365 … Dish Soap REFILL") must not win over
-  // a product that actually survives those gates. We keep looking, remembering the
-  // weaker options only as last-resort fallbacks.
+  // a product that actually survives those gates. Nor should an aged static/flagship
+  // placeholder (stale quote) shadow a fresher, relevant real import. We keep
+  // looking, remembering the weaker options only as last-resort fallbacks.
   let fallbackQuoted: VerifiedInventoryResolution | null = null;
+  let staleRelevant: VerifiedInventoryResolution | null = null;
   let catalogOnly: VerifiedInventoryResolution | null = null;
 
   for (const candidate of candidates) {
@@ -412,16 +434,20 @@ export async function resolveVerifiedInventoryQuery(
       qaStatus: bestQuote.qaStatus ?? "none",
       normalizationNote: bestQuote.normalizationNote,
     };
-    if (relevant) return result; // best case: a quote AND survives the display gates
-    if (!fallbackQuoted) fallbackQuoted = result;
+    if (relevant && bestQuoteIsFresh(quotes)) return result; // relevant + survives gates + fresh
+    if (relevant && !staleRelevant) staleRelevant = result;  // relevant but STALE → fallback only
+    if (!relevant && !fallbackQuoted) fallbackQuoted = result;
   }
 
-  // Real, relevant DB import (e.g. the freshly imported Dawn dish soap, which
-  // survives the display gates) beats a catalog-only placeholder with no live
-  // price and beats a quoted-but-irrelevant static item.
+  // Real, relevant DB import (e.g. fresh Bounty for "paper towels") beats a STALE
+  // static/flagship placeholder, a catalog-only placeholder (no live price), and a
+  // quoted-but-irrelevant static item. resolveFromDbProducts itself prefers fresh.
   const dbHit = await resolveFromDbProducts(query, candidates);
   if (dbHit) return dbHit;
 
+  // Nothing fresher matched → fall back to the relevant-but-stale catalog item
+  // (shown with a stale/last-verified label), then the weaker placeholders.
+  if (staleRelevant) return staleRelevant;
   if (catalogOnly) return catalogOnly;
   if (fallbackQuoted) return fallbackQuoted;
 
@@ -531,10 +557,12 @@ async function resolveFromDbProducts(
     hasPersistedQuotes: false,
   }));
 
-  // Prefer the highest-scored product that has a quote AND survives the display
-  // relevance gates. A quoted-but-gated row (e.g. an accessory/refill) is kept only
-  // as a last resort, so it can never starve a real product that would show.
-  let fallback: VerifiedInventoryResolution | null = null;
+  // Prefer the highest-scored product that has a quote, survives the display
+  // relevance gates, AND is fresh. A gated row (accessory/refill) or a stale one is
+  // kept only as a fallback, so it can never starve a real, fresh product. Offer
+  // ORDERING (cheapest-first, stale included + labeled) happens later in display.
+  let staleRelevantFallback: VerifiedInventoryResolution | null = null;
+  let gatedFallback: VerifiedInventoryResolution | null = null;
   for (const { p, score } of scored.slice(0, 8)) {
     const quotes = await loadPersistedLiveQuotes(p.catalogId);
     if (!quotes.length) continue;
@@ -555,10 +583,14 @@ async function resolveFromDbProducts(
       quotes,
       lastVerifiedAt: quotes[0]!.fetchedAt,
     };
-    if (titleIsRelevant(query, p.title, p.brand)) return result;
-    if (!fallback) fallback = result;
+    if (!titleIsRelevant(query, p.title, p.brand)) {
+      if (!gatedFallback) gatedFallback = result;
+      continue;
+    }
+    if (bestQuoteIsFresh(quotes)) return result; // relevant + fresh → best
+    if (!staleRelevantFallback) staleRelevantFallback = result;
   }
-  return fallback;
+  return staleRelevantFallback ?? gatedFallback;
 }
 
 export async function resolveVerifiedInventoryByAsin(
