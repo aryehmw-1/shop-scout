@@ -521,6 +521,7 @@ async function resolveFromDbProducts(
     },
     take: 30,
     select: {
+      id: true,
       catalogId: true, title: true, brand: true, sizeLabel: true, upc: true,
       imageUrl: true, category: true, keywordsJson: true, organic: true,
       basePriceUsd: true, unitLabel: true, slug: true,
@@ -559,40 +560,70 @@ async function resolveFromDbProducts(
     hasPersistedQuotes: false,
   }));
 
-  // Prefer the highest-scored product that has a quote, survives the display
-  // relevance gates, AND is fresh. A gated row (accessory/refill) or a stale one is
-  // kept only as a fallback, so it can never starve a real, fresh product. Offer
-  // ORDERING (cheapest-first, stale included + labeled) happens later in display.
-  let staleRelevantFallback: VerifiedInventoryResolution | null = null;
-  let gatedFallback: VerifiedInventoryResolution | null = null;
-  for (const { p, score } of scored.slice(0, 8)) {
-    const quotes = await loadPersistedLiveQuotes(p.catalogId);
-    if (!quotes.length) continue;
-    const result: VerifiedInventoryResolution = {
-      hit: true,
-      catalogItem: productToCatalogItem(p),
-      resolved: {
-        catalogId: p.catalogId,
-        title: p.title,
-        brand: p.brand,
-        confidence: Math.min(0.95, 0.6 + score / 200),
-        matchReason: "db_product_title_token",
-        synthetic: false,
-      },
-      matchMethod: "title_token",
-      matchScore: score,
-      candidates: [...existingCandidates, ...dbCandidates],
-      quotes,
-      lastVerifiedAt: quotes[0]!.fetchedAt,
-    };
-    if (!titleIsRelevant(query, p.title, p.brand)) {
-      if (!gatedFallback) gatedFallback = result;
-      continue;
-    }
-    if (bestQuoteIsFresh(quotes)) return result; // relevant + fresh → best
-    if (!staleRelevantFallback) staleRelevantFallback = result;
+  // Batch-load the newest consumer-visible quote per candidate in ONE query (no
+  // N+1), so freshness can be weighed across ALL candidates — not just a top-N
+  // window where a generic seed ("Paper Towels") tied on text score would hide a
+  // fresher branded import ("Bounty Paper Towels …") ranked just below it.
+  const ids = scored.map((s) => s.p.id);
+  const quoteRows = await prisma.priceQuote.findMany({
+    where: {
+      productId: { in: ids },
+      source: { in: VERIFIED_SOURCES },
+      ...consumerVisibleQuoteWhere(),
+    },
+    select: { productId: true, fetchedAt: true, retailerId: true, source: true },
+    orderBy: { fetchedAt: "desc" },
+  });
+  const newestByProduct = new Map<string, { fetchedAt: Date; retailerId: string; source: string }>();
+  for (const q of quoteRows) if (!newestByProduct.has(q.productId)) newestByProduct.set(q.productId, q);
+
+  const isFresh = (id: string): boolean => {
+    const q = newestByProduct.get(id);
+    if (!q) return false;
+    const tier = classifyQuoteFreshness({
+      fetchedAt: q.fetchedAt,
+      retailerId: q.retailerId as RetailerId,
+      priceSource: q.source as never,
+    }).tier;
+    return tier === "fresh" || tier === "aging";
+  };
+
+  // Choose, in score order: the first relevant product with a FRESH quote; else the
+  // first relevant product with any (stale) quote; else the first gated product with
+  // a quote. A stale/generic placeholder can never starve a fresher relevant import,
+  // but stale offers still surface (labeled) when nothing fresher matches.
+  let chosen: (typeof scored)[number] | null = null;
+  let staleRelevant: (typeof scored)[number] | null = null;
+  let gated: (typeof scored)[number] | null = null;
+  for (const s of scored) {
+    if (!newestByProduct.has(s.p.id)) continue; // no consumer-visible quote
+    const relevant = titleIsRelevant(query, s.p.title, s.p.brand);
+    if (!relevant) { gated ??= s; continue; }
+    if (isFresh(s.p.id)) { chosen = s; break; }
+    staleRelevant ??= s;
   }
-  return staleRelevantFallback ?? gatedFallback;
+  const pick = chosen ?? staleRelevant ?? gated;
+  if (!pick) return null;
+
+  const quotes = await loadPersistedLiveQuotes(pick.p.catalogId);
+  if (!quotes.length) return null;
+  return {
+    hit: true,
+    catalogItem: productToCatalogItem(pick.p),
+    resolved: {
+      catalogId: pick.p.catalogId,
+      title: pick.p.title,
+      brand: pick.p.brand,
+      confidence: Math.min(0.95, 0.6 + pick.score / 200),
+      matchReason: "db_product_title_token",
+      synthetic: false,
+    },
+    matchMethod: "title_token",
+    matchScore: pick.score,
+    candidates: [...existingCandidates, ...dbCandidates],
+    quotes,
+    lastVerifiedAt: quotes[0]!.fetchedAt,
+  };
 }
 
 export async function resolveVerifiedInventoryByAsin(
