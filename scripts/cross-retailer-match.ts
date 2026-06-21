@@ -48,6 +48,7 @@ loadEnv();
 
 import { prisma } from "../src/lib/db/prisma";
 import { ingestRetailerProducts } from "../src/lib/pipeline/ingest";
+import { getRetailerConfigByName } from "../src/lib/pipeline/ingestion/retailer-config";
 import type { SourcingRetailer } from "../src/lib/pipeline/sourcing/retailer-strategy";
 
 function flag(name: string, def?: string): string | undefined {
@@ -78,10 +79,13 @@ async function main() {
   const seen = new Set<string>();
   const upcs: { upc: string; title: string }[] = [];
   for (const p of barcoded) {
-    const digits = (p.upc ?? "").replace(/\D/g, "");
-    if (digits.length < 8 || seen.has(digits)) continue;
+    // Some Target rows pack several space-separated UPCs — anchor on the FIRST,
+    // so the stamp produces a single clean code:<gtin14> key.
+    const first = (p.upc ?? "").trim().split(/\s+/)[0] ?? "";
+    const digits = first.replace(/\D/g, "");
+    if (digits.length < 8 || digits.length > 14 || seen.has(digits)) continue;
     seen.add(digits);
-    upcs.push({ upc: p.upc!, title: p.title });
+    upcs.push({ upc: first, title: p.title });
     if (upcs.length >= MAX_UPCS) break;
   }
 
@@ -94,22 +98,36 @@ async function main() {
   console.log(`  UPC-lookup retailers: ${RETAILERS.join(", ")}`);
   console.log(`  Lookups: ${lookups} | max records: ~${maxRecords} | est cost: ~$${estCost.toFixed(2)}`);
   console.log(`  SPEND CAP: $${MAX_SPEND.toFixed(2)}`);
-  console.log("  NOTE: merge needs the UPC-STAMP step (see header) — without it the");
-  console.log("        looked-up rows key as model:asin and will NOT merge.");
+  console.log("  UPC-STAMP active: the queried upc is written onto the looked-up rows");
+  console.log("  (upcGtin) so they key as code:<gtin14> and MERGE with the anchor product.");
   if (estCost > MAX_SPEND) { console.error("  ABORT: estimate exceeds --max-spend."); process.exit(1); }
   if (!upcs.length) { console.log("  No recent barcoded products found — import Target first."); process.exit(0); }
   if (DRY) { console.log("\n--dry-run: no API calls made. Exiting."); process.exit(0); }
   if (!YES) { console.error("  Re-run with --yes to execute (paid)."); process.exit(1); }
 
-  let spent = 0, ok = 0, miss = 0, fail = 0, consecErr = 0;
-  console.log("\n=== Looking up barcodes (live Bright Data) ===");
+  let spent = 0, ok = 0, miss = 0, fail = 0, stamped = 0, consecErr = 0;
+  console.log("\n=== Looking up barcodes (live Bright Data) + UPC-STAMP ===");
   for (const { upc, title } of upcs) {
     for (const retailer of RETAILERS) {
-      if (spent + LIMIT * COST > MAX_SPEND) { console.error("  !! spend cap reached — stopping."); await done(ok, miss, fail); return; }
+      if (spent + LIMIT * COST > MAX_SPEND) { console.error("  !! spend cap reached — stopping."); await done(ok, miss, fail, spent, stamped); return; }
       try {
+        const t0 = new Date(Date.now() - 5_000); // small skew guard
         const res = await ingestRetailerProducts({ retailer, query: upc, operation: "upc_lookup", limit: LIMIT });
         spent += (res.inserted || LIMIT) * COST;
-        if (res.inserted > 0) { ok++; console.log(`  ✓ ${retailer} ${upc} → ${res.inserted} row(s)  [${title.slice(0, 32)}]`); }
+        if (res.inserted > 0) {
+          ok++;
+          // UPC-STAMP: the looked-up retailer's scrape omits the barcode, so stamp
+          // the QUERIED upc onto the new RAW rows (we searched by it → high
+          // confidence). buildNormalizedListing reads upcGtin → duplicateGroupKey
+          // becomes code:<gtin14> → it merges with the Target product at publish.
+          const retailerName = getRetailerConfigByName(retailer)?.name ?? retailer;
+          const upd = await prisma.rawProductRecord.updateMany({
+            where: { retailer: retailerName, scrapedAt: { gte: t0 }, OR: [{ upcGtin: null }, { upcGtin: "" }] },
+            data: { upcGtin: upc },
+          });
+          stamped += upd.count;
+          console.log(`  ✓ ${retailer} ${upc} → ${res.inserted} row(s), stamped ${upd.count}  [${title.slice(0, 30)}]`);
+        }
         else { miss++; console.log(`  · ${retailer} ${upc} → no match`); }
         consecErr = 0;
       } catch (err) {
@@ -120,12 +138,12 @@ async function main() {
     }
     if (consecErr >= 3) break;
   }
-  await done(ok, miss, fail, spent);
+  await done(ok, miss, fail, spent, stamped);
 }
 
-async function done(ok: number, miss: number, fail: number, spent = 0) {
+async function done(ok: number, miss: number, fail: number, spent = 0, stamped = 0) {
   console.log("\n=== Ingest summary ===");
-  console.log(`  matched (rows found): ${ok} | no-match: ${miss} | failed: ${fail} | ~$${spent.toFixed(2)} spent`);
+  console.log(`  matched (rows found): ${ok} | no-match: ${miss} | failed: ${fail} | upc-stamped rows: ${stamped} | ~$${spent.toFixed(2)} spent`);
   console.log("  Next: publish + merge with");
   console.log(`    npx tsx --conditions=react-server scripts/import-common-products.ts --no-ingest --retailers=${RETAILERS.join(",")}`);
   await prisma.$disconnect();
