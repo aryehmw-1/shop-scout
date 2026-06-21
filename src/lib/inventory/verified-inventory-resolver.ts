@@ -588,21 +588,25 @@ async function resolveFromDbProducts(
     return tier === "fresh" || tier === "aging";
   };
 
-  // Choose, in score order: the first relevant product with a FRESH quote; else the
-  // first relevant product with any (stale) quote; else the first gated product with
-  // a quote. A stale/generic placeholder can never starve a fresher relevant import,
-  // but stale offers still surface (labeled) when nothing fresher matches.
+  // Choose, in score order: the first relevant product with a FRESH quote; else,
+  // among relevant STALE products, a real retailer import (cat- id) BEFORE a static
+  // catalog placeholder seed — the bare "Paper Towels" seed's low-confidence offer
+  // is hidden by the display gates, while a real import's stale offer shows
+  // (labeled). Else the first gated product with a quote. A stale/generic seed can
+  // never starve a fresher OR more-real relevant import; stale offers still surface.
   let chosen: (typeof scored)[number] | null = null;
-  let staleRelevant: (typeof scored)[number] | null = null;
+  let staleImport: (typeof scored)[number] | null = null;
+  let staleSeed: (typeof scored)[number] | null = null;
   let gated: (typeof scored)[number] | null = null;
   for (const s of scored) {
     if (!newestByProduct.has(s.p.id)) continue; // no consumer-visible quote
     const relevant = titleIsRelevant(query, s.p.title, s.p.brand);
     if (!relevant) { gated ??= s; continue; }
     if (isFresh(s.p.id)) { chosen = s; break; }
-    staleRelevant ??= s;
+    if (s.p.catalogId.startsWith("cat-")) staleImport ??= s;
+    else staleSeed ??= s;
   }
-  const pick = chosen ?? staleRelevant ?? gated;
+  const pick = chosen ?? staleImport ?? staleSeed ?? gated;
   if (!pick) return null;
 
   const quotes = await loadPersistedLiveQuotes(pick.p.catalogId);
