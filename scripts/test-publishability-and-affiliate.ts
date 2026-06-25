@@ -376,11 +376,13 @@ async function main() {
 
   // Target: same generic architecture, dataset gd_ltppk5mx2lp0v1k0vo.
   const target = getRetailerConfig("target");
-  check("Target keyword_search → Discover by keywords {keyword, domain, zipcode}", () => {
+  check("Target keyword_search → Discover by keywords {keywords, zipcode}", () => {
     const op = getRetailerOperation(target, "keyword_search");
     assert.ok(op);
-    // Target's dataset uses the "keywords" discover collector (plural) and
-    // REQUIRES a domain (site URL) alongside the keyword — verified live.
+    // Target's dataset uses the "keywords" discover collector (plural) and the
+    // search term must be in a field literally named `keywords`; it REJECTS a
+    // `keyword`/`domain` field ("This input should not contain a keyword field").
+    // Verified live 2026-06-19.
     assert.equal(op!.discoverBy, "keywords");
     assert.deepEqual(
       buildOperationInput(op!, "laundry detergent", {
@@ -388,8 +390,7 @@ async function main() {
         domain: "https://www.target.com",
       }),
       {
-        keyword: "laundry detergent",
-        domain: "https://www.target.com",
+        keywords: "laundry detergent",
         zipcode: "78701",
       },
     );

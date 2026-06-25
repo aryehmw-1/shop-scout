@@ -1,7 +1,27 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-25T03:44:10.070Z",
+  "updatedAt": "2026-06-25T19:23:46.771Z",
   "events": [
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T19:23:46.771Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T19:23:46.758Z"
+    },
+    {
+      "event": "session_return",
+      "sessionId": "s_mqtu9kv1_nlekup",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-25T18:31:46.271Z"
+    },
     {
       "event": "session_abandon",
       "sessionId": "s_mqsyk4ln_fx3l89",
