@@ -1,5 +1,6 @@
 import { CATALOG } from "../retailers/catalog";
 import { getProductionCategoryIds } from "../inventory/category-coverage";
+import { stripShoppingPrefixes } from "../shopping/query";
 
 /** Simple Damerau-Levenshtein-lite: min edit distance (cap word length). */
 function editDistance(a: string, b: string): number {
@@ -41,7 +42,9 @@ const TYPO_MAP: Record<string, string> = {
 };
 
 export function normalizeSearchQuery(raw: string): string {
-  let q = raw
+  // Strip conversational lead-ins first ("I want to find beats" → "beats") so the
+  // actual product is what we search, resolve, and display — not the whole sentence.
+  let q = stripShoppingPrefixes(raw)
     .trim()
     .toLowerCase()
     .replace(/[^\w\s'-]/g, " ")

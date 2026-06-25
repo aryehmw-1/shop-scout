@@ -231,7 +231,7 @@ export function ProductResults({
       <div className="mt-4 rounded-2xl border border-orange-100 bg-white px-4 py-5 shadow-sm">
         <div className="flex items-center gap-3 text-sm font-semibold text-stone-700">
           <Loader2 size={18} className="animate-spin text-orange-500" aria-hidden />
-          Checking live prices across stores…
+          Searching our verified inventory…
         </div>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {[1, 2, 3].map((i) => (
@@ -332,12 +332,11 @@ export function ProductResults({
             <p className="text-base font-semibold text-stone-900 leading-relaxed">
               {q ? (
                 <>
-                  I couldn&apos;t find{" "}
-                  <span className="text-stone-900">{q}</span>{" "}
-                  in Homivion&apos;s catalog yet.
+                  Want us to add{" "}
+                  <span className="text-orange-600">{q}</span>?
                 </>
               ) : (
-                <>I couldn&apos;t find that product in Homivion&apos;s catalog yet.</>
+                <>Want us to add this product?</>
               )}
             </p>
           )}

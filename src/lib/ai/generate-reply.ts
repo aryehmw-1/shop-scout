@@ -1,6 +1,7 @@
 import type { CommerceRetrievalPayload } from "../commerce-intelligence/ai/retrieval-payload";
 import type { IntelligenceInsight, ProductSearchResults } from "../types";
 import { buildFullSearchQuery } from "../shopping/intent-merge";
+import { stripShoppingPrefixes } from "../shopping/query";
 import { extractIntentFromMessage } from "./extract-intent";
 import { generateAIText, isClaudeConfigured, isGeminiConfigured } from "./index";
 import { generateGeminiTextStream } from "./gemini";
@@ -149,7 +150,11 @@ function buildUserContext(ctx: ReplyContext): string {
   if (ctx.zipCode) parts.push(`ZIP (shipping only): ${ctx.zipCode}`);
   const parsed = extractIntentFromMessage(ctx.userMessage, ctx.zipCode);
   const mergedIntent = { ...parsed, ...ctx.intent };
-  const query = ctx.query ?? buildFullSearchQuery(mergedIntent as ShoppingIntent) ?? parsed.query;
+  // Strip conversational lead-ins ("I want to find beats" → "beats") so the
+  // product name in replies (incl. "I couldn't find …") is the actual product.
+  const query = stripShoppingPrefixes(
+    ctx.query ?? buildFullSearchQuery(mergedIntent as ShoppingIntent) ?? parsed.query ?? "",
+  ) || undefined;
   if (query) parts.push(`Search query: ${query}`);
   const gender = ctx.gender ?? parsed.gender;
   const ageGroup = ctx.ageGroup ?? parsed.ageGroup;

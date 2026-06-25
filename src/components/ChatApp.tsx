@@ -32,10 +32,10 @@ import { identifyProductImage } from "@/lib/vision/identify-client";
 import { PHOTO_SEARCH_ENABLED } from "@/lib/config/features";
 
 const SHOPPING_LOADING_STEPS = [
-  "Checking the database for saved prices...",
-  "Searching live offers across stores...",
-  "Comparing prices from every retailer...",
-  "Hunting down the best delivered price...",
+  "Searching our verified inventory...",
+  "Matching your product in our catalog...",
+  "Comparing the prices we've confirmed...",
+  "Finding the lowest verified price...",
 ];
 
 const CHAT_LOADING_STEPS = [

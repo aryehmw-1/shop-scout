@@ -1,6 +1,7 @@
-/** Strip natural-language prefixes so "find me mens pants" → "mens pants" */
+/** Strip natural-language prefixes so "I want to find beats" → "beats",
+ *  "looking for an air fryer" → "air fryer", "find me mens pants" → "mens pants". */
 const PREFIX_CHAIN =
-  /^(?:please\s+)?(?:(?:can you|could you|will you)\s+)?(?:(?:help me|help)\s+)?(?:(?:find|get|show|search for|look for|shop for|buy|need|want)(?:\s+me)?)\s+(?:a|an|some|the)?\s*/i;
+  /^(?:please\s+)?(?:i(?:'m|\s+am)?\s+)?(?:(?:would|just|really)\s+)?(?:(?:can|could|will|would)\s+you\s+)?(?:(?:like|want|wanna|wish|need|trying|looking|hoping|searching|shopping|help(?:\s+me)?)\s+)?(?:(?:to|for)\s+)?(?:(?:find|get|show|search|look|shop|buy|need|want|locate|source|grab|order)(?:\s+(?:me|for))?\s+)?(?:(?:an|a|some|the)\s+)?/i;
 
 export function stripShoppingPrefixes(raw: string): string {
   let s = raw.trim();
