@@ -63,48 +63,43 @@ function comparePriceMain(offer: ProductOffer, display: { main: string }): strin
  * the most trust-building fact (free with membership / free over threshold /
  * unknown) right where the eye lands, so a $6.99 estimate never looks hidden.
  */
-function ShippingLabel({ offer }: { offer: ProductOffer }) {
-  const shipping = offer.estimatedShipping ?? offer.deliveryFee;
+function providerHasRealShipping(offer: ProductOffer): boolean {
+  return (
+    (offer.providerSource === "ebay" || offer.providerSource === "shopsavvy") &&
+    offer.estimatedShipping != null
+  );
+}
 
-  if (offer.memberPricingApplied && shipping === 0) {
-    return <span className="text-violet-700">Free with membership</span>;
-  }
-  if (shipping === 0) {
-    return <span className="text-emerald-700">Free shipping</span>;
-  }
-  if (offer.freeShippingEligible && offer.freeShippingThreshold) {
-    return (
-      <>
-        + {shipping != null ? formatPrice(shipping) : "—"} shipping ·{" "}
-        <span className="text-emerald-700">
-          free over {formatPrice(offer.freeShippingThreshold)}
-        </span>
-      </>
+function ShippingLabel({ offer }: { offer: ProductOffer }) {
+  // HONEST SHIPPING: only a dollar figure when a live provider actually returned
+  // one. The Bright Data catalog has no shipping cost, so never fabricate — show
+  // "Shipping calculated at checkout" instead of a $6.99-style estimate.
+  if (providerHasRealShipping(offer)) {
+    return offer.estimatedShipping === 0 ? (
+      <span className="text-emerald-700">Free shipping</span>
+    ) : (
+      <>+ {formatPrice(offer.estimatedShipping!)} shipping</>
     );
   }
-  if (shipping == null) {
-    return <span className="text-stone-500">Shipping unknown</span>;
+  if (offer.memberPricingApplied) {
+    return <span className="text-violet-700">Free with membership</span>;
   }
-  return <>+ {formatPrice(shipping)} shipping</>;
+  return <span className="text-stone-500">Shipping calculated at checkout</span>;
 }
 
 /**
- * Confidence tag for the estimated delivered total — degrades gracefully so a
- * low-confidence guess is never presented as a hard fact.
+ * Confidence tag for the delivered total — only meaningful when we have REAL
+ * provider shipping. Without it we don't estimate a delivered total, so there's
+ * nothing to qualify (no "Estimated" tag on a price we didn't estimate).
  */
 function DeliveredConfidenceLabel({ offer }: { offer: ProductOffer }) {
-  const shipping = offer.estimatedShipping ?? offer.deliveryFee;
+  if (!providerHasRealShipping(offer)) return null;
   const confidence = offer.deliveredPriceConfidence;
-  let label: string | null = null;
-  if (shipping == null) {
-    label = "Shipping unknown — total may vary";
-  } else if (confidence != null) {
-    label =
-      confidence >= 0.75 ? "Strong estimate"
-      : confidence >= 0.55 ? "Estimated"
-      : "Rough estimate — add ZIP";
-  }
-  if (!label) return null;
+  if (confidence == null) return null;
+  const label =
+    confidence >= 0.75 ? "Strong estimate"
+    : confidence >= 0.55 ? "Estimated"
+    : "Rough estimate — add ZIP";
   return <p className="mt-1 text-[11px] text-stone-400">{label}</p>;
 }
 
@@ -772,7 +767,9 @@ function CompareEvidenceLayout({
               {offers.length} exact-match offer{offers.length === 1 ? "" : "s"}
             </p>
           </div>
-          <div className="grid gap-4 lg:grid-cols-3">
+          {/* L5 rich grid: use the full desktop width so all 5 cheapest offers
+              sit in one row on wide screens (compare 5–7 at a glance). */}
+          <div className="grid gap-3 lg:grid-cols-3 xl:grid-cols-5">
             {offers.map((offer, i) => (
               <ExactOfferCard
                 key={offer.id}

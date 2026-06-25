@@ -1,7 +1,15 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-25T03:40:49.696Z",
+  "updatedAt": "2026-06-25T03:44:10.070Z",
   "events": [
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqsyk4ln_fx3l89",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-25T03:44:10.070Z"
+    },
     {
       "event": "recommendation_no_match",
       "meta": {
