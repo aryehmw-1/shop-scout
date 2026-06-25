@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { BellPlus, CheckCircle2, Loader2 } from "lucide-react";
+import { BellPlus, CheckCircle2, Loader2, Pencil } from "lucide-react";
 import { APP_NAME } from "@/lib/constants";
 import { trackEvent, analyticsSessionId } from "@/lib/analytics/track-client";
 
@@ -130,13 +130,20 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
         Confirm what you need and drop your email — we&apos;ll ping you the moment it&apos;s live.
       </p>
 
-      <div className="mt-4 space-y-2">
-        {/* Product field with typewriter animation */}
+      <div className="mt-4 space-y-2 text-left">
+        {/* Editable product field — make it obvious users can refine the name
+            (add brand, size, model) before requesting. */}
+        <label className="flex items-center justify-between px-1 text-xs font-semibold text-stone-500">
+          <span>Product to add</span>
+          <span className="inline-flex items-center gap-1 font-normal text-orange-500">
+            <Pencil size={11} /> tap to edit — add brand, size, or model
+          </span>
+        </label>
         <div className="relative">
           {!userActive && (
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0 flex items-center justify-center px-4 text-[15px] text-stone-400 sm:text-lg"
+              className="pointer-events-none absolute inset-0 flex items-center px-4 text-[15px] text-stone-400 sm:text-lg"
             >
               <span className="truncate">{displayed}</span>
               <span className="animate-blink ml-px inline-block h-4 w-[1.5px] shrink-0 bg-stone-300" />
@@ -160,9 +167,14 @@ export function ProductRequestForm({ searchQuery }: ProductRequestFormProps) {
               }
             }}
             required
-            className={`w-full rounded-xl border border-stone-200 bg-white px-4 py-3 text-center text-[15px] outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 sm:py-3.5 sm:text-lg ${
+            className={`w-full rounded-xl border border-orange-200 bg-white px-4 py-3 pr-10 text-left text-[15px] outline-none transition focus:border-orange-400 focus:ring-2 focus:ring-orange-100 sm:py-3.5 sm:text-lg ${
               userActive ? "text-stone-900" : "text-transparent caret-transparent"
             }`}
+          />
+          <Pencil
+            size={15}
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-orange-400"
+            aria-hidden
           />
         </div>
 

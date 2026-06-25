@@ -278,44 +278,25 @@ export function ProductResults({
     const hasSimilar = similarAlternatives.length > 0;
     return (
       <div className="mt-4 space-y-4">
-        {/* Case 1 — no exact match but we DO have relevant alternatives: lead with
-            them, clearly labelled, and make the request form secondary. */}
-        {hasSimilar && (
-          <div className="rounded-2xl border border-orange-200/70 bg-cream-50/60 px-4 py-4">
-            <p className="mb-1 text-base font-semibold text-stone-900">
-              We couldn&apos;t find an exact match{q ? <> for <span className="text-stone-900">{q}</span></> : null}.
-            </p>
-            <p className="mb-1 text-xs text-stone-500">
-              Here are similar products you might like instead.
-            </p>
-            <SimilarAlternatives similar={similarAlternatives} exactCount={0} searchQuery={searchQuery} onSave={onSave} savedIds={savedIds} />
-          </div>
-        )}
-        {/* Case 1 (similar exist) → collapsible request CTA so the form is opt-in. */}
+        {/* N3 not-found: an editable request bar first (users can refine the
+            product name — add brand/size/model), then the closest options we
+            DO carry as a grid. */}
         {hasSimilar ? (
-          <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-4 py-3">
-            <button
-              type="button"
-              onClick={() => setShowRequestForm((v) => !v)}
-              aria-expanded={showRequestForm}
-              className="flex w-full items-center justify-between gap-2 text-left"
-            >
-              <span className="flex items-center gap-2 text-sm font-semibold text-stone-800">
-                <Search size={16} className="text-stone-400" aria-hidden />
-                Can&apos;t find what you&apos;re looking for? Request this exact product
-              </span>
-              <ChevronDown
-                size={18}
-                className={`shrink-0 text-stone-400 transition-transform ${showRequestForm ? "rotate-180" : ""}`}
-                aria-hidden
-              />
-            </button>
-            {showRequestForm && (
-              <div className="mt-3 border-t border-stone-200 pt-3">
-                <ProductRequestForm searchQuery={q} />
-              </div>
-            )}
-          </div>
+          <>
+            <div className="rounded-2xl border border-orange-200/70 bg-cream-50/60 px-4 py-4">
+              <p className="text-base font-semibold text-stone-900">
+                No exact match{q ? <> for <span className="text-orange-600">{q}</span></> : null} yet.
+              </p>
+              <p className="mb-2 text-xs text-stone-500">
+                Request it — you can edit the name to add a brand, size, or model — or pick a close option below.
+              </p>
+              <ProductRequestForm searchQuery={q} />
+            </div>
+            <div className="rounded-2xl border border-stone-200 bg-white px-4 py-4">
+              <p className="mb-2 text-sm font-semibold text-stone-700">Closest options we do carry</p>
+              <SimilarAlternatives similar={similarAlternatives} exactCount={0} searchQuery={searchQuery} onSave={onSave} savedIds={savedIds} />
+            </div>
+          </>
         ) : (
         <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-5 py-5 space-y-4">
           {volumeMissing && q ? (
