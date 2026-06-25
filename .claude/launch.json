@@ -8,8 +8,8 @@
         "run",
         "dev"
       ],
-      "port": 3000,
-      "autoPort": true
+      "port": 3001,
+      "autoPort": false
     }
   ]
 }

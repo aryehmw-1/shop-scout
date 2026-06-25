@@ -30,6 +30,7 @@ import {
   conversationDebugEnabled,
 } from "../conversation/conversation-debug";
 import { DEFAULT_CHAT_CHIPS, GROCERY_DEMO_CHIPS } from "../inventory/demo-suggestions";
+import { coversQuery } from "../search/query-understanding";
 import { getDynamicOnboardingChips } from "../inventory/onboarding-examples";
 import type {
   ConversationDebugSnapshot,
@@ -400,18 +401,30 @@ async function searchWithIntelligenceFirst(
   const t0 = Date.now();
   const intel = tryIntelligenceSearch(fullIntent, zip);
   if (intel) {
-    intel.productResults.zipCode = zip;
-    logSearchDebug(fullIntent, intel.productResults, {
-      path: "intelligence_graph",
-      broadenedUsed: false,
-      latencyMs: { total: Date.now() - t0 },
-    });
-    applyRetailerPreference(intel.productResults, fullIntent.retailerPreference);
-    return {
-      productResults: intel.productResults,
-      retrievalPayload: intel.retrievalPayload,
-      commerceInsight: intel.commerceInsight,
-    };
+    // RELEVANCE GATE: the intelligence path can otherwise return off-topic
+    // products (e.g. "ferrari 488" → random items), short-circuiting before the
+    // gated searchService and starving the proper "not found" flow. Keep only
+    // offers whose title/brand actually cover the query's content words; if none
+    // survive, fall through to searchService (which gates + can show not-found).
+    const relQuery = fullIntent.query ?? "";
+    const relevant = intel.productResults.online.filter((o) =>
+      coversQuery(`${o.storeTitle ?? ""} ${o.title} ${o.brand ?? ""}`, relQuery),
+    );
+    if (relevant.length > 0) {
+      intel.productResults.online = relevant;
+      intel.productResults.zipCode = zip;
+      logSearchDebug(fullIntent, intel.productResults, {
+        path: "intelligence_graph",
+        broadenedUsed: false,
+        latencyMs: { total: Date.now() - t0 },
+      });
+      applyRetailerPreference(intel.productResults, fullIntent.retailerPreference);
+      return {
+        productResults: intel.productResults,
+        retrievalPayload: intel.retrievalPayload,
+        commerceInsight: intel.commerceInsight,
+      };
+    }
   }
   const tSearch = Date.now();
   const productResults = await searchService.search(fullIntent, {

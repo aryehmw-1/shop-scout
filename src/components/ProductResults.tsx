@@ -298,46 +298,53 @@ export function ProductResults({
             </div>
           </>
         ) : (
-        <div className="rounded-2xl border border-stone-200 bg-stone-50/80 px-5 py-5 space-y-4">
-          {volumeMissing && q ? (
-            <p className="text-sm text-stone-600 leading-relaxed">
-              We don&apos;t carry{" "}
-              <span className="font-semibold text-stone-800">{q}</span>{" "}
-              in that size yet — only{" "}
-              <span className="font-semibold text-stone-800">
-                {availableVolumeLabel ?? "a different size"}
-              </span>
-              {" "}is in our catalog right now.
-            </p>
-          ) : (
-            <p className="text-base font-semibold text-stone-900 leading-relaxed">
-              {q ? (
-                <>
-                  Want us to add{" "}
-                  <span className="text-orange-600">{q}</span>?
-                </>
+          <>
+            {/* N3 no-alternatives: editable request box, then a browse box. */}
+            <div className="rounded-2xl border border-orange-200/70 bg-cream-50/60 px-4 py-5 sm:px-6">
+              {volumeMissing && q ? (
+                <p className="mb-1 text-sm text-stone-600 leading-relaxed">
+                  We don&apos;t carry{" "}
+                  <span className="font-semibold text-stone-800">{q}</span>{" "}
+                  in that size yet — only{" "}
+                  <span className="font-semibold text-stone-800">
+                    {availableVolumeLabel ?? "a different size"}
+                  </span>
+                  {" "}is in our catalog right now.
+                </p>
               ) : (
-                <>Want us to add this product?</>
+                <>
+                  <p className="text-base font-semibold text-stone-900 sm:text-lg">
+                    {q ? (
+                      <>Want us to add <span className="text-orange-600">{q}</span>?</>
+                    ) : (
+                      <>Want us to add this product?</>
+                    )}
+                  </p>
+                  <p className="mb-1 text-xs text-stone-500">
+                    Edit the name below to add a brand, size, or model, then request it.
+                  </p>
+                </>
               )}
-            </p>
-          )}
-          <ProductRequestForm searchQuery={q} />
-          <a
-            href="/inventory"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-orange-700 underline-offset-2 hover:underline"
-          >
-            Browse available products
-          </a>
-          {volumeMissing && online.length > 0 && (
-            <button
-              type="button"
-              onClick={() => setShowMismatchAnyway(true)}
-              className="block text-sm font-semibold text-orange-700 underline-offset-2 hover:underline"
-            >
-              Show the {availableVolumeLabel ?? "available size"} we do have instead
-            </button>
-          )}
-        </div>
+              <ProductRequestForm searchQuery={q} />
+              {volumeMissing && online.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowMismatchAnyway(true)}
+                  className="mt-3 block text-sm font-semibold text-orange-700 underline-offset-2 hover:underline"
+                >
+                  Show the {availableVolumeLabel ?? "available size"} we do have instead
+                </button>
+              )}
+            </div>
+            <div className="rounded-2xl border border-stone-200 bg-white px-4 py-4 sm:px-6">
+              <a
+                href="/inventory"
+                className="inline-flex items-center gap-1 text-sm font-semibold text-orange-700 underline-offset-2 hover:underline"
+              >
+                Browse available products →
+              </a>
+            </div>
+          </>
         )}
         {results.searchDebug && searchDebugEnabledClient() && (
           <SearchPipelineDebugPanel debug={results.searchDebug} />

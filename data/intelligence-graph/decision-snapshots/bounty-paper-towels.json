@@ -2,6 +2,28 @@
   "version": 1,
   "snapshots": [
     {
+      "at": "2026-06-25T03:38:39.869Z",
+      "canonicalId": "bounty-paper-towels",
+      "winnerOfferId": "bounty-paper-towels-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 23.73,
+      "compositeScore": 0.951,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10486608826857793
+    },
+    {
+      "at": "2026-06-25T03:37:20.510Z",
+      "canonicalId": "bounty-paper-towels",
+      "winnerOfferId": "bounty-paper-towels-costco",
+      "winnerRetailer": "costco",
+      "winnerPrice": 23.73,
+      "compositeScore": 0.951,
+      "identityConfidence": 0.89,
+      "validatedOfferCount": 5,
+      "priceSpreadRatio": 0.10486608826857793
+    },
+    {
       "at": "2026-06-14T14:13:56.448Z",
       "canonicalId": "bounty-paper-towels",
       "winnerOfferId": "bounty-paper-towels-costco",
@@ -300,28 +322,6 @@
     },
     {
       "at": "2026-06-02T02:16:20.470Z",
-      "canonicalId": "bounty-paper-towels",
-      "winnerOfferId": "bounty-paper-towels-costco",
-      "winnerRetailer": "costco",
-      "winnerPrice": 23.73,
-      "compositeScore": 0.951,
-      "identityConfidence": 0.89,
-      "validatedOfferCount": 5,
-      "priceSpreadRatio": 0.10486608826857793
-    },
-    {
-      "at": "2026-06-02T02:16:20.270Z",
-      "canonicalId": "bounty-paper-towels",
-      "winnerOfferId": "bounty-paper-towels-costco",
-      "winnerRetailer": "costco",
-      "winnerPrice": 23.73,
-      "compositeScore": 0.951,
-      "identityConfidence": 0.89,
-      "validatedOfferCount": 5,
-      "priceSpreadRatio": 0.10486608826857793
-    },
-    {
-      "at": "2026-06-02T02:16:20.229Z",
       "canonicalId": "bounty-paper-towels",
       "winnerOfferId": "bounty-paper-towels-costco",
       "winnerRetailer": "costco",

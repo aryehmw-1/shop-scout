@@ -1,7 +1,43 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-16T04:00:56.492Z",
+  "updatedAt": "2026-06-25T03:38:39.876Z",
   "sessions": [
+    {
+      "id": "sr_mqsyd20z_f3ced0",
+      "sessionId": "f7aaad793345bc12",
+      "cohort": "general",
+      "at": "2026-06-25T03:38:39.876Z",
+      "queryCategory": "general",
+      "matched": true,
+      "canonicalId": "bounty-paper-towels",
+      "winnerRetailer": "Costco",
+      "winnerPrice": 23.73,
+      "trustSummary": "We recommend Costco at $23.73 — Highest decision score (0.95) among validated offers.",
+      "identityScore": 0.89,
+      "evidenceCount": 1,
+      "uncertaintyCount": 0,
+      "interactionTrail": [
+        "recommendation_shown"
+      ]
+    },
+    {
+      "id": "sr_mqsybcsr_f6a1f7",
+      "sessionId": "f7aaad793345bc12",
+      "cohort": "general",
+      "at": "2026-06-25T03:37:20.523Z",
+      "queryCategory": "general",
+      "matched": true,
+      "canonicalId": "bounty-paper-towels",
+      "winnerRetailer": "Costco",
+      "winnerPrice": 23.73,
+      "trustSummary": "We recommend Costco at $23.73 — Highest decision score (0.95) among validated offers.",
+      "identityScore": 0.89,
+      "evidenceCount": 1,
+      "uncertaintyCount": 0,
+      "interactionTrail": [
+        "recommendation_shown"
+      ]
+    },
     {
       "id": "sr_mqg471d7_a0bbd5",
       "sessionId": "bb0a946eee341d73",

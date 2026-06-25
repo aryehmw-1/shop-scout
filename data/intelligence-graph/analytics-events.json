@@ -1,7 +1,169 @@
 {
   "version": 1,
-  "updatedAt": "2026-06-16T14:10:39.907Z",
+  "updatedAt": "2026-06-25T03:40:49.696Z",
   "events": [
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T03:40:49.696Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:40:49.688Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T03:40:06.982Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:40:06.979Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T03:40:02.770Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:40:02.762Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T03:39:23.778Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:39:23.768Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T03:38:57.774Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:38:57.769Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:38:39.867Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T03:38:37.280Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:38:37.277Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T03:38:33.953Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:38:33.946Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:37:20.507Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T03:37:18.744Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:37:18.738Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T03:37:15.773Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:37:15.768Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T03:37:12.107Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:37:12.099Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T03:35:45.471Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:35:45.453Z"
+    },
+    {
+      "event": "session_abandon",
+      "sessionId": "s_mqsy3qcx_s58z7e",
+      "meta": {
+        "cohort": "general"
+      },
+      "at": "2026-06-25T03:31:25.600Z"
+    },
+    {
+      "event": "recommendation_no_match",
+      "meta": {
+        "category": "general"
+      },
+      "at": "2026-06-25T03:29:45.027Z"
+    },
+    {
+      "event": "query_category",
+      "queryCategory": "general",
+      "at": "2026-06-25T03:29:45.011Z"
+    },
     {
       "event": "recommendation_no_match",
       "meta": {
