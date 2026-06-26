@@ -6,7 +6,9 @@ import {
   inferCategoryKind,
   normalizeBrand,
   normalizeColor,
+  normalizeManufacturerModel,
   normalizeModelNumber,
+  isRetailerSku,
   normalizePackCount,
   normalizeSize,
   normalizeTitle,
@@ -64,7 +66,12 @@ export function buildNormalizedListing(raw: RawListingInput): NormalizedListing 
     gtin: raw.gtin ?? undefined,
     ean: raw.ean ?? undefined,
     modelNumber: raw.modelNumber ?? undefined,
-    modelNumberNormalized: normalizeModelNumber(raw.modelNumber) || undefined,
+    // Manufacturer-model key excludes retailer SKUs (they never match across
+    // retailers); the SKU itself is preserved separately for catalog identity.
+    modelNumberNormalized: normalizeManufacturerModel(raw.modelNumber) || undefined,
+    retailerSku: isRetailerSku(normalizeModelNumber(raw.modelNumber))
+      ? normalizeModelNumber(raw.modelNumber)
+      : undefined,
     size: raw.size ?? undefined,
     sizeNormalized: sizeFromTitle.normalized,
     sizeValue: sizeFromTitle.value,

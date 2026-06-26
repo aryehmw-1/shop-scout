@@ -155,6 +155,30 @@ export function normalizeModelNumber(raw: string | null | undefined): string {
 }
 
 /**
+ * True when a normalized model value is actually a RETAILER-specific SKU, not a
+ * manufacturer part number. Retailer SKUs never match across retailers, so they
+ * must NOT seed the cross-retailer `model:` identity (doing so splits the same
+ * item into per-retailer groups). Covers:
+ *   - Amazon ASIN:      B0 + 8–9 alphanumerics (e.g. B0CXYZ1234)
+ *   - Walmart item id / Target TCIN: pure numeric, ≥6 digits
+ */
+export function isRetailerSku(normalizedModel: string | null | undefined): boolean {
+  const v = (normalizedModel ?? "").toUpperCase();
+  if (!v) return false;
+  return /^B0[A-Z0-9]{8,9}$/.test(v) || /^\d{6,}$/.test(v);
+}
+
+/**
+ * The manufacturer part number for cross-retailer matching: the normalized model
+ * UNLESS it's a retailer SKU, in which case "" (so it falls through to the
+ * brand+title+size identity tier that DOES align across retailers).
+ */
+export function normalizeManufacturerModel(raw: string | null | undefined): string {
+  const m = normalizeModelNumber(raw);
+  return isRetailerSku(m) ? "" : m;
+}
+
+/**
  * Normalize a barcode to digits only and validate length. UPC-A=12, EAN-13=13,
  * EAN-8=8. A 12-digit UPC and its 13-digit EAN (leading 0) are treated as equal
  * by gtinEquivalent(). Returns "" when the value isn't a plausible barcode.

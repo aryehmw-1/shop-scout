@@ -331,13 +331,18 @@ async function main() {
       const hasModel = Boolean(listing.brandNormalized && listing.modelNumberNormalized);
       if (!hasBarcode && !hasModel) {
         const itemId = retailerItemId(rec);
+        // Adopt the retailer item-id as a SKU (not as a manufacturer model) so the
+        // listing is still publishable but its identity falls to the brand+title+
+        // size tier — which DOES align across retailers (so the same item from
+        // Amazon+Walmart merges at ingest instead of splitting on per-retailer SKU).
         if (itemId && listing.brandNormalized) {
-          listing.modelNumber = itemId;
-          listing.modelNumberNormalized = itemId.toLowerCase();
+          listing.retailerSku = itemId;
         }
       }
       const hasIdentity =
-        hasBarcode || Boolean(listing.brandNormalized && listing.modelNumberNormalized);
+        hasBarcode ||
+        Boolean(listing.brandNormalized && listing.modelNumberNormalized) ||
+        Boolean(listing.brandNormalized && listing.retailerSku);
       const usable =
         Boolean(listing.title) && (listing.price ?? 0) > 0 &&
         Boolean(rec.imageUrl?.startsWith("http")) && Boolean(rec.productUrl?.startsWith("http"));

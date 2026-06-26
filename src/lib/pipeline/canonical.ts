@@ -77,7 +77,9 @@ export async function createCanonicalProduct(
       brandCanonical: listing.brandNormalized,
       upc: listing.upc ?? null,
       gtin: listing.gtin ?? null,
-      mpn: listing.modelNumber ?? null,
+      // Only store a REAL manufacturer part number in mpn — never a retailer SKU
+      // (ASIN/item-id), which would pollute the cross-retailer model identity.
+      mpn: listing.modelNumberNormalized ?? null,
       category: listing.category ?? "general",
       sizeLabel: listing.sizeNormalized ?? listing.size ?? "1 unit",
       basePriceUsd: listing.price ?? 0,
@@ -100,7 +102,10 @@ export async function createCanonicalProduct(
   const identifiers: { type: string; value: string }[] = [];
   if (listing.upc) identifiers.push({ type: "upc", value: listing.upc });
   if (listing.gtin) identifiers.push({ type: "gtin", value: listing.gtin });
-  if (listing.modelNumber) identifiers.push({ type: "mpn", value: listing.modelNumber });
+  // Real manufacturer model → mpn identifier; retailer SKU → its own type so it's
+  // preserved (catalog identity / refresh) without polluting cross-retailer mpn.
+  if (listing.modelNumberNormalized) identifiers.push({ type: "mpn", value: listing.modelNumberNormalized });
+  if (listing.retailerSku) identifiers.push({ type: "retailer_sku", value: listing.retailerSku });
   for (const id of identifiers) {
     await prisma.productIdentifier
       .create({

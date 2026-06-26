@@ -193,6 +193,46 @@ async function main() {
     assert.equal(isCanonicalCreationSafe(strong, 90), true);
   });
 
+  // ── 4b. Retailer-SKU normalization (keep SKUs out of the manufacturer model) ─
+  console.log("Retailer-SKU normalization:");
+  const { isRetailerSku, normalizeManufacturerModel, normalizeModelNumber } = await import(
+    "../src/lib/pipeline/normalize"
+  );
+  check("ASIN is detected as a retailer SKU", () => {
+    assert.equal(isRetailerSku("B0CXYZ1234"), true);
+    assert.equal(isRetailerSku(normalizeModelNumber("B0CXYZ1234")), true);
+  });
+  check("long numeric (Walmart item id / Target TCIN) is a retailer SKU", () => {
+    assert.equal(isRetailerSku("123456789"), true);
+    assert.equal(isRetailerSku("82649773"), true);
+  });
+  check("a real manufacturer model is NOT a retailer SKU", () => {
+    assert.equal(isRetailerSku("MTJV3"), false);
+    assert.equal(isRetailerSku("WF45T6000AW"), false);
+  });
+  check("normalizeManufacturerModel drops retailer SKUs, keeps real models", () => {
+    assert.equal(normalizeManufacturerModel("B0CXYZ1234"), ""); // ASIN → dropped
+    assert.equal(normalizeManufacturerModel("123456789"), ""); // item id → dropped
+    assert.equal(normalizeManufacturerModel("WF45T6000AW"), "WF45T6000AW"); // real → kept
+  });
+  check("retailer-SKU model no longer pollutes the cross-retailer group key", () => {
+    // Same product, two retailers, each with its own SKU in the model field →
+    // both must fall to the brand+title+size tier (NOT per-retailer model keys).
+    const mk = (sku: string): NL =>
+      ({
+        title: "Hefty Trash Bags 13 Gallon",
+        titleNormalized: "hefty trash bags 13 gallon",
+        brandNormalized: "hefty",
+        modelNumberNormalized: normalizeManufacturerModel(sku) || undefined,
+        sizeNormalized: "13 gallon",
+        categoryKind: "household",
+      } as NL);
+    const a = duplicateGroupKey(mk("B0CXYZ1234")); // Amazon ASIN
+    const b = duplicateGroupKey(mk("987654321")); // Walmart item id
+    assert.ok(a && b && a === b, `expected same bts key, got ${a} vs ${b}`);
+    assert.ok(!a!.startsWith("model:"), `should not be a model key: ${a}`);
+  });
+
   // ── 5. Top-retailers-first sourcing + source modes ─────────────────────────
   console.log("Sourcing strategy (ingestion only — never touches public search):");
   const { retailersForCategory, sourcingCategory, MAX_OFFERS_PER_PRODUCT, isDueForRefresh } =

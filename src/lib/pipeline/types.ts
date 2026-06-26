@@ -52,7 +52,13 @@ export interface NormalizedListing {
   gtin?: string;
   ean?: string;
   modelNumber?: string;
+  /** Manufacturer part number ONLY (retailer SKUs excluded) — feeds the
+   *  cross-retailer `model:` identity tier. Set via normalizeManufacturerModel. */
   modelNumberNormalized?: string;
+  /** A retailer-specific SKU (ASIN / Walmart item id / Target TCIN) detected in
+   *  the model field. Preserved for catalog identity & refresh, but kept OUT of
+   *  the manufacturer-model matching key. */
+  retailerSku?: string;
   // Quantity / size
   size?: string;
   sizeNormalized?: string; // e.g. "92 oz"
