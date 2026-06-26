@@ -27,6 +27,8 @@
  *   --max-consecutive-errors=3          Abort after this many failures in a row
  *   --dry-run                           Estimate cost + plan only; NO API calls
  *   --no-validate                       Import only; skip the validation pipeline
+ *   --no-link                           Skip the automatic cross-retailer linker
+ *                                       that runs after a successful import
  *   --yes                               Skip the confirmation prompt
  *
  * Examples:
@@ -44,6 +46,7 @@ import { runRawValidationBatch, validationStats } from "../src/lib/pipeline/batc
 import { buildNormalizedListing } from "../src/lib/pipeline/build-listing";
 import { publishTrustedCatalogRecord } from "../src/lib/pipeline/canonical";
 import { getRetailerConfigByName } from "../src/lib/pipeline/ingestion/retailer-config";
+import { linkCrossRetailer } from "../src/lib/matching/link-cross-retailer";
 import type { SourcingRetailer } from "../src/lib/pipeline/sourcing/retailer-strategy";
 
 // ── Default keyword lists: common household / grocery / electronics ──────────
@@ -92,6 +95,11 @@ interface Flags {
   publishMode: "catalog" | "pipeline" | "none";
   dryRun: boolean;
   yes: boolean;
+  /** Automatically run the cross-retailer linker after a successful import so
+   *  newly-imported items merge with existing duplicates (one product, many
+   *  retailer offers). On by default; --no-link skips it. Cross-retailer only —
+   *  same-retailer dedup stays manual via scripts/link-cross-retailer.ts. */
+  link: boolean;
   keywordOverrides: Record<string, string[]>;
 }
 
@@ -129,6 +137,7 @@ function parseFlags(argv: string[]): Flags {
       : ((get("publish-mode") ?? "catalog") as Flags["publishMode"]),
     dryRun: has("dry-run"),
     yes: has("yes"),
+    link: !has("no-link"),
     keywordOverrides,
   };
 }
@@ -371,6 +380,25 @@ async function main() {
   });
   const searchable = freshOffers.length;
 
+  // ── Auto-link: merge newly-imported items with existing cross-retailer dupes ─
+  // Runs only when this import actually published something. Cross-retailer only
+  // and idempotent — safe to run every time. --no-link or --dry-run skips it.
+  let linkResult: Awaited<ReturnType<typeof linkCrossRetailer>> | null = null;
+  if (flags.link && !flags.dryRun && published > 0) {
+    console.log("\n=== Cross-retailer linking (auto) ===");
+    try {
+      linkResult = await linkCrossRetailer({ apply: true, crossOnly: true });
+      console.log(
+        `  Linked ${linkResult.merged} clusters (${linkResult.crossRetailer} cross-retailer); ` +
+        `moved ${linkResult.offersMoved} offers, retired ${linkResult.retired} duplicates.`,
+      );
+      for (const s of linkResult.samples.slice(0, 6)) console.log("    " + s);
+    } catch (e) {
+      // Linking is best-effort — a failure here must not fail the whole import.
+      console.warn("  Auto-link failed (import data is intact; run scripts/link-cross-retailer.ts manually):", e);
+    }
+  }
+
   // ── Final summary ─────────────────────────────────────────────────────────
   const stats = await validationStats();
   console.log("\n=== Final summary ===");
@@ -382,6 +410,9 @@ async function main() {
   console.log(`  Rejected:                   ${rejected}`);
   console.log(`  Failed queries:             ${failures.length}`);
   console.log(`  Searchable (new w/ offer):  ${searchable}`);
+  if (linkResult) {
+    console.log(`  Cross-retailer merges:      ${linkResult.crossRetailer} (offers moved: ${linkResult.offersMoved})`);
+  }
   console.log(`\n  DB totals → published: ${stats.published}, needsReview: ${stats.needsReview}, ` +
     `rejected: ${stats.rejected}, total raw: ${stats.total}`);
   if (failures.length) {
