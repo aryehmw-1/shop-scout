@@ -42,6 +42,7 @@ import { buildNormalizedListing } from "../src/lib/pipeline/build-listing";
 import { publishTrustedCatalogRecord } from "../src/lib/pipeline/canonical";
 import { getRetailerConfigByName } from "../src/lib/pipeline/ingestion/retailer-config";
 import { linkCrossRetailer } from "../src/lib/matching/link-cross-retailer";
+import { corroborateUpcStamp } from "../src/lib/matching/upc-corroboration";
 import type { SourcingRetailer } from "../src/lib/pipeline/sourcing/retailer-strategy";
 
 // Retailers whose Bright Data dataset supports discover-by-UPC. Walmart is
@@ -94,6 +95,8 @@ function confirm(question: string): Promise<boolean> {
 interface Candidate {
   productId: string;
   title: string;
+  brand: string | null;
+  sizeLabel: string | null;
   barcode: string;
   haveRetailers: string[];   // retailer ids that already have a live offer
   queryRetailers: SourcingRetailer[]; // upc-capable retailers we still lack
@@ -138,7 +141,7 @@ async function selectCandidates(flags: Flags): Promise<Candidate[]> {
       ...(flags.category ? { category: { contains: flags.category, mode: "insensitive" } } : {}),
     },
     select: {
-      id: true, title: true, upc: true, gtin: true,
+      id: true, title: true, brand: true, sizeLabel: true, upc: true, gtin: true,
       priceQuotes: {
         where: { inStock: true, expiresAt: { gt: new Date() } },
         select: { retailerId: true, providerSource: true },
@@ -158,7 +161,7 @@ async function selectCandidates(flags: Flags): Promise<Candidate[]> {
     if (haveRetailers.length === 0) continue;
     const queryRetailers = UPC_CAPABLE.filter((r) => !haveRetailers.includes(r));
     if (queryRetailers.length === 0) continue; // already covered on every upc-capable retailer
-    candidates.push({ productId: p.id, title: p.title, barcode, haveRetailers, queryRetailers });
+    candidates.push({ productId: p.id, title: p.title, brand: p.brand, sizeLabel: p.sizeLabel, barcode, haveRetailers, queryRetailers });
     if (candidates.length >= flags.limitProducts) break;
   }
   return candidates;
@@ -253,6 +256,51 @@ async function main() {
   await Promise.all(Array.from({ length: Math.min(flags.concurrency, tasks.length) }, () => worker()));
   console.log(`\n  Imported ${imported} new raw records. Failures: ${failures.length}.`);
 
+  // ── UPC stamping (corroborated) ───────────────────────────────────────────
+  // upc_lookup often returns the right product WITHOUT echoing the barcode. Since
+  // we know the UPC we queried, stamp it onto a barcode-less row — but ONLY when
+  // the row is strongly corroborated as the SAME item (brand + title + size,
+  // never a bundle/kit/refill, never a conflicting barcode). Every decision is
+  // logged. A row that already carries its own barcode is left untouched (the
+  // normal catalog-build below handles it; a different barcode = different item).
+  console.log(`\n=== UPC stamping (corroborated) ===`);
+  const fresh = await prisma.rawProductRecord.findMany({
+    where: {
+      scrapedAt: { gte: runStart },
+      processingStatus: { in: ["RAW", "CHECKED", "NEEDS_REVIEW", "STALE"] },
+    },
+    orderBy: { scrapedAt: "desc" },
+  });
+  let stamped = 0, stampRejected = 0;
+  for (const rec of fresh) {
+    const recListing = buildNormalizedListing(rec as never);
+    const recBarcode =
+      cleanBarcode(recListing.upc) ?? cleanBarcode(recListing.gtin) ?? cleanBarcode(recListing.ean);
+    if (recBarcode) continue; // carries its own barcode → not a stamping candidate
+    const retailerId = getRetailerConfigByName(rec.retailer)?.retailer;
+    const cands = candidates.filter((c) => retailerId && c.queryRetailers.includes(retailerId));
+    let accepted: { c: Candidate; reasons: string[] } | null = null;
+    let bestReject: string[] = ["no queried candidate for this retailer"];
+    for (const c of cands) {
+      const r = corroborateUpcStamp(
+        { brand: c.brand, title: c.title, sizeLabel: c.sizeLabel, barcode: c.barcode },
+        { brand: recListing.brand, title: recListing.title, sizeLabel: recListing.sizeNormalized ?? recListing.size, barcode: null },
+      );
+      if (r.accept) { accepted = { c, reasons: r.reasons }; break; }
+      // Keep the most informative rejection (the one that got furthest).
+      if (r.reasons.length >= bestReject.length) bestReject = r.reasons;
+    }
+    if (accepted) {
+      await prisma.rawProductRecord.update({ where: { id: rec.id }, data: { upcGtin: accepted.c.barcode } });
+      stamped++;
+      console.log(`  ✓ STAMP ${accepted.c.barcode} → ${rec.retailer.padEnd(7)} "${(rec.title ?? "").slice(0, 44)}"  [${accepted.reasons.join("; ")}]`);
+    } else {
+      stampRejected++;
+      console.log(`  ✗ keep-unlinked ${rec.retailer.padEnd(7)} "${(rec.title ?? "").slice(0, 44)}"  [${bestReject.join("; ")}]`);
+    }
+  }
+  console.log(`  Stamped ${stamped} rows; rejected ${stampRejected}.`);
+
   // ── Catalog-build the new raw records (barcode key → idempotent merge) ─────
   console.log(`\n=== Publish: catalog build ===`);
   const pending = await prisma.rawProductRecord.findMany({
@@ -321,6 +369,7 @@ async function main() {
   console.log(`  Candidate products queried:   ${candidates.length}`);
   console.log(`  UPC lookups run:              ${tasks.length} (failures ${failures.length})`);
   console.log(`  New raw records imported:     ${imported}`);
+  console.log(`  UPC-stamped (corroborated):   ${stamped} (rejected ${stampRejected})`);
   console.log(`  Catalog-built (published):    ${published}`);
   console.log(`  Cross-retailer merges:        ${linkResult ? linkResult.crossRetailer : "n/a"}`);
   console.log(`  Multi-retailer products:      ${before} → ${after}  (Δ ${after - before >= 0 ? "+" : ""}${after - before})`);

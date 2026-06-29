@@ -36,9 +36,11 @@ interface EmbedResult {
  *  set its per-1k-token price in MODEL_COST_PER_1K below. */
 type Embedder = (text: string) => Promise<EmbedResult | null>;
 
-/** USD per 1k tokens, by model. Stub is free; add real models when wired. */
+/** USD per 1k tokens, by model. Stub is free; OpenAI priced per their API. */
 const MODEL_COST_PER_1K: Record<string, number> = {
   "shadow-stub-v1": 0,
+  // OpenAI text-embedding-3-small: $0.02 / 1M tokens = $0.00002 / 1k.
+  "text-embedding-3-small": 0.00002,
 };
 
 /** Deterministic local embedding — schema-faithful, no network, no cost.
@@ -58,7 +60,59 @@ const localStubEmbedder: Embedder = async (text) => {
   return { vector, model: "shadow-stub-v1", tokensEst: Math.ceil(fingerprint.length / 4) };
 };
 
-let embedder: Embedder = localStubEmbedder;
+/** Real semantic embeddings via OpenAI (text-embedding-3-small, 1536-dim). Used
+ *  ONLY when EMBEDDINGS_PROVIDER=openai and OPENAI_API_KEY is set; otherwise we
+ *  never reach here. Returns null on any failure so the caller falls back to the
+ *  local stub — OpenAI is an upgrade, never a hard dependency. */
+const openAIEmbedder: Embedder = async (text) => {
+  const key = process.env.OPENAI_API_KEY?.trim();
+  const fingerprint = text.trim().slice(0, 2048);
+  if (!key || !fingerprint) return null;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8_000);
+  try {
+    const res = await fetch("https://api.openai.com/v1/embeddings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
+      body: JSON.stringify({ model: "text-embedding-3-small", input: fingerprint }),
+      signal: controller.signal,
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as {
+      data?: { embedding?: number[] }[];
+      usage?: { total_tokens?: number };
+    };
+    const vector = json.data?.[0]?.embedding;
+    if (!vector?.length) return null;
+    return {
+      vector,
+      model: "text-embedding-3-small",
+      tokensEst: json.usage?.total_tokens ?? Math.ceil(fingerprint.length / 4),
+    };
+  } catch {
+    return null; // network/timeout/parse → fall back to local
+  } finally {
+    clearTimeout(timer);
+  }
+};
+
+/** True when a real provider is explicitly configured. Defaults to local-only. */
+function useOpenAIEmbeddings(): boolean {
+  return process.env.EMBEDDINGS_PROVIDER === "openai" && Boolean(process.env.OPENAI_API_KEY?.trim());
+}
+
+/** Default embedder: try OpenAI when configured, ALWAYS fall back to the local
+ *  zero-cost stub so a missing key / outage / rate-limit never breaks the shadow
+ *  pass. This is the "keep local embeddings as fallback" guarantee. */
+const defaultEmbedder: Embedder = async (text) => {
+  if (useOpenAIEmbeddings()) {
+    const real = await openAIEmbedder(text);
+    if (real) return real;
+  }
+  return localStubEmbedder(text);
+};
+
+let embedder: Embedder = defaultEmbedder;
 
 /** Test/seam hook — swap the embedder (e.g. to a real model) without touching
  *  callers. Not used on the request path. */
