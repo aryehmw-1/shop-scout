@@ -602,11 +602,16 @@ export interface ClarificationState {
     | "bakery"
     | "produce"
     | "meat"
-    | "pantry";
+    | "pantry"
+    | "household";
   question: string;
   options: string[];
   baseQuery: string;
   baseIntent: Partial<ShoppingIntent>;
+  /** When true, ASK this question before running any search (don't guess) even
+   *  if the catalog has results. Used for broad household categories like
+   *  "paper towels" / "detergent" / "trash bags" where guessing is unhelpful. */
+  askFirst?: boolean;
 }
 
 export interface SessionState {

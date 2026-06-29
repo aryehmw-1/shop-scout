@@ -104,12 +104,20 @@ export function subtypeFromOption(option: string): string {
 const BROAD_QUERY =
   /^(salad|salads|milk|dairy|bread|eggs?|chicken|meat|produce|fruit|snacks?|chips?|coffee|pasta|pants|trousers|shoes?|jacket|coat)$/i;
 
+/** "Cheapest" / "Best" etc. aren't query terms — they're ranking preferences.
+ *  Results already sort cheapest-first, so for these we search the bare category. */
+const SOFT_RANK_OPTION = /^(cheapest|cheap|best|lowest( price)?|best value|value)$/i;
+
 export function queryWithSubtype(
   baseQuery: string,
   option: string,
   intent: Partial<ShoppingIntent>,
 ): string {
   const base = baseQuery.trim();
+  if (SOFT_RANK_OPTION.test(option.trim())) {
+    // Keep the category query; the brand prefix (if any) still applies.
+    return [intent.brand, base].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+  }
   if (BROAD_QUERY.test(base)) {
     return option;
   }
@@ -147,6 +155,7 @@ function categoryForKind(kind: ClarificationState["kind"]): string | undefined {
     produce: "produce",
     meat: "meat",
     pantry: "pantry",
+    household: "household",
     shoes: "shoes",
     pants: "clothing",
     outerwear: "clothing",

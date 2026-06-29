@@ -1,5 +1,6 @@
 import type { ChatHistoryMessage } from "./generate-reply";
 import { detectClarificationNeeded } from "./clarify-intent";
+import { detectHouseholdClarification } from "./category-clarify";
 import { isObviousProductSearch } from "./product-query-specificity";
 import { findBroadKeywordRule } from "./shopping-keywords";
 import { parseSizeFromText } from "../shopping/sizes";
@@ -183,6 +184,24 @@ export async function analyzeShoppingMessage(
       parseSizeFromText(message) ??
       undefined,
   };
+
+  // Broad household staples ("paper towels", "detergent", "trash bags") are
+  // checked BEFORE the obvious-search short-circuit: we want to ask how to narrow
+  // a commodity category first rather than guess. A query that already carries a
+  // brand / size / count / "cheapest" falls through (the rule's `specifics` gate)
+  // and searches normally.
+  const householdClarify = detectHouseholdClarification(
+    mergedRules.query ?? message,
+    mergedRules,
+  );
+  if (householdClarify) {
+    return {
+      intent: mergedRules,
+      needsClarification: true,
+      clarification: householdClarify,
+      clarifyQuestion: householdClarify.question,
+    };
+  }
 
   if (isObviousProductSearch(message, mergedRules)) {
     return {

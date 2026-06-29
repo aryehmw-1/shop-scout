@@ -1019,6 +1019,27 @@ export async function resolveChatTurn(
         );
 
     if (analysis.needsClarification && analysis.clarification) {
+      // ASK-FIRST categories (broad household staples like "paper towels",
+      // "detergent", "trash bags"): the catalog always has SOME match, so the
+      // "search anyway" path below would never ask. Honor the user's intent —
+      // ask the short clarifying question up front and let them narrow down.
+      if (analysis.clarification.askFirst) {
+        return {
+          action: "clarify",
+          session: {
+            phase: "clarifying",
+            intent: { ...intent, ...analysis.intent, zipCode: zip },
+            asked: [...asked, "clarify"],
+            clarifying: analysis.clarification,
+            compareMode: false,
+          },
+          compareMode: false,
+          zipCode: zip,
+          chips: analysis.clarification.options,
+          clarifyQuestion: analysis.clarifyQuestion ?? analysis.clarification.question,
+        };
+      }
+
       // Don't dead-end a broad query on a clarifying question with ZERO results
       // (the #1 "nothing useful comes back" failure — e.g. "iphone charger",
       // "refrigerator"). Run the search anyway and show the best matches; the
