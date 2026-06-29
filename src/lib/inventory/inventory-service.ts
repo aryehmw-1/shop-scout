@@ -308,6 +308,19 @@ function similarTokens(text: string): Set<string> {
   );
 }
 
+/** Best available product photo: prefer the canonical product image, else the
+ *  first offer that actually carries a usable (https) image. Keeps similar-product
+ *  cards from rendering a blank when the cheapest quote happens to lack a photo. */
+function bestProductImage(
+  productImage: string | null | undefined,
+  quotes: { imageUrl: string | null }[],
+): string {
+  const usable = (u: string | null | undefined): u is string => !!u && u.startsWith("https://");
+  if (usable(productImage)) return productImage;
+  for (const q of quotes) if (usable(q.imageUrl)) return q.imageUrl;
+  return productImage ?? quotes.find((q) => q.imageUrl)?.imageUrl ?? "";
+}
+
 export async function findSimilarProducts(
   opts: {
     category: string;
@@ -333,7 +346,10 @@ export async function findSimilarProducts(
           source: { in: ["scraped", "connector_api", "daily_index", "nightly_index"] },
         },
         orderBy: { landedCostUsd: "asc" },
-        take: 1,
+        // Take several (not just the cheapest) so we can pick the best available
+        // product image across offers — the cheapest quote may lack a photo even
+        // when a sibling offer for the same product has one.
+        take: 6,
       },
     },
     orderBy: [{ popularityScore: "desc" }, { searchFrequency: "desc" }],
@@ -368,7 +384,7 @@ export async function findSimilarProducts(
       catalogId: p.catalogId,
       title: p.title,
       brand: p.brand,
-      imageUrl: p.imageUrl ?? q.imageUrl ?? "",
+      imageUrl: bestProductImage(p.imageUrl, p.priceQuotes),
       retailer,
       retailerName: getRetailerMeta(retailer).name,
       price: q.priceUsd,
@@ -408,7 +424,8 @@ export async function findBroadenedSimilar(
         priceQuotes: {
           where: { source: { in: ["scraped", "connector_api", "daily_index", "nightly_index"] } },
           orderBy: [{ fetchedAt: "desc" }, { landedCostUsd: "asc" }],
-          take: 1,
+          // Several quotes so bestProductImage can find a photo if the freshest lacks one.
+          take: 6,
         },
       },
       take: ids.length,
@@ -427,7 +444,7 @@ export async function findBroadenedSimilar(
         catalogId: p.catalogId,
         title: p.title,
         brand: p.brand,
-        imageUrl: p.imageUrl ?? q.imageUrl ?? "",
+        imageUrl: bestProductImage(p.imageUrl, p.priceQuotes),
         retailer,
         retailerName: getRetailerMeta(retailer).name,
         price: q.priceUsd,

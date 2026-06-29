@@ -121,6 +121,7 @@ export function MobileOfferList({ offers, onShopClick, searchQuery, variant = "e
               <ProductImage
                 src={offer.imageUrl}
                 alt={offer.title}
+                retailerId={offer.retailer}
                 className="h-full w-full object-cover"
               />
               {best && (
