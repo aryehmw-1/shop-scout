@@ -279,16 +279,27 @@ async function main() {
     if (recBarcode) continue; // carries its own barcode → not a stamping candidate
     const retailerId = getRetailerConfigByName(rec.retailer)?.retailer;
     const cands = candidates.filter((c) => retailerId && c.queryRetailers.includes(retailerId));
+    // Word overlap between the row title and a candidate title — used to pick the
+    // CLOSEST candidate for a meaningful rejection reason (not an arbitrary one).
+    const recWords = new Set((recListing.title ?? "").toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2));
+    const overlapWith = (c: Candidate) =>
+      c.title.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2 && recWords.has(w)).length;
     let accepted: { c: Candidate; reasons: string[] } | null = null;
-    let bestReject: string[] = ["no queried candidate for this retailer"];
+    let bestReject: { reasons: string[]; overlap: number } = {
+      reasons: ["no queried candidate for this retailer"],
+      overlap: -1,
+    };
     for (const c of cands) {
       const r = corroborateUpcStamp(
         { brand: c.brand, title: c.title, sizeLabel: c.sizeLabel, barcode: c.barcode },
         { brand: recListing.brand, title: recListing.title, sizeLabel: recListing.sizeNormalized ?? recListing.size, barcode: null },
       );
       if (r.accept) { accepted = { c, reasons: r.reasons }; break; }
-      // Keep the most informative rejection (the one that got furthest).
-      if (r.reasons.length >= bestReject.length) bestReject = r.reasons;
+      // Report the rejection from the CLOSEST candidate (most shared title words)
+      // so the log reads e.g. "brand mismatch scjohnson ≠ mrs meyers", not a
+      // mismatch against some unrelated product we also happened to query.
+      const ov = overlapWith(c);
+      if (ov > bestReject.overlap) bestReject = { reasons: r.reasons, overlap: ov };
     }
     if (accepted) {
       await prisma.rawProductRecord.update({ where: { id: rec.id }, data: { upcGtin: accepted.c.barcode } });
@@ -296,7 +307,7 @@ async function main() {
       console.log(`  ✓ STAMP ${accepted.c.barcode} → ${rec.retailer.padEnd(7)} "${(rec.title ?? "").slice(0, 44)}"  [${accepted.reasons.join("; ")}]`);
     } else {
       stampRejected++;
-      console.log(`  ✗ keep-unlinked ${rec.retailer.padEnd(7)} "${(rec.title ?? "").slice(0, 44)}"  [${bestReject.join("; ")}]`);
+      console.log(`  ✗ keep-unlinked ${rec.retailer.padEnd(7)} "${(rec.title ?? "").slice(0, 44)}"  [${bestReject.reasons.join("; ")}]`);
     }
   }
   console.log(`  Stamped ${stamped} rows; rejected ${stampRejected}.`);
