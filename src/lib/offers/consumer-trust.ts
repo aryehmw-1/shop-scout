@@ -14,20 +14,23 @@ import {
   isQuoteFreshStrict,
 } from "../pricing/quote-freshness-policy";
 
-/** Minimum match confidence for consumer UI (raised from persist floor 0.58). */
-export const MIN_CONSUMER_MATCH_CONFIDENCE = 0.72;
-
-/** Minimum image quality score — rejects placeholders and low-res thumbs. */
-export const MIN_CONSUMER_IMAGE_CONFIDENCE = 0.4;
-
-/** Minimum identity confidence when no exact UPC/GTIN match reason present. */
-export const MIN_CONSUMER_IDENTITY_CONFIDENCE = 0.65;
-
-/** Best-deal badge requires even higher confidence for link/compare flows. */
-export const MIN_CONSUMER_BEST_DEAL_CONFIDENCE = 0.78;
-
-/** @deprecated Tiered model uses retailer policies — kept for legacy diagnostics. */
-export const CONSUMER_QUOTE_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+// Thresholds live in a dependency-free leaf module to avoid the consumer-trust ↔
+// offer-trust import cycle. Imported for internal use AND re-exported so existing
+// importers of consumer-trust are unchanged.
+import {
+  MIN_CONSUMER_MATCH_CONFIDENCE,
+  MIN_CONSUMER_IMAGE_CONFIDENCE,
+  MIN_CONSUMER_IDENTITY_CONFIDENCE,
+  MIN_CONSUMER_BEST_DEAL_CONFIDENCE,
+  CONSUMER_QUOTE_MAX_AGE_MS,
+} from "./consumer-trust-thresholds";
+export {
+  MIN_CONSUMER_MATCH_CONFIDENCE,
+  MIN_CONSUMER_IMAGE_CONFIDENCE,
+  MIN_CONSUMER_IDENTITY_CONFIDENCE,
+  MIN_CONSUMER_BEST_DEAL_CONFIDENCE,
+  CONSUMER_QUOTE_MAX_AGE_MS,
+};
 
 const PLACEHOLDER_IMAGE =
   /unsplash\.com|placeholder|via\.placeholder|dummyimage|placehold\.co/i;

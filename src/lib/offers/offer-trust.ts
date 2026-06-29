@@ -2,7 +2,9 @@ import { isGenericCatalogImage } from "../indexing/retailer-page-image";
 import { isRetailerHostedImage } from "../indexing/retailer-page-image";
 import { isVerifiedLivePrice } from "../search/price-truth";
 import type { ProductOffer } from "../types";
-import { MIN_CONSUMER_BEST_DEAL_CONFIDENCE } from "./consumer-trust";
+// Import from the leaf thresholds module (NOT consumer-trust) — consumer-trust
+// imports offer-trust, so importing it back here is a cycle that crashed the build.
+import { MIN_CONSUMER_BEST_DEAL_CONFIDENCE } from "./consumer-trust-thresholds";
 import { isAuthoritativeMatchBand } from "./product-match-analysis";
 import { MIN_TRUSTED_MATCH_CONFIDENCE } from "./offer-quality";
 import { classifyProductUrl, isPdpProductUrl, isSearchProductUrl } from "./url-classifier";
