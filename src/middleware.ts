@@ -49,12 +49,20 @@ async function injectImpactVerificationMeta(
     return NextResponse.next();
   }
 
-  const contentType = response.headers.get("content-type") ?? "";
-  if (!contentType.includes("text/html")) {
-    return response;
+  // A redirecting route (e.g. /compare → /chat) returns an opaqueredirect here in
+  // the edge runtime (status 0, headers hidden). We can't read or re-emit it, and
+  // returning it crashes middleware (MIDDLEWARE_INVOCATION_FAILED). Let Next serve
+  // the route natively so its redirect reaches the browser unchanged.
+  if (
+    response.type === "opaqueredirect" ||
+    response.status === 0 ||
+    (response.status >= 300 && response.status < 400)
+  ) {
+    return NextResponse.next();
   }
 
-  if (response.status >= 300 && response.status < 400) {
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.includes("text/html")) {
     return response;
   }
 
