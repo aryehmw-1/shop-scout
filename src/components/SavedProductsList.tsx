@@ -22,8 +22,10 @@ interface Props {
   onRemove: (id: string) => void;
 }
 
+// Compare now happens in the AI chat experience — always hand off to /chat with
+// the product name preloaded so the assistant compares offers immediately.
 const compareHref = (o: ProductOffer) =>
-  o.catalogId ? `/compare?product=${encodeURIComponent(o.catalogId)}` : `/chat?q=${encodeURIComponent(`${o.brand} ${o.title}`)}`;
+  `/chat?q=${encodeURIComponent(`${o.brand} ${o.title}`.trim())}`;
 const storeHref = (o: ProductOffer) =>
   storeOutboundHref(o.retailer as RetailerId, o.productUrl || undefined, o.affiliateUrl, {
     offerId: o.id,

@@ -60,7 +60,7 @@ export function VerifiedOnboardingPaths({
           return (
             <Link
               key={path.id}
-              href="/compare?q=whole%20milk"
+              href="/chat?q=whole%20milk"
               scroll={false}
               onClick={(event) => {
                 event.preventDefault();

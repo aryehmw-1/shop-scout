@@ -1,28 +1,11 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
-import { ComparePageClient } from "./ComparePageClient";
-import { APP_NAME } from "@/lib/constants";
-import { canonicalToSearchResults } from "@/lib/demo-commerce/canonical/to-search-results";
-import {
-  getCanonicalProductById,
-} from "@/lib/demo-commerce/canonical/store";
-import {
-  filterPublicCanonicalProduct,
-} from "@/lib/retailers/public-retailers";
-import type { ProductSearchResults, ShoppingIntent } from "@/lib/types";
-import { searchService } from "@/lib/search/search-service";
-import { inventoryService, demoInventoryFallbackEnabled } from "@/lib/inventory/inventory-service";
+import { redirect } from "next/navigation";
+import { inventoryService } from "@/lib/inventory/inventory-service";
 
-export const metadata: Metadata = {
-  title: "Compare pricing",
-  description:
-    "Compare pricing across Amazon, Costco, Kroger, Walmart, Target, and more. See savings, trust scores, and price history in one view.",
-  openGraph: {
-    title: `Compare pricing · ${APP_NAME}`,
-    description:
-      "Side-by-side compare pricing with persisted pricing, savings context, and retailer trust signals.",
-  },
-};
+// The standalone Compare Prices page is RETIRED — comparison now happens inside
+// the AI chat experience. This route only resolves whatever context it was given
+// (a free-text query, or a product catalogId) into a chat query and redirects to
+// /chat, where the assistant compares offers immediately. Kept as a redirect so
+// old links, bookmarks, and the inventory "Compare" button all land in chat.
 
 type ComparePageProps = {
   searchParams?: Promise<{
@@ -33,62 +16,26 @@ type ComparePageProps = {
   }>;
 };
 
-async function loadInitialCompareResults({
-  query,
-  productId,
-  zip,
-}: {
-  query: string;
-  productId: string;
-  zip: string;
-}): Promise<ProductSearchResults | null> {
-  if (productId) {
-    const persisted = await inventoryService.getProductResultsById(decodeURIComponent(productId));
-    if (persisted?.online.length) return persisted;
-    if (!demoInventoryFallbackEnabled()) return null;
-
-    const product = getCanonicalProductById(decodeURIComponent(productId));
-    if (!product) return null;
-    const publicProduct = filterPublicCanonicalProduct(product);
-    return publicProduct.offers.length >= 2 ?
-        canonicalToSearchResults(publicProduct, zip)
-      : null;
+/** Best chat query for a given product id: the matched product's name (so the
+ *  assistant searches/compares the right item), falling back to its first offer. */
+async function queryForProduct(productId: string): Promise<string | null> {
+  try {
+    const results = await inventoryService.getProductResultsById(decodeURIComponent(productId));
+    const matched = results?.matchedProduct;
+    if (matched?.title) return `${matched.brand ?? ""} ${matched.title}`.trim();
+    const first = results?.online[0];
+    if (first) return `${first.brand ?? ""} ${first.title ?? ""}`.trim();
+  } catch {
+    /* fall through to a bare chat redirect */
   }
-
-  if (!query || query.length < 2) return null;
-
-  const intent: ShoppingIntent = { query, zipCode: zip };
-  return searchService.search(intent, {
-    mode: "compare",
-    skipHistory: true,
-  });
+  return null;
 }
 
 export default async function ComparePage({ searchParams }: ComparePageProps) {
   const params = (await searchParams) ?? {};
-  const productId = params.product ?? params.catalog ?? "";
-  const query = params.q?.trim() ?? "";
-  const zip = params.zip?.trim() || "78701";
-  const initialResults = await loadInitialCompareResults({ query, productId, zip });
-  const initialError =
-    (query || productId) && !initialResults ?
-      "No matching product in inventory. Try another name or browse inventory."
-    : null;
+  const query = params.q?.trim();
+  const productId = (params.product ?? params.catalog ?? "").trim();
 
-  return (
-    <Suspense
-      fallback={
-        <div className="flex flex-1 items-center justify-center text-stone-500">
-          Loading compare…
-        </div>
-      }
-    >
-      <ComparePageClient
-        initialQuery={query}
-        initialProductId={productId}
-        initialResults={initialResults}
-        initialError={initialError}
-      />
-    </Suspense>
-  );
+  const chatQuery = query || (productId ? await queryForProduct(productId) : null);
+  redirect(chatQuery ? `/chat?q=${encodeURIComponent(chatQuery)}` : "/chat");
 }

@@ -365,17 +365,6 @@ export function ProductResults({
   const categoryId = resultCategoryId
     ? CATALOG.find((c) => c.id === resultCategoryId)?.category
     : undefined;
-  const compareQuery =
-    searchQuery?.trim() ||
-    matched?.title ||
-    (online[0] ? `${online[0].brand} ${online[0].title}`.trim() : "");
-  const compareHref =
-    online[0]?.catalogId ?
-      `/compare?product=${encodeURIComponent(online[0].catalogId)}`
-    : compareQuery ?
-      `/compare?q=${encodeURIComponent(compareQuery)}`
-    : null;
-
   const renderOffers = (offers: ProductOffer[], layout: "grid" | "carousel" = "grid") => {
     if (!offers.length) return null;
 
@@ -464,24 +453,6 @@ export function ProductResults({
             </ul>
           </details>
         )}
-
-      {compareHref && online.length > 0 && !compareMode && (
-        <div className="flex justify-end">
-          <Link
-            href={compareHref}
-            onClick={() =>
-              trackEvent({
-                name: "product_clicked",
-                properties: { productId: online[0]?.catalogId, query: searchQuery },
-              })
-            }
-            className="inline-flex items-center gap-1.5 rounded-xl border border-sage-200 bg-white px-3 py-2 text-sm font-semibold text-sage-800 shadow-sm hover:border-sage-400 hover:bg-sage-50"
-          >
-            Open full compare view
-            <ExternalLink size={14} aria-hidden />
-          </Link>
-        </div>
-      )}
 
       {matched && !similarMode && !compareMode && (
         <div className="hidden gap-4 rounded-2xl border border-orange-200/80 bg-cream-50/90 p-4 sm:p-5 lg:flex">

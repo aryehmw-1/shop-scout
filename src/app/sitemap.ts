@@ -7,7 +7,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "", priority: 1, changeFrequency: "weekly" },
     { path: "/inventory", priority: 0.9, changeFrequency: "daily" },
     { path: "/chat", priority: 0.85, changeFrequency: "weekly" },
-    { path: "/compare", priority: 0.8, changeFrequency: "weekly" },
     { path: "/about", priority: 0.7, changeFrequency: "monthly" },
     { path: "/contact", priority: 0.6, changeFrequency: "monthly" },
     { path: "/affiliate-disclosure", priority: 0.5, changeFrequency: "monthly" },
