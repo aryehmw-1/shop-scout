@@ -191,8 +191,15 @@ function ExactOfferCard({
   const meta = getRetailerMeta(offer.retailer);
   const priceDisplay = getOfferPriceDisplay(offer);
   const isBest = rank === 1;
-  const image = offer.imageUrl || matched?.imageUrl || "";
-  const productName = matched?.title ?? offer.storeTitle ?? `${offer.brand} ${offer.title}`;
+  // A "similar" offer is a DIFFERENT product than the one we searched — never
+  // borrow the matched product's photo/name for it (that's what made similar
+  // cards all show the searched Amazon item). Use the offer's own image/title;
+  // an empty image falls back to the retailer logo via ProductImage(retailerId).
+  const isSimilar = offer.matchBand === "similar";
+  const image = offer.imageUrl || (isSimilar ? "" : matched?.imageUrl ?? "");
+  const productName = isSimilar
+    ? offer.storeTitle ?? `${offer.brand ?? ""} ${offer.title}`.trim()
+    : matched?.title ?? offer.storeTitle ?? `${offer.brand} ${offer.title}`;
 
   return (
     <article
