@@ -15,7 +15,9 @@ import { GROCERY_ONBOARDING_EXAMPLES } from "./onboarding-examples";
 
 /** Default chat quick picks — lead with verified grocery categories. */
 export const DEFAULT_CHAT_CHIPS = [
-  ...GROCERY_ONBOARDING_EXAMPLES.slice(0, 4),
+  ...GROCERY_ONBOARDING_EXAMPLES.slice(0, 3),
+  // Surfaces the AI Shopping Planner (P5) — a grouped multi-category plan.
+  "Cleaning supplies for a family of 5",
   "Paste an Amazon link",
 ] as const;
 

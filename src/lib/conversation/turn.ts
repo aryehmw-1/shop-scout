@@ -1,6 +1,7 @@
 import { getStoresNearZip } from "../retailers/catalog";
 import { searchService } from "../search/search-service";
 import { findBroadenedSimilar, findCatalogEstimateMatches } from "../inventory/inventory-service";
+import { detectPlannerIntent, buildShoppingPlan } from "../shopping/shopping-planner";
 import { tryIntelligenceSearch } from "../commerce-intelligence/retrieval/intelligence-search";
 import type { CommerceRetrievalPayload } from "../commerce-intelligence/ai/retrieval-payload";
 import { parseProductUrl } from "../matching/url-parser";
@@ -381,6 +382,8 @@ export interface ResolvedChatTurn {
   referenceProductTitle?: string;
   clarifyQuestion?: string;
   conversationDebug?: ConversationDebugSnapshot;
+  /** AI Shopping Planner output — a grouped list decomposed from the request. */
+  shoppingPlan?: import("../types").ShoppingPlan;
 }
 
 async function searchWithIntelligenceFirst(
@@ -672,6 +675,32 @@ export async function resolveChatTurn(
       },
       { message: text, priorSession: session, merged: false },
     );
+  }
+
+  // AI SHOPPING PLANNER (P5). "I need cleaning supplies for a family of 5",
+  // "moving into a dorm", "bathroom restock" → decompose into a grouped list
+  // from EXISTING catalog data (no imports, no live fetch). Caught before the
+  // single-product search path so a multi-category request isn't run as one query.
+  if (!extractUrl(text) && detectPlannerIntent(text)) {
+    const plan = await buildShoppingPlan(text);
+    if (plan) {
+      return {
+        action: "plan",
+        session: {
+          phase: "ready",
+          intent: { ...intent, query: text, zipCode: zip },
+          asked: [...asked, "plan"],
+          sourceUrl,
+          sourceProductTitle,
+          compareMode: false,
+        },
+        compareMode: false,
+        zipCode: zip,
+        query: text,
+        shoppingPlan: plan,
+        chips: plan.refineChips,
+      };
+    }
   }
 
   const url = extractUrl(text);

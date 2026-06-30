@@ -485,6 +485,31 @@ export interface SimilarProduct {
   internalUrl?: string;
 }
 
+export interface ShoppingPlanProduct {
+  title: string;
+  brand: string;
+  price: number;
+  /** Internal route (product page or /chat?q=) to pull live offers. */
+  internalUrl: string;
+}
+
+export interface ShoppingPlanGroup {
+  label: string;
+  query: string;
+  /** "estimated" = catalog matches with estimate prices; "none" = thin coverage. */
+  coverage: "estimated" | "none";
+  products: ShoppingPlanProduct[];
+}
+
+/** AI Shopping Planner output — a grouped list decomposed from a natural request. */
+export interface ShoppingPlan {
+  title: string;
+  intro: string;
+  groups: ShoppingPlanGroup[];
+  note: string;
+  refineChips: string[];
+}
+
 export interface ProductSearchResults {
   local: ProductOffer[];
   online: ProductOffer[];

@@ -5,6 +5,7 @@ import {
 } from "../ai/generate-reply";
 import type { ChatResponse, LearningProfile, SessionState } from "../types";
 import { resolveChatTurn, type ResolvedChatTurn } from "./turn";
+import { renderShoppingPlanReply } from "../shopping/shopping-planner";
 
 /**
  * Build the reply context for a resolved turn. Shared by the buffered
@@ -54,9 +55,11 @@ export async function processMessage(
     progressive,
   );
 
-  const reply = await generateAssistantReply(
-    buildReplyContext(message, turn, history),
-  );
+  // The Shopping Planner builds a deterministic, grouped Markdown reply from real
+  // catalog data — skip the LLM so prices/products are exactly what we found.
+  const reply = turn.shoppingPlan
+    ? renderShoppingPlanReply(turn.shoppingPlan)
+    : await generateAssistantReply(buildReplyContext(message, turn, history));
 
   return {
     reply,

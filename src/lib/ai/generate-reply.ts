@@ -19,6 +19,7 @@ export type ChatAction =
   | "clarify"
   | "link_search"
   | "invalid_link"
+  | "plan"
   | "conversational";
 
 export interface ChatHistoryMessage {
