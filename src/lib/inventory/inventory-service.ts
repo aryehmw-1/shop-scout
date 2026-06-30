@@ -562,19 +562,26 @@ export async function findCatalogEstimateMatches(
     take: ids.length,
   });
 
-  // PRECISION over recall here — a WRONG estimate (water for "aluminum foil") is
-  // worse than an honest empty. Require EVERY query content word to appear as a
-  // whole title word (simple plural tolerance), not a substring (which let
-  // "riptide" match "tide"). Plus the shared product-type gate.
+  // Balance recall and precision. A WRONG estimate (water for "aluminum foil") is
+  // worse than an honest empty, but requiring EVERY token was too strict ("ARM and
+  // HAMMER laundry detergent" → 0 because no title has all four words). So we
+  // require: (1) the HEAD noun (last content token) present as a whole title word
+  // — the product type itself — and (2) a MAJORITY of query tokens present. Whole-
+  // word (plural-tolerant), never substring (which let "riptide" match "tide").
+  // The sharesProductType gate is the precision backstop.
   const norm = (t: string) => t.replace(/s$/, "");
-  const titleHasAll = (title: string): boolean => {
+  const head = norm(queryTokens[queryTokens.length - 1]!);
+  const needed = Math.max(1, Math.ceil(queryTokens.length / 2));
+  const titleMatches = (title: string): boolean => {
     const titleTokens = new Set(baseTokens(title).map(norm));
-    return queryTokens.every((q) => titleTokens.has(norm(q)));
+    if (!titleTokens.has(head)) return false; // must be the right product type
+    const hits = queryTokens.filter((q) => titleTokens.has(norm(q))).length;
+    return hits >= needed;
   };
 
   const out: SimilarProduct[] = [];
   for (const p of products) {
-    if (!titleHasAll(p.title)) continue;
+    if (!titleMatches(p.title)) continue;
     if (!sharesProductType(query, `${p.brand} ${p.title}`, p.category)) continue;
     const image = bestProductImage(p.imageUrl, []);
     if (!image.startsWith("https://")) continue; // only show cards with a real photo
