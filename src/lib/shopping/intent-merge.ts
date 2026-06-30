@@ -96,6 +96,7 @@ export function mergeSearchIntent(
       maxPrice: parseMaxPriceFromText(msg) ?? fresh.maxPrice,
       zipCode: previous.zipCode,
       organic: fresh.organic,
+      retailerPreference: fresh.retailerPreference,
     };
   }
 
@@ -153,6 +154,9 @@ export function mergeSearchIntent(
     category,
     productSubtype: subtype,
     zipCode: previous.zipCode,
+    // Carry a retailer constraint stated mid-conversation ("only Amazon") so the
+    // refined search actually honors it instead of silently dropping it.
+    retailerPreference: fresh.retailerPreference ?? previous.retailerPreference,
   };
 }
 
