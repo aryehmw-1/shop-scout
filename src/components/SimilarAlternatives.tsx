@@ -38,6 +38,8 @@ export function similarToOffer(s: SimilarProduct): ProductOffer {
     affiliateUrl: s.affiliateUrl ?? "",
     matchConfidence: 0.5,
     matchBand: "similar",
+    priceApproximate: s.priceApproximate,
+    internalUrl: s.internalUrl,
   };
 }
 
@@ -56,16 +58,31 @@ export function SimilarAlternatives({ similar, exactCount, searchQuery, onSave, 
     .slice(0, cap);
   if (!offers.length) return null;
 
+  // All-approximate set → these are catalog products we have but haven't priced
+  // live yet. Be honest about the estimate up front.
+  const allApproximate = offers.every((o) => o.priceApproximate);
+
   return (
     <section className="mt-3 space-y-2">
       <div className="flex w-full items-center gap-2 rounded-lg bg-stone-100 px-3 py-2 text-[12px] font-semibold text-stone-700 ring-1 ring-stone-200">
         <Sparkles size={14} className="shrink-0 text-stone-500" aria-hidden />
         <span>
-          Similar alternatives
-          <span className="font-normal text-stone-500">
-            {" "}— close options, not the exact item
-            {exactCount === 0 ? " we could find" : " you searched"}
-          </span>
+          {allApproximate ? (
+            <>
+              From our catalog
+              <span className="font-normal text-stone-500">
+                {" "}— estimated prices; tap a product to pull live offers
+              </span>
+            </>
+          ) : (
+            <>
+              Similar alternatives
+              <span className="font-normal text-stone-500">
+                {" "}— close options, not the exact item
+                {exactCount === 0 ? " we could find" : " you searched"}
+              </span>
+            </>
+          )}
         </span>
       </div>
       <MobileOfferList

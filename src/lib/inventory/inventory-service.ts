@@ -91,6 +91,12 @@ function quoteToLiveQuote(row: PriceQuote) {
     imageConfidence: row.imageConfidence ?? undefined,
     confidenceReasons: JSON.parse(row.confidenceReasonsJson || "[]") as ProductOffer["confidenceReasons"],
     fetchedAt: row.fetchedAt.toISOString(),
+    // classifyOfferFreshness reads priceAsOf/lastVerifiedAt (NOT fetchedAt), and
+    // without them falls back to Date.now() — making every persisted quote look
+    // "fresh" regardless of real age. Stamp the real fetch time so stale offers
+    // degrade and label correctly (graceful-stale visibility).
+    priceAsOf: row.fetchedAt.toISOString(),
+    lastVerifiedAt: row.fetchedAt.toISOString(),
     expiresAt: row.expiresAt.toISOString(),
     verifiedPersistedInventory: true,
     normalizationNote: "inventory_service_quote",
@@ -251,14 +257,63 @@ export async function searchProducts(
  * products (Bright Data imports like IKEA) are discoverable by chat search.
  */
 async function dbProductCatalogIdsForQuery(query: string, limit: number): Promise<string[]> {
+  // Singularize plurals for matching ("sponges"→"sponge") so a query and a title
+  // that disagree on number still match. "sponge" is a substring of "sponges", so
+  // a singular token matches both forms. Guarded to avoid butchering short words.
+  const singularize = (t: string) =>
+    t.length > 3 && t.endsWith("s") && !t.endsWith("ss") ? t.slice(0, -1) : t;
   const tokens = query
     .toLowerCase()
     .split(/\s+/)
     .map((t) => t.replace(/[^a-z0-9]/gi, ""))
-    .filter((t) => t.length > 1);
+    .filter((t) => t.length > 1)
+    .map(singularize);
   if (!tokens.length) return [];
+  const ql = singularize(query.toLowerCase().trim());
 
-  const rows = await prisma.product.findMany({
+  // POPULARITY-ORDERED sampling. The old code did `take:50` over an unordered OR
+  // match, so for broad terms ("dish soap" matches thousands) it sampled arbitrary
+  // rows and the genuine 2-token matches were often never seen → empty results.
+  // We now (1) take the full-PHRASE title matches first (highest precision), then
+  // (2) a popularity-ordered token-AND pool, then (3) a token-OR pool — each
+  // ordered by popularityScore so we always see the BEST candidates, not random ones.
+  const order = [{ popularityScore: "desc" as const }, { searchFrequency: "desc" as const }];
+  const sel = { catalogId: true, title: true, brand: true, category: true, keywordsJson: true };
+
+  const phraseRows =
+    tokens.length > 1
+      ? await prisma.product.findMany({
+          where: {
+            published: true,
+            validationStatus: "approved",
+            title: { contains: ql, mode: "insensitive" },
+          },
+          select: sel,
+          orderBy: order,
+          take: 80,
+        })
+      : [];
+
+  const andRows =
+    tokens.length > 1
+      ? await prisma.product.findMany({
+          where: {
+            published: true,
+            validationStatus: "approved",
+            AND: tokens.map((t) => ({
+              OR: [
+                { title: { contains: t, mode: "insensitive" as const } },
+                { keywordsJson: { contains: t, mode: "insensitive" as const } },
+              ],
+            })),
+          },
+          select: sel,
+          orderBy: order,
+          take: 80,
+        })
+      : [];
+
+  const orRows = await prisma.product.findMany({
     where: {
       published: true,
       validationStatus: "approved",
@@ -268,19 +323,35 @@ async function dbProductCatalogIdsForQuery(query: string, limit: number): Promis
         ...tokens.map((t) => ({ keywordsJson: { contains: t, mode: "insensitive" as const } })),
       ],
     },
-    select: { catalogId: true, title: true, brand: true, category: true, keywordsJson: true },
-    take: 50,
+    select: sel,
+    orderBy: order,
+    take: 120,
   });
 
-  const ql = query.toLowerCase();
-  return rows
-    .map((p) => {
+  const seen = new Map<string, { catalogId: string; score: number }>();
+  const consider = (rows: typeof orRows, phraseBonus: number) => {
+    for (const p of rows) {
+      if (seen.has(p.catalogId)) continue;
+      const title = p.title.toLowerCase();
       const hay = `${p.brand} ${p.title} ${p.category} ${p.keywordsJson}`.toLowerCase();
-      let score = hay.includes(ql) ? 40 : 0;
-      for (const t of tokens) if (hay.includes(t)) score += 12;
-      return { catalogId: p.catalogId, score };
-    })
-    .filter((s) => s.score >= 24) // ≥2 token hits or a full-phrase hit
+      let score = phraseBonus;
+      if (title.includes(ql)) score += 40;
+      else if (hay.includes(ql)) score += 24;
+      // Token hits weight TITLE higher than keywords (keyword stuffing is noisy —
+      // it's what made "mop" surface a dish-soap whose keywords mention mopping).
+      for (const t of tokens) {
+        if (title.includes(t)) score += 14;
+        else if (hay.includes(t)) score += 6;
+      }
+      seen.set(p.catalogId, { catalogId: p.catalogId, score });
+    }
+  };
+  consider(phraseRows, 30);
+  consider(andRows, 18);
+  consider(orRows, 0);
+
+  return [...seen.values()]
+    .filter((s) => s.score >= 24) // ≥2 title-token hits or a full-phrase hit
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map((s) => s.catalogId);
@@ -458,6 +529,75 @@ export async function findBroadenedSimilar(
     }
   }
   return [];
+}
+
+/**
+ * NEVER-EMPTY fallback. When live + cached + broadened-quoted search all came up
+ * empty, surface relevant products we ALREADY have in the catalog — even though
+ * they have no live offer yet — using their base/typical price as a clearly-labeled
+ * ESTIMATE. The catalog has ~24k products with images + base prices but only ~0.4%
+ * are currently priced, so this is what makes the full catalog searchable without
+ * importing anything new. Each card links INTERNALLY to the product page so a tap
+ * pulls live prices. Gated by product-type so we never fill space with junk.
+ */
+export async function findCatalogEstimateMatches(
+  query: string,
+  limit = 6,
+): Promise<SimilarProduct[]> {
+  const queryTokens = baseTokens(query).filter((t) => t.length > 1);
+  if (!queryTokens.length) return [];
+
+  // High-recall candidate pool (phrase/AND/OR, popularity-ordered).
+  const ids = await dbProductCatalogIdsForQuery(query, 60);
+  if (!ids.length) return [];
+
+  const products = await prisma.product.findMany({
+    where: {
+      catalogId: { in: ids },
+      published: true,
+      validationStatus: "approved",
+      basePriceUsd: { gt: 0 },
+    },
+    orderBy: [{ popularityScore: "desc" }, { searchFrequency: "desc" }],
+    take: ids.length,
+  });
+
+  // PRECISION over recall here — a WRONG estimate (water for "aluminum foil") is
+  // worse than an honest empty. Require EVERY query content word to appear as a
+  // whole title word (simple plural tolerance), not a substring (which let
+  // "riptide" match "tide"). Plus the shared product-type gate.
+  const norm = (t: string) => t.replace(/s$/, "");
+  const titleHasAll = (title: string): boolean => {
+    const titleTokens = new Set(baseTokens(title).map(norm));
+    return queryTokens.every((q) => titleTokens.has(norm(q)));
+  };
+
+  const out: SimilarProduct[] = [];
+  for (const p of products) {
+    if (!titleHasAll(p.title)) continue;
+    if (!sharesProductType(query, `${p.brand} ${p.title}`, p.category)) continue;
+    const image = bestProductImage(p.imageUrl, []);
+    if (!image.startsWith("https://")) continue; // only show cards with a real photo
+    out.push({
+      catalogId: p.catalogId,
+      title: p.title,
+      brand: p.brand,
+      imageUrl: image,
+      retailer: "amazon" as RetailerId, // neutral; estimate has no live retailer yet
+      retailerName: "Catalog",
+      price: p.basePriceUsd,
+      productUrl: "",
+      affiliateUrl: null,
+      priceApproximate: true,
+      internalUrl: `/inventory/products/${p.catalogId}`,
+    });
+    if (out.length >= limit * 3) break;
+  }
+  out.sort((a, b) => a.price - b.price);
+  if (out.length) {
+    console.log("[search-estimate-fallback]", { query, surfaced: Math.min(out.length, limit) });
+  }
+  return out.slice(0, limit);
 }
 
 export async function getProductById(id: string): Promise<InventoryProductDetails | null> {

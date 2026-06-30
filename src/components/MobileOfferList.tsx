@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import type { ProductOffer } from "@/lib/types";
 import { ProductImage } from "./ProductImage";
 import { OutboundLink } from "./OutboundLink";
@@ -89,16 +90,15 @@ export function MobileOfferList({ offers, onShopClick, searchQuery, variant = "e
         const pctBelow = isExact && offer.percentBelowMarket
           ? Math.round(offer.percentBelowMarket)
           : 0;
-        return (
-          <OutboundLink
-            key={offer.id}
-            offer={offer}
-            context={{ source: "mobile_list", searchQuery }}
-            onNavigate={onShopClick}
-            className={`relative flex gap-2.5 rounded-xl border bg-white p-2 shadow-sm transition active:bg-stone-50 ${
-              best ? "border-orange-300 ring-1 ring-orange-200/70" : "border-stone-200"
-            }`}
-          >
+        // Catalog-estimate cards have no live outbound offer — link INTERNALLY to
+        // the product page (which pulls live prices) instead of /api/outbound
+        // (which would render nothing for an offer with no affiliate URL).
+        const approximate = Boolean(offer.priceApproximate && offer.internalUrl);
+        const cardClass = `relative flex gap-2.5 rounded-xl border bg-white p-2 shadow-sm transition active:bg-stone-50 ${
+          best ? "border-orange-300 ring-1 ring-orange-200/70" : "border-stone-200"
+        }`;
+        const inner = (
+          <>
             {onSave && (
               <button
                 type="button"
@@ -141,7 +141,13 @@ export function MobileOfferList({ offers, onShopClick, searchQuery, variant = "e
                 <span className="truncate rounded bg-stone-100 px-1.5 py-0.5 text-[11px] font-bold text-stone-700">
                   {offer.retailerName}
                 </span>
-                <FreshnessIndicator offer={offer} compact interactive />
+                {approximate ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-900">
+                    Est. price
+                  </span>
+                ) : (
+                  <FreshnessIndicator offer={offer} compact interactive />
+                )}
               </div>
               <p className="mt-0.5 line-clamp-1 text-[12px] text-stone-500">{offer.title}</p>
 
@@ -171,16 +177,38 @@ export function MobileOfferList({ offers, onShopClick, searchQuery, variant = "e
                 </div>
                 <span
                   className={`inline-flex shrink-0 items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-bold text-white shadow-sm ${
-                    isSimilar
+                    approximate
+                      ? "bg-stone-900"
+                      : isSimilar
                       ? "bg-stone-900" // Similar alternatives → black View
                       : "bg-gradient-to-r from-orange-500 to-amber-500" // Matching/exact → orange View
                   }`}
                 >
-                  View
+                  {approximate ? "Live prices" : "View"}
                   <ExternalLink size={12} aria-hidden />
                 </span>
               </div>
             </div>
+          </>
+        );
+        return approximate ? (
+          <Link
+            key={offer.id}
+            href={offer.internalUrl!}
+            onClick={() => onShopClick?.(offer)}
+            className={cardClass}
+          >
+            {inner}
+          </Link>
+        ) : (
+          <OutboundLink
+            key={offer.id}
+            offer={offer}
+            context={{ source: "mobile_list", searchQuery }}
+            onNavigate={onShopClick}
+            className={cardClass}
+          >
+            {inner}
           </OutboundLink>
         );
       })}

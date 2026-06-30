@@ -298,6 +298,12 @@ export interface ProductOffer {
   displayPriceConfidence?: number;
   isBestDeal?: boolean;
   priceNote?: string;
+  /** Catalog-estimate fallback: price is a typical/base estimate, NOT a confirmed
+   *  live quote. Rendered with an "Est." badge + internal link to fetch live prices. */
+  priceApproximate?: boolean;
+  /** Internal app route (e.g. /inventory/products/<id>) for approximate matches that
+   *  have no outbound retailer offer yet — tap to pull live prices. */
+  internalUrl?: string;
   /** Composite deal ranking score (0–1). Higher = better trustworthy deal. */
   dealScore?: number;
   marketMedianPrice?: number;
@@ -473,6 +479,10 @@ export interface SimilarProduct {
   productUrl: string;
   /** Affiliate-safe outbound URL (null → hide the outbound link). */
   affiliateUrl: string | null;
+  /** Catalog-estimate fallback: price is a base/typical estimate, not a live quote. */
+  priceApproximate?: boolean;
+  /** Internal route to fetch live prices for this product (no outbound offer yet). */
+  internalUrl?: string;
 }
 
 export interface ProductSearchResults {
@@ -504,6 +514,9 @@ export interface ProductSearchResults {
   similar?: SimilarProduct[];
   /** Grocery search surfaced catalog estimates when no verified quotes exist. */
   closestMatchFallback?: boolean;
+  /** Never-empty fallback: the `similar` items are catalog products we already have
+   *  but haven't priced live yet — shown as clearly-labeled ESTIMATES. */
+  approximateCatalogFallback?: boolean;
   /** Retailer the user named in the query ("Walmart TV" → walmart). */
   retailerPreference?: RetailerId;
   /** False when a retailer was requested but it has no offers (show a note +

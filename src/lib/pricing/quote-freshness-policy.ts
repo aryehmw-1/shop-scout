@@ -30,11 +30,18 @@ export interface RetailerFreshnessPolicy {
   refreshCadenceMs: number;
 }
 
+// GRACEFUL DEGRADATION over hard expiry. We keep offers VISIBLE (clearly labeled
+// stale) for weeks rather than deleting them at 14d — an honest "Price from 12d
+// ago · may have changed" beats an empty result. The staleVisible window is the
+// always-visible, clearly-labeled band; hardExpire is the DB-retention horizon
+// (purge only after this). See purgeExpiredPriceQuotes (age-based off fetchedAt)
+// and passesStaleVisibleFallbackGates.
+const DAY = 24 * 60 * 60 * 1000;
 const DEFAULT_POLICY: Omit<RetailerFreshnessPolicy, "retailerId"> = {
   freshMaxAgeMs: 6 * 60 * 60 * 1000,
   agingMaxAgeMs: 24 * 60 * 60 * 1000,
-  staleVisibleMaxAgeMs: 7 * 24 * 60 * 60 * 1000,
-  hardExpireMs: 14 * 24 * 60 * 60 * 1000,
+  staleVisibleMaxAgeMs: 30 * DAY,
+  hardExpireMs: 90 * DAY,
   proactiveRefreshLeadMs: 12 * 60 * 60 * 1000,
   minDisplayConfidence: 0.32,
   refreshCadenceMs: 24 * 60 * 60 * 1000,
@@ -44,27 +51,22 @@ const RETAILER_POLICIES: Partial<Record<RetailerId, Partial<RetailerFreshnessPol
   amazon: {
     freshMaxAgeMs: 4 * 60 * 60 * 1000,
     agingMaxAgeMs: 18 * 60 * 60 * 1000,
-    staleVisibleMaxAgeMs: 7 * 24 * 60 * 60 * 1000,
     refreshCadenceMs: 12 * 60 * 60 * 1000,
   },
   target: {
     freshMaxAgeMs: 6 * 60 * 60 * 1000,
     agingMaxAgeMs: 24 * 60 * 60 * 1000,
-    staleVisibleMaxAgeMs: 7 * 24 * 60 * 60 * 1000,
     refreshCadenceMs: 24 * 60 * 60 * 1000,
   },
   walmart: {
     freshMaxAgeMs: 8 * 60 * 60 * 1000,
     agingMaxAgeMs: 36 * 60 * 60 * 1000,
-    staleVisibleMaxAgeMs: 5 * 24 * 60 * 60 * 1000,
     refreshCadenceMs: 48 * 60 * 60 * 1000,
   },
   kroger: {
-    staleVisibleMaxAgeMs: 5 * 24 * 60 * 60 * 1000,
     refreshCadenceMs: 48 * 60 * 60 * 1000,
   },
   costco: {
-    staleVisibleMaxAgeMs: 5 * 24 * 60 * 60 * 1000,
     refreshCadenceMs: 72 * 60 * 60 * 1000,
   },
 };

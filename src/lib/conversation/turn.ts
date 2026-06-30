@@ -1,6 +1,6 @@
 import { getStoresNearZip } from "../retailers/catalog";
 import { searchService } from "../search/search-service";
-import { findBroadenedSimilar } from "../inventory/inventory-service";
+import { findBroadenedSimilar, findCatalogEstimateMatches } from "../inventory/inventory-service";
 import { tryIntelligenceSearch } from "../commerce-intelligence/retrieval/intelligence-search";
 import type { CommerceRetrievalPayload } from "../commerce-intelligence/ai/retrieval-payload";
 import { parseProductUrl } from "../matching/url-parser";
@@ -448,6 +448,18 @@ async function searchWithIntelligenceFirst(
     if (broadened.length) {
       productResults.similar = broadened;
       broadenedUsed = true;
+    }
+  }
+
+  // NEVER-EMPTY: if even the broadened-quoted search found nothing, fall back to
+  // catalog products we already have (no live offer yet) as clearly-labeled
+  // ESTIMATES — so a real category like "sponges" surfaces our catalog instead of
+  // a dead end. Last resort only; uses existing data, fetches nothing new.
+  if (productResults.online.length === 0 && !(productResults.similar?.length)) {
+    const estimates = await findCatalogEstimateMatches(fullIntent.query, 6);
+    if (estimates.length) {
+      productResults.similar = estimates;
+      productResults.approximateCatalogFallback = true;
     }
   }
 

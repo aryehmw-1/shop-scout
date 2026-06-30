@@ -36,15 +36,21 @@ import {
   resetIndexRetailerSummary,
   formatIndexRetailerSummaryMarkdown,
 } from "./index-retailer-summary";
-import { computePersistExpiresAt } from "../pricing/quote-freshness-policy";
+import { computePersistExpiresAt, consumerVisibleQuoteCutoff } from "../pricing/quote-freshness-policy";
 import { saveIndexRunArtifact } from "./index-run-artifact";
 import { persistAmazonPaapiIdentity } from "../offers/offer-metadata-persist";
 
 const NIGHTLY_SOURCE = DAILY_INDEX_SOURCE;
 
 export async function purgeExpiredPriceQuotes(): Promise<number> {
+  // Age-based off fetchedAt + the CURRENT retention policy (not the stored
+  // `expiresAt` snapshot, which was written under the old 14d horizon). This lets
+  // us extend retention for graceful stale degradation without a backfill, and
+  // keeps offers queryable+labeled for the full hardExpire window. Quotes are
+  // only deleted once they're older than even the stale-visible horizon.
+  const cutoff = consumerVisibleQuoteCutoff();
   const result = await prisma.priceQuote.deleteMany({
-    where: { expiresAt: { lt: new Date() } },
+    where: { fetchedAt: { lt: cutoff } },
   });
   if (result.count > 0) {
     console.log(
