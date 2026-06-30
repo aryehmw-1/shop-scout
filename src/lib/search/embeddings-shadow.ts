@@ -96,6 +96,15 @@ const openAIEmbedder: Embedder = async (text) => {
   }
 };
 
+/** Exposed for the offline eval harness (scripts/eval-embeddings.ts) so it can
+ *  drive local vs OpenAI directly without touching the request path. */
+export const evalEmbedders = {
+  local: localStubEmbedder,
+  openai: openAIEmbedder,
+  cosine,
+  MODEL_COST_PER_1K,
+};
+
 /** True when a real provider is explicitly configured. Defaults to local-only. */
 function useOpenAIEmbeddings(): boolean {
   return process.env.EMBEDDINGS_PROVIDER === "openai" && Boolean(process.env.OPENAI_API_KEY?.trim());
